@@ -1,5 +1,10 @@
 You are working on NOZOMI.
 
+Data layer:
+- Supabase anon/client: auth, reads, and per-user rows (`word_mastery`, etc.)
+- `vocabulary_entries` writes: service-role ingest only (`npm run ingest:jmdict`), never browser upsert
+- Curated vocabulary ships in-memory (`JMDICT_CURATED`); DB extends the catalog when ingested
+
 Before generating code:
 - read architecture rules
 - read naming rules

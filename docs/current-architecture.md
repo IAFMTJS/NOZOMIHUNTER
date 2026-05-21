@@ -1,6 +1,6 @@
 # Current Architecture
 
-Last updated: v0.1.0 — Sprint 0 + Phase 1 complete + Phase 2–6 scaffolds
+Last updated: v0.6.0 — Phase 5 dungeon system
 
 ## Implemented
 
@@ -14,13 +14,17 @@ Last updated: v0.1.0 — Sprint 0 + Phase 1 complete + Phase 2–6 scaffolds
 | DB migration 001 | Yes |
 | Progression systems | Yes |
 | Player store | Yes |
-| Quest system (MVP) | Yes |
+| Quest system (vocabulary + conversation encounters) | Yes |
+| AI conversation (rule-based director) | Yes |
+| Conversation memory (Supabase) | Yes |
+| Penalty system | Yes |
+| Tutorial / onboarding quest | Yes |
 | Save system | Yes |
 | Dashboard | Yes |
-| AI (Phase 2 scaffold) | Scaffold |
-| JMDict (Phase 3 scaffold) | Scaffold |
-| Speech (Phase 4 scaffold) | Scaffold |
-| Dungeons (Phase 5 scaffold) | Scaffold |
+| JMDict engine (parser, index, search, frequency, mastery) | Yes |
+| Speech (STT hook, scoring pipeline, speech quests) | Yes |
+| Dungeons (Neon Corridor, multi-sector + boss) | Yes |
+| Listening encounters (dungeon sectors) | Yes |
 | Multiplayer (Phase 6 scaffold) | Scaffold, flags off |
 
 ## Folder map
@@ -33,16 +37,19 @@ Last updated: v0.1.0 — Sprint 0 + Phase 1 complete + Phase 2–6 scaffolds
 /docs
 /supabase/migrations
 /src/app
-/src/features/{auth,quests}
-/src/systems/{events,progression,quests,save,antiExploit,ai,mastery,speech,dungeons}
-/src/services/{supabase,openai,whisper,jmdict}
+/src/features/{auth,quests,conversation,speech,dungeons}
+/src/systems/{events,progression,quests,penalties,tutorial,save,antiExploit,ai,mastery,speech,dungeons}
+/src/services/{supabase,dialogue,speech,jmdict}
+/src/hooks/useBrowserSpeech.ts
 /src/stores
 /src/config
 ```
 
 ## Core loop
 
-Login → Quest → XP → Level Up → Save (Supabase)
+Login → Quest or Dungeon → Encounter → XP → Level Up → Save (Supabase)
+
+Dungeon loop: Enter → Deploy → Sectors (vocab, listening, NPC, speech) → Boss → Extract
 
 ## Environment
 

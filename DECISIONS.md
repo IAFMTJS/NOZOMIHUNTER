@@ -8,15 +8,20 @@
 | Language | TypeScript strict | Architecture rules |
 | Styling | Tailwind CSS v4 | Fast dark UI |
 | State | Zustand | Centralized player state |
-| Backend | Supabase | Auth, Postgres, Realtime later |
+| Backend | Supabase | Auth, Postgres, Realtime — **only required external service** |
 | Validation | Zod | Runtime boundaries |
-| AI (Phase 2+) | OpenAI API | Dialogue, intent, emotion |
-| Speech (Phase 4+) | Whisper | STT pipeline |
+| Dialogue (Phase 2+) | Local rule-based orchestrator | No paid LLM APIs |
+| Speech (Phase 4+) | Web Speech API + transcript scoring | Free browser STT; no Whisper |
+
+## Paid APIs
+
+**None.** Do not add OpenAI, Anthropic, or other metered AI APIs. Optional future path: self-hosted Ollama (still $0 per request).
 
 ## Auth
 
 | Decision | Choice |
 |----------|--------|
+| Provider | **Supabase Auth only** |
 | Google login | Supabase OAuth |
 | Guest mode | Supabase anonymous sign-in |
 | Session | `@supabase/ssr` cookies |

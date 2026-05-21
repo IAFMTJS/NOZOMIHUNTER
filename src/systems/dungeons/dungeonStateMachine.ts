@@ -1,37 +1,27 @@
-export type DungeonState =
-  | "IDLE"
-  | "PREPARATION"
-  | "EXPLORATION"
-  | "ENCOUNTER"
-  | "REWARD"
-  | "BOSS"
-  | "EXTRACTION"
-  | "COMPLETE"
-  | "FAILURE"
+import type { DungeonMachineState } from "@/contracts/dungeon-contract"
 
-const TRANSITIONS: Record<DungeonState, DungeonState[]> = {
-  IDLE: ["PREPARATION"],
+const TRANSITIONS: Record<DungeonMachineState, DungeonMachineState[]> = {
   PREPARATION: ["EXPLORATION"],
-  EXPLORATION: ["ENCOUNTER"],
-  ENCOUNTER: ["REWARD", "FAILURE"],
+  EXPLORATION: ["ENCOUNTER", "BOSS"],
+  ENCOUNTER: ["REWARD", "FAILURE", "EXPLORATION"],
   REWARD: ["EXPLORATION", "BOSS"],
-  BOSS: ["EXTRACTION", "FAILURE"],
+  BOSS: ["EXTRACTION", "FAILURE", "EXPLORATION"],
   EXTRACTION: ["COMPLETE"],
   COMPLETE: [],
-  FAILURE: ["IDLE"],
+  FAILURE: ["PREPARATION"],
 }
 
 export function canTransition(
-  from: DungeonState,
-  to: DungeonState
+  from: DungeonMachineState,
+  to: DungeonMachineState
 ): boolean {
   return TRANSITIONS[from]?.includes(to) ?? false
 }
 
 export function transition(
-  current: DungeonState,
-  next: DungeonState
-): DungeonState {
+  current: DungeonMachineState,
+  next: DungeonMachineState
+): DungeonMachineState {
   if (!canTransition(current, next)) {
     throw new Error(`Invalid dungeon transition: ${current} -> ${next}`)
   }

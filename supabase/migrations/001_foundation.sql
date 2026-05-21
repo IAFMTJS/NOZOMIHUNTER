@@ -1,6 +1,5 @@
 -- NOZOMI Foundation Schema
-
-create extension if not exists "uuid-ossp";
+-- Uses gen_random_uuid() (PG 13+) — uuid-ossp is deprecated on hosted Supabase.
 
 -- Profiles (extends auth.users)
 create table if not exists public.profiles (
@@ -39,7 +38,7 @@ create table if not exists public.player_penalties (
 );
 
 create table if not exists public.quests (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   type text not null,
   title text not null,
   description text not null,
@@ -51,7 +50,7 @@ create table if not exists public.quests (
 );
 
 create table if not exists public.user_quests (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles (id) on delete cascade,
   quest_id uuid references public.quests (id),
   status text not null default 'active',
@@ -62,7 +61,7 @@ create table if not exists public.user_quests (
 );
 
 create table if not exists public.conversations (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles (id) on delete cascade,
   messages jsonb not null default '[]'::jsonb,
   memory jsonb not null default '{}'::jsonb,

@@ -55,14 +55,11 @@ Gameplay logic NEVER belongs inside React components.
 - Framer Motion
 
 ## Backend
-- Supabase
-- PostgreSQL
-- Realtime
+- **Supabase** — auth (Google + guest), PostgreSQL, Realtime
 
-## AI
-- OpenAI
-- Whisper
-- Adaptive AI systems
+## Dialogue & speech (free)
+- Rule-based dialogue orchestrator (no paid LLM)
+- Web Speech API for STT where supported (no Whisper/OpenAI)
 
 ---
 

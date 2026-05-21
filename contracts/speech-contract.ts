@@ -7,9 +7,19 @@ export interface SpeechAnalysisContract {
 
   hesitationScore: number
 
+  timingScore: number
+
+  compositeScore: number
+
+  passed: boolean
+
+  responseTimeMs: number
+
   detectedWords: string[]
 
   mistakes: SpeechMistakeContract[]
+
+  feedback: string
 }
 
 export interface SpeechMistakeContract {

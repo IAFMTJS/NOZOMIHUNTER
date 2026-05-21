@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Suspense } from "react"
 import { LoginForm } from "@/features/auth/components/LoginForm"
 
 export default function LoginPage() {
@@ -6,9 +7,11 @@ export default function LoginPage() {
     <main className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-8 p-8">
       <div className="text-center">
         <h1 className="text-2xl font-bold text-[var(--accent)]">NOZOMI</h1>
-        <p className="text-[var(--muted)]">Hunter System — sign in</p>
+        <p className="text-[var(--muted)]">Hunter System — Supabase sign in</p>
       </div>
-      <LoginForm />
+      <Suspense fallback={<p className="text-[var(--muted)]">Loading...</p>}>
+        <LoginForm />
+      </Suspense>
       <Link href="/" className="text-sm text-[var(--muted)] hover:underline">
         Back
       </Link>

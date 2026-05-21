@@ -64,3 +64,25 @@ export interface ConversationRow {
   created_at: string
   updated_at: string
 }
+
+export interface VocabularyEntryRow {
+  id: string
+  ent_seq: number
+  japanese: string[]
+  reading: string[]
+  meanings: string[]
+  romaji: string
+  jlpt: string | null
+  frequency_tier: number
+  search_text: string
+  created_at: string
+}
+
+export interface WordMasteryRow {
+  user_id: string
+  word_id: string
+  mastery: number
+  correct_count: number
+  wrong_count: number
+  last_seen_at: string
+}

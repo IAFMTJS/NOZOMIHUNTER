@@ -11,10 +11,18 @@ import {
   type ProgressionState,
   type ProgressionUpdateResult,
 } from "@/systems/progression/progressionOrchestrator"
+import { applyQuestFailurePenalties } from "@/systems/penalties/penaltySystem"
+import type { PlayerPenaltyContract } from "@/contracts/player-contract"
+import { markTutorialComplete } from "@/systems/tutorial/tutorialSystem"
 
 export interface QuestCompleteResult {
   quest: QuestContract
   progression: ProgressionUpdateResult | null
+}
+
+export interface QuestFailResult {
+  quest: QuestContract
+  penalties: PlayerPenaltyContract
 }
 
 export function acceptQuest(quest: QuestContract, playerId: string): QuestContract {
@@ -55,11 +63,38 @@ export function completeQuest(
     questId: quest.id,
   })
 
-  const progression = applyQuestReward(
+  let progression = applyQuestReward(
     progressionState,
     quest.rewards,
     playerId
   )
 
+  if (progression && quest.isTutorial) {
+    progression = {
+      ...progression,
+      progression: markTutorialComplete(progression.progression),
+    }
+  }
+
   return { quest: completedQuest, progression }
+}
+
+export function failQuest(
+  quest: QuestContract,
+  penalties: PlayerPenaltyContract,
+  playerId: string
+): QuestFailResult {
+  eventBus.emit(GAME_EVENTS.QUEST_FAILED, {
+    playerId,
+    questId: quest.id,
+    questType: quest.type,
+  })
+
+  const nextPenalties = applyQuestFailurePenalties(
+    penalties,
+    quest.penalties,
+    quest.isTutorial
+  )
+
+  return { quest, penalties: nextPenalties }
 }

@@ -7,7 +7,16 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "supabase": "supabase",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:status": "supabase status",
+    "db:reset": "supabase db reset",
+    "db:push": "supabase db push --yes",
+    "db:diff": "supabase db diff -f",
+    "db:migration:new": "supabase migration new",
+    "ingest:jmdict": "tsx scripts/ingest-jmdict.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
@@ -27,7 +36,9 @@
     "@types/react-dom": "^19.0.4",
     "eslint": "^9.22.0",
     "eslint-config-next": "^15.2.4",
+    "supabase": "^2.101.0",
     "tailwindcss": "^4.0.17",
+    "tsx": "^4.19.3",
     "typescript": "^5.8.2"
   }
 }

@@ -8,6 +8,8 @@ Player Assignment
 ↓
 Objective Tracking
 ↓
+Encounter (vocabulary / conversation / speech — validate → mastery or resonance score)
+↓
 Progress Validation
 ↓
 Completion Check

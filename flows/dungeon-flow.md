@@ -1,32 +1,32 @@
-# Dungeon Flow
+# Dungeon Flow (Phase 5)
 
-Enter Dungeon
+Enter Dungeon (DUNGEON quest assigned)
 ↓
-Generate Dungeon Layout
+PREPARATION — briefing, Deploy
 ↓
-Generate Encounters
+EXPLORATION — Enter sector
 ↓
-Player Preparation
+ENCOUNTER — vocab / listening / NPC / speech
 ↓
-Encounter Start
+REWARD — sector cleared
 ↓
-Language Challenge
+(repeat sectors)
 ↓
-Success / Failure
+BOSS — vocabulary phase → speech phase
 ↓
-Apply Rewards / Penalties
+EXTRACTION — claim XP + unlocks
 ↓
-Progress Dungeon State
-↓
-Boss Encounter
-↓
-Extraction
-↓
-Save Progress
+DUNGEON_COMPLETED
+
+Failure paths:
+- Sector failure increments `encounterFailures`; at max → dungeon fail + penalties
+- Abort dungeon → fail contract
 
 Events:
-- DUNGEON_ENTERED
-- ENCOUNTER_STARTED
-- ENCOUNTER_COMPLETED
-- DUNGEON_COMPLETED
-- PENALTY_TRIGGERED
+- `DUNGEON_ENTERED`
+- `ENCOUNTER_STARTED`
+- `ENCOUNTER_COMPLETED`
+- `DUNGEON_COMPLETED`
+- `DUNGEON_FAILED`
+
+Persistence: `user_quests.quest_snapshot` + `progress.dungeonRun`

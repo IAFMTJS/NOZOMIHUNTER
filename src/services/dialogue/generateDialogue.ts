@@ -3,8 +3,8 @@ import { processDialogue } from "@/systems/ai/dialogueOrchestrator"
 import type { AIResponseContract } from "@/contracts/ai-contract"
 
 /**
- * OpenAI integration point. MVP uses local orchestrator;
- * set OPENAI_API_KEY and extend this service for production LLM calls.
+ * Free dialogue service — rule-based orchestrator only (no paid LLM APIs).
+ * Future option: self-hosted Ollama or similar, still $0 API cost.
  */
 export async function generateDialogue(
   message: string,
@@ -14,11 +14,5 @@ export async function generateDialogue(
     throw new Error("AI conversation disabled")
   }
 
-  const apiKey = process.env.OPENAI_API_KEY
-  if (!apiKey) {
-    return processDialogue({ message, playerId })
-  }
-
-  // Future: fetch OpenAI chat completion with RPG system prompt
   return processDialogue({ message, playerId })
 }

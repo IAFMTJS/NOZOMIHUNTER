@@ -1,0 +1,2 @@
+-- Optional seed data for local `npm run db:reset`.
+-- Add development fixtures here when needed.

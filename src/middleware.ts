@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { updateSession } from "@/lib/supabase/middleware"
+import { isSupabaseConfigured } from "@/lib/supabase/env"
 
 const protectedPaths = ["/dashboard"]
 
@@ -9,7 +10,7 @@ export async function middleware(request: NextRequest) {
 
   const isProtected = protectedPaths.some((p) => pathname.startsWith(p))
 
-  if (isProtected && !user) {
+  if (isProtected && !user && isSupabaseConfigured()) {
     const url = request.nextUrl.clone()
     url.pathname = "/login"
     return NextResponse.redirect(url)

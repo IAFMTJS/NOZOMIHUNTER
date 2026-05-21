@@ -2,6 +2,16 @@ import { createClient } from "@/lib/supabase/client"
 import type { PlayerContract, HunterRank } from "@/contracts/player-contract"
 import type { QuestContract } from "@/contracts/quest-contract"
 import { defaultProgression } from "@/systems/progression/unlockSystem"
+import { dedupeActiveQuests } from "@/systems/quests/questListUtils"
+import { mergeQuestRow } from "@/systems/quests/questEncounterRepair"
+
+function requireClient() {
+  const supabase = createClient()
+  if (!supabase) {
+    throw new Error("Supabase is not configured")
+  }
+  return supabase
+}
 
 function mapPlayer(
   profile: { id: string; username: string; created_at: string; updated_at: string },
@@ -43,7 +53,7 @@ export async function loadPlayer(userId: string): Promise<{
   player: PlayerContract
   activeQuests: QuestContract[]
 } | null> {
-  const supabase = createClient()
+  const supabase = requireClient()
 
   const [profileRes, statsRes, progRes, penRes, questsRes] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", userId).single(),
@@ -66,8 +76,13 @@ export async function loadPlayer(userId: string): Promise<{
     penRes.data ?? {}
   )
 
-  const activeQuests: QuestContract[] = (questsRes.data ?? []).map((row) =>
-    row.quest_snapshot as QuestContract
+  const activeQuests = dedupeActiveQuests(
+    (questsRes.data ?? []).map((row) =>
+      mergeQuestRow(
+        row.quest_snapshot as QuestContract,
+        row.progress as Record<string, unknown> | null
+      )
+    )
   )
 
   return { player, activeQuests }
@@ -77,7 +92,7 @@ export async function savePlayer(
   player: PlayerContract,
   activeQuests: QuestContract[]
 ): Promise<void> {
-  const supabase = createClient()
+  const supabase = requireClient()
 
   await Promise.all([
     supabase
@@ -114,15 +129,8 @@ export async function savePlayer(
     }),
   ])
 
-  for (const quest of activeQuests) {
-    await supabase.from("user_quests").upsert({
-      user_id: player.id,
-      quest_id: quest.id.startsWith("quest-") ? null : quest.id,
-      status: "active",
-      quest_snapshot: quest,
-      progress: { objectives: quest.objectives },
-      updated_at: new Date().toISOString(),
-    })
+  for (const quest of dedupeActiveQuests(activeQuests)) {
+    await updateUserQuest(player.id, quest)
   }
 }
 
@@ -130,21 +138,34 @@ export async function assignQuest(
   userId: string,
   quest: QuestContract
 ): Promise<void> {
-  const supabase = createClient()
+  const existing = await findActiveQuestRow(userId, quest.id)
+  if (existing) {
+    await updateUserQuest(userId, quest)
+    return
+  }
+
+  const supabase = requireClient()
   await supabase.from("user_quests").insert({
     user_id: userId,
     quest_id: null,
     status: "active",
     quest_snapshot: quest,
-    progress: { objectives: quest.objectives },
+    progress: {
+      objectives: quest.objectives,
+      vocabularyEncounter: quest.vocabularyEncounter,
+      conversationEncounter: quest.conversationEncounter,
+      speechEncounter: quest.speechEncounter,
+      listeningEncounter: quest.listeningEncounter,
+      dungeonRun: quest.dungeonRun,
+    },
   })
 }
 
-export async function completeUserQuest(
+async function findActiveQuestRow(
   userId: string,
   questId: string
-): Promise<void> {
-  const supabase = createClient()
+): Promise<{ id: string } | null> {
+  const supabase = requireClient()
   const { data: rows } = await supabase
     .from("user_quests")
     .select("id, quest_snapshot")
@@ -154,11 +175,68 @@ export async function completeUserQuest(
   const row = (rows ?? []).find(
     (r) => (r.quest_snapshot as { id?: string })?.id === questId
   )
+  return row ? { id: row.id } : null
+}
 
-  if (row) {
+export async function updateUserQuest(
+  userId: string,
+  quest: QuestContract
+): Promise<void> {
+  const supabase = requireClient()
+  const row = await findActiveQuestRow(userId, quest.id)
+  if (!row) return
+
+  await supabase
+    .from("user_quests")
+    .update({
+      quest_snapshot: quest,
+      progress: {
+        objectives: quest.objectives,
+        vocabularyEncounter: quest.vocabularyEncounter,
+        conversationEncounter: quest.conversationEncounter,
+        speechEncounter: quest.speechEncounter,
+        listeningEncounter: quest.listeningEncounter,
+        dungeonRun: quest.dungeonRun,
+      },
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", row.id)
+}
+
+async function setQuestStatusForSnapshot(
+  userId: string,
+  questId: string,
+  status: "completed" | "failed"
+): Promise<void> {
+  const supabase = requireClient()
+  const { data: rows } = await supabase
+    .from("user_quests")
+    .select("id, quest_snapshot")
+    .eq("user_id", userId)
+    .eq("status", "active")
+
+  const matching = (rows ?? []).filter(
+    (r) => (r.quest_snapshot as { id?: string })?.id === questId
+  )
+
+  for (const row of matching) {
     await supabase
       .from("user_quests")
-      .update({ status: "completed", updated_at: new Date().toISOString() })
+      .update({ status, updated_at: new Date().toISOString() })
       .eq("id", row.id)
   }
+}
+
+export async function completeUserQuest(
+  userId: string,
+  questId: string
+): Promise<void> {
+  await setQuestStatusForSnapshot(userId, questId, "completed")
+}
+
+export async function failUserQuest(
+  userId: string,
+  questId: string
+): Promise<void> {
+  await setQuestStatusForSnapshot(userId, questId, "failed")
 }

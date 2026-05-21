@@ -7,6 +7,7 @@ import { calculateQuestReward } from "./rewardSystem"
 import { mergeUnlocks, defaultProgression } from "./unlockSystem"
 import type { PlayerProgressionContract } from "@/contracts/player-contract"
 import { canGrantXp } from "@/systems/antiExploit/xpGuard"
+import { fatigueXpMultiplier } from "@/systems/penalties/penaltySystem"
 
 export interface ProgressionState {
   xp: number
@@ -27,7 +28,10 @@ export function applyQuestReward(
   rewards: QuestRewardContract,
   playerId: string
 ): ProgressionUpdateResult | null {
-  const payload = calculateQuestReward(rewards)
+  const payload = calculateQuestReward(
+    rewards,
+    fatigueXpMultiplier(state.penalties.fatigue)
+  )
 
   if (!canGrantXp(playerId, payload.xp)) {
     return null
@@ -65,11 +69,16 @@ export function applyQuestReward(
     })
   }
 
+  const penalties = {
+    ...state.penalties,
+    xpDebt: Math.max(0, state.penalties.xpDebt - xpResult.xpGained),
+  }
+
   return {
     xp: xpResult.xp,
     level: xpResult.level,
     rank: xpResult.rank,
-    penalties: state.penalties,
+    penalties,
     progression,
     xpGained: xpResult.xpGained,
     leveledUp: xpResult.leveledUp,

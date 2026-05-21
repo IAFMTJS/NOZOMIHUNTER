@@ -1,25 +1,33 @@
-import type { JmdictEntry } from "@/services/jmdict/parser"
+import type { VocabularyEntryContract } from "@/contracts/vocabulary-contract"
+import { buildSearchText } from "@/services/jmdict/normalize"
 
-const masteryMap = new Map<string, number>()
-
-export function recordWordMastery(wordId: string, score: number): void {
-  const current = masteryMap.get(wordId) ?? 0
-  masteryMap.set(wordId, Math.min(100, current + score))
+export interface VocabularyIndex {
+  entries: VocabularyEntryContract[]
+  byId: Map<string, VocabularyEntryContract>
+  searchBlob: Map<string, string>
 }
 
-export function getMastery(wordId: string): number {
-  return masteryMap.get(wordId) ?? 0
+export function buildVocabularyIndex(
+  entries: VocabularyEntryContract[]
+): VocabularyIndex {
+  const byId = new Map<string, VocabularyEntryContract>()
+  const searchBlob = new Map<string, string>()
+
+  for (const entry of entries) {
+    byId.set(entry.id, entry)
+    searchBlob.set(entry.id, buildSearchText(entry))
+  }
+
+  return { entries, byId, searchBlob }
 }
 
-export function searchEntries(
-  entries: JmdictEntry[],
-  query: string
-): JmdictEntry[] {
-  const q = query.toLowerCase()
-  return entries.filter(
-    (e) =>
-      e.japanese.includes(query) ||
-      e.romaji.toLowerCase().includes(q) ||
-      e.english.toLowerCase().includes(q)
-  )
+export function mergeVocabularyIndexes(
+  base: VocabularyIndex,
+  extra: VocabularyEntryContract[]
+): VocabularyIndex {
+  const merged = new Map(base.byId)
+  for (const entry of extra) {
+    merged.set(entry.id, entry)
+  }
+  return buildVocabularyIndex([...merged.values()])
 }

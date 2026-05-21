@@ -1,26 +1,34 @@
-# Speech Flow
+# Speech Flow (Phase 4)
 
-Voice Recording
+Player opens SPEECH quest
 ↓
-Audio Upload
+Phrase displayed (from vocabulary catalog)
 ↓
-Whisper Transcription
+Voice: Web Speech API (`useBrowserSpeech`, ja-JP) OR typed transcript fallback
+↓
+`transcribeAndAnalyze` (rate-limited via `speechGuard`)
 ↓
 Pronunciation Analysis
 ↓
-Timing Analysis
+Hesitation Detection
+↓
+Timing Analysis (response time ms)
 ↓
 Confidence Analysis
 ↓
-Speech Score Calculation
+Composite Score + pass/fail vs difficulty threshold
 ↓
-XP Validation
+Quest objective advance or wrong-attempt penalty
 ↓
-Save Analysis
+XP on quest complete (existing progression path)
+↓
+Save progress (quest_snapshot)
 ↓
 Trigger Events
 
 Events:
 - SPEECH_RECORDED
 - SPEECH_ANALYZED
-- XP_GAINED
+- XP_GAINED (on quest complete)
+
+Note: No Whisper or paid STT — see `DECISIONS.md`.

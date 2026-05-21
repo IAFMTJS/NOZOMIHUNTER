@@ -10,9 +10,9 @@ export interface QuestRewardPayload {
 
 export function calculateQuestReward(
   rewards: QuestRewardContract,
-  difficultyMultiplier = 1
+  rewardMultiplier = 1
 ): QuestRewardPayload {
-  const baseXp = Math.floor(rewards.xp * difficultyMultiplier)
+  const baseXp = Math.floor(rewards.xp * rewardMultiplier)
 
   return {
     xp: clampXpReward(baseXp),

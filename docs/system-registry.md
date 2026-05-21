@@ -57,98 +57,261 @@ Contracts
 
 dungeonSystem
 
+Location: `/src/systems/dungeons/*`, `/src/features/dungeons/*`
+
 Responsibilities
 
-* dungeon generation
-* branching paths
-* encounters
-* raid support
-* dungeon scaling
+* dungeon generation (`dungeonGenerator`, `dungeonQuestGenerator`)
+* state machine (`dungeonStateMachine`, `dungeonOrchestrator`)
+* sector + boss encounter mounting (`dungeonEncounterFactory`)
+* listening encounters (`listeningEncounterSystem`)
+* access gates (`dungeonAccess`)
+* persistence via DUNGEON quest snapshots
 
 Dependencies
 
-* progression system
+* vocabulary, conversation, speech encounter systems
+* progression system (rewards on extraction)
+* penalty system (failure / abort)
 * event bus
-* encounter system
 
 Events
 
 * DUNGEON_ENTERED
+* ENCOUNTER_STARTED
+* ENCOUNTER_COMPLETED
 * DUNGEON_COMPLETED
 * DUNGEON_FAILED
 
 Contracts
 
 * dungeon-contract.ts
+* encounter-contract.ts (ListeningEncounterContract)
 
 ⸻
 
 aiDialogueSystem
 
+Location: `/src/systems/ai/dialogueOrchestrator.ts`
+
 Responsibilities
 
-* dialogue generation
-* adaptive responses
-* contextual immersion
-* relationship responses
+* dialogue generation (rule-based, no paid APIs)
+* intent + emotion driven responses
+* scenario-aware director replies
+* conversation scoring
 
 Dependencies
 
 * memory system
 * intent system
 * emotion system
+* conversation content config
 
 Events
 
+* MESSAGE_RECEIVED
 * AI_RESPONSE_GENERATED
 
 Contracts
 
 * ai-contract.ts
+* encounter-contract.ts
+
+⸻
+
+conversationEncounterSystem
+
+Location: `/src/systems/quests/conversationEncounterSystem.ts`
+
+Responsibilities
+
+* conversation quest threads
+* exchange validation
+* memory updates per message
+* quest objective progression
+
+Dependencies
+
+* dialogue orchestrator
+* conversation scoring
+* conversation repository
 
 ⸻
 
 speechSystem
 
+Location: `/src/systems/speech/*`, `/src/services/speech/transcribe.ts`
+
 Responsibilities
 
-* speech analysis
-* pronunciation scoring
-* hesitation detection
-* confidence scoring
+* speech analysis pipeline (pronunciation, hesitation, timing, confidence, composite)
+* speech encounter quest progression
+* anti-exploit rate limiting (`speechGuard`)
 
 Dependencies
 
-* Whisper services
-* progression system
+* Web Speech API (client hook) or typed transcript
+* vocabulary catalog (phrase picks)
+* progression system (via quest completion)
+* event bus
 
 Events
 
+* SPEECH_RECORDED
 * SPEECH_ANALYZED
 
 Contracts
 
 * speech-contract.ts
+* encounter-contract.ts (SpeechEncounterContract)
+
+⸻
+
+speechEncounterSystem
+
+Location: `/src/systems/quests/speechEncounterSystem.ts`
+
+Responsibilities
+
+* speech quest phrase selection
+* apply analysis to quest objectives
+* wrong-attempt failure threshold
+
+Dependencies
+
+* speech pipeline, quest validator, vocabulary word picker
 
 ⸻
 
 penaltySystem
+
+Location: `/src/systems/penalties/penaltySystem.ts`
 
 Responsibilities
 
 * corruption
 * fatigue
 * XP debt
-* punishment scaling
+* punishment scaling on quest failure
+* fatigue XP reduction multiplier
 
 Dependencies
 
 * progression system
-* dungeon system
+* event bus
+* penalty config
 
 Events
 
 * PENALTY_TRIGGERED
+
+⸻
+
+vocabularyEncounterSystem
+
+Location: `/src/systems/quests/vocabularyEncounterSystem.ts`
+
+Responsibilities
+
+* frequency-weighted word selection from vocabulary catalog
+* answer validation (romaji / English)
+* encounter progress sync with quest objectives
+* mastery deltas per answer
+
+Dependencies
+
+* vocabularyCatalog, frequencySystem, masterySystem
+* quest validator
+
+Contracts
+
+* encounter-contract.ts
+* vocabulary-contract.ts
+* quest-contract.ts (vocabularyEncounter field)
+
+⸻
+
+jmdictParser
+
+Location: `/src/services/jmdict/parser.ts`
+
+Responsibilities
+
+* parse JMDict XML to normalized entries
+* priority tag → frequency tier
+
+Dependencies
+
+* jmdictConfig, normalize
+
+⸻
+
+vocabularyCatalog
+
+Location: `/src/systems/mastery/vocabularyCatalog.ts`
+
+Responsibilities
+
+* in-memory vocabulary index (curated + DB merge)
+* catalog init on player hydrate
+
+Dependencies
+
+* jmdictCurated, vocabularyIndex
+
+⸻
+
+masterySystem
+
+Location: `/src/systems/mastery/masterySystem.ts`
+
+Responsibilities
+
+* per-word mastery 0–100
+* correct/wrong tracking
+* VOCABULARY_MASTERED event at 80+
+
+Dependencies
+
+* vocabularyRepository (persist via quest service)
+* event bus
+
+Events
+
+* VOCABULARY_MASTERED
+
+Contracts
+
+* vocabulary-contract.ts
+
+⸻
+
+searchSystem / frequencySystem
+
+Location: `/src/systems/mastery/searchSystem.ts`, `frequencySystem.ts`
+
+Responsibilities
+
+* fast in-memory search
+* encounter word picking (frequency + low mastery bias)
+
+⸻
+
+tutorialSystem
+
+Location: `/src/systems/tutorial/tutorialSystem.ts`
+
+Responsibilities
+
+* first-run tutorial quest assignment
+* tutorial unlock flag (`system:tutorial:intro`)
+* briefing copy
+
+Dependencies
+
+* quest generator
+* player progression unlocks
 
 ⸻
 

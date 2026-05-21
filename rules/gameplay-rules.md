@@ -1,5 +1,17 @@
 # Gameplay Rules
 
+## Japanese display (mandatory)
+
+Any learner-facing Japanese **must** include romaji:
+
+- Vocabulary/speech targets: kanji + romaji via `JapaneseText`
+- Conversation/dialogue: inline `日本語 (romaji)` via `formatLearnerContent`
+- New phrases: add readings to `PHRASE_READINGS` or `jmdictCurated` before shipping
+
+Never show Japanese alone in the UI.
+
+---
+
 ## Core Philosophy
 
 This is not a productivity app.

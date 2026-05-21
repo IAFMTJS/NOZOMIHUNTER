@@ -6,11 +6,16 @@ import {
   requestNewQuest,
   advanceQuest,
   finishQuest,
+  submitVocabularyAnswerForQuest,
+  submitConversationMessageForQuest,
+  submitSpeechForQuest,
+  failQuestForPlayer,
 } from "../services/questService"
 
 export function useQuestLogic(userId: string | undefined) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [questMessage, setQuestMessage] = useState<string | null>(null)
 
   const hydrate = useCallback(async () => {
     if (!userId) return
@@ -28,6 +33,7 @@ export function useQuestLogic(userId: string | undefined) {
   const newQuest = useCallback(async () => {
     if (!userId) return
     setBusy(true)
+    setQuestMessage(null)
     try {
       await requestNewQuest(userId)
     } catch (e) {
@@ -52,10 +58,103 @@ export function useQuestLogic(userId: string | undefined) {
     [userId]
   )
 
+  const submitAnswer = useCallback(
+    async (questId: string, answer: string) => {
+      if (!userId) return null
+      setBusy(true)
+      setError(null)
+      try {
+        const result = await submitVocabularyAnswerForQuest(
+          userId,
+          questId,
+          answer
+        )
+        if (result?.encounterFailed) {
+          setQuestMessage("Quest failed. Penalties applied.")
+        }
+        return result
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Failed to submit answer")
+        return null
+      } finally {
+        setBusy(false)
+      }
+    },
+    [userId]
+  )
+
+  const submitSpeech = useCallback(
+    async (questId: string, transcript: string, responseTimeMs: number) => {
+      if (!userId) return null
+      setBusy(true)
+      setError(null)
+      try {
+        const result = await submitSpeechForQuest(
+          userId,
+          questId,
+          transcript,
+          responseTimeMs
+        )
+        if (result?.encounterFailed) {
+          setQuestMessage("Quest failed. Penalties applied.")
+        }
+        return result
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Failed to analyze speech")
+        return null
+      } finally {
+        setBusy(false)
+      }
+    },
+    [userId]
+  )
+
+  const sendMessage = useCallback(
+    async (questId: string, message: string) => {
+      if (!userId) return null
+      setBusy(true)
+      setError(null)
+      try {
+        const result = await submitConversationMessageForQuest(
+          userId,
+          questId,
+          message
+        )
+        if (result?.encounterFailed) {
+          setQuestMessage("Quest failed. Penalties applied.")
+        }
+        return result
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Failed to send message")
+        return null
+      } finally {
+        setBusy(false)
+      }
+    },
+    [userId]
+  )
+
+  const abandon = useCallback(
+    async (questId: string) => {
+      if (!userId) return
+      setBusy(true)
+      try {
+        await failQuestForPlayer(userId, questId)
+        setQuestMessage("Contract abandoned. Penalties applied.")
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Failed to abandon quest")
+      } finally {
+        setBusy(false)
+      }
+    },
+    [userId]
+  )
+
   const complete = useCallback(
     async (questId: string) => {
       if (!userId) return
       setBusy(true)
+      setQuestMessage(null)
       try {
         await finishQuest(userId, questId)
       } catch (e) {
@@ -67,5 +166,17 @@ export function useQuestLogic(userId: string | undefined) {
     [userId]
   )
 
-  return { busy, error, hydrate, newQuest, progress, complete }
+  return {
+    busy,
+    error,
+    questMessage,
+    hydrate,
+    newQuest,
+    progress,
+    submitAnswer,
+    sendMessage,
+    submitSpeech,
+    abandon,
+    complete,
+  }
 }

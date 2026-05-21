@@ -24,7 +24,7 @@ Each system has a single responsibility. Systems must not import React.
 
 ## Services
 
-- MAY: external I/O only (Supabase, OpenAI, Whisper)
+- MAY: external I/O only (Supabase; browser APIs for speech on client)
 - MAY NOT: gameplay calculations
 
 ## Components

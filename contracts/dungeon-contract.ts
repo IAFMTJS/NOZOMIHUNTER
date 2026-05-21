@@ -74,3 +74,23 @@ export interface DungeonPenaltyContract {
   corruption: number
   fatigue: number
 }
+
+/** Live dungeon run state — persisted on DUNGEON quest snapshots. */
+export interface DungeonRunContract {
+  dungeon: DungeonContract
+  machineState: DungeonMachineState
+  currentEncounterIndex: number
+  activeType: EncounterType | "BOSS" | null
+  encounterFailures: number
+  bossPhase: number
+}
+
+export type DungeonMachineState =
+  | "PREPARATION"
+  | "EXPLORATION"
+  | "ENCOUNTER"
+  | "REWARD"
+  | "BOSS"
+  | "EXTRACTION"
+  | "COMPLETE"
+  | "FAILURE"

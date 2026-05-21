@@ -1,3 +1,11 @@
+import type {
+  ConversationEncounterContract,
+  ListeningEncounterContract,
+  SpeechEncounterContract,
+  VocabularyEncounterContract,
+} from "./encounter-contract"
+import type { DungeonRunContract } from "./dungeon-contract"
+
 export interface QuestContract {
   id: string
 
@@ -16,11 +24,30 @@ export interface QuestContract {
 
   requirements?: QuestRequirementContract[]
 
+  /** Populated for VOCABULARY quests — encounter state persists in quest_snapshot. */
+  vocabularyEncounter?: VocabularyEncounterContract
+
+  /** Populated for CONVERSATION quests — thread persists in quest_snapshot + conversations table. */
+  conversationEncounter?: ConversationEncounterContract
+
+  /** Populated for SPEECH quests — phrase progress in quest_snapshot. */
+  speechEncounter?: SpeechEncounterContract
+
+  /** Populated for DUNGEON quests — run state + active encounter payloads. */
+  dungeonRun?: DungeonRunContract
+
+  /** Active listening sector (dungeon or future listening quests). */
+  listeningEncounter?: ListeningEncounterContract
+
+  /** First-run guided quest; lighter failure penalties. */
+  isTutorial?: boolean
+
   hidden?: boolean
 }
 
 export type QuestType =
   | "VOCABULARY"
+  | "CONVERSATION"
   | "LISTENING"
   | "SPEECH"
   | "GRAMMAR"
