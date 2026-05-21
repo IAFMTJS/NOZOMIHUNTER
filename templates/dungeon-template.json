@@ -1,0 +1,9 @@
+{
+  "name": "Template Dungeon",
+  "theme": "CYBER_TOKYO",
+  "difficulty": "RANK_E",
+  "encounters": [],
+  "rewards": { "xp": 100 },
+  "penalties": { "corruption": 0, "fatigue": 0 },
+  "multiplayerEnabled": false
+}

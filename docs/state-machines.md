@@ -1,0 +1,51 @@
+# State Machines
+
+## Dungeon State Machine
+
+IDLE
+↓
+PREPARATION
+↓
+EXPLORATION
+↓
+ENCOUNTER
+↓
+REWARD
+↓
+BOSS
+↓
+EXTRACTION
+↓
+COMPLETE / FAILURE
+
+---
+
+## Dialogue State Machine
+
+IDLE
+↓
+LISTENING
+↓
+PROCESSING
+↓
+RESPONDING
+↓
+EVALUATION
+↓
+MEMORY_UPDATE
+
+---
+
+## Raid State Machine
+
+FORMING
+↓
+READY
+↓
+ACTIVE
+↓
+BOSS_PHASE
+↓
+SUCCESS / FAILURE
+↓
+REWARD_DISTRIBUTION

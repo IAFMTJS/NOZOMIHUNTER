@@ -1,0 +1,16 @@
+{
+  "type": "VOCABULARY",
+  "title": "Template Quest",
+  "description": "Replace with content pipeline output.",
+  "difficulty": "NORMAL",
+  "rewards": { "xp": 50 },
+  "objectives": [
+    {
+      "id": "obj-1",
+      "description": "Objective description",
+      "currentProgress": 0,
+      "requiredProgress": 1,
+      "completed": false
+    }
+  ]
+}
