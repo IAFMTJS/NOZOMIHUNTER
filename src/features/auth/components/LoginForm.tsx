@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useAuth } from "@/hooks/useAuth"
 import { SupabaseSetupNotice } from "@/components/SupabaseSetupNotice"
+import { Button } from "@/components/ui/Button"
+import { Input } from "@/components/ui/Input"
 
 type AuthMode = "signin" | "signup" | "magic"
 
@@ -122,104 +124,73 @@ export function LoginForm() {
     <div className="flex w-full max-w-sm flex-col gap-5">
       <div className="flex gap-2 text-sm">
         {(["signin", "signup", "magic"] as const).map((m) => (
-          <button
+          <Button
             key={m}
-            type="button"
+            variant={mode === m ? "primary" : "ghost"}
             disabled={busy}
             onClick={() => {
               setMode(m)
               setError(null)
               setNotice(null)
             }}
-            className={`rounded px-3 py-1 ${
-              mode === m
-                ? "bg-[var(--accent)] text-black"
-                : "border border-white/20 text-[var(--muted)] hover:bg-white/10"
-            }`}
+            className={mode === m ? "!bg-[var(--accent)] !text-[var(--accent-on)]" : ""}
           >
             {m === "signin" ? "Sign in" : m === "signup" ? "Sign up" : "Magic link"}
-          </button>
+          </Button>
         ))}
       </div>
 
       {mode === "magic" ? (
         <form onSubmit={handleMagicLink} className="flex flex-col gap-3">
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-[var(--muted)]">Email</span>
-            <input
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="rounded border border-white/20 bg-black/30 px-3 py-2"
-            />
-          </label>
-          <button
-            type="submit"
-            disabled={busy}
-            className="rounded border border-[var(--accent)] px-4 py-2 text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black disabled:opacity-50"
-          >
+          <Input
+            label="Email"
+            type="email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Button type="submit" size="md" disabled={busy}>
             Send magic link
-          </button>
+          </Button>
         </form>
       ) : (
         <form onSubmit={handleEmailSubmit} className="flex flex-col gap-3">
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-[var(--muted)]">Email</span>
-            <input
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="rounded border border-white/20 bg-black/30 px-3 py-2"
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-[var(--muted)]">Password</span>
-            <input
-              type="password"
-              required
-              minLength={6}
-              autoComplete={mode === "signup" ? "new-password" : "current-password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="rounded border border-white/20 bg-black/30 px-3 py-2"
-            />
-          </label>
-          <button
-            type="submit"
-            disabled={busy}
-            className="rounded border border-[var(--accent)] px-4 py-2 text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black disabled:opacity-50"
-          >
+          <Input
+            label="Email"
+            type="email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Input
+            label="Password"
+            type="password"
+            required
+            minLength={6}
+            autoComplete={mode === "signup" ? "new-password" : "current-password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button type="submit" size="md" disabled={busy}>
             {mode === "signup" ? "Create account" : "Sign in with email"}
-          </button>
+          </Button>
         </form>
       )}
 
       <div className="flex items-center gap-3 text-xs text-[var(--muted)]">
-        <span className="h-px flex-1 bg-white/10" />
+        <span className="h-px flex-1 bg-[var(--border-subtle)]" />
         or
-        <span className="h-px flex-1 bg-white/10" />
+        <span className="h-px flex-1 bg-[var(--border-subtle)]" />
       </div>
 
-      <button
-        type="button"
-        disabled={busy}
-        onClick={handleGoogle}
-        className="rounded border border-white/20 px-4 py-2 hover:bg-white/10 disabled:opacity-50"
-      >
+      <Button variant="ghost" size="md" disabled={busy} onClick={handleGoogle}>
         Continue with Google
-      </button>
-      <button
-        type="button"
-        disabled={busy}
-        onClick={handleGuest}
-        className="rounded border border-white/20 px-4 py-2 hover:bg-white/10 disabled:opacity-50"
-      >
+      </Button>
+      <Button variant="ghost" size="md" disabled={busy} onClick={handleGuest}>
         Enter as Guest
-      </button>
+      </Button>
 
       {notice && <p className="text-sm text-[var(--accent)]">{notice}</p>}
       {error && <p className="text-sm text-[var(--danger)]">{error}</p>}

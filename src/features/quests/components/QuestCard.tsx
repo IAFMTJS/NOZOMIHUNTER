@@ -1,10 +1,25 @@
 "use client"
 
 import { useState } from "react"
+import { motion } from "framer-motion"
 import type { QuestContract } from "@/contracts/quest-contract"
+import { PreparationScoreBar } from "@/components/preparation/PreparationScoreBar"
+import { Panel } from "@/components/ui/Panel"
+import { Button } from "@/components/ui/Button"
+import { StatusChip } from "@/components/ui/StatusChip"
 import { VocabularyEncounter } from "./VocabularyEncounter"
 import { ConversationEncounter } from "@/features/conversation/components/ConversationEncounter"
 import { SpeechEncounter } from "@/features/speech/components/SpeechEncounter"
+import { ListeningEncounter } from "@/features/dungeons/components/ListeningEncounter"
+import { QuestPreparationGate } from "./QuestPreparationGate"
+import { hasActivePreparationPhase } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
+import { EncounterFocusShell } from "@/components/ui/EncounterFocusShell"
+import { QuestContractActions } from "./QuestContractActions"
+import {
+  EncounterFeedback,
+  feedbackToneFromMessage,
+} from "@/components/ui/EncounterFeedback"
+import { MOTION } from "@/config/motionPresets"
 
 interface QuestCardProps {
   quest: QuestContract
@@ -28,8 +43,17 @@ interface QuestCardProps {
     feedback: string
     compositeScore: number
   } | null>
+  onSubmitListening?: (answer: string) => Promise<{
+    correct: boolean
+    encounterFailed: boolean
+  } | null>
   onAbandon?: () => Promise<void>
+  onDismissPreparation?: (questId: string) => void | Promise<void>
   disabled?: boolean
+  encounterClassName?: string
+  maxWrongAttempts?: number
+  maxListeningReplays?: number
+  signalDegraded?: boolean
 }
 
 export function QuestCard({
@@ -39,10 +63,17 @@ export function QuestCard({
   onSubmitAnswer,
   onSendMessage,
   onSubmitSpeech,
+  onSubmitListening,
   onAbandon,
+  onDismissPreparation,
   disabled,
+  encounterClassName = "",
+  maxWrongAttempts,
+  maxListeningReplays,
+  signalDegraded,
 }: QuestCardProps) {
   const [lastResult, setLastResult] = useState<string | null>(null)
+  const [flash, setFlash] = useState<"success" | "danger" | null>(null)
 
   const objective = quest.objectives[0]
   const canComplete =
@@ -56,6 +87,27 @@ export function QuestCard({
     quest.type === "CONVERSATION" && hasConversation
   const hasSpeech = (quest.speechEncounter?.phrases.length ?? 0) > 0
   const isSpeechEncounter = quest.type === "SPEECH" && hasSpeech
+  const hasListening = (quest.listeningEncounter?.fragments.length ?? 0) > 0
+  const isListeningEncounter = quest.type === "LISTENING" && hasListening
+
+  const prep = quest.vocabularyPreparation
+  const inPreparationPhase = hasActivePreparationPhase(quest)
+  const showPrepBadge =
+    prep &&
+    (isVocabularyEncounter || isSpeechEncounter) &&
+    collectTargets(quest)
+
+  const flashClass =
+    flash === "success"
+      ? "nozomi-flash-success"
+      : flash === "danger"
+        ? "nozomi-flash-danger"
+        : ""
+
+  function pulseFlash(tone: "success" | "danger") {
+    setFlash(tone)
+    window.setTimeout(() => setFlash(null), 280)
+  }
 
   async function handleSubmit(answer: string) {
     if (!onSubmitAnswer) return
@@ -64,14 +116,17 @@ export function QuestCard({
 
     if (result.encounterFailed) {
       setLastResult("Contract failed. Penalties applied.")
+      pulseFlash("danger")
       return
     }
 
-    setLastResult(
-      result.correct
-        ? "Target identified."
-        : "Incorrect. The system is watching."
-    )
+    if (result.correct) {
+      setLastResult("Lock confirmed.")
+      pulseFlash("success")
+    } else {
+      setLastResult("Signal degraded. The system is watching.")
+      pulseFlash("danger")
+    }
   }
 
   async function handleSend(message: string) {
@@ -81,10 +136,35 @@ export function QuestCard({
 
     if (result.encounterFailed) {
       setLastResult("Contract failed. Penalties applied.")
+      pulseFlash("danger")
+    } else if (result.passed) {
+      setLastResult("Exchange logged.")
+      pulseFlash("success")
     } else {
       setLastResult(result.feedback)
+      pulseFlash("danger")
     }
     return result
+  }
+
+  async function handleListening(answer: string) {
+    if (!onSubmitListening) return
+    const result = await onSubmitListening(answer)
+    if (!result) return
+
+    if (result.encounterFailed) {
+      setLastResult("Contract failed. Penalties applied.")
+      pulseFlash("danger")
+      return
+    }
+
+    if (result.correct) {
+      setLastResult("Transmission decoded.")
+      pulseFlash("success")
+    } else {
+      setLastResult("Signal mismatch. Listen again.")
+      pulseFlash("danger")
+    }
   }
 
   async function handleSpeech(transcript: string, responseTimeMs: number) {
@@ -94,121 +174,171 @@ export function QuestCard({
 
     if (result.encounterFailed) {
       setLastResult("Contract failed. Penalties applied.")
+      pulseFlash("danger")
       return
     }
 
-    setLastResult(
-      `${result.feedback} (resonance ${result.compositeScore})`
-    )
+    if (result.passed) {
+      setLastResult(`${result.feedback} (resonance ${result.compositeScore})`)
+      pulseFlash("success")
+    } else {
+      setLastResult(result.feedback)
+      pulseFlash("danger")
+    }
   }
 
-  return (
-    <article className="rounded border border-white/10 bg-white/5 p-4">
-      <div className="mb-2 flex items-start justify-between gap-2">
-        <h3 className="font-semibold text-[var(--accent)]">
-          {quest.title}
-          {quest.isTutorial && (
-            <span className="ml-2 text-xs font-normal text-[var(--muted)]">
-              Tutorial
-            </span>
-          )}
-        </h3>
-        <span className="text-xs uppercase text-[var(--muted)]">
-          {quest.type}
-        </span>
-      </div>
-      <p className="mb-3 text-sm text-[var(--muted)]">{quest.description}</p>
+  const hasEncounterUi =
+    isVocabularyEncounter ||
+    isConversationEncounter ||
+    isSpeechEncounter ||
+    isListeningEncounter
 
-      {isVocabularyEncounter && onSubmitAnswer && onAbandon ? (
-        <>
-          <VocabularyEncounter
-            quest={quest}
-            disabled={disabled}
-            onSubmit={handleSubmit}
-            onAbandon={onAbandon}
-          />
-          {lastResult && (
-            <p
-              className={`mt-2 text-sm ${
-                lastResult.includes("failed")
-                  ? "text-[var(--danger)]"
-                  : "text-[var(--muted)]"
-              }`}
-            >
-              {lastResult}
-            </p>
-          )}
-        </>
-      ) : isSpeechEncounter && onSubmitSpeech && onAbandon ? (
-        <>
-          <SpeechEncounter
-            quest={quest}
-            disabled={disabled}
-            onSubmit={handleSpeech}
-            onAbandon={onAbandon}
-          />
-          {lastResult && (
-            <p
-              className={`mt-2 text-sm ${
-                lastResult.includes("failed")
-                  ? "text-[var(--danger)]"
-                  : "text-[var(--muted)]"
-              }`}
-            >
-              {lastResult}
-            </p>
-          )}
-        </>
-      ) : isConversationEncounter && onSendMessage && onAbandon ? (
-        <>
-          <ConversationEncounter
-            quest={quest}
-            disabled={disabled}
-            onSend={handleSend}
-            onAbandon={onAbandon}
-          />
-          {lastResult && (
-            <p
-              className={`mt-2 text-sm ${
-                lastResult.includes("failed")
-                  ? "text-[var(--danger)]"
-                  : "text-[var(--muted)]"
-              }`}
-            >
-              {lastResult}
-            </p>
-          )}
-        </>
-      ) : (
-        <p className="mb-3 rounded border border-white/10 bg-black/20 p-3 text-sm text-[var(--muted)]">
-          Encounter data is loading — refresh the dashboard.
+  const contractActions =
+    !inPreparationPhase ? (
+      <QuestContractActions
+        rewardXp={quest.rewards.xp}
+        disabled={disabled}
+        canComplete={!!canComplete}
+        showProgress={!hasEncounterUi}
+        onProgress={onProgress}
+        onComplete={onComplete}
+      />
+    ) : null
+
+  const encounterBlock =
+    isVocabularyEncounter && onSubmitAnswer && onAbandon ? (
+      <>
+        <VocabularyEncounter
+          quest={quest}
+          disabled={disabled}
+          onSubmit={handleSubmit}
+          onAbandon={onAbandon}
+          hideLegacyBriefing={inPreparationPhase}
+          flashClassName={flashClass}
+        />
+        <EncounterFeedback
+          message={lastResult}
+          tone={lastResult ? feedbackToneFromMessage(lastResult) : "neutral"}
+        />
+      </>
+    ) : isSpeechEncounter && onSubmitSpeech && onAbandon ? (
+      <>
+        <SpeechEncounter
+          quest={quest}
+          disabled={disabled}
+          onSubmit={handleSpeech}
+          onAbandon={onAbandon}
+          hideLegacyBriefing={inPreparationPhase}
+        />
+        <EncounterFeedback
+          message={lastResult}
+          tone={lastResult ? feedbackToneFromMessage(lastResult) : "neutral"}
+        />
+      </>
+    ) : isListeningEncounter && onSubmitListening && onAbandon ? (
+      <>
+        <ListeningEncounter
+          quest={quest}
+          disabled={disabled}
+          maxWrongAttempts={maxWrongAttempts}
+          maxReplays={maxListeningReplays}
+          signalDegraded={signalDegraded}
+          onSubmit={handleListening}
+          onAbandon={onAbandon}
+          flashClassName={flashClass}
+        />
+        <EncounterFeedback
+          message={lastResult}
+          tone={lastResult ? feedbackToneFromMessage(lastResult) : "neutral"}
+        />
+      </>
+    ) : isConversationEncounter && onSendMessage && onAbandon ? (
+      <ConversationEncounter
+        quest={quest}
+        disabled={disabled}
+        onSend={handleSend}
+        onAbandon={onAbandon}
+        flashClassName={flashClass}
+      />
+    ) : (
+      <Panel tone="inset" className="mb-3 !p-3">
+        <p className="text-sm text-[var(--muted)]">
+          Encounter data is loading — refresh the contract board.
         </p>
-      )}
+      </Panel>
+    )
 
-      <p className="mb-3 text-sm">Reward: {quest.rewards.xp} XP</p>
+  return (
+    <motion.div
+      layout
+      transition={MOTION.panel}
+      className={canComplete && !inPreparationPhase ? "nozomi-contract-ready rounded-[var(--radius-panel)]" : ""}
+    >
+      <Panel
+        as="article"
+        tone={inPreparationPhase ? "accent" : "default"}
+        className="transition-colors"
+      >
+        <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <h3 className="font-display font-semibold leading-snug text-[var(--foreground)]">
+            {quest.title}
+            {quest.isTutorial && (
+              <span className="ml-2 text-xs font-normal text-[var(--muted)]">
+                Tutorial
+              </span>
+            )}
+            {inPreparationPhase && (
+              <span className="ml-2">
+                <StatusChip label="Briefing" tone="accent" pulse />
+              </span>
+            )}
+          </h3>
+          <StatusChip label={quest.type} tone="neutral" />
+        </div>
 
-      <div className="flex gap-2">
-        {!isVocabularyEncounter &&
-          !isConversationEncounter &&
-          !isSpeechEncounter && (
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={onProgress}
-            className="rounded border border-white/20 px-3 py-1 text-sm hover:bg-white/10 disabled:opacity-50"
-          >
-            Progress
-          </button>
+        {showPrepBadge && prep && !inPreparationPhase && (
+          <div className="mb-4">
+            <PreparationScoreBar
+              score={prep.preparationScore}
+              label="Contract readiness"
+            />
+          </div>
         )}
-        <button
-          type="button"
-          disabled={disabled || !canComplete}
-          onClick={onComplete}
-          className="rounded border border-[var(--accent)] px-3 py-1 text-sm text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black disabled:opacity-50"
+
+        <p className="mb-3 text-sm text-[var(--muted)]">{quest.description}</p>
+
+        <QuestPreparationGate
+          quest={quest}
+          disabled={disabled}
+          onBriefingDismissed={onDismissPreparation}
         >
-          Complete
-        </button>
-      </div>
-    </article>
+          <EncounterFocusShell
+            title={quest.title}
+            enabled={
+              !inPreparationPhase &&
+            (isVocabularyEncounter ||
+              isConversationEncounter ||
+              isSpeechEncounter ||
+              isListeningEncounter)
+            }
+            autoFocus
+            encounterClassName={encounterClassName}
+            footer={hasEncounterUi ? contractActions ?? undefined : undefined}
+          >
+            {encounterBlock}
+          </EncounterFocusShell>
+          {!inPreparationPhase && hasEncounterUi && contractActions}
+        </QuestPreparationGate>
+
+        {!inPreparationPhase && !hasEncounterUi && contractActions}
+      </Panel>
+    </motion.div>
+  )
+}
+
+function collectTargets(quest: QuestContract): boolean {
+  return (
+    (quest.vocabularyEncounter?.words.length ?? 0) > 0 ||
+    (quest.speechEncounter?.phrases.length ?? 0) > 0
   )
 }

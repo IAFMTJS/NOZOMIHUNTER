@@ -6,6 +6,7 @@ import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import { runSpeechPipeline } from "@/systems/speech/speechPipeline"
 import { canSubmitSpeech } from "@/systems/antiExploit/speechGuard"
+import { checkSpeechRateLimitServer } from "@/services/supabase/progressionRepository"
 
 export interface TranscribeAndAnalyzeInput {
   transcript: string
@@ -27,6 +28,11 @@ export async function transcribeAndAnalyze(
   }
 
   if (!canSubmitSpeech(input.playerId)) {
+    throw new Error("Speech rate limit — slow down before transmitting again")
+  }
+
+  const serverOk = await checkSpeechRateLimitServer()
+  if (!serverOk) {
     throw new Error("Speech rate limit — slow down before transmitting again")
   }
 

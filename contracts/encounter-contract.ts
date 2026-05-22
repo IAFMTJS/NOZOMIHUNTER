@@ -59,7 +59,7 @@ export interface SpeechEncounterContract {
   attempts: SpeechAttemptContract[]
 }
 
-/** Audio-free listening: infer the signal from meaning + romaji/kana. */
+/** Listening via browser TTS — player decodes spoken Japanese. */
 export interface ListeningFragmentContract {
   id: string
   japanese: string

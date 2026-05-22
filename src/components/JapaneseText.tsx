@@ -32,9 +32,11 @@ export function JapaneseText({
 
   return (
     <span className={`inline-flex flex-col ${className}`}>
-      <span className={`${sizes.jp} text-[var(--accent)]`}>{japanese}</span>
+      <span className={`font-japanese ${sizes.jp} text-[var(--accent-bright)]`}>
+        {japanese}
+      </span>
       {showKana && (
-        <span className={`${sizes.romaji} text-[var(--foreground)]/80`}>
+        <span className={`font-japanese ${sizes.romaji} text-[var(--foreground)]/80`}>
           {reading}
         </span>
       )}

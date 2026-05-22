@@ -28,8 +28,19 @@ export function mergeUnlocks(
 
 export function defaultProgression(): PlayerProgressionContract {
   return {
-    unlockedDungeons: [],
+    unlockedDungeons: ["dungeon:neon-corridor"],
     unlockedSystems: ["quests", "dashboard"],
     titles: [],
   }
+}
+
+/** Sync level-gated registry entries on hydrate. */
+export function ensureProgressionUnlocksForLevel(
+  progression: PlayerProgressionContract,
+  level: number
+): PlayerProgressionContract {
+  const grants: string[] = []
+  if (level >= 2) grants.push("system:listening")
+  if (grants.length === 0) return progression
+  return mergeUnlocks(progression, grants)
 }

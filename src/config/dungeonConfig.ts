@@ -8,6 +8,8 @@ export interface DungeonDefinitionConfig {
   name: string
   description: string
   minLevel: number
+  /** Must appear in player.progression.unlockedDungeons before entry. */
+  requiredDungeon?: string
   encounterPlan: { id: string; type: EncounterType; difficulty: number }[]
   bossName: string
   rewardXpBase: number
@@ -43,7 +45,29 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
     ],
     bossName: "Corridor Warden",
     rewardXpBase: 120,
-    unlocks: ["dungeon:neon-corridor", "system:dungeons"],
+    unlocks: [
+      "dungeon:neon-corridor",
+      "dungeon:shadow-archive",
+      "system:dungeons",
+    ],
+  },
+  {
+    key: "dungeon:shadow-archive",
+    theme: "SHADOW_ARCHIVE",
+    name: "Shadow Archive",
+    description:
+      "Cold storage beneath the grid. Listening ghosts, sealed dialogue, and the Archive Warden.",
+    minLevel: 4,
+    requiredDungeon: "dungeon:neon-corridor",
+    encounterPlan: [
+      { id: "sector-listen", type: "LISTENING", difficulty: 2 },
+      { id: "sector-vocab", type: "VOCAB", difficulty: 2 },
+      { id: "sector-npc", type: "NPC", difficulty: 3 },
+      { id: "sector-speech", type: "SPEECH", difficulty: 3 },
+    ],
+    bossName: "Archive Warden",
+    rewardXpBase: 150,
+    unlocks: ["dungeon:shadow-archive"],
   },
 ]
 
@@ -61,7 +85,6 @@ export function listAvailableDungeons(
 ): DungeonDefinitionConfig[] {
   return DUNGEON_DEFINITIONS.filter(
     (d) =>
-      playerLevel >= d.minLevel &&
-      (unlockedDungeons.includes(d.key) || d.key === "dungeon:neon-corridor")
+      playerLevel >= d.minLevel && unlockedDungeons.includes(d.key)
   )
 }

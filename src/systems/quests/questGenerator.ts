@@ -11,6 +11,7 @@ import { VOCABULARY_ENCOUNTER_CONFIG } from "@/config/vocabularyEncounterConfig"
 import { PENALTY_CONFIG } from "@/config/penaltyConfig"
 
 import { createQuestInstanceId } from "./questIds"
+import { attachVocabularyPreparation } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
 
 import { VOCABULARY_QUEST_VARIANTS } from "@/config/questContentConfig"
 
@@ -27,8 +28,15 @@ import {
   SPEECH_QUEST_VARIANTS,
   getSpeechScenario,
 } from "@/config/speechContentConfig"
+import {
+  LISTENING_QUEST_CONFIG,
+  LISTENING_QUEST_VARIANTS,
+} from "@/config/listeningQuestConfig"
+import { createListeningEncounter } from "@/systems/dungeons/listeningEncounterSystem"
 
-
+function finalizeQuest(quest: QuestContract): QuestContract {
+  return attachVocabularyPreparation(quest)
+}
 
 function buildVocabularyQuest(
 
@@ -172,7 +180,7 @@ export function generateVocabularyQuest(playerLevel: number): QuestContract {
 
 
 
-  return {
+  return finalizeQuest({
 
     ...template,
 
@@ -180,7 +188,7 @@ export function generateVocabularyQuest(playerLevel: number): QuestContract {
 
     requirements: [{ minimumLevel: Math.max(1, playerLevel - 2) }],
 
-  }
+  })
 
 }
 
@@ -196,7 +204,7 @@ export function generateConversationQuest(playerLevel: number): QuestContract {
 
     ]
 
-  return buildConversationQuest(scenario.id, playerLevel)
+  return finalizeQuest(buildConversationQuest(scenario.id, playerLevel))
 
 }
 
@@ -274,25 +282,114 @@ export function generateSpeechQuest(playerLevel: number): QuestContract {
 
     SPEECH_SCENARIOS[Math.floor(Math.random() * SPEECH_SCENARIOS.length)]
 
-  return buildSpeechQuest(scenario.id, playerLevel)
+  return finalizeQuest(buildSpeechQuest(scenario.id, playerLevel))
 
 }
 
 
 
-/** Random vocabulary, conversation, or speech contract (Phase 4). */
+function buildListeningQuest(playerLevel: number): QuestContract {
 
-export function generateQuestForPlayer(playerLevel: number): QuestContract {
+  const variant =
+
+    LISTENING_QUEST_VARIANTS[
+
+      Math.floor(Math.random() * LISTENING_QUEST_VARIANTS.length)
+
+    ]
+
+  const fragmentCount = LISTENING_QUEST_CONFIG.DEFAULT_FRAGMENT_COUNT
+
+  const encounter = createListeningEncounter(fragmentCount, variant.briefing)
+
+
+
+  return {
+
+    id: createQuestInstanceId(),
+
+    type: "LISTENING",
+
+    title: variant.title,
+
+    description: variant.briefing,
+
+    difficulty: playerLevel < 5 ? "EASY" : playerLevel < 15 ? "NORMAL" : "HARD",
+
+    rewards: {
+
+      xp: playerLevel < 5 ? 50 : playerLevel < 15 ? 65 : 80,
+
+      unlocks: ["system:listening"],
+
+    },
+
+    penalties: PENALTY_CONFIG.DEFAULT_QUEST_FAILURE,
+
+    listeningEncounter: encounter,
+
+    objectives: [
+
+      {
+
+        id: "obj-1",
+
+        description: "Decode audio transmissions",
+
+        currentProgress: 0,
+
+        requiredProgress: fragmentCount,
+
+        completed: false,
+
+      },
+
+    ],
+
+    requirements: [{ minimumLevel: Math.max(2, playerLevel - 2) }],
+
+  }
+
+}
+
+
+
+export function generateListeningQuest(playerLevel: number): QuestContract {
+
+  return finalizeQuest(buildListeningQuest(playerLevel))
+
+}
+
+
+
+/** Random vocabulary, conversation, speech, or listening contract. */
+
+export function generateQuestForPlayer(
+  playerLevel: number,
+  unlockedSystems: string[] = []
+): QuestContract {
 
   const roll = Math.random()
 
-  if (playerLevel >= 3 && roll < 0.34) {
+  const canListening =
+    playerLevel >= 2 &&
+    unlockedSystems.includes("system:listening")
+
+
+
+  if (playerLevel >= 3 && roll < 0.2) {
 
     return generateSpeechQuest(playerLevel)
 
   }
 
-  if (roll < 0.67) {
+  if (canListening && roll < 0.4) {
+
+    return generateListeningQuest(playerLevel)
+
+  }
+
+  if (roll < 0.65) {
 
     return generateConversationQuest(playerLevel)
 
@@ -314,7 +411,7 @@ export function generateTutorialQuest(playerId: string): QuestContract {
 
 
 
-  return {
+  return finalizeQuest({
 
     id: `tutorial-${playerId}`,
 
@@ -352,7 +449,7 @@ export function generateTutorialQuest(playerId: string): QuestContract {
 
     ],
 
-  }
+  })
 
 }
 
@@ -369,6 +466,12 @@ export function getQuestBriefing(quest: QuestContract): string | null {
   if (quest.speechEncounter?.briefing) {
 
     return quest.speechEncounter.briefing
+
+  }
+
+  if (quest.listeningEncounter?.briefing) {
+
+    return quest.listeningEncounter.briefing
 
   }
 

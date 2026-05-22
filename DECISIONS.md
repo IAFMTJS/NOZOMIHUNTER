@@ -11,11 +11,11 @@
 | Backend | Supabase | Auth, Postgres, Realtime — **only required external service** |
 | Validation | Zod | Runtime boundaries |
 | Dialogue (Phase 2+) | Local rule-based orchestrator | No paid LLM APIs |
-| Speech (Phase 4+) | Web Speech API + transcript scoring | Free browser STT; no Whisper |
+| Speech (Phase 4+) | MediaRecorder + browser STT + typed fallback | Free browser path only — no OpenAI / Whisper |
 
 ## Paid APIs
 
-**None.** Do not add OpenAI, Anthropic, or other metered AI APIs. Optional future path: self-hosted Ollama (still $0 per request).
+**None.** Do not add OpenAI, Anthropic, or other metered AI APIs. Speech uses browser STT + typed fallback only.
 
 ## Auth
 

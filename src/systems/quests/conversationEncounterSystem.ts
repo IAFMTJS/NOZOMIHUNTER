@@ -13,6 +13,8 @@ import { processDialogue } from "@/systems/ai/dialogueOrchestrator"
 import { scoreConversationExchange } from "@/systems/ai/conversationScoring"
 import { updateMemory } from "@/systems/ai/memorySystem"
 import { advanceObjective } from "./questValidator"
+import { eventBus } from "@/systems/events/eventBus"
+import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import {
   formatLearnerContent,
   resolveMessageReading,
@@ -95,8 +97,16 @@ export async function submitConversationMessage(
 
   if (score.passed) {
     successfulExchanges += 1
+    eventBus.emit(GAME_EVENTS.ENCOUNTER_ANSWER_CORRECT, {
+      questId: quest.id,
+      scenarioId: encounter.scenarioId,
+    })
   } else {
     wrongTurns += 1
+    eventBus.emit(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, {
+      questId: quest.id,
+      scenarioId: encounter.scenarioId,
+    })
   }
 
   const updatedMessages = [

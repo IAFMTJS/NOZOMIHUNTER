@@ -21,6 +21,7 @@ Events
 * XP_GAINED
 * LEVEL_UP
 * RANK_UP
+* UNLOCK_GRANTED
 
 Contracts
 
@@ -141,17 +142,26 @@ Dependencies
 
 speechSystem
 
-Location: `/src/systems/speech/*`, `/src/services/speech/transcribe.ts`
+Location: `/src/systems/speech/*`, `/src/services/speech/transcribe.ts`, `/src/hooks/useSpeechRecording.ts`
 
 Responsibilities
 
+* **recordingStateSystem** — strict IDLE → REQUESTING_PERMISSION → RECORDING → PROCESSING → COMPLETED | ERROR
+* **microphoneSystem** — `beginMicrophoneRequest` (gesture-safe), stream cleanup, level monitor
+* **speechContextSystem** — secure-context / LAN HTTP diagnostics for mobile
+* **speechProcessingSystem** — MediaRecorder + live browser STT orchestration
+* **clientTranscriptionSystem** — browser STT transcript resolution (no server upload)
+* **silenceDetectionSystem** — auto-stop on sustained silence
+* **speechRecoverySystem** — stale session / page-hide recovery
+* **speechDebugSystem** — optional `NEXT_PUBLIC_SPEECH_DEBUG` tracing
 * speech analysis pipeline (pronunciation, hesitation, timing, confidence, composite)
 * speech encounter quest progression
-* anti-exploit rate limiting (`speechGuard`)
+* anti-exploit: client `speechGuard` + server `check_player_rate_limit` RPC
 
 Dependencies
 
-* Web Speech API (client hook) or typed transcript
+* Browser MediaRecorder + Web Speech API (live transcript) or typed transcript
+* No paid STT / Whisper / OpenAI APIs — typed fallback when browser STT unavailable
 * vocabulary catalog (phrase picks)
 * progression system (via quest completion)
 * event bus
@@ -205,6 +215,73 @@ Dependencies
 Events
 
 * PENALTY_TRIGGERED
+
+⸻
+
+presentationSystem
+
+Location: `/src/systems/presentation/penaltyPresentationSystem.ts`, `/src/app/globals.css` (atmosphere + penalty classes)
+
+Responsibilities
+
+* map `PlayerPenaltyContract` to shell/encounter CSS classes (corruption scanlines, fatigue transition speed)
+* shared motion tokens (`/src/config/motionPresets.ts`)
+
+Dependencies
+
+* player-contract penalties
+
+UI consumers
+
+* `HunterShell`, `EncounterFocusShell`, `PenaltyStatus`, `XPBar`
+
+⸻
+
+audioSystem
+
+Location: `/src/systems/audio/*`
+
+Responsibilities
+
+* Web Audio UI cues (confirm, error, level up, sector clear, corruption hum)
+* mute preference (`localStorage`)
+* subscribe via `registerAudioHandlers` on core event bus
+
+Events (played)
+
+* `ENCOUNTER_ANSWER_CORRECT`, `ENCOUNTER_ANSWER_WRONG`, `LEVEL_UP`, `QUEST_COMPLETED`, `ENCOUNTER_STARTED`, `ENCOUNTER_COMPLETED`, `DUNGEON_*`, `PENALTY_TRIGGERED`
+
+Emitted by encounter systems on answer/score outcomes.
+
+⸻
+
+vocabularyPreparationSystem
+
+Location: `/src/systems/vocabulary/*`, `/src/components/preparation/QuestPreparationBriefing.tsx`
+
+Responsibilities
+
+* extract quest vocabulary targets (`questVocabularySystem`, `collectQuestVocabularyTargets`)
+* detect unknown words vs player mastery tiers (`vocabularyDetectionSystem`, `vocabularyMasteryBridge`)
+* prioritize critical vocabulary (`vocabularyPrioritySystem`)
+* generate mission briefing (`vocabularyExplanationSystem`, `vocabularyPreparationSystem`, `vocabularyPreparationOrchestrator`)
+* pre-quest UI gate (`QuestPreparationGate`)
+
+Dependencies
+
+* vocabulary catalog, masterySystem (numeric 0–100)
+* quest generator / accept / repair (attach `vocabularyPreparation` on quest)
+
+Events
+
+* `VOCABULARY_PREPARATION_READY`
+
+Contracts
+
+* `vocabulary-contract.ts` (`QuestVocabularyPreparationContract`)
+* `quest-contract.ts` (`vocabularyPreparation` field)
+
+Philosophy: `/docs/vocabulary-philosophy.md` · Flow: `/flows/vocabulary-preparation-flow.md`
 
 ⸻
 
@@ -336,20 +413,22 @@ Events
 
 analyticsSystem
 
+Location: `/src/systems/analytics/analyticsSystem.ts`
+
 Responsibilities
 
-* gameplay telemetry
-* balancing analytics
-* failure tracking
-* progression analytics
+* in-memory telemetry buffer (`recordAnalyticsEvent`)
+* persists via `record_gameplay_event` RPC → `gameplay_events` table
+* fed by `registerCoreEventHandlers` alongside structured logging
 
 Dependencies
 
-* event bus
+* event bus (subscribe via eventHandlers)
+* logger
 
 Events
 
-* all major gameplay events
+* all major gameplay events (read-only consumers)
 
 ⸻
 
@@ -391,3 +470,64 @@ Dependencies
 Events
 
 * EXPLOIT_DETECTED
+
+⸻
+
+resolveQuestCompletion (v0.7.0)
+
+Responsibilities
+
+* merge reward unlocks into progression on quest/dungeon complete
+* diff new unlock keys; emit UNLOCK_GRANTED
+
+Dependencies
+
+* unlockSystem
+* event bus
+
+⸻
+
+penaltyGameplaySystem (v0.7.1)
+
+Responsibilities
+
+* corruption-modified wrong-attempt limits, listening replays, dungeon failure budget
+* fatigue recovery on completion
+
+Dependencies
+
+* penaltyConfig
+* dungeonConfig
+
+⸻
+
+unlockRegistry (config)
+
+Responsibilities
+
+* human labels for system:/dungeon:/title: unlock keys
+
+⸻
+
+themedAudioSystem (v0.8.0)
+
+Responsibilities
+
+* optional MP3 cues per dungeon theme; procedural fallback
+
+Dependencies
+
+* audioSystem
+
+⸻
+
+dungeonAccess (extended v0.7.0)
+
+Responsibilities
+
+* listAllDungeonDefinitions
+* resolveDungeonAccess (available, locked_level, locked_prerequisite, blocked_active_run)
+
+Events
+
+* UNLOCK_GRANTED (progression)

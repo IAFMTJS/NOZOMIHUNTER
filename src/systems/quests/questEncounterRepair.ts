@@ -9,12 +9,15 @@ import { createVocabularyEncounter } from "./vocabularyEncounterSystem"
 import { createConversationEncounter } from "./conversationEncounterSystem"
 
 import { createSpeechEncounter } from "./speechEncounterSystem"
+import { createListeningEncounter } from "@/systems/dungeons/listeningEncounterSystem"
+import { LISTENING_QUEST_CONFIG } from "@/config/listeningQuestConfig"
 
 import {
   formatLearnerContent,
   resolveMessageReading,
   stripRomajiPairs,
 } from "@/services/jmdict/readingAnnotation"
+import { attachVocabularyPreparation } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
 
 
 
@@ -77,6 +80,74 @@ function hasPlayableSpeech(quest: QuestContract): boolean {
   const phrases = quest.speechEncounter?.phrases
 
   return Boolean(phrases && phrases.length > 0)
+
+}
+
+function hasPlayableListening(quest: QuestContract): boolean {
+
+  const fragments = quest.listeningEncounter?.fragments
+
+  return Boolean(fragments && fragments.length > 0)
+
+}
+
+function buildListeningPayload(quest: QuestContract): QuestContract {
+
+  const count = LISTENING_QUEST_CONFIG.DEFAULT_FRAGMENT_COUNT
+
+  const briefing =
+
+    quest.listeningEncounter?.briefing ??
+
+    quest.description ??
+
+    "Listen to each signal and transmit what you heard."
+
+  const encounter = createListeningEncounter(count, briefing)
+
+  const cleared = Math.min(
+
+    quest.objectives[0]?.currentProgress ?? 0,
+
+    encounter.fragments.length
+
+  )
+
+  return {
+
+    ...quest,
+
+    type: "LISTENING",
+
+    listeningEncounter: {
+
+      ...encounter,
+
+      currentIndex: Math.min(cleared, encounter.fragments.length),
+
+      wrongAttempts: quest.listeningEncounter?.wrongAttempts ?? 0,
+
+    },
+
+    objectives: [
+
+      {
+
+        id: "obj-1",
+
+        description: "Decode audio transmissions",
+
+        currentProgress: cleared,
+
+        requiredProgress: encounter.fragments.length,
+
+        completed: cleared >= encounter.fragments.length,
+
+      },
+
+    ],
+
+  }
 
 }
 
@@ -257,50 +328,38 @@ function backfillConversationReadings(quest: QuestContract): QuestContract {
 }
 
 export function repairQuestSnapshot(quest: QuestContract): QuestContract {
+  let repaired: QuestContract
 
   if (quest.type === "DUNGEON" && quest.dungeonRun) {
-    return quest
+    repaired = quest
+  } else if (quest.type === "SPEECH") {
+    repaired = hasPlayableSpeech(quest)
+      ? patchSpeechPhrases(quest)
+      : buildSpeechPayload(quest)
+  } else if (quest.type === "CONVERSATION") {
+    repaired = hasPlayableConversation(quest)
+      ? backfillConversationReadings(quest)
+      : buildConversationPayload(quest)
+  } else if (quest.type === "LISTENING") {
+    repaired = hasPlayableListening(quest)
+      ? quest
+      : buildListeningPayload(quest)
+  } else {
+    const wordCount = quest.isTutorial
+      ? VOCABULARY_ENCOUNTER_CONFIG.TUTORIAL_WORD_COUNT
+      : VOCABULARY_ENCOUNTER_CONFIG.DEFAULT_WORD_COUNT
+
+    repaired =
+      quest.type === "VOCABULARY" && hasPlayableVocabulary(quest)
+        ? patchVocabularyWords(quest)
+        : buildVocabularyPayload(quest, wordCount)
   }
 
-  if (quest.type === "SPEECH") {
-    if (hasPlayableSpeech(quest)) {
-      return patchSpeechPhrases(quest)
-    }
-    return buildSpeechPayload(quest)
+  if (repaired.vocabularyPreparation) {
+    return repaired
   }
 
-  if (quest.type === "CONVERSATION") {
-
-    if (hasPlayableConversation(quest)) {
-
-      return backfillConversationReadings(quest)
-
-    }
-
-    return buildConversationPayload(quest)
-
-  }
-
-
-
-  const wordCount = quest.isTutorial
-
-    ? VOCABULARY_ENCOUNTER_CONFIG.TUTORIAL_WORD_COUNT
-
-    : VOCABULARY_ENCOUNTER_CONFIG.DEFAULT_WORD_COUNT
-
-
-
-  if (quest.type === "VOCABULARY" && hasPlayableVocabulary(quest)) {
-
-    return patchVocabularyWords(quest)
-
-  }
-
-
-
-  return buildVocabularyPayload(quest, wordCount)
-
+  return attachVocabularyPreparation(repaired)
 }
 
 

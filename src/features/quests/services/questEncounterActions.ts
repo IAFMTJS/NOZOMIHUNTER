@@ -1,0 +1,208 @@
+import { submitVocabularyAnswer } from "@/systems/quests/vocabularyEncounterSystem"
+import { submitConversationMessage } from "@/systems/quests/conversationEncounterSystem"
+import {
+  applySpeechAnalysis,
+  getCurrentPhrase,
+} from "@/systems/quests/speechEncounterSystem"
+import { transcribeAndAnalyze } from "@/services/speech/transcribe"
+import {
+  loadPlayerAiState,
+  savePlayerAiState,
+} from "@/services/supabase/conversationRepository"
+import { upsertWordMastery } from "@/services/supabase/vocabularyRepository"
+import { usePlayerStore } from "@/stores/usePlayerStore"
+import { updateUserQuest } from "@/services/supabase/playerRepository"
+import { failQuestForPlayer } from "./questLifecycle"
+import { persistQuestState } from "./questPersistence"
+import { submitListeningAnswer } from "@/systems/dungeons/listeningEncounterSystem"
+import { maxWrongAttemptsForPenalties } from "@/systems/penalties/penaltyGameplaySystem"
+
+export async function submitVocabularyAnswerForQuest(
+  userId: string,
+  questId: string,
+  answer: string
+): Promise<{
+  correct: boolean
+  encounterFailed: boolean
+  encounterComplete: boolean
+} | null> {
+  const store = usePlayerStore.getState()
+  const quest = store.activeQuests.find((q) => q.id === questId)
+  if (!quest?.vocabularyEncounter || !store.player) return null
+
+  const maxWrong = maxWrongAttemptsForPenalties(store.player.penalties)
+  const result = submitVocabularyAnswer(quest, answer, userId, maxWrong)
+  store.updateQuest(result.quest)
+  await updateUserQuest(userId, result.quest)
+
+  if (result.masteryUpdate) {
+    try {
+      await upsertWordMastery(userId, result.masteryUpdate)
+    } catch {
+      /* mastery persists on next successful save when DB available */
+    }
+  }
+
+  if (result.encounterFailed) {
+    await failQuestForPlayer(userId, questId)
+    return {
+      correct: false,
+      encounterFailed: true,
+      encounterComplete: false,
+    }
+  }
+
+  await persistQuestState()
+  return {
+    correct: result.correct,
+    encounterFailed: false,
+    encounterComplete: result.encounterComplete,
+  }
+}
+
+export async function submitConversationMessageForQuest(
+  userId: string,
+  questId: string,
+  message: string
+): Promise<{
+  passed: boolean
+  encounterFailed: boolean
+  encounterComplete: boolean
+  feedback: string
+  directorReply: string
+} | null> {
+  const store = usePlayerStore.getState()
+  const quest = store.activeQuests.find((q) => q.id === questId)
+  if (!quest?.conversationEncounter || !store.player) return null
+
+  const aiState = await loadPlayerAiState(userId)
+  const result = await submitConversationMessage(
+    quest,
+    message,
+    userId,
+    aiState.memory
+  )
+
+  store.updateQuest(result.quest)
+  await updateUserQuest(userId, result.quest)
+
+  await savePlayerAiState(
+    userId,
+    result.memory,
+    result.quest.conversationEncounter!.messages,
+    aiState.conversationId
+  )
+
+  if (result.encounterFailed) {
+    await failQuestForPlayer(userId, questId)
+    return {
+      passed: false,
+      encounterFailed: true,
+      encounterComplete: false,
+      feedback: result.feedback,
+      directorReply: result.aiResponse.response,
+    }
+  }
+
+  await persistQuestState()
+  return {
+    passed: result.passed,
+    encounterFailed: false,
+    encounterComplete: result.encounterComplete,
+    feedback: result.feedback,
+    directorReply: result.aiResponse.response,
+  }
+}
+
+export async function submitSpeechForQuest(
+  userId: string,
+  questId: string,
+  transcript: string,
+  responseTimeMs: number
+): Promise<{
+  passed: boolean
+  encounterFailed: boolean
+  encounterComplete: boolean
+  feedback: string
+  compositeScore: number
+} | null> {
+  const store = usePlayerStore.getState()
+  const quest = store.activeQuests.find((q) => q.id === questId)
+  if (!quest?.speechEncounter || !store.player) return null
+
+  const phrase = getCurrentPhrase(quest.speechEncounter)
+  if (!phrase) return null
+
+  let analysis
+  try {
+    analysis = await transcribeAndAnalyze({
+      transcript,
+      playerId: userId,
+      phrase,
+      responseTimeMs,
+      difficulty: quest.difficulty,
+    })
+  } catch (e) {
+    throw e instanceof Error ? e : new Error("Speech analysis failed")
+  }
+
+  const maxWrong = maxWrongAttemptsForPenalties(store.player.penalties)
+  const result = applySpeechAnalysis(quest, analysis, maxWrong)
+  store.updateQuest(result.quest)
+  await updateUserQuest(userId, result.quest)
+
+  if (result.encounterFailed) {
+    await failQuestForPlayer(userId, questId)
+    return {
+      passed: false,
+      encounterFailed: true,
+      encounterComplete: false,
+      feedback: analysis.feedback,
+      compositeScore: analysis.compositeScore,
+    }
+  }
+
+  await persistQuestState()
+  return {
+    passed: result.passed,
+    encounterFailed: false,
+    encounterComplete: result.encounterComplete,
+    feedback: analysis.feedback,
+    compositeScore: analysis.compositeScore,
+  }
+}
+
+export async function submitListeningAnswerForQuest(
+  userId: string,
+  questId: string,
+  answer: string
+): Promise<{
+  correct: boolean
+  encounterFailed: boolean
+  encounterComplete: boolean
+} | null> {
+  const store = usePlayerStore.getState()
+  const quest = store.activeQuests.find((q) => q.id === questId)
+  if (!quest?.listeningEncounter || !store.player) return null
+
+  const maxWrong = maxWrongAttemptsForPenalties(store.player.penalties)
+  const result = submitListeningAnswer(quest, answer, maxWrong)
+  store.updateQuest(result.quest)
+  await updateUserQuest(userId, result.quest)
+
+  if (result.encounterFailed) {
+    await failQuestForPlayer(userId, questId)
+    return {
+      correct: false,
+      encounterFailed: true,
+      encounterComplete: false,
+    }
+  }
+
+  await persistQuestState()
+  return {
+    correct: result.correct,
+    encounterFailed: false,
+    encounterComplete: result.encounterComplete,
+  }
+}

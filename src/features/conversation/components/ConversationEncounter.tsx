@@ -1,10 +1,18 @@
 "use client"
 
 import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import type { QuestContract } from "@/contracts/quest-contract"
 import { getQuestBriefing } from "@/systems/quests/questGenerator"
 import { CONVERSATION_ENCOUNTER_CONFIG } from "@/config/conversationEncounterConfig"
+import { MOTION } from "@/config/motionPresets"
 import { LearnerMessageText } from "@/components/JapaneseText"
+import { Panel } from "@/components/ui/Panel"
+import { Button } from "@/components/ui/Button"
+import {
+  EncounterFeedback,
+  feedbackToneFromMessage,
+} from "@/components/ui/EncounterFeedback"
 
 interface ConversationEncounterProps {
   quest: QuestContract
@@ -15,6 +23,7 @@ interface ConversationEncounterProps {
     feedback: string
   } | null>
   onAbandon: () => Promise<void>
+  flashClassName?: string
 }
 
 export function ConversationEncounter({
@@ -22,6 +31,7 @@ export function ConversationEncounter({
   disabled,
   onSend,
   onAbandon,
+  flashClassName = "",
 }: ConversationEncounterProps) {
   const [message, setMessage] = useState("")
   const [feedback, setFeedback] = useState<string | null>(null)
@@ -34,7 +44,7 @@ export function ConversationEncounter({
   if (!encounter?.messages.length) {
     return (
       <p className="mt-3 text-sm text-[var(--danger)]">
-        Dialogue data missing. Refresh the dashboard.
+        Dialogue data missing. Refresh the contract board.
       </p>
     )
   }
@@ -51,7 +61,9 @@ export function ConversationEncounter({
       setFeedback(
         result.encounterFailed
           ? "Link severed. Contract failed."
-          : result.feedback
+          : result.passed
+            ? "Exchange logged."
+            : result.feedback
       )
     } finally {
       setSending(false)
@@ -64,66 +76,74 @@ export function ConversationEncounter({
   )
 
   return (
-    <div className="mt-3 rounded border border-white/10 bg-black/20 p-4">
+    <Panel tone="inset" className={`mt-3 ${flashClassName}`}>
       {briefing && (
         <p className="mb-3 text-sm italic text-[var(--muted)]">{briefing}</p>
       )}
 
-      <p className="mb-2 text-xs uppercase text-[var(--muted)]">
+      <p className="mb-2 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
         {encounter.directorName} · Exchanges{" "}
         {encounter.successfulExchanges}/{encounter.requiredExchanges}
       </p>
 
-      <ul className="mb-4 max-h-48 space-y-2 overflow-y-auto pr-1">
-        {encounter.messages.map((msg) => (
-          <li
-            key={msg.id}
-            className={`rounded px-3 py-2 text-sm ${
-              msg.role === "director"
-                ? "border border-[var(--accent)]/30 bg-[var(--accent)]/5"
-                : "border border-white/10 bg-white/5"
-            }`}
-          >
-            <span className="mr-2 text-xs uppercase text-[var(--muted)]">
-              {msg.role === "director" ? encounter.directorName : "You"}
-            </span>
-            <LearnerMessageText
-              content={msg.content}
-              reading={msg.reading}
-              className="block"
-            />
-          </li>
-        ))}
+      <ul className="mb-4 max-h-56 space-y-2 overflow-y-auto pr-1">
+        <AnimatePresence initial={false}>
+          {encounter.messages.map((msg) => (
+            <motion.li
+              key={msg.id}
+              layout
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={MOTION.feedback}
+              className={`rounded px-3 py-2.5 text-sm ${
+                msg.role === "director"
+                  ? "border border-[var(--accent)]/40 bg-[var(--accent)]/10 shadow-[inset_0_0_20px_var(--glow-accent)]"
+                  : "border border-white/10 bg-white/5"
+              }`}
+            >
+              <span className="mr-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+                {msg.role === "director" ? encounter.directorName : "You"}
+              </span>
+              <LearnerMessageText
+                content={msg.content}
+                reading={msg.reading}
+                className="mt-1 block"
+              />
+            </motion.li>
+          ))}
+        </AnimatePresence>
       </ul>
 
       <form onSubmit={handleSend} className="flex flex-col gap-3">
         <label className="text-sm text-[var(--muted)]">
-          Your message (Japanese or English)
+          Transmit (Japanese or English)
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             disabled={disabled || sending}
             rows={2}
-            className="mt-1 w-full resize-none rounded border border-white/20 bg-black/30 px-3 py-2 text-[var(--foreground)]"
+            className="mt-1 min-h-11 w-full resize-none rounded border border-[var(--border-subtle)] bg-[var(--surface-2)] px-3 py-2 text-base text-[var(--foreground)] outline-none focus:border-[var(--accent)]/60 sm:min-h-0 sm:text-sm"
             placeholder="e.g. junbi dekite imasu (準備できています) or I am ready"
           />
         </label>
-        <div className="flex flex-wrap gap-2">
-          <button
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <Button
             type="submit"
+            size="md"
             disabled={disabled || sending || !message.trim()}
-            className="rounded border border-[var(--accent)] px-3 py-1 text-sm text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black disabled:opacity-50"
+            className="w-full sm:w-auto"
           >
-            {sending ? "Transmitting..." : "Send"}
-          </button>
-          <button
-            type="button"
+            {sending ? "Transmitting..." : "Transmit"}
+          </Button>
+          <Button
+            variant="ghost"
+            size="md"
             disabled={disabled || sending}
             onClick={onAbandon}
-            className="rounded border border-white/20 px-3 py-1 text-sm text-[var(--muted)] hover:bg-white/10 disabled:opacity-50"
+            className="w-full sm:w-auto"
           >
-            Abandon
-          </button>
+            Abort contract
+          </Button>
         </div>
       </form>
 
@@ -133,17 +153,10 @@ export function ConversationEncounter({
           {objective.requiredProgress} · Failed turns remaining: {wrongLeft}
         </p>
       )}
-      {feedback && (
-        <p
-          className={`mt-2 text-sm ${
-            feedback.includes("failed") || feedback.includes("severed")
-              ? "text-[var(--danger)]"
-              : "text-[var(--muted)]"
-          }`}
-        >
-          {feedback}
-        </p>
-      )}
-    </div>
+      <EncounterFeedback
+        message={feedback}
+        tone={feedback ? feedbackToneFromMessage(feedback) : "neutral"}
+      />
+    </Panel>
   )
 }

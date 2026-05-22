@@ -29,6 +29,8 @@ Alternatively, apply SQL manually in the dashboard SQL Editor, in order:
 
 1. [`supabase/migrations/001_foundation.sql`](../supabase/migrations/001_foundation.sql)
 2. [`supabase/migrations/002_jmdict_vocabulary.sql`](../supabase/migrations/002_jmdict_vocabulary.sql)
+3. [`supabase/migrations/003_progression_guards.sql`](../supabase/migrations/003_progression_guards.sql) — speech rate limits + legacy XP delta guard
+4. [`supabase/migrations/004_quest_completion_and_analytics.sql`](../supabase/migrations/004_quest_completion_and_analytics.sql) — `complete_quest_guarded`, strict autosave XP, `gameplay_events`
 
 ## 3. Auth providers
 

@@ -5,6 +5,8 @@ import { SPEECH_ENCOUNTER_CONFIG } from "@/config/speechEncounterConfig"
 import { getSpeechScenario } from "@/config/speechContentConfig"
 import { pickVocabularyWords } from "./vocabularyEncounterSystem"
 import { advanceObjective } from "./questValidator"
+import { eventBus } from "@/systems/events/eventBus"
+import { GAME_EVENTS } from "@/systems/events/eventTypes"
 
 export function pickSpeechPhrases(
   count: number
@@ -43,7 +45,8 @@ export interface SpeechSubmitResult {
 
 export function applySpeechAnalysis(
   quest: QuestContract,
-  analysis: SpeechAnalysisContract
+  analysis: SpeechAnalysisContract,
+  maxWrongAttempts: number = SPEECH_ENCOUNTER_CONFIG.MAX_WRONG_ATTEMPTS
 ): SpeechSubmitResult {
   const encounter = quest.speechEncounter
   if (!encounter) {
@@ -62,8 +65,12 @@ export function applySpeechAnalysis(
 
   if (!analysis.passed) {
     const wrongAttempts = encounter.wrongAttempts + 1
-    const encounterFailed =
-      wrongAttempts >= SPEECH_ENCOUNTER_CONFIG.MAX_WRONG_ATTEMPTS
+    const encounterFailed = wrongAttempts >= maxWrongAttempts
+
+    eventBus.emit(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, {
+      questId: quest.id,
+      encounterFailed,
+    })
 
     return {
       quest: {
@@ -85,6 +92,11 @@ export function applySpeechAnalysis(
   }
   const updatedObjectives = advanceObjective(quest.objectives, "obj-1", 1)
   const encounterComplete = nextIndex >= encounter.phrases.length
+
+  eventBus.emit(GAME_EVENTS.ENCOUNTER_ANSWER_CORRECT, {
+    questId: quest.id,
+    encounterComplete,
+  })
 
   return {
     quest: {

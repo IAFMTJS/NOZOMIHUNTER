@@ -1,15 +1,208 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0f;
-  --foreground: #e8e6e3;
-  --accent: #c9a227;
-  --danger: #8b2635;
-  --muted: #6b7280;
+  --font-display-family: "Barlow Condensed", system-ui, sans-serif;
+  --font-body-family: "DM Sans", system-ui, sans-serif;
+  --font-japanese-family: "Noto Sans JP", "Hiragino Sans", sans-serif;
+  --background: #0a0c10;
+  --foreground: #e4e9f0;
+  --accent: #7eb0d4;
+  --accent-bright: #a8cce8;
+  --accent-dim: rgba(126, 176, 212, 0.1);
+  --accent-on: #0a0c10;
+  --danger: #d46a7a;
+  --warning: #c9a66b;
+  --success: #5ba88a;
+  --corruption: #9a6bab;
+  --muted: #7a8494;
+  --surface-0: #0a0c10;
+  --surface-header: #11151c;
+  --surface-1: rgba(255, 255, 255, 0.035);
+  --surface-2: rgba(0, 0, 0, 0.4);
+  --border-subtle: rgba(148, 163, 184, 0.14);
+  --border-accent: rgba(126, 176, 212, 0.35);
+  --glow-accent: rgba(126, 176, 212, 0.07);
+  --radius-panel: 0.5rem;
+  --radius-chip: 0.25rem;
+  --ease-game: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-feedback: 200ms;
+  --duration-atmosphere: 600ms;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-muted: var(--muted);
+  --font-display: var(--font-display-family), system-ui, sans-serif;
+  --font-body: var(--font-body-family), system-ui, sans-serif;
+  --font-japanese: var(--font-japanese-family), "Hiragino Sans", sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: system-ui, sans-serif;
+  font-family: var(--font-body-family), system-ui, sans-serif;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.pt-safe {
+  padding-top: max(0px, env(safe-area-inset-top));
+}
+
+.font-display {
+  font-family: var(--font-display-family), system-ui, sans-serif;
+}
+
+.font-japanese {
+  font-family: var(--font-japanese-family), "Hiragino Sans", sans-serif;
+}
+
+/* Entry screens only — cool moonlight, no gold wash */
+.nozomi-atmosphere {
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, var(--glow-accent), transparent),
+    radial-gradient(ellipse 50% 35% at 0% 100%, rgba(90, 120, 160, 0.05), transparent),
+    var(--background);
+}
+
+.nozomi-scanlines::after {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.025) 2px,
+    rgba(0, 0, 0, 0.025) 4px
+  );
+  z-index: 0;
+}
+
+.nozomi-vignette::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 45%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+  z-index: 0;
+}
+
+/* Lobby: softer atmosphere for contract board */
+.nozomi-atmosphere-lobby {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, var(--glow-accent), transparent),
+    radial-gradient(ellipse 40% 30% at 100% 100%, rgba(90, 120, 160, 0.04), transparent),
+    var(--background);
+}
+
+.nozomi-scanlines-light::after {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.012) 3px,
+    rgba(0, 0, 0, 0.012) 6px
+  );
+  z-index: 0;
+}
+
+.nozomi-vignette-light::before {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(0, 0, 0, 0.28) 100%
+  );
+}
+
+/* Encounter focus — hunt mode */
+.nozomi-encounter-focus {
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(126, 176, 212, 0.08), transparent),
+    var(--surface-0);
+}
+
+.nozomi-contract-ready {
+  box-shadow: 0 0 0 1px var(--border-accent), 0 0 24px var(--glow-accent);
+}
+
+/* Penalty atmosphere (failure-design.md) */
+.nozomi-corruption-low .nozomi-scanlines::after,
+.nozomi-corruption-low .nozomi-scanlines-light::after {
+  opacity: 1.4;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(154, 107, 171, 0.04) 2px,
+    rgba(154, 107, 171, 0.04) 4px
+  );
+}
+
+.nozomi-corruption-high {
+  filter: hue-rotate(-4deg);
+}
+
+.nozomi-corruption-high .nozomi-encounter-panel {
+  animation: nozomi-glitch 4s ease-in-out infinite;
+}
+
+@keyframes nozomi-glitch {
+  0%,
+  92%,
+  100% {
+    transform: translate(0);
+  }
+  93% {
+    transform: translate(-1px, 0);
+  }
+  95% {
+    transform: translate(1px, 0);
+  }
+}
+
+.nozomi-fatigue * {
+  transition-duration: calc(var(--duration-atmosphere) * 1.5) !important;
+}
+
+@keyframes nozomi-feedback-flash-success {
+  0% {
+    box-shadow: 0 0 0 0 rgba(126, 176, 212, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 12px transparent;
+  }
+}
+
+@keyframes nozomi-feedback-flash-danger {
+  0% {
+    box-shadow: 0 0 0 0 rgba(212, 106, 122, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 10px transparent;
+  }
+}
+
+.nozomi-flash-success {
+  animation: nozomi-feedback-flash-success var(--duration-feedback) var(--ease-game);
+}
+
+.nozomi-flash-danger {
+  animation: nozomi-feedback-flash-danger var(--duration-feedback) var(--ease-game);
 }

@@ -6,17 +6,22 @@ import { useAuth } from "@/hooks/useAuth"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { useQuestLogic } from "@/features/quests/hooks/useQuestLogic"
 import { useDungeonLogic } from "@/features/dungeons/hooks/useDungeonLogic"
-import { DungeonRunner } from "@/features/dungeons/components/DungeonRunner"
-import { listAvailableDungeons } from "@/config/dungeonConfig"
-import { hasActiveDungeon } from "@/systems/dungeons/dungeonAccess"
+import { ContractHub } from "@/features/dashboard/ContractHub"
 import { XPBar } from "@/components/XPBar"
+import { UnlockNotice } from "@/components/UnlockNotice"
+import { RankUpNotice } from "@/components/RankUpNotice"
+import { InstallPrompt } from "@/components/InstallPrompt"
 import { PenaltyStatus } from "@/components/PenaltyStatus"
-import { QuestCard } from "@/features/quests/components/QuestCard"
 import { FirstQuestTutorial } from "@/features/quests/components/FirstQuestTutorial"
 import { xpProgressInCurrentLevel } from "@/systems/progression/levelSystem"
 import { registerCoreEventHandlers } from "@/systems/events/eventHandlers"
 import { SupabaseSetupNotice } from "@/components/SupabaseSetupNotice"
 import { isTutorialComplete } from "@/systems/tutorial/tutorialSystem"
+import { HunterShell } from "@/components/layout/HunterShell"
+import { getPenaltyPresentation } from "@/systems/presentation/penaltyPresentationSystem"
+import { syncCorruptionAudio } from "@/systems/audio/registerAudioHandlers"
+import { unlockAudio } from "@/systems/audio/audioSystem"
+import { LevelUpNotice } from "@/components/LevelUpNotice"
 
 let eventsRegistered = false
 
@@ -26,7 +31,12 @@ export function DashboardClient() {
   const activeQuests = usePlayerStore((s) => s.activeQuests)
   const levelUpNotice = usePlayerStore((s) => s.levelUpNotice)
   const clearLevelUpNotice = usePlayerStore((s) => s.clearLevelUpNotice)
+  const rankUpNotice = usePlayerStore((s) => s.rankUpNotice)
+  const clearRankUpNotice = usePlayerStore((s) => s.clearRankUpNotice)
+  const unlockNoticeQueue = usePlayerStore((s) => s.unlockNoticeQueue)
+  const dismissUnlockNotice = usePlayerStore((s) => s.dismissUnlockNotice)
   const [tutorialDismissed, setTutorialDismissed] = useState(false)
+
   const {
     busy,
     error,
@@ -37,7 +47,9 @@ export function DashboardClient() {
     submitAnswer,
     sendMessage,
     submitSpeech,
+    submitListening,
     abandon,
+    dismissPreparation,
     complete,
   } = useQuestLogic(user?.id)
 
@@ -46,10 +58,6 @@ export function DashboardClient() {
     (q) => q.type === "DUNGEON" && q.dungeonRun
   )
   const regularQuests = activeQuests.filter((q) => q.type !== "DUNGEON")
-  const availableDungeons = player
-    ? listAvailableDungeons(player.level, player.progression.unlockedDungeons)
-    : []
-
   const showTutorial =
     player &&
     !isTutorialComplete(player) &&
@@ -67,25 +75,36 @@ export function DashboardClient() {
     if (user?.id) hydrate()
   }, [user?.id, hydrate])
 
+  useEffect(() => {
+    if (player) syncCorruptionAudio(player.penalties.corruption)
+  }, [player?.penalties.corruption])
+
   if (loading) {
-    return <p className="p-8 text-[var(--muted)]">Loading session...</p>
+    return (
+      <HunterShell pageTitle="Command node">
+        <p className="text-[var(--muted)]">Syncing hunter registry…</p>
+      </HunterShell>
+    )
   }
 
   if (!configured) {
     return (
-      <main className="mx-auto max-w-2xl p-8">
+      <HunterShell pageTitle="Command node" maxWidth="md">
         <SupabaseSetupNotice />
-      </main>
+      </HunterShell>
     )
   }
 
   if (!user) {
     return (
-      <p className="p-8">
-        <Link href="/login" className="text-[var(--accent)]">
-          Sign in
-        </Link>
-      </p>
+      <HunterShell pageTitle="Command node" maxWidth="md">
+        <p>
+          <Link href="/login" className="text-[var(--accent-bright)] hover:underline">
+            Sign in
+          </Link>{" "}
+          to access the command node.
+        </p>
+      </HunterShell>
     )
   }
 
@@ -93,142 +112,96 @@ export function DashboardClient() {
     ? xpProgressInCurrentLevel(player.xp, player.level)
     : { current: 0, required: 100 }
 
+  const penaltyPresentation = player
+    ? getPenaltyPresentation(player.penalties)
+    : { shellClass: "", encounterClass: "", transitionSlow: false }
+
+  const hud = player ? (
+    <div className="space-y-3">
+      <XPBar
+        currentXP={progressBar.current}
+        requiredXP={progressBar.required}
+        level={player.level}
+        xpDebt={player.penalties.xpDebt}
+      />
+      <PenaltyStatus penalties={player.penalties} className="!p-3" />
+    </div>
+  ) : null
+
   return (
-    <main className="mx-auto max-w-2xl p-8">
-      <header className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--accent)]">Dashboard</h1>
-          <p className="text-[var(--muted)]">
-            {player?.username ?? "Hunter"} · Rank {player?.rank ?? "E"}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => signOut().then(() => (window.location.href = "/"))}
-          className="text-sm text-[var(--muted)] hover:underline"
-        >
-          Sign out
-        </button>
-      </header>
-
-      {levelUpNotice && (
-        <div
-          className="mb-6 rounded border border-[var(--accent)] bg-[var(--accent)]/10 p-4"
-          role="status"
-        >
-          <p className="font-semibold text-[var(--accent)]">
-            Level Up — Level {levelUpNotice}
-          </p>
-          <button
-            type="button"
-            className="mt-2 text-sm underline"
-            onClick={clearLevelUpNotice}
-          >
-            Dismiss
-          </button>
-        </div>
+    <HunterShell
+      pageTitle="Command node"
+      username={player?.username ?? "Hunter"}
+      rank={player?.rank}
+      level={player?.level}
+      hud={hud}
+      shellClassName={penaltyPresentation.shellClass}
+      onSignOut={() => {
+        unlockAudio()
+        void signOut().then(() => (window.location.href = "/"))
+      }}
+    >
+      {levelUpNotice != null && (
+        <LevelUpNotice
+          level={levelUpNotice}
+          onDismiss={clearLevelUpNotice}
+        />
       )}
 
-      {player && (
-        <section className="mb-8">
-          <XPBar
-            currentXP={progressBar.current}
-            requiredXP={progressBar.required}
-            level={player.level}
-          />
-        </section>
+      {rankUpNotice != null && (
+        <RankUpNotice rank={rankUpNotice} onDismiss={clearRankUpNotice} />
       )}
 
-      {player && <PenaltyStatus penalties={player.penalties} />}
+      {unlockNoticeQueue[0] != null && (
+        <UnlockNotice
+          unlockKey={unlockNoticeQueue[0]}
+          onDismiss={dismissUnlockNotice}
+        />
+      )}
+
+      <InstallPrompt />
 
       {showTutorial && (
         <FirstQuestTutorial onDismiss={() => setTutorialDismissed(true)} />
       )}
 
-      {(availableDungeons.length > 0 || activeDungeon) && (
-        <section className="mb-8">
-          <h2 className="mb-4 text-lg font-semibold">Dungeons</h2>
-          {!activeDungeon && (
-            <div className="mb-4 flex flex-wrap gap-2">
-              {availableDungeons.map((def) => (
-                <button
-                  key={def.key}
-                  type="button"
-                  disabled={dungeon.busy || hasActiveDungeon(activeQuests)}
-                  onClick={() => dungeon.enter(def.key)}
-                  className="rounded border border-[var(--accent)] px-3 py-1 text-sm text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black disabled:opacity-50"
-                >
-                  Enter {def.name}
-                </button>
-              ))}
-            </div>
-          )}
-          {dungeon.error && (
-            <p className="mb-4 text-sm text-[var(--danger)]">{dungeon.error}</p>
-          )}
-          {dungeon.message && (
-            <p className="mb-4 text-sm text-[var(--muted)]">{dungeon.message}</p>
-          )}
-          {activeDungeon && (
-            <DungeonRunner
-              quest={activeDungeon}
-              disabled={dungeon.busy}
-              onDeploy={dungeon.deploy}
-              onEnterSector={dungeon.enterSector}
-              onExtract={dungeon.extract}
-              onSubmitAnswer={dungeon.submitAnswer}
-              onSubmitListening={dungeon.submitListening}
-              onSendMessage={dungeon.sendMessage}
-              onSubmitSpeech={dungeon.submitSpeech}
-              onAbandon={dungeon.abandon}
-            />
-          )}
-        </section>
+      {player && (
+        <ContractHub
+          player={player}
+          regularQuests={regularQuests}
+          activeQuests={activeQuests}
+          activeDungeon={activeDungeon}
+          busy={busy}
+          error={error}
+          questMessage={questMessage}
+          encounterClassName={penaltyPresentation.encounterClass}
+          dungeonBusy={dungeon.busy}
+          dungeonError={dungeon.error}
+          dungeonMessage={dungeon.message}
+          onNewQuest={newQuest}
+          onEnterDungeon={dungeon.enter}
+          onDungeonDeploy={dungeon.deploy}
+          onDungeonEnterSector={dungeon.enterSector}
+          onDungeonExtract={dungeon.extract}
+          onDungeonSubmitAnswer={dungeon.submitAnswer}
+          onDungeonSubmitListening={dungeon.submitListening}
+          onDungeonSendMessage={dungeon.sendMessage}
+          onDungeonSubmitSpeech={dungeon.submitSpeech}
+          onDungeonAbandon={dungeon.abandon}
+          onProgress={progress}
+          onComplete={complete}
+          onSubmitAnswer={(questId, answer) => submitAnswer(questId, answer)}
+          onSendMessage={(questId, message) => sendMessage(questId, message)}
+          onSubmitSpeech={(questId, transcript, ms) =>
+            submitSpeech(questId, transcript, ms)
+          }
+          onSubmitListening={(questId, answer) =>
+            submitListening(questId, answer)
+          }
+          onAbandon={abandon}
+          onDismissPreparation={dismissPreparation}
+        />
       )}
-
-      <section className="mb-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Active Quests</h2>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={newQuest}
-            className="rounded border border-[var(--accent)] px-3 py-1 text-sm text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black disabled:opacity-50"
-          >
-            New Quest
-          </button>
-        </div>
-
-        {error && <p className="mb-4 text-sm text-[var(--danger)]">{error}</p>}
-        {questMessage && (
-          <p className="mb-4 text-sm text-[var(--muted)]">{questMessage}</p>
-        )}
-
-        {regularQuests.length === 0 ? (
-          <p className="text-[var(--muted)]">
-            No active quests. Request one to begin the loop.
-          </p>
-        ) : (
-          <ul className="flex flex-col gap-4">
-            {regularQuests.map((quest) => (
-              <li key={quest.id}>
-                <QuestCard
-                  quest={quest}
-                  disabled={busy}
-                  onProgress={() => progress(quest.id)}
-                  onComplete={() => complete(quest.id)}
-                  onSubmitAnswer={(answer) => submitAnswer(quest.id, answer)}
-                  onSendMessage={(message) => sendMessage(quest.id, message)}
-                  onSubmitSpeech={(transcript, ms) =>
-                    submitSpeech(quest.id, transcript, ms)
-                  }
-                  onAbandon={() => abandon(quest.id)}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </main>
+    </HunterShell>
   )
 }

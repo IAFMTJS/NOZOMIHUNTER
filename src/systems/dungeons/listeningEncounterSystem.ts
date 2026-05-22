@@ -10,6 +10,9 @@ import {
   readingToRomaji,
 } from "@/services/jmdict/normalize"
 import { VOCABULARY_ENCOUNTER_CONFIG } from "@/config/vocabularyEncounterConfig"
+import { advanceObjective } from "@/systems/quests/questValidator"
+import { eventBus } from "@/systems/events/eventBus"
+import { GAME_EVENTS } from "@/systems/events/eventTypes"
 
 export function createListeningEncounter(
   fragmentCount: number,
@@ -68,7 +71,8 @@ export interface ListeningAnswerResult {
 
 export function submitListeningAnswer(
   quest: QuestContract,
-  answer: string
+  answer: string,
+  maxWrongAttempts: number = VOCABULARY_ENCOUNTER_CONFIG.MAX_WRONG_ATTEMPTS
 ): ListeningAnswerResult {
   const encounter = quest.listeningEncounter
   if (!encounter) {
@@ -81,8 +85,13 @@ export function submitListeningAnswer(
 
   if (!correct) {
     wrongAttempts += 1
-    const encounterFailed =
-      wrongAttempts >= VOCABULARY_ENCOUNTER_CONFIG.MAX_WRONG_ATTEMPTS
+    const encounterFailed = wrongAttempts >= maxWrongAttempts
+
+    eventBus.emit(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, {
+      questId: quest.id,
+      encounterFailed,
+    })
+
     return {
       quest: {
         ...quest,
@@ -96,6 +105,12 @@ export function submitListeningAnswer(
 
   currentIndex += 1
   const encounterComplete = currentIndex >= encounter.fragments.length
+  const updatedObjectives = advanceObjective(quest.objectives, "obj-1", 1)
+
+  eventBus.emit(GAME_EVENTS.ENCOUNTER_ANSWER_CORRECT, {
+    questId: quest.id,
+    encounterComplete,
+  })
 
   return {
     quest: {
@@ -105,6 +120,7 @@ export function submitListeningAnswer(
         currentIndex,
         wrongAttempts,
       },
+      objectives: updatedObjectives,
     },
     correct: true,
     encounterFailed: false,

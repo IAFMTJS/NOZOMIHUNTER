@@ -1,0 +1,95 @@
+import { createClient } from "@/lib/supabase/client"
+import type { HunterRank, PlayerContract } from "@/contracts/player-contract"
+
+export interface GuardedQuestCompletionResult {
+  ok: boolean
+  quest_id: string
+  xp: number
+  level: number
+  rank: HunterRank
+  xp_gained: number
+  previous_xp: number
+  previous_level: number
+}
+
+function requireClient() {
+  const supabase = createClient()
+  if (!supabase) {
+    throw new Error("Supabase is not configured")
+  }
+  return supabase
+}
+
+export async function applyGuardedProgression(player: PlayerContract): Promise<void> {
+  const supabase = requireClient()
+  const { error } = await supabase.rpc("apply_guarded_progression", {
+    p_xp: player.xp,
+    p_level: player.level,
+    p_rank: player.rank,
+    p_unlocked_systems: player.progression.unlockedSystems,
+    p_unlocked_dungeons: player.progression.unlockedDungeons,
+    p_titles: player.progression.titles,
+  })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}
+
+export async function completeQuestGuarded(
+  questId: string,
+  xpClaimed: number
+): Promise<GuardedQuestCompletionResult> {
+  const supabase = requireClient()
+  const { data, error } = await supabase.rpc("complete_quest_guarded", {
+    p_quest_id: questId,
+    p_xp_claimed: xpClaimed,
+  })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  const row = data as Record<string, unknown>
+  return {
+    ok: Boolean(row.ok),
+    quest_id: String(row.quest_id),
+    xp: Number(row.xp),
+    level: Number(row.level),
+    rank: String(row.rank) as HunterRank,
+    xp_gained: Number(row.xp_gained),
+    previous_xp: Number(row.previous_xp),
+    previous_level: Number(row.previous_level),
+  }
+}
+
+export async function recordGameplayEvent(
+  eventType: string,
+  payload: unknown
+): Promise<void> {
+  const supabase = createClient()
+  if (!supabase) return
+
+  const { error } = await supabase.rpc("record_gameplay_event", {
+    p_event_type: eventType,
+    p_payload: payload as Record<string, unknown>,
+  })
+
+  if (error) {
+    return
+  }
+}
+
+export async function checkSpeechRateLimitServer(): Promise<boolean> {
+  const supabase = requireClient()
+  const { data, error } = await supabase.rpc("check_player_rate_limit", {
+    p_action_type: "speech_submit",
+    p_max_per_window: 24,
+    p_window_ms: 60_000,
+  })
+
+  if (error) {
+    return true
+  }
+  return data === true
+}

@@ -10,6 +10,8 @@ interface PlayerStore {
   activeQuests: QuestContract[]
   isHydrated: boolean
   levelUpNotice: number | null
+  rankUpNotice: HunterRank | null
+  unlockNoticeQueue: string[]
 
   setPlayer: (player: PlayerContract) => void
   setActiveQuests: (quests: QuestContract[]) => void
@@ -21,11 +23,15 @@ interface PlayerStore {
     progression: PlayerContract["progression"]
     penalties: PlayerContract["penalties"]
     leveledUp: boolean
+    rankUp?: boolean
+    newUnlocks?: string[]
   }) => void
   applyPenalties: (penalties: PlayerContract["penalties"]) => void
   updateQuest: (quest: QuestContract) => void
   setQuests: (quests: QuestContract[]) => void
   clearLevelUpNotice: () => void
+  clearRankUpNotice: () => void
+  dismissUnlockNotice: () => void
   reset: () => void
   getProgressionState: () => ProgressionState | null
 }
@@ -35,6 +41,8 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   activeQuests: [],
   isHydrated: false,
   levelUpNotice: null,
+  rankUpNotice: null,
+  unlockNoticeQueue: [],
 
   setPlayer: (player) => set({ player }),
 
@@ -58,6 +66,11 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         updatedAt: new Date().toISOString(),
       },
       levelUpNotice: update.leveledUp ? update.level : get().levelUpNotice,
+      rankUpNotice: update.rankUp ? update.rank : get().rankUpNotice,
+      unlockNoticeQueue:
+        update.newUnlocks?.length
+          ? [...get().unlockNoticeQueue, ...update.newUnlocks]
+          : get().unlockNoticeQueue,
     })
   },
 
@@ -86,12 +99,19 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   clearLevelUpNotice: () => set({ levelUpNotice: null }),
 
+  clearRankUpNotice: () => set({ rankUpNotice: null }),
+
+  dismissUnlockNotice: () =>
+    set((state) => ({ unlockNoticeQueue: state.unlockNoticeQueue.slice(1) })),
+
   reset: () =>
     set({
       player: null,
       activeQuests: [],
       isHydrated: false,
       levelUpNotice: null,
+      rankUpNotice: null,
+      unlockNoticeQueue: [],
     }),
 
   getProgressionState: () => {

@@ -7,10 +7,21 @@ import { ConversationEncounter } from "@/features/conversation/components/Conver
 import { SpeechEncounter } from "@/features/speech/components/SpeechEncounter"
 import { ListeningEncounter } from "./ListeningEncounter"
 import { getDungeonBriefing } from "@/systems/dungeons/dungeonOrchestrator"
+import { Panel } from "@/components/ui/Panel"
+import { Button } from "@/components/ui/Button"
+import { StatusChip } from "@/components/ui/StatusChip"
+import { DungeonPhaseStepper } from "@/components/ui/DungeonPhaseStepper"
+import { DungeonCorridorRail } from "@/components/ui/DungeonCorridorRail"
+import { EncounterFocusShell } from "@/components/ui/EncounterFocusShell"
+import { ExtractionCeremony } from "./ExtractionCeremony"
 
 interface DungeonRunnerProps {
   quest: QuestContract
   disabled?: boolean
+  encounterClassName?: string
+  maxWrongAttempts?: number
+  maxListeningReplays?: number
+  signalDegraded?: boolean
   onDeploy: () => Promise<void>
   onEnterSector: () => Promise<void>
   onExtract: () => Promise<void>
@@ -24,6 +35,10 @@ interface DungeonRunnerProps {
 export function DungeonRunner({
   quest,
   disabled,
+  encounterClassName = "",
+  maxWrongAttempts,
+  maxListeningReplays,
+  signalDegraded,
   onDeploy,
   onEnterSector,
   onExtract,
@@ -38,9 +53,14 @@ export function DungeonRunner({
   if (!run) return null
 
   const boss = run.dungeon.boss
-  const sectorsDone = run.dungeon.encounters.filter((e) => e.completed).length
-  const sectorTotal = run.dungeon.encounters.length
+  const encounters = run.dungeon.encounters
+  const sectorsDone = encounters.filter((e) => e.completed).length
+  const sectorTotal = encounters.length
   const objective = quest.objectives[0]
+  const activeSectorIndex = encounters.findIndex((e) => !e.completed)
+  const state = run.machineState
+  const inEncounter =
+    state === "ENCOUNTER" || state === "BOSS" || state === "REWARD"
 
   async function wrap<T>(fn: () => Promise<T>, okMsg?: string): Promise<T | undefined> {
     try {
@@ -53,39 +73,30 @@ export function DungeonRunner({
     }
   }
 
-  const state = run.machineState
+  const corridorSectors = encounters.map((e, i) => ({
+    id: e.id,
+    label: `Sector ${i + 1} · ${e.type}`,
+    completed: e.completed,
+    current:
+      !e.completed &&
+      i === activeSectorIndex &&
+      (state === "ENCOUNTER" || state === "EXPLORATION" || state === "REWARD"),
+  }))
 
-  return (
-    <article className="rounded border border-[var(--accent)]/40 bg-[var(--accent)]/5 p-4">
-      <div className="mb-2 flex items-start justify-between gap-2">
-        <h3 className="font-semibold text-[var(--accent)]">{quest.title}</h3>
-        <span className="text-xs uppercase text-[var(--muted)]">
-          {state.replace("_", " ")}
-        </span>
-      </div>
-      <p className="mb-2 text-sm text-[var(--muted)]">{getDungeonBriefing(quest)}</p>
-      <p className="mb-4 text-xs text-[var(--muted)]">
-        Sectors {sectorsDone}/{sectorTotal}
-        {objective
-          ? ` · Progress ${objective.currentProgress}/${objective.requiredProgress}`
-          : ""}
-        {boss ? ` · Boss: ${boss.name}` : ""}
-      </p>
-
+  const encounterBody = (
+    <>
       {state === "PREPARATION" && (
         <div className="flex flex-col gap-3">
           <p className="text-sm">
             The corridor is live. Deploy when ready — reckless failures stack
             corruption fast.
           </p>
-          <button
-            type="button"
+          <Button
             disabled={disabled}
             onClick={() => wrap(onDeploy, "Deployed into sector grid.")}
-            className="rounded border border-[var(--accent)] px-3 py-2 text-sm text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black disabled:opacity-50"
           >
             Deploy
-          </button>
+          </Button>
         </div>
       )}
 
@@ -94,28 +105,25 @@ export function DungeonRunner({
           <p className="text-sm text-[var(--muted)]">
             Next sector awaits. Enter when your focus is sharp.
           </p>
-          <button
-            type="button"
+          <Button
             disabled={disabled}
             onClick={() => wrap(onEnterSector, "Sector engaged.")}
-            className="rounded border border-[var(--accent)] px-3 py-2 text-sm text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black disabled:opacity-50"
           >
             Enter sector
-          </button>
+          </Button>
         </div>
       )}
 
       {state === "REWARD" && (
         <div className="flex flex-col gap-3">
-          <p className="text-sm text-[var(--accent)]">Sector cleared.</p>
-          <button
-            type="button"
+          <p className="text-sm text-[var(--accent-bright)]">Sector cleared.</p>
+          <Button
+            variant="ghost"
             disabled={disabled}
             onClick={() => wrap(onEnterSector, "Pushing deeper...")}
-            className="rounded border border-white/20 px-3 py-2 text-sm hover:bg-white/10 disabled:opacity-50"
           >
             Continue
-          </button>
+          </Button>
         </div>
       )}
 
@@ -132,6 +140,9 @@ export function DungeonRunner({
         <ListeningEncounter
           quest={quest}
           disabled={disabled}
+          maxWrongAttempts={maxWrongAttempts}
+          maxReplays={maxListeningReplays}
+          signalDegraded={signalDegraded}
           onSubmit={onSubmitListening}
           onAbandon={onAbandon}
         />
@@ -163,7 +174,7 @@ export function DungeonRunner({
       )}
 
       {state === "BOSS" && (
-        <>
+        <Panel tone="boss" className="mb-3">
           <p className="mb-3 text-sm font-semibold text-[var(--danger)]">
             {boss?.name ?? "Boss"} — phase {run.bossPhase + 1} / {boss?.phases ?? 2}
           </p>
@@ -183,23 +194,62 @@ export function DungeonRunner({
               onAbandon={onAbandon}
             />
           )}
-        </>
+        </Panel>
       )}
 
       {state === "EXTRACTION" && (
-        <div className="flex flex-col gap-3">
-          <p className="text-sm">
-            Core breached. Extract {quest.rewards.xp} XP and registry unlocks.
-          </p>
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => wrap(onExtract, "Extraction complete.")}
-            className="rounded border border-[var(--accent)] px-3 py-2 text-sm text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black disabled:opacity-50"
-          >
-            Extract rewards
-          </button>
-        </div>
+        <ExtractionCeremony
+          xp={quest.rewards.xp}
+          theme={run.dungeon.theme}
+          disabled={disabled}
+          onExtract={async () => {
+            await onExtract()
+            setStatus("Extraction complete.")
+          }}
+        />
+      )}
+    </>
+  )
+
+  return (
+    <Panel as="article" tone="accent">
+      <div className="mb-2 flex items-start justify-between gap-2">
+        <h3 className="font-display text-lg font-semibold text-[var(--foreground)]">
+          {quest.title}
+        </h3>
+        <StatusChip
+          label={state.replace(/_/g, " ")}
+          tone={state === "BOSS" ? "danger" : "accent"}
+        />
+      </div>
+
+      <p className="mb-2 font-display text-sm text-[var(--accent-bright)]">
+        {getDungeonBriefing(quest)}
+      </p>
+
+      <DungeonPhaseStepper machineState={state} />
+
+      <DungeonCorridorRail sectors={corridorSectors} />
+
+      <p className="mb-4 text-xs text-[var(--muted)]">
+        Sectors {sectorsDone}/{sectorTotal}
+        {objective
+          ? ` · Progress ${objective.currentProgress}/${objective.requiredProgress}`
+          : ""}
+        {boss ? ` · Boss: ${boss.name}` : ""}
+      </p>
+
+      {inEncounter ? (
+        <EncounterFocusShell
+          title={quest.title}
+          enabled
+          autoFocus
+          encounterClassName={encounterClassName}
+        >
+          {encounterBody}
+        </EncounterFocusShell>
+      ) : (
+        encounterBody
       )}
 
       {status && (
@@ -209,15 +259,15 @@ export function DungeonRunner({
       )}
 
       {state !== "EXTRACTION" && state !== "PREPARATION" && (
-        <button
-          type="button"
+        <Button
+          variant="danger"
           disabled={disabled}
           onClick={() => wrap(onAbandon)}
-          className="mt-4 text-xs text-[var(--danger)] hover:underline disabled:opacity-50"
+          className="mt-4"
         >
           Abort dungeon
-        </button>
+        </Button>
       )}
-    </article>
+    </Panel>
   )
 }

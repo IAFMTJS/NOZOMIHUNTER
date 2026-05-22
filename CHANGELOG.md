@@ -1,5 +1,100 @@
 # Changelog
 
+## v0.8.0
+
+- Hunter profile (`/profile`): stats, penalties, unlock registry labels
+- `ExtractionCeremony` staged dungeon extract UI with themed audio hooks
+- `RankUpNotice` + `UnlockNotice` on progression rewards
+- `themedAudioSystem` — optional `/public/audio` MP3s, procedural fallback
+- `HunterShell` profile link; safe-area utilities (`pt-safe`, `pb-safe`)
+
+## v0.7.2
+
+- PWA: `manifest.ts`, `public/icons/icon.svg`, iOS `appleWebApp` + `viewportFit: cover`
+- `InstallPrompt` (beforeinstallprompt + iOS Add to Home Screen copy)
+- `public/sw.js` — cache static assets; `ServiceWorkerRegister` (production)
+- Docs: [`docs/mobile-pwa.md`](docs/mobile-pwa.md)
+
+## v0.7.1
+
+- Second dungeon: **Shadow Archive** (`dungeon:shadow-archive`), unlocked from Neon Corridor extract
+- `penaltyGameplaySystem`: corruption → fewer wrong attempts, listening replays, dungeon failure budget; fatigue −1 on complete
+- `dungeonAccess.resolveDungeonAccess` + `DungeonCorridorCard` locked/available states
+- Listening dispatch gated on `system:listening` (granted at level 2 on hydrate); extra quest variants
+
+## v0.7.0
+
+- **Unlock fix**: `resolveQuestCompletion` merges reward unlocks in `finishQuest` / `extractDungeonRewards` before save
+- `UNLOCK_GRANTED` event; `unlockRegistry` + `UnlockNotice` queue in player store
+- Starter corridor `dungeon:neon-corridor` in `defaultProgression`
+
+## v0.6.8
+
+- Listening contracts on the board (level 2+); Japanese TTS via `japaneseTtsSystem` — no prerecorded audio
+- `ListeningEncounter`: receive/replay signal, waveform UI, no on-screen meaning leak
+- Command node hub (`ContractHub`): menu → hunt / dispatch / dungeon sector (progressive disclosure)
+- Landing: `HomeTerminal` boot sequence + “Initialize hunter”
+- Listening answers advance objectives; emit correct/wrong events
+
+## v0.6.7
+
+- Game feel: lobby atmosphere on contract board (`HunterShell` + `AtmosphericBackground` lobby variant)
+- Hunt mode: auto-focus `EncounterFocusShell`, encounter backdrop, combat copy (Confirm lock, Transmit, Abort)
+- Encounter feedback: `EncounterFeedback`, flash animations, animated target rail and dialogue bubbles
+- Penalty atmosphere: corruption scanlines/glitch, fatigue-slow transitions, XP debt on `XPBar`, `corruption`/`boss` panel tones
+- Dungeon UI: `DungeonPhaseStepper`, `DungeonCorridorRail`, boss nameplate panel, focus shell during sectors
+- Audio: `audioSystem` (Web Audio), `registerAudioHandlers`, mute toggle; events `ENCOUNTER_ANSWER_CORRECT` / `ENCOUNTER_ANSWER_WRONG`
+- Systems: `penaltyPresentationSystem`, `motionPresets`; emits from vocabulary/conversation/speech encounter systems
+
+## v0.6.6
+
+- `complete_quest_guarded` RPC: server validates quest objectives on stored snapshot, grants capped XP, marks quest completed
+- `apply_guarded_progression` now rejects XP changes on autosave (XP only through quest completion RPC)
+- Analytics events persist to `gameplay_events` via `record_gameplay_event`
+- Speech split: `speechMediaRecorder`, `speechLiveRecognition`; `ListeningEncounter` uses `EncounterTargetRail`
+- Quest/dungeon finish flows sync snapshot before guarded completion
+
+## v0.6.5
+
+- Architecture guardian fixes: split `questService` / `dungeonService`, `vocabularyBootstrap` in services layer
+- `analyticsSystem` + event handlers wired for telemetry buffer
+- Supabase migration 003: `apply_guarded_progression` RPC, `check_player_rate_limit` for speech
+- Shared `EncounterTargetRail`, `useSpeechEncounterController`, `QuestContractActions`
+- Docs/registry sync (v0.6.5 architecture, speech flow, GDD index); event-bus note in architecture-rules
+
+## v0.6.4
+
+- Mobile mic: invoke `getUserMedia` synchronously on tap (iOS permission prompt); `npm run dev:mobile` for HTTPS LAN testing
+- LAN `http://192.168.x.x` shows explicit hint (browsers block mic without secure context)
+- Speech and listening encounters aligned with `Panel`, `Button`, `Input`, and design tokens
+- Mobile pass: 44px touch targets, stacked encounter actions, tighter Contract Board / prep gate padding
+- `EncounterFocusShell`: fullscreen encounter mode on active contracts (reward + complete in overlay footer)
+
+## v0.6.3
+
+- UI foundation: design tokens, fonts (Barlow Condensed, DM Sans, Noto Sans JP), atmospheric entry screens
+- Reusable components: `Button`, `Panel`, `Input`, `StatusChip`, `HunterShell`, `AtmosphericBackground`
+- Contract Board shell (sticky HUD, penalty meters, animated XP/quest list); master prompt references ui-rules
+
+## v0.6.2
+
+- Vocabulary preparation UI: hunter briefing panel, readiness bar, target cards, deploy gate (encounter locked until briefing dismissed)
+- Hydrate refreshes preparation data on existing quests; dismiss persists to quest snapshot
+- Vocabulary preparation pipeline: extract targets → detect unknown → prioritize critical → mission briefing
+- New systems under `/src/systems/vocabulary/` (detection, explanation, preparation, mastery tiers, quest vocabulary, orchestrator)
+- `QuestPreparationBriefing` + `QuestPreparationGate` shown before quest encounters when unknown words exist
+- Quest contract field `vocabularyPreparation`; event `VOCABULARY_PREPARATION_READY`
+- Docs: `flows/vocabulary-preparation-flow.md`, `docs/vocabulary-philosophy.md`
+
+## v0.6.1
+
+- Speech architecture: centralized recording state machine (`IDLE` → `REQUESTING_PERMISSION` → `RECORDING` → `PROCESSING` → `COMPLETED` | `ERROR`)
+- New systems: `microphoneSystem`, `speechProcessingSystem`, `clientTranscriptionSystem`, `silenceDetectionSystem`, `speechRecoverySystem`, `speechDebugSystem`
+- MediaRecorder capture (`audio/webm`, Safari `audio/mp4` fallback) with stream cleanup via `track.stop()`
+- Browser STT only — no OpenAI/Whisper, no server audio upload (`FEATURE_FLAGS.SPEECH_RECORDING`)
+- `useSpeechRecording` hook; `SpeechEncounter` shows mic/recording/processing/transcription/failure states
+- Contracts: `SpeechRecordingStatusContract` in `speech-contract.ts`
+
 ## v0.6.0
 
 - Phase 5: dungeon system — Neon Corridor vertical slice with state machine, sectors, boss, extraction

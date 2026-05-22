@@ -54,6 +54,12 @@ Effects:
 - increased dungeon difficulty
 - unstable encounters
 
+Implemented (v0.7.1, `penaltyGameplaySystem`):
+- Fewer wrong attempts before encounter fail: `5 - floor(corruption / 15)`, minimum 3
+- Listening replay cap per fragment: `3 - floor(corruption / 10)`, minimum 1
+- Dungeon sector failure budget: 1 failure when corruption ≥ 40 (else 2)
+- UI copy: “Signal degraded” when corruption or fatigue crosses presentation thresholds
+
 ---
 
 ## Fatigue
@@ -63,6 +69,10 @@ Effects:
 - reduced rewards
 - slower recovery
 - increased hesitation penalties
+
+Implemented (v0.7.1):
+- XP multiplier on quest/dungeon rewards (`fatigueXpMultiplier`)
+- −1 fatigue on quest or dungeon completion (floor 0)
 
 ---
 

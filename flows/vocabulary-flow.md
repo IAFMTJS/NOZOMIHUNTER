@@ -6,6 +6,8 @@ Player hydrate → load mastery from `word_mastery`
 ↓
 Quest generation → `pickWordsByFrequency` (low mastery, high frequency)
 ↓
+**Preparation** (`vocabulary-preparation-flow.md`): detect unknown → prioritize critical → mission briefing
+↓
 Encounter answer → normalize → validate
 ↓
 Mastery delta (+12 correct / -4 wrong)
@@ -13,6 +15,8 @@ Mastery delta (+12 correct / -4 wrong)
 Persist mastery row (Supabase)
 ↓
 `VOCABULARY_MASTERED` when mastery ≥ 80
+
+Preparation systems: `/src/systems/vocabulary/*` — see `flows/vocabulary-preparation-flow.md`
 
 Bulk ingest (optional):
 

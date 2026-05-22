@@ -1,34 +1,38 @@
-# Speech Flow (Phase 4)
+# Speech Flow (Phase 4+)
 
-Player opens SPEECH quest
+Player opens SPEECH quest or dungeon speech sector
 ↓
 Phrase displayed (from vocabulary catalog)
 ↓
-Voice: Web Speech API (`useBrowserSpeech`, ja-JP) OR typed transcript fallback
+**Recording state machine** (`recordingStateSystem`)
+- IDLE → REQUESTING_PERMISSION → RECORDING → PROCESSING → COMPLETED | ERROR
 ↓
-`transcribeAndAnalyze` (rate-limited via `speechGuard`)
+`speechProcessingSystem.startSpeechRecording` (requires `FEATURE_FLAGS.SPEECH_RECORDING`)
+- `beginMicrophoneRequest` called synchronously on tap (iOS permission prompt)
+- `speechContextSystem` blocks LAN `http://192.168.x.x` — use `npm run dev:mobile` (HTTPS)
+- `microphoneSystem` resolves stream, level monitor, `track.stop()` cleanup
+- `MediaRecorder` captures `audio/webm` (fallback `audio/mp4` on Safari)
+- `browserSpeechRecognitionSystem` live transcript (Chrome/Edge) in parallel
+- `silenceDetectionSystem` optional auto-stop on sustained silence
 ↓
-Pronunciation Analysis
+Player stops → `stopSpeechRecording`
 ↓
-Hesitation Detection
+`clientTranscriptionSystem.resolveClientTranscript` — browser STT only, no server upload
 ↓
-Timing Analysis (response time ms)
+`transcribeAndAnalyze` (rate-limited via `speechGuard` + `check_player_rate_limit` RPC)
 ↓
-Confidence Analysis
+Pronunciation → Hesitation → Timing → Confidence → Composite
 ↓
-Composite Score + pass/fail vs difficulty threshold
+`speechEncounterSystem.applySpeechAnalysis` → quest objective / wrong attempts
 ↓
-Quest objective advance or wrong-attempt penalty
-↓
-XP on quest complete (existing progression path)
+XP on quest complete (progression path)
 ↓
 Save progress (quest_snapshot)
 ↓
-Trigger Events
+Events: `SPEECH_RECORDED`, `SPEECH_ANALYZED`
 
-Events:
-- SPEECH_RECORDED
-- SPEECH_ANALYZED
-- XP_GAINED (on quest complete)
+Recovery: `speechRecoverySystem` clears stale RECORDING/PROCESSING on page hide or timeout.
 
-Note: No Whisper or paid STT — see `DECISIONS.md`.
+Debug: `NEXT_PUBLIC_SPEECH_DEBUG=true` → `MIC ACTIVE | STATE: … | STT: …`
+
+Components: `SpeechEncounter` + `useSpeechRecording` — display state only; no gameplay logic.

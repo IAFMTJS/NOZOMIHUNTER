@@ -4,6 +4,7 @@ import type { QuestContract } from "@/contracts/quest-contract"
 import { defaultProgression } from "@/systems/progression/unlockSystem"
 import { dedupeActiveQuests } from "@/systems/quests/questListUtils"
 import { mergeQuestRow } from "@/systems/quests/questEncounterRepair"
+import { applyGuardedProgression } from "@/services/supabase/progressionRepository"
 
 function requireClient() {
   const supabase = createClient()
@@ -112,15 +113,7 @@ export async function savePlayer(
       intelligence: player.stats.intelligence,
       consistency: player.stats.consistency,
     }),
-    supabase.from("progression").upsert({
-      user_id: player.id,
-      level: player.level,
-      xp: player.xp,
-      rank: player.rank,
-      unlocked_systems: player.progression.unlockedSystems,
-      unlocked_dungeons: player.progression.unlockedDungeons,
-      titles: player.progression.titles,
-    }),
+    applyGuardedProgression(player),
     supabase.from("player_penalties").upsert({
       user_id: player.id,
       corruption: player.penalties.corruption,

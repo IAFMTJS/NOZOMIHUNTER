@@ -11,6 +11,8 @@ import { getVocabularyCatalog } from "@/systems/mastery/vocabularyCatalog"
 import { pickWordsByFrequency } from "@/systems/mastery/frequencySystem"
 import { getMasteryMap, recordWordAnswer } from "@/systems/mastery/masterySystem"
 import { advanceObjective } from "./questValidator"
+import { eventBus } from "@/systems/events/eventBus"
+import { GAME_EVENTS } from "@/systems/events/eventTypes"
 
 export function pickVocabularyWords(count: number): VocabularyEncounterContract["words"] {
   const index = getVocabularyCatalog()
@@ -70,7 +72,8 @@ export interface VocabularyAnswerResult {
 export function submitVocabularyAnswer(
   quest: QuestContract,
   answer: string,
-  playerId?: string
+  playerId?: string,
+  maxWrongAttempts: number = VOCABULARY_ENCOUNTER_CONFIG.MAX_WRONG_ATTEMPTS
 ): VocabularyAnswerResult {
   const encounter = quest.vocabularyEncounter
   if (!encounter) {
@@ -86,8 +89,13 @@ export function submitVocabularyAnswer(
 
   if (!correct) {
     const wrongAttempts = encounter.wrongAttempts + 1
-    const encounterFailed =
-      wrongAttempts >= VOCABULARY_ENCOUNTER_CONFIG.MAX_WRONG_ATTEMPTS
+    const encounterFailed = wrongAttempts >= maxWrongAttempts
+
+    eventBus.emit(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, {
+      questId: quest.id,
+      wordId,
+      encounterFailed,
+    })
 
     return {
       quest: {
@@ -110,6 +118,12 @@ export function submitVocabularyAnswer(
 
   const updatedObjectives = advanceObjective(quest.objectives, "obj-1", 1)
   const encounterComplete = nextIndex >= encounter.words.length
+
+  eventBus.emit(GAME_EVENTS.ENCOUNTER_ANSWER_CORRECT, {
+    questId: quest.id,
+    wordId,
+    encounterComplete,
+  })
 
   return {
     quest: {

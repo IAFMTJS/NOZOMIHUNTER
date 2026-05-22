@@ -9,7 +9,9 @@ import {
   submitVocabularyAnswerForQuest,
   submitConversationMessageForQuest,
   submitSpeechForQuest,
+  submitListeningAnswerForQuest,
   failQuestForPlayer,
+  dismissQuestPreparationBriefing,
 } from "../services/questService"
 
 export function useQuestLogic(userId: string | undefined) {
@@ -109,6 +111,31 @@ export function useQuestLogic(userId: string | undefined) {
     [userId]
   )
 
+  const submitListening = useCallback(
+    async (questId: string, answer: string) => {
+      if (!userId) return null
+      setBusy(true)
+      setError(null)
+      try {
+        const result = await submitListeningAnswerForQuest(
+          userId,
+          questId,
+          answer
+        )
+        if (result?.encounterFailed) {
+          setQuestMessage("Quest failed. Penalties applied.")
+        }
+        return result
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Failed to submit decode")
+        return null
+      } finally {
+        setBusy(false)
+      }
+    },
+    [userId]
+  )
+
   const sendMessage = useCallback(
     async (questId: string, message: string) => {
       if (!userId) return null
@@ -150,6 +177,23 @@ export function useQuestLogic(userId: string | undefined) {
     [userId]
   )
 
+  const dismissPreparation = useCallback(
+    async (questId: string) => {
+      if (!userId) return
+      setBusy(true)
+      try {
+        await dismissQuestPreparationBriefing(userId, questId)
+      } catch (e) {
+        setError(
+          e instanceof Error ? e.message : "Failed to dismiss preparation"
+        )
+      } finally {
+        setBusy(false)
+      }
+    },
+    [userId]
+  )
+
   const complete = useCallback(
     async (questId: string) => {
       if (!userId) return
@@ -176,7 +220,9 @@ export function useQuestLogic(userId: string | undefined) {
     submitAnswer,
     sendMessage,
     submitSpeech,
+    submitListening,
     abandon,
+    dismissPreparation,
     complete,
   }
 }

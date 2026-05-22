@@ -14,6 +14,16 @@ Before generating code:
 - read system registry
 - analyze existing systems
 
+Before UI work:
+- read rules/ui-rules.md
+- read prompts/ui-prompts.md
+- reuse components in /src/components/ui and /src/components/layout
+- never place gameplay logic inside UI components
+
+Before UI work:
+- read rules/ui-rules.md
+- read prompts/ui-prompts.md
+
 You must:
 - preserve architecture consistency
 - preserve gameplay philosophy

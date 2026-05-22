@@ -122,6 +122,10 @@ Examples:
 - PENALTY_TRIGGERED
 - DUNGEON_ENTERED
 
+Gameplay orchestration may call systems directly. Emitted events are consumed by
+`analyticsSystem` (telemetry buffer) and logging — do not assume every handler
+re-runs game logic.
+
 Avoid tightly coupled systems.
 
 ---

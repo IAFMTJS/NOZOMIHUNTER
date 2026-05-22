@@ -1,6 +1,6 @@
 # Current Architecture
 
-Last updated: v0.6.0 — Phase 5 dungeon system
+Last updated: v0.8.0 — unlock persistence, two dungeons, PWA, profile
 
 ## Implemented
 
@@ -9,22 +9,24 @@ Last updated: v0.6.0 — Phase 5 dungeon system
 | Next.js App Router | Yes |
 | Folder structure | Yes |
 | Contracts | `/contracts` |
-| Event bus | `src/systems/events` |
+| Event bus + analytics buffer | `src/systems/events`, `src/systems/analytics` |
 | Auth (Google + guest) | Yes |
-| DB migration 001 | Yes |
-| Progression systems | Yes |
+| DB migration 001–004 | Yes (004 = `complete_quest_guarded`, `gameplay_events`) |
+| Progression systems | Yes (XP via `complete_quest_guarded`; autosave uses strict `apply_guarded_progression`) |
 | Player store | Yes |
-| Quest system (vocabulary + conversation encounters) | Yes |
+| Quest system (vocabulary + conversation + speech + listening/TTS) | Yes |
+| Command node hub (`ContractHub` — menu / hunt / dispatch / sector) | Yes |
+| Vocabulary preparation briefing (pre-quest) | Yes |
 | AI conversation (rule-based director) | Yes |
-| Conversation memory (Supabase) | Yes |
-| Penalty system | Yes |
-| Tutorial / onboarding quest | Yes |
-| Save system | Yes |
-| Dashboard | Yes |
-| JMDict engine (parser, index, search, frequency, mastery) | Yes |
-| Speech (STT hook, scoring pipeline, speech quests) | Yes |
-| Dungeons (Neon Corridor, multi-sector + boss) | Yes |
-| Listening encounters (dungeon sectors) | Yes |
+| UI kit (`Button`, `Panel`, `Input`, `EncounterFocusShell`, `EncounterTargetRail`, `EncounterFeedback`, `DungeonPhaseStepper`, `DungeonCorridorRail`) | Yes |
+| Presentation (`penaltyPresentationSystem`, motion tokens, corruption/fatigue CSS) | Yes |
+| Audio (`audioSystem`, Web Audio cues via event bus, mute toggle) | Yes |
+| Speech (recording state machine, MediaRecorder, browser STT, mobile gesture preflight) | Yes |
+| Dungeons (Neon Corridor + Shadow Archive) | Yes |
+| Unlock persistence + `UNLOCK_GRANTED` | Yes (`resolveQuestCompletion`) |
+| Penalty gameplay hooks | Yes (`penaltyGameplaySystem`) |
+| PWA (manifest, SW, install prompt) | Yes — see `docs/mobile-pwa.md` |
+| Hunter profile (`/profile`) | Yes |
 | Multiplayer (Phase 6 scaffold) | Scaffold, flags off |
 
 ## Folder map
@@ -37,10 +39,13 @@ Last updated: v0.6.0 — Phase 5 dungeon system
 /docs
 /supabase/migrations
 /src/app
-/src/features/{auth,quests,conversation,speech,dungeons}
-/src/systems/{events,progression,quests,penalties,tutorial,save,antiExploit,ai,mastery,speech,dungeons}
-/src/services/{supabase,dialogue,speech,jmdict}
-/src/hooks/useBrowserSpeech.ts
+/src/features/{auth,quests,conversation,speech,dungeons}/services (split persistence + actions + lifecycle)
+/src/systems/{events,analytics,progression,quests,penalties,penaltyGameplay,tutorial,save,antiExploit,ai,mastery,vocabulary,speech,dungeons,presentation,audio,listening}
+/src/config/{unlockRegistry,dungeonConfig,penaltyConfig}
+/public/{icons,sw.js,audio}
+/src/services/{supabase,vocabulary,speech,jmdict,dialogue}
+/src/components/{ui,layout,preparation}
+/src/hooks
 /src/stores
 /src/config
 ```
@@ -49,8 +54,6 @@ Last updated: v0.6.0 — Phase 5 dungeon system
 
 Login → Quest or Dungeon → Encounter → XP → Level Up → Save (Supabase)
 
-Dungeon loop: Enter → Deploy → Sectors (vocab, listening, NPC, speech) → Boss → Extract
-
 ## Environment
 
-See `.env.example` and `DECISIONS.md` for OAuth redirect URLs.
+See `.env.example` and `DECISIONS.md`. Mobile dev: `npm run dev:mobile` (HTTPS on LAN). PWA install + SW: `docs/mobile-pwa.md`.

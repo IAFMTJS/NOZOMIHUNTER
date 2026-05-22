@@ -3,9 +3,10 @@ import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import type { QuestContract } from "@/contracts/quest-contract"
 import type { DungeonRunContract } from "@/contracts/dungeon-contract"
 import { DUNGEON_CONFIG } from "@/config/dungeonConfig"
+import type { PlayerPenaltyContract } from "@/contracts/player-contract"
+import { maxDungeonEncounterFailures } from "@/systems/penalties/penaltyGameplaySystem"
 import { advanceObjective } from "@/systems/quests/questValidator"
 import { failQuest } from "@/systems/quests/questOrchestrator"
-import type { PlayerPenaltyContract } from "@/contracts/player-contract"
 import {
   clearEncounterPayloads,
   mountBossEncounter,
@@ -56,6 +57,7 @@ export function deployDungeon(
   eventBus.emit(GAME_EVENTS.DUNGEON_ENTERED, {
     playerId,
     dungeonId: run.dungeon.id,
+    theme: run.dungeon.theme,
   })
   return patchRun(quest, nextRun)
 }
@@ -239,20 +241,32 @@ export function failDungeonRun(
   }
 }
 
-export function registerEncounterFailure(quest: QuestContract): QuestContract {
+export function registerEncounterFailure(
+  quest: QuestContract,
+  penalties?: PlayerPenaltyContract
+): QuestContract {
   const run = quest.dungeonRun!
   const failures = run.encounterFailures + 1
   const updated = patchRun(quest, { ...run, encounterFailures: failures })
+  const maxFailures = penalties
+    ? maxDungeonEncounterFailures(penalties)
+    : DUNGEON_CONFIG.MAX_ENCOUNTER_FAILURES
 
-  if (failures >= DUNGEON_CONFIG.MAX_ENCOUNTER_FAILURES) {
+  if (failures >= maxFailures) {
     return updated
   }
 
   return updated
 }
 
-export function shouldFailDungeon(quest: QuestContract): boolean {
-  return (quest.dungeonRun?.encounterFailures ?? 0) >= DUNGEON_CONFIG.MAX_ENCOUNTER_FAILURES
+export function shouldFailDungeon(
+  quest: QuestContract,
+  penalties?: PlayerPenaltyContract
+): boolean {
+  const maxFailures = penalties
+    ? maxDungeonEncounterFailures(penalties)
+    : DUNGEON_CONFIG.MAX_ENCOUNTER_FAILURES
+  return (quest.dungeonRun?.encounterFailures ?? 0) >= maxFailures
 }
 
 export function getDungeonBriefing(quest: QuestContract): string {

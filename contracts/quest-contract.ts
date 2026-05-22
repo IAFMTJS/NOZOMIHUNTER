@@ -5,6 +5,7 @@ import type {
   VocabularyEncounterContract,
 } from "./encounter-contract"
 import type { DungeonRunContract } from "./dungeon-contract"
+import type { QuestVocabularyPreparationContract } from "./vocabulary-contract"
 
 export interface QuestContract {
   id: string
@@ -41,6 +42,9 @@ export interface QuestContract {
 
   /** First-run guided quest; lighter failure penalties. */
   isTutorial?: boolean
+
+  /** Pre-quest vocabulary briefing (unknown / critical words). */
+  vocabularyPreparation?: QuestVocabularyPreparationContract
 
   hidden?: boolean
 }

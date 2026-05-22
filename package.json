@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:mobile": "next dev --hostname 0.0.0.0 --experimental-https",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -19,6 +20,9 @@
     "ingest:jmdict": "tsx scripts/ingest-jmdict.ts"
   },
   "dependencies": {
+    "@fontsource/barlow-condensed": "^5.2.8",
+    "@fontsource/dm-sans": "^5.2.8",
+    "@fontsource/noto-sans-jp": "^5.2.9",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.1",
     "framer-motion": "^12.6.3",

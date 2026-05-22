@@ -1,3 +1,39 @@
+export const RECORDING_STATE_VALUES = [
+  "IDLE",
+  "REQUESTING_PERMISSION",
+  "RECORDING",
+  "PROCESSING",
+  "COMPLETED",
+  "ERROR",
+] as const
+
+export type RecordingStateContract =
+  (typeof RECORDING_STATE_VALUES)[number]
+
+export type SpeechUploadStatusContract =
+  | "idle"
+  | "pending"
+  | "uploading"
+  | "success"
+  | "failed"
+  | "retrying"
+
+export type SpeechTranscriptionStatusContract =
+  | "idle"
+  | "processing"
+  | "success"
+  | "failed"
+  | "skipped"
+
+export interface SpeechRecordingStatusContract {
+  state: RecordingStateContract
+  error: string | null
+  uploadStatus: SpeechUploadStatusContract
+  transcriptionStatus: SpeechTranscriptionStatusContract
+  retryCount: number
+  micActive: boolean
+}
+
 export interface SpeechAnalysisContract {
   transcript: string
 

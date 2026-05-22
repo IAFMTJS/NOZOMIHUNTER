@@ -14,6 +14,7 @@ import {
 import { applyQuestFailurePenalties } from "@/systems/penalties/penaltySystem"
 import type { PlayerPenaltyContract } from "@/contracts/player-contract"
 import { markTutorialComplete } from "@/systems/tutorial/tutorialSystem"
+import { attachVocabularyPreparation } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
 
 export interface QuestCompleteResult {
   quest: QuestContract
@@ -26,8 +27,11 @@ export interface QuestFailResult {
 }
 
 export function acceptQuest(quest: QuestContract, playerId: string): QuestContract {
+  const prepared = quest.vocabularyPreparation
+    ? quest
+    : attachVocabularyPreparation(quest, playerId)
   eventBus.emit(GAME_EVENTS.QUEST_ACCEPTED, { playerId, questId: quest.id })
-  return quest
+  return prepared
 }
 
 export function progressQuestObjective(
