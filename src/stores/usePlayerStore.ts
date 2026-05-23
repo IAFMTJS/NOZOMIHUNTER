@@ -4,6 +4,7 @@ import type { QuestContract } from "@/contracts/quest-contract"
 import type { ProgressionState } from "@/systems/progression/progressionTypes"
 import type { HunterRank } from "@/contracts/player-contract"
 import { dedupeActiveQuests } from "@/systems/quests/questListUtils"
+import { applyLevelUpDelta } from "@/systems/progression/rpgStatsSystem"
 
 interface PlayerStore {
   player: PlayerContract | null
@@ -55,12 +56,21 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     const player = get().player
     if (!player) return
 
+    const levelsGained = update.leveledUp
+      ? Math.max(0, update.level - player.level)
+      : 0
+    const rpgStats =
+      levelsGained > 0
+        ? applyLevelUpDelta(player.rpgStats, levelsGained, update.rank)
+        : player.rpgStats
+
     set({
       player: {
         ...player,
         xp: update.xp,
         level: update.level,
         rank: update.rank,
+        rpgStats,
         progression: update.progression,
         penalties: update.penalties,
         updatedAt: new Date().toISOString(),

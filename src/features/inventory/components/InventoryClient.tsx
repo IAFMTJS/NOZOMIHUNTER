@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
+import { ItemTile } from "@/components/ui/screen/ItemTile"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
 import { Button } from "@/components/ui/Button"
@@ -22,6 +24,8 @@ type Cat = "ALL" | "EQUIPMENT" | "CONSUMABLE" | "MISC"
 
 export function InventoryClient() {
   const { player, user } = useHunterSession()
+  const searchParams = useSearchParams()
+  const manageMode = searchParams.get("mode") === "manage"
   const [catalog, setCatalog] = useState<ItemCatalogEntryContract[]>([])
   const [view, setView] = useState<View>("LOADOUT")
   const [tab, setTab] = useState<Cat>("ALL")
@@ -170,32 +174,19 @@ export function InventoryClient() {
                 const meta = catalogMap.get(s.itemKey)
                 const isGear = meta?.category === "EQUIPMENT"
                 return (
-                  <button
+                  <ItemTile
                     key={s.itemKey}
-                    type="button"
-                    disabled={busy || !isGear}
-                    onClick={() => isGear && void handleEquip(s.itemKey)}
-                    className={`relative flex aspect-square flex-col items-center justify-center rounded-lg border p-2 text-center ${
-                      s.equipped
-                        ? "border-[var(--accent-bright)] bg-[var(--accent)]/20"
-                        : "border-[var(--border-subtle)] bg-black/30"
-                    } ${isGear ? "cursor-pointer hover:border-[var(--accent)]" : ""}`}
-                  >
-                    <span className="text-[10px] uppercase text-[var(--muted)]">
-                      {meta?.icon ?? "?"}
-                    </span>
-                    <span className="mt-1 line-clamp-2 text-[9px] text-[var(--foreground)]">
-                      {meta?.name ?? s.itemKey}
-                    </span>
-                    <span className="absolute right-1 top-1 rounded bg-[var(--accent)] px-1 text-[9px] font-bold text-white">
-                      {s.quantity}
-                    </span>
-                    {s.equipped && (
-                      <span className="absolute bottom-1 left-1 text-[8px] uppercase text-[var(--accent-bright)]">
-                        EQ
-                      </span>
-                    )}
-                  </button>
+                    iconKey={meta?.icon ?? "crate"}
+                    name={meta?.name ?? s.itemKey}
+                    quantity={s.quantity}
+                    equipped={s.equipped}
+                    disabled={busy || !isGear || !manageMode}
+                    onClick={
+                      manageMode && isGear
+                        ? () => void handleEquip(s.itemKey)
+                        : undefined
+                    }
+                  />
                 )
               })}
             </div>
@@ -203,13 +194,21 @@ export function InventoryClient() {
         </>
       )}
 
-      <div className="mt-6 flex items-center justify-between rounded-xl border border-[var(--border-subtle)] px-4 py-3 text-sm">
+      <div className="mt-6 flex items-center justify-between gap-2 rounded-xl border border-[var(--border-subtle)] px-4 py-3 text-sm">
         <span className="text-[var(--muted)]">
           Capacity {used} / {used + remaining}
         </span>
-        <Link href="/vocabulary" className="text-[var(--accent-bright)] hover:underline">
-          Threat index
-        </Link>
+        <div className="flex gap-3">
+          <Link
+            href={manageMode ? "/inventory" : "/inventory?mode=manage"}
+            className="text-[var(--accent-bright)] hover:underline"
+          >
+            {manageMode ? "Done" : "Manage"}
+          </Link>
+          <Link href="/vocabulary" className="text-[var(--accent-bright)] hover:underline">
+            Threat index
+          </Link>
+        </div>
       </div>
     </HunterPage>
   )

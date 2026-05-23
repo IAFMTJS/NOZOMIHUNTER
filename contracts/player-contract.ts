@@ -37,6 +37,9 @@ export interface PlayerContract {
 
   stats: PlayerStatsContract
 
+  /** Combat core stats (STR/AGI/INT/VIT) — persisted on progression. */
+  rpgStats: RpgStatsContract
+
   penalties: PlayerPenaltyContract
 
   progression: PlayerProgressionContract
@@ -70,6 +73,13 @@ export interface PlayerStatsContract {
   confidence: number
   intelligence: number
   consistency: number
+}
+
+export interface RpgStatsContract {
+  strength: number
+  agility: number
+  intelligence: number
+  vitality: number
 }
 
 export interface PlayerPenaltyContract {

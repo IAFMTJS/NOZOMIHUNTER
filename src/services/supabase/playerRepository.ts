@@ -16,6 +16,7 @@ import { computeSynchronizationStatus } from "@/systems/synchronization/synchron
 import { defaultEconomy } from "@/systems/economy/staminaSystem"
 import { parsePendingRewards } from "@/systems/rewards/rewardClaimSystem"
 import { PlayerSchema } from "@/systems/validation/playerSchema"
+import { resolveRpgStats } from "@/systems/progression/rpgStatsSystem"
 import { logSystemEvent } from "@/systems/logger/logger"
 import type { ProgressionRow } from "@/types/database"
 
@@ -54,6 +55,9 @@ function mapPlayer(
   const chainDays = profile.sync_chain_days ?? 0
   const lastActive = profile.last_active_date ?? null
   const syncView = computeSynchronizationStatus(lastActive, chainDays)
+  const level = (prog.level as number) ?? 1
+  const rank = (prog.rank as HunterRank) ?? "E"
+  const progRow = prog as unknown as ProgressionRow
 
   return {
     id: profile.id,
@@ -65,9 +69,15 @@ function mapPlayer(
       status: syncView.status,
       atRisk: syncView.atRisk,
     },
-    level: prog.level as number,
+    level,
     xp: prog.xp as number,
-    rank: prog.rank as HunterRank,
+    rank,
+    rpgStats: resolveRpgStats(level, rank, {
+      strength: progRow.rpg_strength,
+      agility: progRow.rpg_agility,
+      intelligence: progRow.rpg_intelligence,
+      vitality: progRow.rpg_vitality,
+    }),
     stats: {
       vocabulary: stats.vocabulary ?? 0,
       grammar: stats.grammar ?? 0,
@@ -153,6 +163,7 @@ export async function loadPlayer(userId: string): Promise<{
     level: player.level,
     xp: player.xp,
     rank: player.rank,
+    rpgStats: player.rpgStats,
     economy: player.economy,
     inventory: player.inventory,
     trackedQuestId: player.trackedQuestId,
@@ -213,6 +224,10 @@ export async function savePlayer(
         stamina_max: player.economy.staminaMax,
         brew_tokens: player.economy.brewTokens,
         pending_rewards: player.pendingRewards,
+        rpg_strength: player.rpgStats.strength,
+        rpg_agility: player.rpgStats.agility,
+        rpg_intelligence: player.rpgStats.intelligence,
+        rpg_vitality: player.rpgStats.vitality,
       })
       .eq("user_id", player.id),
     supabase.from("player_penalties").upsert({

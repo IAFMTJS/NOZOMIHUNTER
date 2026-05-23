@@ -5,11 +5,13 @@ import { useHunterSession } from "@/features/hunter/context/HunterSessionContext
 import { HunterPage } from "@/components/layout/HunterPage"
 import { HunterPageBack } from "@/components/layout/HunterPageBack"
 import { Button } from "@/components/ui/Button"
+import { HeroBanner } from "@/components/ui/screen/HeroBanner"
+import { RewardRow } from "@/components/ui/screen/RewardRow"
 import {
   isObjectiveRevealed,
   objectiveDisplayText,
-} from "@/systems/quests/missionCatalogSystem"
-import { isQuestTracked } from "@/systems/quests/missionTrackingSystem"
+} from "@/systems/quests/contractCatalogSystem"
+import { isQuestTracked } from "@/systems/quests/contractTrackingSystem"
 
 interface ContractDetailClientProps {
   questId: string
@@ -36,7 +38,7 @@ export function ContractDetailClient({ questId }: ContractDetailClientProps) {
     <HunterPage>
       <HunterPageBack href="/contracts" label="Contracts" />
       <div className="space-y-5">
-        <div className="h-32 rounded-2xl bg-gradient-to-br from-[var(--accent)]/25 to-black/60" />
+        <HeroBanner title={quest.title} rankLabel={quest.narrativeTier === "MAIN" ? "A" : "B"} />
         <div>
           <h1 className="font-display text-2xl font-semibold text-[var(--foreground)]">
             {quest.title}
@@ -75,16 +77,24 @@ export function ContractDetailClient({ questId }: ContractDetailClientProps) {
           <p className="mb-2 text-xs uppercase tracking-widest text-[var(--muted)]">
             Rewards
           </p>
-          <div className="flex flex-wrap gap-2 text-sm">
-            <span className="rounded bg-[var(--reward)]/20 px-2 py-1 text-[var(--reward)]">
-              +{quest.rewards.xp} XP
-            </span>
-            {quest.rewards.credits != null && (
-              <span className="rounded bg-white/10 px-2 py-1">
-                {quest.rewards.credits} credits
-              </span>
-            )}
-          </div>
+          <RewardRow
+            items={[
+              {
+                key: "xp",
+                label: `+${quest.rewards.xp} XP`,
+                tone: "xp",
+              },
+              ...(quest.rewards.credits != null && quest.rewards.credits > 0
+                ? [
+                    {
+                      key: "credits",
+                      label: `${quest.rewards.credits} credits`,
+                      tone: "credits" as const,
+                    },
+                  ]
+                : []),
+            ]}
+          />
         </section>
 
         <Button
@@ -97,7 +107,7 @@ export function ContractDetailClient({ questId }: ContractDetailClientProps) {
         </Button>
 
         <Button
-          variant="primary"
+          variant="ghost"
           size="md"
           className="w-full !py-3"
           onClick={() => {

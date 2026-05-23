@@ -31,6 +31,10 @@ export async function applyGuardedProgression(player: PlayerContract): Promise<v
     p_unlocked_systems: player.progression.unlockedSystems,
     p_unlocked_dungeons: player.progression.unlockedDungeons,
     p_titles: player.progression.titles,
+    p_rpg_strength: player.rpgStats.strength,
+    p_rpg_agility: player.rpgStats.agility,
+    p_rpg_intelligence: player.rpgStats.intelligence,
+    p_rpg_vitality: player.rpgStats.vitality,
   })
 
   if (error) {

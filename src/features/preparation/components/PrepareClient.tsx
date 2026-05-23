@@ -110,7 +110,10 @@ export function PrepareClient() {
         label={dungeonKey ? "Sectors" : "Contracts"}
       />
       <div className="space-y-6">
-        <PreparationRingGauge score={readiness.preparationScore} />
+        <PreparationRingGauge
+          score={readiness.preparationScore}
+          label="Preparation score"
+        />
         <p className="text-center text-xs text-[var(--muted)]">{readiness.survivalLabel}</p>
         <PreparationChecklist checklist={checklist} />
         <PowerComparison recommended={recommended} yours={power.total} />

@@ -4,7 +4,7 @@ import { findActiveQuestRowId } from "@/services/supabase/playerRepository"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
-import { setTrackedQuest } from "@/systems/quests/missionTrackingSystem"
+import { setTrackedQuest } from "@/systems/quests/contractTrackingSystem"
 
 export async function trackMissionForUser(
   userId: string,

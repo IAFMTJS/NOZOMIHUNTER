@@ -9,10 +9,12 @@ import { xpProgressInCurrentLevel } from "@/systems/progression/levelSystem"
 import { AudioMuteToggle } from "@/components/ui/AudioMuteToggle"
 
 const LINKS = [
-  { href: "/stats", label: "Operator metrics" },
+  { href: "/achievements", label: "Achievements" },
+  { href: "/records", label: "Records" },
+  { href: "/settings", label: "Settings" },
+  { href: "/stats", label: "Core stats" },
   { href: "/system", label: "System status" },
   { href: "/vocabulary", label: "Threat index" },
-  { href: "/achievements", label: "Achievements" },
 ]
 
 export function ProfileMenuClient() {

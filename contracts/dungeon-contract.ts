@@ -25,6 +25,7 @@ export type DungeonTheme =
   | "CORRUPTED_SHRINE"
   | "NEON_CITY"
   | "SHADOW_ARCHIVE"
+  | "ABYSS_CORE"
 
 export type DungeonDifficulty =
   | "RANK_E"

@@ -5,7 +5,7 @@
 1. User signs in → `/home`
 2. `HunterSessionProvider` hydrates player + quests once
 3. `BottomNav` routes: `/home`, `/contracts`, `/dungeons`, `/inventory`, `/profile`
-4. Secondary routes (header/back, not in tab bar): `/prepare`, `/vocabulary`, `/system`
+4. Secondary routes (header/back, not in tab bar): `/prepare`, `/vocabulary`, `/system`, `/stats`, `/settings`, `/records`, `/achievements`
 5. `/dashboard` redirects to `/home` (PWA `start_url` is `/home`)
 
 ## Mission flow

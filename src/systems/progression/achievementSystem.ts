@@ -24,6 +24,11 @@ const DEFINITIONS: Omit<AchievementContract, "unlocked">[] = [
     description: "Unlock the Neon Corridor sector.",
   },
   {
+    id: "abyss-clear",
+    title: "Abyss breach",
+    description: "Unlock the Abyss Core sector.",
+  },
+  {
     id: "vocab-master",
     title: "Threat neutralized",
     description: "Earn a vocabulary mastery title.",
@@ -49,6 +54,9 @@ export function resolveAchievements(player: PlayerContract): AchievementContract
         break
       case "neon-clear":
         unlocked = unlocks.has("dungeon:neon-corridor")
+        break
+      case "abyss-clear":
+        unlocked = unlocks.has("dungeon:abyss-core")
         break
       case "vocab-master":
         unlocked = [...titles].some((t) => t.includes("vocab") || t.includes("mastery"))

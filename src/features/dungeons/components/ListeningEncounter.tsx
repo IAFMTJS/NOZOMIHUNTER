@@ -11,6 +11,7 @@ import { stopJapaneseSpeech } from "@/systems/listening/japaneseTtsSystem"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { EncounterTargetRail } from "@/components/ui/EncounterTargetRail"
+import { ListeningFocusShell } from "@/components/ui/ListeningFocusShell"
 
 interface ListeningEncounterProps {
   quest: QuestContract
@@ -18,6 +19,7 @@ interface ListeningEncounterProps {
   maxWrongAttempts?: number
   maxReplays?: number
   signalDegraded?: boolean
+  focusMode?: boolean
   onSubmit: (answer: string) => Promise<void>
   onAbandon: () => Promise<void>
   flashClassName?: string
@@ -29,6 +31,7 @@ export function ListeningEncounter({
   maxWrongAttempts = VOCABULARY_ENCOUNTER_CONFIG.MAX_WRONG_ATTEMPTS,
   maxReplays = 3,
   signalDegraded = false,
+  focusMode = false,
   onSubmit,
   onAbandon,
   flashClassName = "",
@@ -45,6 +48,9 @@ export function ListeningEncounter({
     ? Math.max(0, maxWrongAttempts - encounter.wrongAttempts)
     : 0
   const replaysLeft = Math.max(0, maxReplays - replayCount)
+  const waveColor = focusMode
+    ? "bg-[var(--listening-accent)]/80"
+    : "bg-[var(--accent)]/80"
 
   useEffect(() => {
     setHeardOnce(false)
@@ -59,6 +65,10 @@ export function ListeningEncounter({
       setHeardOnce(true)
       setReplayCount((n) => n + 1)
     }
+  }
+
+  function stopSignal() {
+    tts.stop()
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -80,39 +90,49 @@ export function ListeningEncounter({
     )
   }
 
-  return (
-    <div className={`mt-3 flex flex-col gap-6 ${flashClassName}`}>
-      <div>
-        <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
-          Audio intercept
-        </p>
-        <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
-          {encounter.briefing}
-        </p>
-        {signalDegraded && (
-          <p className="mt-3 text-xs text-[var(--warning)]">
-            Signal degraded — fewer retries and tighter error budget.
+  const body = (
+    <div className={`flex flex-col gap-6 ${flashClassName}`}>
+      {!focusMode && (
+        <div>
+          <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
+            Audio intercept
           </p>
-        )}
-      </div>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
+            {encounter.briefing}
+          </p>
+          {signalDegraded && (
+            <p className="mt-3 text-xs text-[var(--warning)]">
+              Signal degraded — fewer retries and tighter error budget.
+            </p>
+          )}
+        </div>
+      )}
 
-      <EncounterTargetRail
-        items={encounter.fragments.map((f, i) => {
-          const done = i < encounter.currentIndex
-          const current = i === encounter.currentIndex
-          return {
-            id: f.id,
-            state: done ? "done" : current ? "current" : "hidden",
-            content: <span className="font-medium">{i + 1}</span>,
-          }
-        })}
-      />
+      {!focusMode && (
+        <EncounterTargetRail
+          items={encounter.fragments.map((f, i) => {
+            const done = i < encounter.currentIndex
+            const current = i === encounter.currentIndex
+            return {
+              id: f.id,
+              state: done ? "done" : current ? "current" : "hidden",
+              content: <span className="font-medium">{i + 1}</span>,
+            }
+          })}
+        />
+      )}
 
-      <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
-        Transmission {encounter.currentIndex + 1} / {encounter.fragments.length}
-      </p>
+      {!focusMode && (
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
+          Transmission {encounter.currentIndex + 1} / {encounter.fragments.length}
+        </p>
+      )}
 
-      <div className="nozomi-signal-well rounded-[var(--radius-panel)] px-4 py-8">
+      <div
+        className={`rounded-[var(--radius-panel)] px-4 py-8 ${
+          focusMode ? "" : "nozomi-signal-well"
+        }`}
+      >
         <div
           className="mb-6 flex h-14 items-end justify-center gap-1"
           aria-hidden
@@ -120,7 +140,7 @@ export function ListeningEncounter({
           {Array.from({ length: 12 }).map((_, i) => (
             <motion.span
               key={i}
-              className="w-1 rounded-full bg-[var(--accent)]/80"
+              className={`w-1 rounded-full ${waveColor}`}
               animate={
                 tts.playing
                   ? {
@@ -151,33 +171,40 @@ export function ListeningEncounter({
         {tts.error && (
           <p className="mt-2 text-center text-xs text-[var(--danger)]">{tts.error}</p>
         )}
-        <div className="mt-6 flex justify-center">
-          <Button
-            type="button"
-            size="md"
-            disabled={
-              disabled ||
-              tts.playing ||
-              !tts.supported ||
-              replayCount >= maxReplays
-            }
-            onClick={() => void playSignal()}
-          >
-            {tts.playing
-              ? "Playing…"
-              : heardOnce
-                ? "Replay signal"
-                : "Receive signal"}
-          </Button>
+        <div className="mt-6 flex flex-col items-center gap-3">
+          {focusMode && tts.playing ? (
+            <Button
+              type="button"
+              size="md"
+              variant="primary"
+              className="!border-[var(--listening-accent)] !bg-[var(--listening-glow)]"
+              onClick={stopSignal}
+            >
+              Tap to stop
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              size="md"
+              disabled={
+                disabled ||
+                tts.playing ||
+                !tts.supported ||
+                replayCount >= maxReplays
+              }
+              onClick={() => void playSignal()}
+            >
+              {tts.playing
+                ? "Playing…"
+                : heardOnce
+                  ? "Replay signal"
+                  : "Receive signal"}
+            </Button>
+          )}
         </div>
-        {heardOnce && replaysLeft > 0 && (
+        {heardOnce && replaysLeft > 0 && !focusMode && (
           <p className="mt-3 text-center text-xs text-[var(--muted)]">
             Replays remaining: {replaysLeft}
-          </p>
-        )}
-        {replayCount >= maxReplays && !tts.playing && (
-          <p className="mt-3 text-center text-xs text-[var(--warning)]">
-            Replay buffer exhausted for this transmission.
           </p>
         )}
         {!tts.supported && (
@@ -223,4 +250,10 @@ export function ListeningEncounter({
       </form>
     </div>
   )
+
+  if (focusMode) {
+    return <ListeningFocusShell>{body}</ListeningFocusShell>
+  }
+
+  return <div className="mt-3">{body}</div>
 }

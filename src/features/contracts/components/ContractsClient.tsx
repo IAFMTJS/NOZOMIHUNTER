@@ -5,8 +5,9 @@ import Link from "next/link"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
 import { Button } from "@/components/ui/Button"
-import { buildMissionCatalog } from "@/systems/quests/missionCatalogSystem"
+import { buildContractCatalog } from "@/systems/quests/contractCatalogSystem"
 import { StatusChip } from "@/components/ui/StatusChip"
+import { CollapsibleSection } from "@/components/ui/screen/CollapsibleSection"
 import { loadCompletedQuestSnapshots } from "@/services/supabase/playerRepository"
 import type { QuestContract } from "@/contracts/quest-contract"
 
@@ -29,7 +30,10 @@ export function ContractsClient() {
     )
   }
 
-  const catalog = buildMissionCatalog(regularQuests, completedQuests.map((q) => q.id))
+  const catalog = buildContractCatalog(
+    regularQuests,
+    completedQuests.map((q) => q.id)
+  )
 
   return (
     <HunterPage>
@@ -92,10 +96,10 @@ export function ContractsClient() {
         )}
 
         {catalog.completed.length > 0 && (
-          <section>
-            <p className="mb-2 font-display text-xs uppercase tracking-widest text-[var(--muted)]">
-              Completed
-            </p>
+          <CollapsibleSection
+            title="Completed contracts"
+            count={catalog.completed.length}
+          >
             <ul className="space-y-2">
               {catalog.completed.map((q) => (
                 <li
@@ -107,7 +111,7 @@ export function ContractsClient() {
                 </li>
               ))}
             </ul>
-          </section>
+          </CollapsibleSection>
         )}
 
         {regularQuests.length === 0 && catalog.completed.length === 0 && (

@@ -75,6 +75,26 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
     rewardXpBase: 150,
     unlocks: ["dungeon:shadow-archive"],
   },
+  {
+    key: "dungeon:abyss-core",
+    theme: "ABYSS_CORE",
+    name: "Abyss Core",
+    description:
+      "The deepest breach point. Extreme signal density, warden-class entities, and zero margin for decode failure.",
+    minLevel: 8,
+    staminaCost: 35,
+    recommendedPower: 2400,
+    requiredDungeon: "dungeon:shadow-archive",
+    encounterPlan: [
+      { id: "sector-vocab", type: "VOCAB", difficulty: 3 },
+      { id: "sector-listen", type: "LISTENING", difficulty: 4 },
+      { id: "sector-npc", type: "NPC", difficulty: 4 },
+      { id: "sector-speech", type: "SPEECH", difficulty: 4 },
+    ],
+    bossName: "Core Warden",
+    rewardXpBase: 200,
+    unlocks: ["dungeon:abyss-core"],
+  },
 ]
 
 export function getDungeonDefinition(key: string): DungeonDefinitionConfig {

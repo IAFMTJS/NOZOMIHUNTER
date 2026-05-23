@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import { computeReadiness } from "@/systems/readiness/readinessSystem"
 import type { PlayerContract } from "@/contracts/player-contract"
 import { defaultEconomy } from "@/systems/economy/staminaSystem"
+import { deriveRpgStatsFromProgress } from "@/systems/progression/rpgStatsSystem"
 
 function basePlayer(overrides: Partial<PlayerContract> = {}): PlayerContract {
   return {
@@ -10,6 +11,7 @@ function basePlayer(overrides: Partial<PlayerContract> = {}): PlayerContract {
     xp: 0,
     level: 1,
     rank: "E",
+    rpgStats: deriveRpgStatsFromProgress(1, "E"),
     stats: {
       vocabulary: 50,
       grammar: 50,

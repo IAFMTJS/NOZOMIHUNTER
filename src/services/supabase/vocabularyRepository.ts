@@ -68,6 +68,29 @@ export async function loadWordMastery(
   }))
 }
 
+export async function markWordAsLearned(
+  userId: string,
+  wordId: string,
+  threshold: number
+): Promise<void> {
+  const supabase = requireClient()
+  const { data: existing } = await supabase
+    .from("word_mastery")
+    .select("correct_count, wrong_count, last_seen_at")
+    .eq("user_id", userId)
+    .eq("word_id", wordId)
+    .maybeSingle()
+
+  await supabase.from("word_mastery").upsert({
+    user_id: userId,
+    word_id: wordId,
+    mastery: threshold,
+    correct_count: existing?.correct_count ?? 0,
+    wrong_count: existing?.wrong_count ?? 0,
+    last_seen_at: existing?.last_seen_at ?? new Date().toISOString(),
+  })
+}
+
 export async function upsertWordMastery(
   userId: string,
   row: WordMasteryContract

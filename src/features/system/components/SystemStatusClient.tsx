@@ -5,6 +5,8 @@ import { useHunterSession } from "@/features/hunter/context/HunterSessionContext
 import { HunterPage } from "@/components/layout/HunterPage"
 import { HunterPageBack } from "@/components/layout/HunterPageBack"
 import { PenaltyStatus } from "@/components/PenaltyStatus"
+import { SystemCrest } from "@/components/ui/screen/SystemCrest"
+import { StatBar } from "@/components/ui/screen/StatBar"
 import { SystemMessageRail } from "@/components/hunter/SystemMessageRail"
 import { selectSystemMessage, systemMessageSubline } from "@/systems/messaging/systemMessagingSystem"
 import { computeReadiness } from "@/systems/readiness/readinessSystem"
@@ -29,20 +31,21 @@ export function SystemStatusClient() {
     <HunterPage>
       <HunterPageBack href="/home" label="Hunter status" />
       <div className="space-y-6">
+        <SystemCrest />
         <SystemMessageRail message={message} subline={systemMessageSubline(player)} />
 
-        <div>
-          <div className="mb-2 flex justify-between text-xs uppercase tracking-widest text-[var(--muted)]">
-            <span>System integrity</span>
-            <span>{integrity}%</span>
-          </div>
-          <div className="h-2 overflow-hidden rounded-full bg-black/50">
-            <div
-              className="h-full rounded-full bg-[var(--accent)]"
-              style={{ width: `${integrity}%` }}
-            />
-          </div>
-        </div>
+        <StatBar
+          label="System integrity"
+          value={integrity}
+          max={100}
+          tone="accent"
+        />
+        <StatBar
+          label="Corruption level"
+          value={player.penalties.corruption}
+          max={100}
+          tone="danger"
+        />
 
         <PenaltyStatus penalties={player.penalties} />
 

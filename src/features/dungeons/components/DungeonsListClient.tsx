@@ -7,9 +7,11 @@ import { DUNGEON_DEFINITIONS } from "@/config/dungeonConfig"
 import { canStartDungeon } from "@/systems/dungeons/dungeonAccess"
 import { computeHunterPower, recommendedPowerForDungeon } from "@/systems/power/hunterPowerSystem"
 import { StatusChip } from "@/components/ui/StatusChip"
+import { RankChip } from "@/components/ui/screen/RankChip"
+import { rankFromLevel } from "@/systems/progression/rankFromLevel"
 
 export function DungeonsListClient() {
-  const { player, activeQuests, hunterPresentation } = useHunterSession()
+  const { player, activeQuests, forecast } = useHunterSession()
 
   if (!player) {
     return (
@@ -44,15 +46,26 @@ export function DungeonsListClient() {
                   <h2 className="font-display text-lg font-semibold text-[var(--foreground)]">
                     {def.name}
                   </h2>
-                  {locked ? (
-                    <span aria-hidden>🔒</span>
-                  ) : (
-                    <StatusChip label={`Lv ${def.minLevel}+`} tone="accent" />
-                  )}
+                  <div className="flex shrink-0 items-center gap-1">
+                    <RankChip
+                      rank={rankFromLevel(def.minLevel)}
+                      tone={locked ? "locked" : "accent"}
+                    />
+                    {locked ? (
+                      <span aria-hidden>🔒</span>
+                    ) : (
+                      <StatusChip label={`Lv ${def.minLevel}+`} tone="accent" />
+                    )}
+                  </div>
                 </div>
                 <p className="mt-1 text-xs text-[var(--muted)]">
                   Recommended power {rec.toLocaleString()} · Your {power.total.toLocaleString()}
                 </p>
+                {forecast?.dungeon.key === def.key && locked && (
+                  <p className="mt-2 text-xs text-[var(--accent-bright)]">
+                    {forecast.subline}
+                  </p>
+                )}
                 {!gate.ok && !locked && (
                   <p className="mt-2 text-xs text-[var(--warning)]">{gate.reason}</p>
                 )}

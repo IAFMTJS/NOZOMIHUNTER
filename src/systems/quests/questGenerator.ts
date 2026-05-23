@@ -37,7 +37,7 @@ import {
   buildQuestRewards,
   hiddenScoutObjective,
 } from "@/systems/quests/questRewardFactory"
-import { withNarrativeTier } from "@/systems/quests/missionCatalogSystem"
+import { withNarrativeTier } from "@/systems/quests/contractCatalogSystem"
 
 function finalizeQuest(quest: QuestContract): QuestContract {
   return attachVocabularyPreparation(quest)

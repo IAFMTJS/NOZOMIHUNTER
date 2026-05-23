@@ -10,4 +10,10 @@ export const POWER_CONFIG = {
     consistency: 4,
   },
   GEAR_BONUS_PER_EQUIPPED: 150,
+  RPG_WEIGHTS: {
+    strength: 12,
+    agility: 10,
+    intelligence: 8,
+    vitality: 6,
+  },
 } as const

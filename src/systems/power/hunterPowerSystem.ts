@@ -22,17 +22,30 @@ export function computeHunterPower(player: PlayerContract): HunterPowerBreakdown
     s.intelligence * w.intelligence +
     s.consistency * w.consistency
 
+  const rw = POWER_CONFIG.RPG_WEIGHTS
+  const r = player.rpgStats
+  const rpgSum =
+    r.strength * rw.strength +
+    r.agility * rw.agility +
+    r.intelligence * rw.intelligence +
+    r.vitality * rw.vitality
+
   const levelBonus = player.level * POWER_CONFIG.LEVEL_MULTIPLIER
   const gearBonus =
     countEquippedItems(player.inventory) * POWER_CONFIG.GEAR_BONUS_PER_EQUIPPED
-  const total = Math.round(statSum + levelBonus + gearBonus)
+  const total = Math.round(statSum + rpgSum + levelBonus + gearBonus)
+
+  const attackBase = Math.round(
+    r.strength * 4 + r.agility * 2 + total * 0.25
+  )
+  const defenseBase = Math.round(r.vitality * 4 + total * 0.18)
 
   return {
     total,
-    attack: Math.round(total * 0.42),
-    defense: Math.round(total * 0.28),
-    critRate: Math.min(45, 5 + Math.floor(s.confidence / 10)),
-    critDamage: Math.round(120 + s.intelligence * 0.8),
+    attack: attackBase,
+    defense: defenseBase,
+    critRate: Math.min(45, 5 + Math.floor(r.agility / 8) + Math.floor(s.confidence / 15)),
+    critDamage: Math.round(120 + r.intelligence * 1.2 + s.intelligence * 0.4),
   }
 }
 

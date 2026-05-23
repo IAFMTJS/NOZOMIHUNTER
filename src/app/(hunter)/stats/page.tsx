@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation"
+import { StatsClient } from "@/features/stats/components/StatsClient"
 
-export default function StatsRedirectPage() {
-  redirect("/profile#operator-metrics")
+export default function StatsPage() {
+  return <StatsClient />
 }

@@ -3,6 +3,7 @@
 import type { PendingRewardBundleContract } from "@/contracts/economy-contract"
 import type { PlayerContract } from "@/contracts/player-contract"
 import { Button } from "@/components/ui/Button"
+import { RewardRow } from "@/components/ui/screen/RewardRow"
 import { XPBar } from "@/components/XPBar"
 import { xpProgressInCurrentLevel } from "@/systems/progression/levelSystem"
 
@@ -38,16 +39,27 @@ export function RewardClaimOverlay({
             xpDebt={player.penalties.xpDebt}
           />
         </div>
-        <ul className="mt-6 space-y-2 text-sm text-[var(--muted)]">
-          {bundle.credits != null && bundle.credits > 0 && (
-            <li>Credits +{bundle.credits}</li>
-          )}
-          {bundle.items.map((item) => (
-            <li key={item.itemKey}>
-              {item.itemKey} ×{item.quantity}
-            </li>
-          ))}
-        </ul>
+        <div className="mt-6">
+          <RewardRow
+            items={[
+              ...(bundle.credits != null && bundle.credits > 0
+                ? [
+                    {
+                      key: "credits",
+                      label: `+${bundle.credits} credits`,
+                      tone: "credits" as const,
+                    },
+                  ]
+                : []),
+              ...bundle.items.map((item) => ({
+                key: item.itemKey,
+                label: item.itemKey.replace(/-/g, " "),
+                quantity: item.quantity,
+                tone: "item" as const,
+              })),
+            ]}
+          />
+        </div>
         {claimError && (
           <p className="mt-4 text-center text-sm text-[var(--danger)]">{claimError}</p>
         )}

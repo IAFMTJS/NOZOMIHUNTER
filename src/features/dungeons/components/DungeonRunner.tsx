@@ -143,6 +143,7 @@ export function DungeonRunner({
           maxWrongAttempts={maxWrongAttempts}
           maxReplays={maxListeningReplays}
           signalDegraded={signalDegraded}
+          focusMode
           onSubmit={onSubmitListening}
           onAbandon={onAbandon}
         />

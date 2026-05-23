@@ -778,7 +778,80 @@ Consumers
 
 ⸻
 
-missionCatalogSystem (v1.0.0)
+contractCatalogSystem (v1.2.0)
+
+Location: `/src/systems/quests/contractCatalogSystem.ts`
+
+Responsibilities
+
+* partition active quests into main story / side / completed views
+* infer `narrativeTier` (MAIN | SIDE)
+* objective display text with hidden objectives
+* optional display overlay via `missionCatalogMetadata`
+
+Consumers
+
+* `/contracts`, `/contracts/[id]`
+
+Contracts
+
+* `quest-contract.ts` (`QuestNarrativeTier`)
+
+Legacy alias: `missionCatalogSystem` re-exports.
+
+⸻
+
+contractTrackingSystem (v1.2.0)
+
+Location: `/src/systems/quests/contractTrackingSystem.ts`
+
+Responsibilities
+
+* `trackedQuestId` on player; resolve tracked quest from board
+* persist via `profiles.tracked_quest_id` + `updateTrackedQuestRow`
+
+Consumers
+
+* contract detail “Track” action, home highlight
+
+Legacy alias: `missionTrackingSystem` re-exports.
+
+⸻
+
+rpgStatsSystem (v1.2.0)
+
+Location: `/src/systems/progression/rpgStatsSystem.ts`
+
+Responsibilities
+
+* derive, clamp, and apply level-up deltas for STR/AGI/INT/VIT
+* persisted on `progression.rpg_*` columns (migration `010`)
+
+Consumers
+
+* `/stats`, `hunterPowerSystem`, `applyProgressionUpdate`
+
+Contracts
+
+* `player-contract.ts` (`RpgStatsContract`)
+
+⸻
+
+recordsPresentationSystem (v1.2.0)
+
+Location: `/src/systems/records/recordsPresentationSystem.ts`
+
+Responsibilities
+
+* map `gameplay_events` and completed contracts to registry log lines
+
+Consumers
+
+* `/records`
+
+⸻
+
+missionCatalogSystem (v1.0.0) — deprecated
 
 Location: `/src/systems/quests/missionCatalogSystem.ts`
 
@@ -798,18 +871,9 @@ Contracts
 
 ⸻
 
-missionTrackingSystem (v1.0.0)
+missionTrackingSystem (v1.0.0) — deprecated
 
-Location: `/src/systems/quests/missionTrackingSystem.ts`
-
-Responsibilities
-
-* `trackedQuestId` on player; resolve tracked quest from board
-* persist via `profiles.tracked_quest_id` + `updateTrackedQuestRow`
-
-Consumers
-
-* mission detail “Track” action, home hub highlight
+See `contractTrackingSystem`.
 
 ⸻
 

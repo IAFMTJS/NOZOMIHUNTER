@@ -34,6 +34,10 @@ export interface ProgressionRow {
   stamina_max?: number
   brew_tokens?: number
   pending_rewards?: Record<string, unknown> | null
+  rpg_strength?: number
+  rpg_agility?: number
+  rpg_intelligence?: number
+  rpg_vitality?: number
 }
 
 export interface PlayerPenaltiesRow {

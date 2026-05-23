@@ -187,7 +187,10 @@ Defined in [`src/app/globals.css`](../src/app/globals.css):
 | `/prepare` | Preparation ring, checklist, power compare |
 | `/vocabulary`, `/vocabulary/[id]` | Threat index + word detail + brew |
 | `/inventory` | Loadout grid + capacity |
-| `/stats` | Redirect → `/profile#operator-metrics` |
+| `/stats` | RPG core stats (STR/AGI/INT/VIT) + battle stats |
+| `/settings` | Audio, reduced motion, logout |
+| `/records` | Hunter registry log (`gameplay_events` + completed contracts) |
+| `/profile#operator-metrics` | Language operator metrics |
 | `/system` | Integrity + penalties |
 | `/profile` | Hunter dossier menu |
 | `/dashboard` | Redirect → `/home` |

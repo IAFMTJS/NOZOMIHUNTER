@@ -14,5 +14,7 @@ Canonical copy for UI and system messages. Internal code names (e.g. `XPBar`) ma
 | New word list | Threat index / mission targets |
 | Submit (encounters) | Transmit |
 | Mission readiness (generic) | Operational readiness |
+| Strength / Agility / … (RPG) | Core stats on `/stats` |
+| Settings / Records | Registry settings / hunter records log |
 
 System lines stay English. Learner-facing Japanese still requires romaji per `rules/gameplay-rules.md`.

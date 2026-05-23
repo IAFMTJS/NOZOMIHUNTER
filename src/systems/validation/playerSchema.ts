@@ -15,12 +15,20 @@ const inventoryItemSchema = z.object({
   icon: z.string().optional(),
 })
 
+const rpgStatsSchema = z.object({
+  strength: z.number().int().min(0),
+  agility: z.number().int().min(0),
+  intelligence: z.number().int().min(0),
+  vitality: z.number().int().min(0),
+})
+
 export const PlayerSchema = z.object({
   id: z.string().uuid(),
   username: z.string().min(1),
   level: z.number().int().min(1),
   xp: z.number().int().min(0),
   rank: z.enum(["E", "D", "C", "B", "A", "S"]),
+  rpgStats: rpgStatsSchema.optional(),
   economy: economySchema.optional(),
   inventory: z.array(inventoryItemSchema).optional(),
   trackedQuestId: z.string().nullable().optional(),

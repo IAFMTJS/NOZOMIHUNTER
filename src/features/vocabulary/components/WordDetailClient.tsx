@@ -7,7 +7,10 @@ import { HunterPage } from "@/components/layout/HunterPage"
 import { HunterPageBack } from "@/components/layout/HunterPageBack"
 import { Button } from "@/components/ui/Button"
 import { JMDICT_CURATED } from "@/data/jmdictCurated"
-import { loadWordMastery } from "@/services/supabase/vocabularyRepository"
+import {
+  loadWordMastery,
+  markWordAsLearned,
+} from "@/services/supabase/vocabularyRepository"
 import { resolveVocabularyThreat, threatDisplayLabel } from "@/systems/vocabulary/vocabularyThreatSystem"
 import { BREW_CONFIG } from "@/config/brewConfig"
 
@@ -20,6 +23,7 @@ export function WordDetailClient({ entSeq }: WordDetailClientProps) {
   const entry = JMDICT_CURATED.find((e) => e.entSeq === entSeq)
   const [mastery, setMastery] = useState(0)
   const [tab, setTab] = useState<"MEANING" | "USAGE">("MEANING")
+  const [marking, setMarking] = useState(false)
 
   useEffect(() => {
     if (!user?.id) return
@@ -78,12 +82,32 @@ export function WordDetailClient({ entSeq }: WordDetailClientProps) {
           Mastery: {mastery}% · {learned ? "Indexed as learned" : "Use Brew on the threat index to learn new words"}
         </p>
 
-        {!learned && (
-          <Link href="/vocabulary">
-            <Button variant="primary" size="md" className="w-full !py-3">
-              Brew from threat index
+        {!learned && user?.id && (
+          <>
+            <Button
+              variant="primary"
+              size="md"
+              className="w-full !py-3"
+              disabled={marking}
+              onClick={() => {
+                setMarking(true)
+                void markWordAsLearned(
+                  user.id,
+                  String(entSeq),
+                  BREW_CONFIG.LEARNED_MASTERY_THRESHOLD
+                )
+                  .then(() => setMastery(BREW_CONFIG.LEARNED_MASTERY_THRESHOLD))
+                  .finally(() => setMarking(false))
+              }}
+            >
+              {marking ? "Indexing…" : "Mark as learned"}
             </Button>
-          </Link>
+            <Link href="/vocabulary" className="block">
+              <Button variant="ghost" size="md" className="mt-2 w-full !py-3">
+                Brew from threat index
+              </Button>
+            </Link>
+          </>
         )}
       </div>
     </HunterPage>

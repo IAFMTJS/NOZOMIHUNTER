@@ -32,6 +32,8 @@
   --duration-atmosphere: 600ms;
   /* Persistent bottom nav — used by .hunter-main and overlays */
   --hunter-nav-height: 3.75rem;
+  --listening-accent: #ff8c42;
+  --listening-glow: rgba(255, 140, 66, 0.2);
 }
 
 @theme inline {
@@ -363,4 +365,22 @@ body {
 
 .nozomi-readiness-critical .nozomi-embedded-accent {
   border-color: rgba(255, 77, 109, 0.35);
+}
+
+.nozomi-reduced-motion *,
+.nozomi-reduced-motion *::before,
+.nozomi-reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+.nozomi-listening-focus {
+  --accent: var(--listening-accent);
+  --accent-bright: #ffb070;
+  --glow-accent: var(--listening-glow);
+}
+
+.nozomi-listening-mic {
+  filter: drop-shadow(0 0 24px var(--listening-glow));
 }

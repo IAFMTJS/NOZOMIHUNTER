@@ -241,6 +241,7 @@ export function QuestCard({
           maxWrongAttempts={maxWrongAttempts}
           maxReplays={maxListeningReplays}
           signalDegraded={signalDegraded}
+          focusMode
           onSubmit={handleListening}
           onAbandon={onAbandon}
           flashClassName={flashClass}

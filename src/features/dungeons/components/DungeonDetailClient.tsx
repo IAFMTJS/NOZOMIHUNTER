@@ -5,6 +5,9 @@ import { useHunterSession } from "@/features/hunter/context/HunterSessionContext
 import { HunterPage } from "@/components/layout/HunterPage"
 import { HunterPageBack } from "@/components/layout/HunterPageBack"
 import { Button } from "@/components/ui/Button"
+import { HeroBanner } from "@/components/ui/screen/HeroBanner"
+import { RewardRow } from "@/components/ui/screen/RewardRow"
+import { rankFromLevel } from "@/systems/progression/rankFromLevel"
 import { getDungeonDefinition } from "@/config/dungeonConfig"
 import { canStartDungeon } from "@/systems/dungeons/dungeonAccess"
 import { computeHunterPower } from "@/systems/power/hunterPowerSystem"
@@ -38,7 +41,10 @@ export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
     <HunterPage>
       <HunterPageBack href="/dungeons" label="Sectors" />
       <div className="space-y-5">
-        <div className="h-40 rounded-2xl bg-gradient-to-br from-[var(--accent)]/20 to-black/70" />
+        <HeroBanner
+          title={def.name}
+          rankLabel={rankFromLevel(def.minLevel)}
+        />
         <h1 className="font-display text-2xl font-semibold">{def.name}</h1>
         <p className="text-sm text-[var(--muted)]">{def.description}</p>
 
@@ -50,9 +56,13 @@ export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
             {def.encounterPlan.map((e) => (
               <span
                 key={e.id}
-                className="flex h-12 w-12 items-center justify-center rounded-lg bg-black/40 text-[10px] uppercase text-[var(--muted)]"
+                className="flex h-12 w-12 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-black/50"
+                title={e.type}
               >
-                {e.type.slice(0, 4)}
+                <svg viewBox="0 0 24 24" className="h-8 w-8 text-[var(--accent)]/70" aria-hidden>
+                  <ellipse cx="12" cy="14" rx="6" ry="8" fill="currentColor" opacity="0.35" />
+                  <circle cx="12" cy="8" r="4" fill="currentColor" opacity="0.5" />
+                </svg>
               </span>
             ))}
           </div>
@@ -67,21 +77,34 @@ export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
           <p className="mb-2 text-xs uppercase tracking-widest text-[var(--muted)]">
             Loot preview
           </p>
-          <ul className="space-y-1 text-sm text-[var(--foreground)]">
-            <li>{lootPreview.xp} XP</li>
-            {lootPreview.credits != null && lootPreview.credits > 0 && (
-              <li>{lootPreview.credits} credits</li>
-            )}
-            {(lootPreview.items ?? []).map((item, i) => {
-              const key = typeof item === "string" ? item : item.itemKey
-              const qty = typeof item === "string" ? 1 : item.quantity
-              return (
-                <li key={`${key}-${i}`}>
-                  {qty}× {key.replace(/-/g, " ")}
-                </li>
-              )
-            })}
-          </ul>
+          <RewardRow
+            items={[
+              {
+                key: "xp",
+                label: `${lootPreview.xp} XP`,
+                tone: "xp",
+              },
+              ...(lootPreview.credits != null && lootPreview.credits > 0
+                ? [
+                    {
+                      key: "credits",
+                      label: `${lootPreview.credits} credits`,
+                      tone: "credits" as const,
+                    },
+                  ]
+                : []),
+              ...(lootPreview.items ?? []).map((item, i) => {
+                const key = typeof item === "string" ? item : item.itemKey
+                const qty = typeof item === "string" ? 1 : item.quantity
+                return {
+                  key: `${key}-${i}`,
+                  label: key.replace(/-/g, " "),
+                  quantity: qty,
+                  tone: "item" as const,
+                }
+              }),
+            ]}
+          />
         </section>
 
         <Button

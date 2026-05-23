@@ -3,7 +3,8 @@ import type { PendingRewardBundleContract } from "@/contracts/economy-contract"
 import type { HunterRank } from "@/contracts/player-contract"
 import type { PlayerProgressionContract } from "@/contracts/player-contract"
 import type { PlayerPenaltyContract } from "@/contracts/player-contract"
-import { loadPlayer } from "@/services/supabase/playerRepository"
+import { loadPlayer, savePlayer } from "@/services/supabase/playerRepository"
+import { dedupeActiveQuests } from "@/systems/quests/questListUtils"
 import type { GuardedQuestCompletionResult } from "@/services/supabase/progressionRepository"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { eventBus } from "@/systems/events/eventBus"
@@ -65,6 +66,18 @@ export async function applyActivityCompletion(
 
   emitUnlockGrants(input.userId, input.newUnlocks)
 
+  if (leveledUp) {
+    const afterLevel = usePlayerStore.getState().player
+    const quests = usePlayerStore.getState().activeQuests
+    if (afterLevel) {
+      try {
+        await savePlayer(afterLevel, dedupeActiveQuests(quests))
+      } catch {
+        /* migration pending */
+      }
+    }
+  }
+
   const pending = await syncRewardStateFromServer(input.userId, input.server)
 
   const activity = applyPlayerActivityRecord(usePlayerStore.getState().player!)
@@ -104,6 +117,7 @@ export async function syncRewardStateFromServer(
     economy: fresh.player.economy,
     inventory: fresh.player.inventory,
     pendingRewards: pending,
+    rpgStats: player.rpgStats,
   })
 
   if (pending && !pending.claimed) {

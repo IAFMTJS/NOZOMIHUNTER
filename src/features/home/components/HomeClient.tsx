@@ -13,7 +13,7 @@ import { ReadinessSummary } from "@/components/hunter/ReadinessSummary"
 import { StatusChip } from "@/components/ui/StatusChip"
 import { xpProgressInCurrentLevel } from "@/systems/progression/levelSystem"
 import { selectSystemMessage, systemMessageSubline } from "@/systems/messaging/systemMessagingSystem"
-import { getTrackedQuest } from "@/systems/quests/missionTrackingSystem"
+import { getTrackedQuest } from "@/systems/quests/contractTrackingSystem"
 import { SYNCHRONIZATION_CONFIG } from "@/config/synchronizationConfig"
 
 export function HomeClient() {
@@ -73,7 +73,10 @@ export function HomeClient() {
         <SynchronizationStatus synchronization={player.synchronization} />
         {nextMilestone && (
           <p className="mt-2 text-xs text-[var(--muted)]">
-            Next discipline cache at {nextMilestone.days}d sync — maintain chain.
+            Next discipline cache in{" "}
+            {Math.max(0, nextMilestone.days - player.synchronization.chainDays)} day
+            {nextMilestone.days - player.synchronization.chainDays === 1 ? "" : "s"} (
+            {nextMilestone.days}d sync target) — maintain chain.
           </p>
         )}
       </div>

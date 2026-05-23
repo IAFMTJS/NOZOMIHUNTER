@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.2.0 (unreleased) — reference parity
+
+- **RPG stats** — `RpgStatsContract`, `rpgStatsSystem`, migration `010_rpg_stats.sql`, `/stats` page, power integration
+- **Routes** — `/settings`, `/records`; `/stats` restored (language metrics remain on `/profile#operator-metrics`)
+- **UI kit** — `HeroBanner`, `RankChip`, `StatBar`, `ItemTile`, `RewardRow`, `SystemCrest`, `CollapsibleSection`, `ListeningFocusShell`
+- **Screens** — visual pass on contracts, dungeons (incl. Abyss Core), preparation, vocabulary (mark learned), inventory (manage mode), system crest, reward overlay
+- **Systems** — `contractCatalogSystem`, `contractTrackingSystem`, `recordsPresentationSystem`, `recordsRepository`
+- **Listening** — focus mode with orange accent and tap-to-stop
+- Docs: `flows/rpg-stats-flow.md`, reference map and release checklist updates
+
 ## v1.1.0 (unreleased) — architecture remediation
 
 - **Dead XP path removed** — `questOrchestrator.completeQuest` and client `applyQuestReward`; guarded RPC only
