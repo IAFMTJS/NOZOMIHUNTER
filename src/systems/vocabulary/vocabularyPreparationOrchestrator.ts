@@ -88,7 +88,11 @@ export function buildVocabularyPreparation(
   const preparationScore =
     readiness?.preparationScore ?? briefing.preparationScore
 
-  if (playerId && displayVocabulary.length > 0) {
+  if (
+    playerId &&
+    displayVocabulary.length > 0 &&
+    !quest.vocabularyPreparation
+  ) {
     eventBus.emit(GAME_EVENTS.VOCABULARY_PREPARATION_READY, {
       playerId,
       questId: quest.id,

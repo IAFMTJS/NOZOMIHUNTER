@@ -105,7 +105,9 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (user?.id) void quest.hydrate()
-  }, [user?.id, quest])
+    // Hydrate once per signed-in user — quest hook returns a new object each render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id])
 
   useEffect(() => {
     if (player) syncCorruptionAudio(player.penalties.corruption)
