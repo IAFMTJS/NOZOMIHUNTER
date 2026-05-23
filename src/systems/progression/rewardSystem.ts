@@ -1,10 +1,13 @@
-import type { QuestRewardContract } from "@/contracts/quest-contract"
+import type {
+  QuestRewardContract,
+  QuestRewardItemContract,
+} from "@/contracts/quest-contract"
 import { clampXpReward } from "./xpSystem"
 
 export interface QuestRewardPayload {
   xp: number
   credits?: number
-  items?: string[]
+  items?: (string | QuestRewardItemContract)[]
   unlocks?: string[]
 }
 

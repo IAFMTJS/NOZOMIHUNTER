@@ -86,30 +86,30 @@ export function DungeonRunner({
   const encounterBody = (
     <>
       {state === "PREPARATION" && (
-        <div className="flex flex-col gap-3">
-          <p className="text-sm">
-            The corridor is live. Deploy when ready — reckless failures stack
-            corruption fast.
+        <div className="nozomi-embedded flex flex-col gap-3 rounded-[var(--radius-panel)] p-4">
+          <p className="text-sm text-[var(--muted)]">
+            Corridor synchronized. Deploy into the sector grid when operational
+            readiness is acceptable — failures stack corruption fast.
           </p>
           <Button
             disabled={disabled}
             onClick={() => wrap(onDeploy, "Deployed into sector grid.")}
           >
-            Deploy
+            Deploy to sector
           </Button>
         </div>
       )}
 
       {state === "EXPLORATION" && (
-        <div className="flex flex-col gap-3">
+        <div className="nozomi-embedded flex flex-col gap-3 rounded-[var(--radius-panel)] p-4">
           <p className="text-sm text-[var(--muted)]">
-            Next sector awaits. Enter when your focus is sharp.
+            Next breach point active. Engage when your channel is clear.
           </p>
           <Button
             disabled={disabled}
             onClick={() => wrap(onEnterSector, "Sector engaged.")}
           >
-            Enter sector
+            Breach sector
           </Button>
         </div>
       )}
@@ -212,26 +212,28 @@ export function DungeonRunner({
   )
 
   return (
-    <Panel as="article" tone="accent">
-      <div className="mb-2 flex items-start justify-between gap-2">
-        <h3 className="font-display text-lg font-semibold text-[var(--foreground)]">
-          {quest.title}
-        </h3>
-        <StatusChip
-          label={state.replace(/_/g, " ")}
-          tone={state === "BOSS" ? "danger" : "accent"}
-        />
+    <Panel as="article" tone={state === "BOSS" ? "boss" : "default"}>
+      <div className="mb-4 flex flex-col gap-3">
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="font-display text-lg font-semibold text-[var(--foreground)]">
+            {quest.title}
+          </h3>
+          <StatusChip
+            label={state.replace(/_/g, " ")}
+            tone={state === "BOSS" ? "danger" : "neutral"}
+          />
+        </div>
+        <p className="font-display text-sm leading-relaxed text-[var(--muted)]">
+          {getDungeonBriefing(quest)}
+        </p>
       </div>
 
-      <p className="mb-2 font-display text-sm text-[var(--accent-bright)]">
-        {getDungeonBriefing(quest)}
-      </p>
+      <div className="mb-8 flex flex-col gap-6">
+        <DungeonPhaseStepper machineState={state} />
+        <DungeonCorridorRail sectors={corridorSectors} />
+      </div>
 
-      <DungeonPhaseStepper machineState={state} />
-
-      <DungeonCorridorRail sectors={corridorSectors} />
-
-      <p className="mb-4 text-xs text-[var(--muted)]">
+      <p className="mb-6 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
         Sectors {sectorsDone}/{sectorTotal}
         {objective
           ? ` · Progress ${objective.currentProgress}/${objective.requiredProgress}`

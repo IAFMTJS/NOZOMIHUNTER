@@ -7,6 +7,7 @@ type PanelTone =
   | "inset"
   | "corruption"
   | "boss"
+  | "reward"
 
 interface PanelProps extends HTMLAttributes<HTMLElement> {
   as?: "div" | "article" | "section" | "aside"
@@ -15,14 +16,16 @@ interface PanelProps extends HTMLAttributes<HTMLElement> {
 }
 
 const TONE_CLASS: Record<PanelTone, string> = {
-  default: "border-[var(--border-subtle)] bg-[var(--surface-1)]",
-  accent:
-    "border-[var(--border-accent)] bg-[var(--accent-dim)] shadow-[0_0_32px_var(--glow-accent)]",
-  danger: "border-[var(--danger)]/50 bg-[var(--danger)]/10",
-  inset: "border-[var(--border-subtle)] bg-[var(--surface-2)]",
+  default: "nozomi-embedded border-transparent",
+  accent: "nozomi-embedded-accent border-transparent",
+  danger:
+    "border-transparent bg-[var(--danger)]/8 shadow-[inset_3px_0_0_rgba(255,77,109,0.5)]",
+  inset: "nozomi-embedded border-transparent opacity-90",
   corruption:
-    "border-[var(--corruption)]/45 bg-[var(--corruption)]/10 shadow-[0_0_24px_rgba(154,107,171,0.12)]",
-  boss: "border-[var(--danger)]/55 bg-[var(--danger)]/8 shadow-[0_0_32px_rgba(212,106,122,0.1)]",
+    "border-transparent bg-[var(--corruption)]/10 shadow-[inset_3px_0_0_rgba(168,85,247,0.45),0_0_24px_rgba(168,85,247,0.1)]",
+  boss: "border-transparent bg-[var(--danger)]/8 shadow-[inset_3px_0_0_rgba(255,77,109,0.55),0_0_28px_rgba(255,77,109,0.08)]",
+  reward:
+    "border-transparent bg-[var(--reward)]/8 shadow-[inset_3px_0_0_rgba(255,184,77,0.45),0_0_24px_var(--glow-reward)]",
 }
 
 export function Panel({
@@ -34,7 +37,7 @@ export function Panel({
 }: PanelProps) {
   return (
     <Tag
-      className={`nozomi-encounter-panel rounded-[var(--radius-panel)] border p-4 transition-colors duration-[var(--duration-feedback)] ${TONE_CLASS[tone]} ${className}`}
+      className={`nozomi-encounter-panel rounded-[var(--radius-panel)] p-4 transition-[box-shadow,opacity] duration-[var(--duration-feedback)] ${TONE_CLASS[tone]} ${className}`}
       {...props}
     >
       {children}

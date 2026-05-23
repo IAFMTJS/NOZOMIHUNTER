@@ -42,6 +42,21 @@ const REGISTRY: Record<string, UnlockRegistryEntry> = {
     description: "Deep storage sector — unstable signals and archive warden.",
     category: "dungeon",
   },
+  "title:discipline-3": {
+    label: "Discipline III",
+    description: "Three-day synchronization chain maintained.",
+    category: "title",
+  },
+  "title:discipline-7": {
+    label: "Discipline VII",
+    description: "Seven-day hunter continuity acknowledged.",
+    category: "title",
+  },
+  "title:discipline-14": {
+    label: "Discipline XIV",
+    description: "Fourteen-day synchronization — registry commendation.",
+    category: "title",
+  },
 }
 
 function formatFallbackKey(key: string): UnlockRegistryEntry {

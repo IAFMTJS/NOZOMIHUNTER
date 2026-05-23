@@ -62,11 +62,15 @@ export interface DungeonBossContract {
   grammarDifficulty: number
 }
 
+export interface DungeonRewardItemContract {
+  itemKey: string
+  quantity: number
+}
+
 export interface DungeonRewardContract {
   xp: number
-
-  items?: string[]
-
+  credits?: number
+  items?: (string | DungeonRewardItemContract)[]
   unlocks?: string[]
 }
 
@@ -83,6 +87,8 @@ export interface DungeonRunContract {
   activeType: EncounterType | "BOSS" | null
   encounterFailures: number
   bossPhase: number
+  /** Stamina deducted on enter — refunded on abort when set. */
+  staminaSpent?: number
 }
 
 export type DungeonMachineState =

@@ -77,7 +77,7 @@ export function SpeechEncounter({
   if (!encounter?.phrases.length) {
     return (
       <p className="mt-3 text-sm text-[var(--danger)]">
-        Speech encounter data missing. Refresh the dashboard.
+        Speech encounter data missing. Re-link hunter status.
       </p>
     )
   }
@@ -112,7 +112,8 @@ export function SpeechEncounter({
       {phrase ? (
         <>
           <p className="mb-1 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-            Transmit {encounter.currentIndex + 1} / {encounter.phrases.length}
+            Voice channel · Transmit {encounter.currentIndex + 1} /{" "}
+            {encounter.phrases.length}
           </p>
           <div className="mb-6 rounded-lg border border-[var(--border-accent)] bg-[var(--accent-dim)] px-4 py-6 text-center">
             <JapaneseText
@@ -172,10 +173,10 @@ export function SpeechEncounter({
               }`}
             >
               {speech.recording
-                ? "Stop & send"
+                ? "Stop & transmit"
                 : speech.processing
                   ? "Processing…"
-                  : "Record (mic)"}
+                  : "Transmit (voice)"}
             </Button>
 
             {(speech.recording || speech.micReady) && speech.supported && (

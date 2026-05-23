@@ -4,29 +4,34 @@
   --font-display-family: "Barlow Condensed", system-ui, sans-serif;
   --font-body-family: "DM Sans", system-ui, sans-serif;
   --font-japanese-family: "Noto Sans JP", "Hiragino Sans", sans-serif;
-  --background: #0a0c10;
-  --foreground: #e4e9f0;
-  --accent: #7eb0d4;
-  --accent-bright: #a8cce8;
-  --accent-dim: rgba(126, 176, 212, 0.1);
-  --accent-on: #0a0c10;
-  --danger: #d46a7a;
-  --warning: #c9a66b;
-  --success: #5ba88a;
-  --corruption: #9a6bab;
-  --muted: #7a8494;
-  --surface-0: #0a0c10;
-  --surface-header: #11151c;
-  --surface-1: rgba(255, 255, 255, 0.035);
-  --surface-2: rgba(0, 0, 0, 0.4);
-  --border-subtle: rgba(148, 163, 184, 0.14);
-  --border-accent: rgba(126, 176, 212, 0.35);
-  --glow-accent: rgba(126, 176, 212, 0.07);
-  --radius-panel: 0.5rem;
+  --background: #05070b;
+  --foreground: #f3f5ff;
+  --accent: #7a5cff;
+  --accent-bright: #9b7dff;
+  --accent-dim: rgba(122, 92, 255, 0.1);
+  --accent-on: #05070b;
+  --danger: #ff4d6d;
+  --warning: #ffb84d;
+  --reward: #ffb84d;
+  --success: #58d68d;
+  --corruption: #a855f7;
+  --muted: #78809a;
+  --surface: #0b1020;
+  --surface-0: #05070b;
+  --surface-header: rgba(11, 16, 32, 0.88);
+  --surface-1: rgba(11, 16, 32, 0.72);
+  --surface-2: rgba(0, 0, 0, 0.45);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-accent: rgba(122, 92, 255, 0.32);
+  --glow-accent: rgba(122, 92, 255, 0.14);
+  --glow-reward: rgba(255, 184, 77, 0.12);
+  --radius-panel: 0.375rem;
   --radius-chip: 0.25rem;
   --ease-game: cubic-bezier(0.22, 1, 0.36, 1);
   --duration-feedback: 200ms;
   --duration-atmosphere: 600ms;
+  /* Persistent bottom nav — used by .hunter-main and overlays */
+  --hunter-nav-height: 3.75rem;
 }
 
 @theme inline {
@@ -56,6 +61,22 @@ body {
   padding-top: max(0px, env(safe-area-inset-top));
 }
 
+.hunter-main {
+  padding-bottom: calc(
+    var(--hunter-nav-height) + max(1rem, env(safe-area-inset-bottom)) + 0.5rem
+  );
+}
+
+.hunter-overlay-above-nav {
+  bottom: calc(var(--hunter-nav-height) + max(0px, env(safe-area-inset-bottom)));
+}
+
+.hunter-fab-above-nav {
+  bottom: calc(
+    var(--hunter-nav-height) + max(1rem, env(safe-area-inset-bottom)) + 0.25rem
+  );
+}
+
 .font-display {
   font-family: var(--font-display-family), system-ui, sans-serif;
 }
@@ -64,11 +85,38 @@ body {
   font-family: var(--font-japanese-family), "Hiragino Sans", sans-serif;
 }
 
-/* Entry screens only — cool moonlight, no gold wash */
+/* Embedded surfaces — emerge from shadow, not card chrome */
+.nozomi-embedded {
+  background: linear-gradient(
+    165deg,
+    rgba(11, 16, 32, 0.85) 0%,
+    rgba(5, 7, 11, 0.4) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.nozomi-embedded-accent {
+  background: linear-gradient(
+    165deg,
+    rgba(122, 92, 255, 0.12) 0%,
+    rgba(11, 16, 32, 0.75) 55%,
+    rgba(5, 7, 11, 0.35) 100%
+  );
+  box-shadow:
+    inset 3px 0 0 rgba(122, 92, 255, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    0 0 32px var(--glow-accent);
+}
+
+/* Entry — purple environmental light */
 .nozomi-atmosphere {
   background:
-    radial-gradient(ellipse 70% 45% at 50% 0%, var(--glow-accent), transparent),
-    radial-gradient(ellipse 50% 35% at 0% 100%, rgba(90, 120, 160, 0.05), transparent),
+    radial-gradient(ellipse 75% 50% at 50% -5%, var(--glow-accent), transparent 65%),
+    radial-gradient(ellipse 45% 35% at 0% 100%, rgba(122, 92, 255, 0.06), transparent),
+    radial-gradient(ellipse 35% 30% at 100% 80%, rgba(11, 16, 32, 0.9), transparent),
     var(--background);
 }
 
@@ -81,8 +129,8 @@ body {
     0deg,
     transparent,
     transparent 2px,
-    rgba(0, 0, 0, 0.025) 2px,
-    rgba(0, 0, 0, 0.025) 4px
+    rgba(0, 0, 0, 0.028) 2px,
+    rgba(0, 0, 0, 0.028) 4px
   );
   z-index: 0;
 }
@@ -94,17 +142,17 @@ body {
   inset: 0;
   background: radial-gradient(
     ellipse at center,
-    transparent 45%,
-    rgba(0, 0, 0, 0.4) 100%
+    transparent 42%,
+    rgba(0, 0, 0, 0.52) 100%
   );
   z-index: 0;
 }
 
-/* Lobby: softer atmosphere for contract board */
+/* Lobby: command terminal — restrained glow */
 .nozomi-atmosphere-lobby {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, var(--glow-accent), transparent),
-    radial-gradient(ellipse 40% 30% at 100% 100%, rgba(90, 120, 160, 0.04), transparent),
+    radial-gradient(ellipse 90% 55% at 50% -15%, var(--glow-accent), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(122, 92, 255, 0.05), transparent),
     var(--background);
 }
 
@@ -117,8 +165,8 @@ body {
     0deg,
     transparent,
     transparent 3px,
-    rgba(0, 0, 0, 0.012) 3px,
-    rgba(0, 0, 0, 0.012) 6px
+    rgba(0, 0, 0, 0.014) 3px,
+    rgba(0, 0, 0, 0.014) 6px
   );
   z-index: 0;
 }
@@ -126,23 +174,25 @@ body {
 .nozomi-vignette-light::before {
   background: radial-gradient(
     ellipse at center,
-    transparent 55%,
-    rgba(0, 0, 0, 0.28) 100%
+    transparent 50%,
+    rgba(0, 0, 0, 0.38) 100%
   );
 }
 
 /* Encounter focus — hunt mode */
 .nozomi-encounter-focus {
   background:
-    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(126, 176, 212, 0.08), transparent),
+    radial-gradient(ellipse 65% 45% at 50% 0%, rgba(122, 92, 255, 0.1), transparent),
     var(--surface-0);
 }
 
 .nozomi-contract-ready {
-  box-shadow: 0 0 0 1px var(--border-accent), 0 0 24px var(--glow-accent);
+  box-shadow:
+    inset 3px 0 0 rgba(122, 92, 255, 0.5),
+    0 0 28px var(--glow-accent);
 }
 
-/* Penalty atmosphere (failure-design.md) */
+/* Penalty atmosphere */
 .nozomi-corruption-low .nozomi-scanlines::after,
 .nozomi-corruption-low .nozomi-scanlines-light::after {
   opacity: 1.4;
@@ -150,13 +200,13 @@ body {
     0deg,
     transparent,
     transparent 2px,
-    rgba(154, 107, 171, 0.04) 2px,
-    rgba(154, 107, 171, 0.04) 4px
+    rgba(168, 85, 247, 0.045) 2px,
+    rgba(168, 85, 247, 0.045) 4px
   );
 }
 
 .nozomi-corruption-high {
-  filter: hue-rotate(-4deg);
+  filter: hue-rotate(-6deg);
 }
 
 .nozomi-corruption-high .nozomi-encounter-panel {
@@ -183,7 +233,7 @@ body {
 
 @keyframes nozomi-feedback-flash-success {
   0% {
-    box-shadow: 0 0 0 0 rgba(126, 176, 212, 0.5);
+    box-shadow: 0 0 0 0 rgba(122, 92, 255, 0.45);
   }
   100% {
     box-shadow: 0 0 0 12px transparent;
@@ -192,7 +242,7 @@ body {
 
 @keyframes nozomi-feedback-flash-danger {
   0% {
-    box-shadow: 0 0 0 0 rgba(212, 106, 122, 0.45);
+    box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.4);
   }
   100% {
     box-shadow: 0 0 0 10px transparent;
@@ -205,4 +255,112 @@ body {
 
 .nozomi-flash-danger {
   animation: nozomi-feedback-flash-danger var(--duration-feedback) var(--ease-game);
+}
+
+/* Screen moods (visual-direction-v2) */
+.nozomi-screen-prep {
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(122, 92, 255, 0.08), transparent),
+    transparent;
+}
+
+.nozomi-screen-hunt {
+  background:
+    radial-gradient(ellipse 80% 45% at 50% 0%, rgba(122, 92, 255, 0.06), transparent),
+    transparent;
+}
+
+.nozomi-screen-dispatch {
+  background:
+    radial-gradient(ellipse 60% 30% at 0% 0%, rgba(122, 92, 255, 0.05), transparent),
+    transparent;
+}
+
+.nozomi-screen-sector {
+  background:
+    radial-gradient(ellipse 70% 50% at 100% 0%, rgba(255, 77, 109, 0.04), transparent),
+    radial-gradient(ellipse 50% 40% at 0% 80%, rgba(122, 92, 255, 0.06), transparent),
+    transparent;
+}
+
+.nozomi-sector-map {
+  position: relative;
+}
+
+.nozomi-screen-extraction {
+  background:
+    radial-gradient(ellipse 60% 35% at 50% 0%, var(--glow-reward), transparent 70%),
+    transparent;
+}
+
+.nozomi-signal-well {
+  background: linear-gradient(
+    180deg,
+    rgba(11, 16, 32, 0.9) 0%,
+    rgba(5, 7, 11, 0.55) 100%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* Hunter identity presentation */
+.nozomi-hunter-portrait-slot {
+  box-shadow:
+    inset 0 0 0 1px var(--border-subtle),
+    0 0 24px var(--glow-accent);
+}
+
+.nozomi-portrait-corrupt-low {
+  filter: hue-rotate(12deg) saturate(1.15);
+}
+
+.nozomi-portrait-corrupt {
+  filter: hue-rotate(24deg) saturate(1.35);
+  animation: nozomi-portrait-glitch 4s ease-in-out infinite;
+}
+
+@keyframes nozomi-portrait-glitch {
+  0%,
+  96%,
+  100% {
+    transform: translate(0);
+  }
+  97% {
+    transform: translate(-1px, 0);
+  }
+}
+
+.nozomi-rank-d .nozomi-hunter-portrait-slot,
+.nozomi-rank-d.nozomi-hunter-portrait-slot {
+  box-shadow:
+    inset 0 0 0 1px var(--border-accent),
+    0 0 20px var(--glow-accent);
+}
+
+.nozomi-rank-s .nozomi-hunter-portrait-slot,
+.nozomi-rank-s.nozomi-hunter-portrait-slot {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 184, 77, 0.35),
+    0 0 28px var(--glow-reward);
+}
+
+.nozomi-sync-at-risk {
+  animation: nozomi-sync-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes nozomi-sync-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.88;
+  }
+}
+
+.nozomi-readiness-unstable .nozomi-embedded-accent {
+  border-color: rgba(255, 184, 77, 0.25);
+}
+
+.nozomi-readiness-critical .nozomi-embedded-accent {
+  border-color: rgba(255, 77, 109, 0.35);
 }

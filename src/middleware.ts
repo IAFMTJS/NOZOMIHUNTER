@@ -2,7 +2,20 @@ import { type NextRequest, NextResponse } from "next/server"
 import { updateSession } from "@/lib/supabase/middleware"
 import { isSupabaseConfigured } from "@/lib/supabase/env"
 
-const protectedPaths = ["/dashboard"]
+const protectedPaths = [
+  "/dashboard",
+  "/home",
+  "/contracts",
+  "/missions",
+  "/dungeons",
+  "/prepare",
+  "/vocabulary",
+  "/inventory",
+  "/system",
+  "/profile",
+  "/stats",
+  "/achievements",
+]
 
 export async function middleware(request: NextRequest) {
   const { response, user } = await updateSession(request)

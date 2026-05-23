@@ -1,5 +1,5 @@
 import { logSystemEvent } from "@/systems/logger/logger"
-import { recordGameplayEvent } from "@/services/supabase/progressionRepository"
+import { persistGameplayEvent } from "@/services/supabase/analyticsRepository"
 import type { GameEventType } from "@/systems/events/eventTypes"
 
 interface AnalyticsEntry {
@@ -27,7 +27,7 @@ export function recordAnalyticsEvent(
   buffer.push(entry)
 
   logSystemEvent("analytics", event, payload)
-  void recordGameplayEvent(event, payload)
+  void persistGameplayEvent(event, payload)
 }
 
 export function getRecentAnalytics(limit = 50): AnalyticsEntry[] {

@@ -4,7 +4,9 @@ import type {
 } from "@/contracts/quest-contract"
 
 export function isQuestComplete(quest: QuestContract): boolean {
-  return quest.objectives.every((o) => o.completed)
+  return quest.objectives
+    .filter((o) => !o.hidden)
+    .every((o) => o.completed)
 }
 
 export function advanceObjective(
@@ -27,7 +29,7 @@ export function advanceObjective(
 }
 
 export function canCompleteQuest(quest: QuestContract): boolean {
-  return quest.objectives.every(
-    (o) => o.currentProgress >= o.requiredProgress
-  )
+  return quest.objectives
+    .filter((o) => !o.hidden)
+    .every((o) => o.currentProgress >= o.requiredProgress)
 }

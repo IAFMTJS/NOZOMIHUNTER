@@ -117,7 +117,7 @@ export function VocabularyEncounter({
                 disabled={disabled || submitting || !answer.trim()}
                 className="w-full sm:w-auto"
               >
-                {submitting ? "Scanning..." : "Confirm lock"}
+                {submitting ? "Transmitting…" : "Transmit"}
               </Button>
               <Button
                 variant="ghost"

@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import type { PlayerContract } from "@/contracts/player-contract"
 import type { QuestContract } from "@/contracts/quest-contract"
-import type { ProgressionState } from "@/systems/progression/progressionOrchestrator"
+import type { ProgressionState } from "@/systems/progression/progressionTypes"
 import type { HunterRank } from "@/contracts/player-contract"
 import { dedupeActiveQuests } from "@/systems/quests/questListUtils"
 

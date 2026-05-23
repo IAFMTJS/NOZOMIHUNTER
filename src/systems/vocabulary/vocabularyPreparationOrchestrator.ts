@@ -1,8 +1,11 @@
+import type { PlayerContract } from "@/contracts/player-contract"
 import type { QuestContract } from "@/contracts/quest-contract"
 import type { QuestVocabularyPreparationContract } from "@/contracts/vocabulary-contract"
 import { getMasteryMap } from "@/systems/mastery/masterySystem"
+import { computeReadiness } from "@/systems/readiness/readinessSystem"
 import {
   generateVocabularyExplanationForWord,
+  threatContextFromQuest,
   type VocabularyExplanation,
 } from "./vocabularyExplanationSystem"
 import { generateQuestPreparationBriefing } from "./vocabularyPreparationSystem"
@@ -28,14 +31,21 @@ export function collectQuestVocabularyTargets(quest: QuestContract): string[] {
   return [...targets]
 }
 
-function buildTargetExplanations(targets: string[]): VocabularyExplanation[] {
-  return targets.map((wordId) => generateVocabularyExplanationForWord(wordId))
+function buildTargetExplanations(
+  targets: string[],
+  quest: QuestContract
+): VocabularyExplanation[] {
+  const ctx = threatContextFromQuest(quest)
+  return targets.map((wordId) =>
+    generateVocabularyExplanationForWord(wordId, ctx)
+  )
 }
 
 export function buildVocabularyPreparation(
   quest: QuestContract,
-  playerId?: string
+  options?: { playerId?: string; player?: PlayerContract }
 ): QuestVocabularyPreparationContract {
+  const playerId = options?.playerId
   const targets = collectQuestVocabularyTargets(quest)
 
   if (!targets.length) {
@@ -52,13 +62,14 @@ export function buildVocabularyPreparation(
     (wordId) => isUnknownForPreparation(masteryMap.get(wordId) ?? 0)
   )
 
+  const threatCtx = threatContextFromQuest(quest)
   const unknownExplanations = unknownWords.map((wordId) =>
-    generateVocabularyExplanationForWord(wordId)
+    generateVocabularyExplanationForWord(wordId, threatCtx)
   )
   const displayVocabulary = vocabularyForBriefingDisplay(
     unknownExplanations.length > 0
       ? unknownExplanations
-      : buildTargetExplanations(targets)
+      : buildTargetExplanations(targets, quest)
   )
 
   const scoreBasis = prioritizeCriticalVocabulary(unknownExplanations)
@@ -67,18 +78,28 @@ export function buildVocabularyPreparation(
     scoreBasis.length > 0 ? scoreBasis : unknownExplanations
   )
 
+  const readiness = options?.player
+    ? computeReadiness({
+        player: options.player,
+        vocabularyScore: briefing.preparationScore,
+        quest,
+      })
+    : null
+  const preparationScore =
+    readiness?.preparationScore ?? briefing.preparationScore
+
   if (playerId && displayVocabulary.length > 0) {
     eventBus.emit(GAME_EVENTS.VOCABULARY_PREPARATION_READY, {
       playerId,
       questId: quest.id,
       wordCount: displayVocabulary.length,
-      preparationScore: briefing.preparationScore,
+      preparationScore,
     })
   }
 
   return {
     questId: quest.id,
-    preparationScore: briefing.preparationScore,
+    preparationScore,
     newVocabulary: unknownExplanations,
     briefingDismissed: false,
   }
@@ -86,9 +107,9 @@ export function buildVocabularyPreparation(
 
 export function attachVocabularyPreparation(
   quest: QuestContract,
-  playerId?: string
+  options?: { playerId?: string; player?: PlayerContract }
 ): QuestContract {
-  const vocabularyPreparation = buildVocabularyPreparation(quest, playerId)
+  const vocabularyPreparation = buildVocabularyPreparation(quest, options)
   return { ...quest, vocabularyPreparation }
 }
 
@@ -112,7 +133,7 @@ export function getPreparationDisplayVocabulary(
     return vocabularyForBriefingDisplay(prep.newVocabulary)
   }
 
-  return vocabularyForBriefingDisplay(buildTargetExplanations(targets))
+  return vocabularyForBriefingDisplay(buildTargetExplanations(targets, quest))
 }
 
 export function hasActivePreparationPhase(quest: QuestContract): boolean {

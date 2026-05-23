@@ -1,5 +1,56 @@
 # Changelog
 
+## v1.1.0 (unreleased) — architecture remediation
+
+- **Dead XP path removed** — `questOrchestrator.completeQuest` and client `applyQuestReward`; guarded RPC only
+- **Unlock key** — `dashboard` → `home` (migration `008_unlock_home_key.sql`, hydrate normalize)
+- **Legacy shell removed** — `DashboardClient`, `HunterShell`, `HunterAppShell`
+- **Command node** — `features/hub/` with `HubMenuView`, `HubHuntView`, `HubDispatchView`, `HubSectorView`
+- **Routes** — `/contracts` (+ redirects from `/missions`); `/stats` → `/profile#operator-metrics`
+- **Session** — `useHunterReadiness`, readiness/forecast on `HunterSessionContext`
+- **Events** — `GAME_EVENTS` moved to `contracts/event-contract.ts`
+- **Encounters** — `encounterSubmitAdapter` shared by quest/dungeon actions
+- **Tests** — Vitest (`npm run test`) for validator, readiness, reward calc
+- **Copy** — terminology pass (dashboard/grid → hunter system language)
+- Docs: `compliance-audit-v1.1.md`, `release-checklist.md`, architecture/flow updates
+- **Compliance pass (7→10)** — shop (`purchase_item_guarded`, `/inventory` Loadout+Shop); equip loadout; prepare deploy gate; `markLearned` removed; server `apply_daily_stamina_guarded`; dungeon `staminaSpent` + abort refund; reward claim error handling; `achievementSystem` + `/achievements`; `completionService` in features layer; `npm run check:architecture`; migration `008_shop_and_guards.sql`
+
+## v1.0.0 (unreleased) — mockup shell integration
+
+- **Audit fixes** — `activityCompletionOrchestrator` (shared quest/dungeon completion + DB hydrate); migration `007_economy_fixes.sql` (stamina JSONB unlock, refund RPC, hidden-objective completion); safe dungeon enter order; `missionTrackingService`; daily stamina regen; quest credits/items/tiers; completed missions UI; dungeon loot preview; PWA `/home` cache; expanded Zod schemas
+- **Architecture docs** — `current-architecture.md`, `system-registry.md`, flows, and `supabase-setup.md` synced to v1.0 routes and economy layer
+- **Mobile shell** — `HunterShellLayout`, `HunterPage`, `BottomNav`, route group `(hunter)` with `/home`, `/missions`, `/dungeons`, `/inventory`, `/profile` (+ `/prepare`, `/vocabulary`, `/stats`, `/system`)
+- **Hunter session** — `HunterSessionProvider` + `useHunterSession`; `EncounterHost` for hunt/sector overlays
+- **Economy** — migration `006_economy_inventory.sql`: credits, stamina, brew tokens, inventory, tracked mission, guarded RPCs
+- **Systems** — `hunterPowerSystem`, `staminaSystem`, `inventorySystem`, `brewSystem`, `missionCatalogSystem`, `missionTrackingSystem`, `rewardClaimSystem`, `preparationChecklistSystem`
+- **Screens** — home, missions list/detail, dungeons list/detail, preparation ring, vocabulary + brew, inventory grid, stats, system status, `RewardClaimOverlay`
+- **Redirects** — `/dashboard` → `/home`; PWA `start_url` `/home`; auth callback → `/home`
+- Docs: [`docs/reference-mockup-integration.md`](docs/reference-mockup-integration.md), [`flows/navigation-flow.md`](flows/navigation-flow.md), [`flows/economy-flow.md`](flows/economy-flow.md)
+
+## v0.9.0 (unreleased)
+
+- **Portrait layers** — procedural silhouette, rank ring, corruption scanlines, sync-at-risk ring (`HunterPortrait`)
+- **Sector breach map** — `dungeonSectorMapSystem` + `SectorMapRail` replaces flat corridor list; readiness deploy advisory (confirm when under advisory)
+- **Threat metadata** — boss/sector-critical word ids in `vocabularyThreatMetadata.ts`
+- **Visual v2 hub screens** — `HubScreenFrame` + atmosphere classes for hunt / dispatch / sector
+- **Encounter copy** — Transmit / Deploy / Breach sector terminology alignment
+- **Hunter identity** — codename + registry ID (`hunterIdentitySystem`), dossier UI on command node and `/profile`
+- **Discipline synchronization** — chain tracking, at-risk/broken states, milestone titles (`title:discipline-*`); migration `005_hunter_identity_sync.sql`
+- **Operational readiness** — `readinessSystem` (penalties, listening, vocab prep); `ReadinessSummary` on hunter status
+- **Dungeon forecast** — `dungeonForecastSystem` + `NextGateForecast` (“next gate” / threat anticipation)
+- **System messaging** — `systemMessagingSystem` + `SystemMessageRail` on hunter status menu
+- **Vocabulary threat intel** — `vocabularyThreatSystem`; briefing shows threat tiers (not raw importance)
+- **Hunter presentation** — rank aura, corruption portrait, sync-at-risk (`hunterPresentationSystem` + CSS)
+- Docs: [`docs/terminology.md`](docs/terminology.md), gap analysis updated in [`docs/missing-systems-and-reference-analysis.md`](docs/missing-systems-and-reference-analysis.md)
+
+## v0.8.1 (unreleased)
+
+- **Visual direction v2** — purple tactical palette, embedded panels, vertical command node layout
+- [`docs/visual-direction-v2.md`](docs/visual-direction-v2.md) active spec; PWA theme `#05070b`
+- `Panel`: borderless embedded tones + `reward` for progression notices
+- `HunterShell` / `HomeTerminal` / `ContractHub` atmosphere and spacing pass
+- Screen passes: mission prep (vertical briefing), listening (signal well), extraction (reward tone), dungeon navigation, dashboard single-state overlays via `hubView`
+
 ## v0.8.0
 
 - Hunter profile (`/profile`): stats, penalties, unlock registry labels

@@ -1,6 +1,11 @@
 export interface ProfileRow {
   id: string
   username: string
+  hunter_codename: string | null
+  registry_id: string | null
+  last_active_date: string | null
+  sync_chain_days: number
+  tracked_quest_id: string | null
   created_at: string
   updated_at: string
 }
@@ -24,6 +29,11 @@ export interface ProgressionRow {
   unlocked_systems: string[]
   unlocked_dungeons: string[]
   titles: string[]
+  credits?: number
+  stamina?: number
+  stamina_max?: number
+  brew_tokens?: number
+  pending_rewards?: Record<string, unknown> | null
 }
 
 export interface PlayerPenaltiesRow {

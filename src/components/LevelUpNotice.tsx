@@ -20,8 +20,8 @@ export function LevelUpNotice({ level, onDismiss }: LevelUpNoticeProps) {
         transition={MOTION.panel}
         className="mb-6"
       >
-        <Panel tone="accent" role="status">
-          <p className="text-xs uppercase tracking-[0.2em] text-[var(--accent-bright)]">
+        <Panel tone="reward" role="status">
+          <p className="text-xs uppercase tracking-[0.2em] text-[var(--reward)]">
             Rank advancement
           </p>
           <p className="mt-1 font-display text-2xl font-bold text-[var(--foreground)]">

@@ -1,4 +1,3 @@
-import { submitVocabularyAnswer } from "@/systems/quests/vocabularyEncounterSystem"
 import { submitConversationMessage } from "@/systems/quests/conversationEncounterSystem"
 import {
   applySpeechAnalysis,
@@ -9,13 +8,16 @@ import {
   loadPlayerAiState,
   savePlayerAiState,
 } from "@/services/supabase/conversationRepository"
-import { upsertWordMastery } from "@/services/supabase/vocabularyRepository"
+import {
+  persistMasteryUpdate,
+  runVocabularySubmit,
+  runListeningSubmit,
+  maxWrongForPenalties,
+} from "@/features/encounters/encounterSubmitAdapter"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { updateUserQuest } from "@/services/supabase/playerRepository"
 import { failQuestForPlayer } from "./questLifecycle"
 import { persistQuestState } from "./questPersistence"
-import { submitListeningAnswer } from "@/systems/dungeons/listeningEncounterSystem"
-import { maxWrongAttemptsForPenalties } from "@/systems/penalties/penaltyGameplaySystem"
 
 export async function submitVocabularyAnswerForQuest(
   userId: string,
@@ -30,18 +32,10 @@ export async function submitVocabularyAnswerForQuest(
   const quest = store.activeQuests.find((q) => q.id === questId)
   if (!quest?.vocabularyEncounter || !store.player) return null
 
-  const maxWrong = maxWrongAttemptsForPenalties(store.player.penalties)
-  const result = submitVocabularyAnswer(quest, answer, userId, maxWrong)
+  const result = runVocabularySubmit(quest, answer, userId, store.player.penalties)
   store.updateQuest(result.quest)
   await updateUserQuest(userId, result.quest)
-
-  if (result.masteryUpdate) {
-    try {
-      await upsertWordMastery(userId, result.masteryUpdate)
-    } catch {
-      /* mastery persists on next successful save when DB available */
-    }
-  }
+  await persistMasteryUpdate(userId, result.masteryUpdate)
 
   if (result.encounterFailed) {
     await failQuestForPlayer(userId, questId)
@@ -146,8 +140,11 @@ export async function submitSpeechForQuest(
     throw e instanceof Error ? e : new Error("Speech analysis failed")
   }
 
-  const maxWrong = maxWrongAttemptsForPenalties(store.player.penalties)
-  const result = applySpeechAnalysis(quest, analysis, maxWrong)
+  const result = applySpeechAnalysis(
+    quest,
+    analysis,
+    maxWrongForPenalties(store.player.penalties)
+  )
   store.updateQuest(result.quest)
   await updateUserQuest(userId, result.quest)
 
@@ -185,8 +182,7 @@ export async function submitListeningAnswerForQuest(
   const quest = store.activeQuests.find((q) => q.id === questId)
   if (!quest?.listeningEncounter || !store.player) return null
 
-  const maxWrong = maxWrongAttemptsForPenalties(store.player.penalties)
-  const result = submitListeningAnswer(quest, answer, maxWrong)
+  const result = runListeningSubmit(quest, answer, store.player.penalties)
   store.updateQuest(result.quest)
   await updateUserQuest(userId, result.quest)
 

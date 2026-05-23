@@ -33,6 +33,11 @@ import {
   LISTENING_QUEST_VARIANTS,
 } from "@/config/listeningQuestConfig"
 import { createListeningEncounter } from "@/systems/dungeons/listeningEncounterSystem"
+import {
+  buildQuestRewards,
+  hiddenScoutObjective,
+} from "@/systems/quests/questRewardFactory"
+import { withNarrativeTier } from "@/systems/quests/missionCatalogSystem"
 
 function finalizeQuest(quest: QuestContract): QuestContract {
   return attachVocabularyPreparation(quest)
@@ -107,12 +112,10 @@ function buildConversationQuest(
     difficulty: playerLevel < 5 ? "EASY" : playerLevel < 15 ? "NORMAL" : "HARD",
 
     rewards: {
-
-      xp: playerLevel < 5 ? 60 : playerLevel < 15 ? 75 : 90,
-
+      ...buildQuestRewards(playerLevel, "MAIN"),
       unlocks: ["system:conversation"],
-
     },
+    narrativeTier: "MAIN",
 
     penalties: PENALTY_CONFIG.DEFAULT_QUEST_FAILURE,
 
@@ -168,10 +171,9 @@ export function generateVocabularyQuest(playerLevel: number): QuestContract {
 
       difficulty: playerLevel < 5 ? "EASY" : playerLevel < 15 ? "NORMAL" : "HARD",
 
-      rewards: { xp: playerLevel < 5 ? 50 : playerLevel < 15 ? 65 : 80 },
-
+      rewards: buildQuestRewards(playerLevel, "SIDE"),
       penalties: PENALTY_CONFIG.DEFAULT_QUEST_FAILURE,
-
+      narrativeTier: "SIDE",
     },
 
     VOCABULARY_ENCOUNTER_CONFIG.DEFAULT_WORD_COUNT
@@ -239,33 +241,24 @@ function buildSpeechQuest(scenarioId: string, playerLevel: number): QuestContrac
     difficulty: playerLevel < 5 ? "EASY" : playerLevel < 15 ? "NORMAL" : "HARD",
 
     rewards: {
-
-      xp: playerLevel < 5 ? 55 : playerLevel < 15 ? 70 : 85,
-
+      ...buildQuestRewards(playerLevel, "MAIN"),
       unlocks: ["system:speech"],
-
     },
+    narrativeTier: "MAIN",
 
     penalties: PENALTY_CONFIG.DEFAULT_QUEST_FAILURE,
 
     speechEncounter: encounter,
 
     objectives: [
-
       {
-
         id: "obj-1",
-
         description: "Transmit spoken phrases",
-
         currentProgress: 0,
-
         requiredProgress: encounter.phrases.length,
-
         completed: false,
-
       },
-
+      hiddenScoutObjective(),
     ],
 
     requirements: [{ minimumLevel: Math.max(3, playerLevel - 2) }],
@@ -317,33 +310,24 @@ function buildListeningQuest(playerLevel: number): QuestContract {
     difficulty: playerLevel < 5 ? "EASY" : playerLevel < 15 ? "NORMAL" : "HARD",
 
     rewards: {
-
-      xp: playerLevel < 5 ? 50 : playerLevel < 15 ? 65 : 80,
-
+      ...buildQuestRewards(playerLevel, "MAIN"),
       unlocks: ["system:listening"],
-
     },
+    narrativeTier: "MAIN",
 
     penalties: PENALTY_CONFIG.DEFAULT_QUEST_FAILURE,
 
     listeningEncounter: encounter,
 
     objectives: [
-
       {
-
         id: "obj-1",
-
         description: "Decode audio transmissions",
-
         currentProgress: 0,
-
         requiredProgress: fragmentCount,
-
         completed: false,
-
       },
-
+      hiddenScoutObjective(),
     ],
 
     requirements: [{ minimumLevel: Math.max(2, playerLevel - 2) }],
@@ -378,24 +362,18 @@ export function generateQuestForPlayer(
 
 
   if (playerLevel >= 3 && roll < 0.2) {
-
-    return generateSpeechQuest(playerLevel)
-
+    return withNarrativeTier(generateSpeechQuest(playerLevel))
   }
 
   if (canListening && roll < 0.4) {
-
-    return generateListeningQuest(playerLevel)
-
+    return withNarrativeTier(generateListeningQuest(playerLevel))
   }
 
   if (roll < 0.65) {
-
-    return generateConversationQuest(playerLevel)
-
+    return withNarrativeTier(generateConversationQuest(playerLevel))
   }
 
-  return generateVocabularyQuest(playerLevel)
+  return withNarrativeTier(generateVocabularyQuest(playerLevel))
 
 }
 

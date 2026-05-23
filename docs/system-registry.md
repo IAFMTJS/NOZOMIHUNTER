@@ -531,3 +531,386 @@ Responsibilities
 Events
 
 * UNLOCK_GRANTED (progression)
+
+⸻
+
+hunterIdentitySystem (v0.9.0)
+
+Location: `/src/systems/identity/hunterIdentitySystem.ts`
+
+Responsibilities
+
+* derive and resolve hunter codename + registry ID (HN-####)
+* backfill on hydrate when DB columns empty
+
+Dependencies
+
+* `hunterCodenames` config
+
+Contracts
+
+* `player-contract.ts` (`HunterIdentityContract`)
+
+⸻
+
+synchronizationSystem (v0.9.0)
+
+Location: `/src/systems/synchronization/synchronizationSystem.ts`
+
+Responsibilities
+
+* discipline chain status (STABLE / AT_RISK / BROKEN / DORMANT)
+* advance chain on contract/dungeon completion via `playerActivitySystem`
+* milestone title unlocks (`title:discipline-*`)
+
+Events
+
+* `SYNC_MAINTAINED`, `SYNC_DECAY_WARNING` (types registered; analytics optional)
+
+⸻
+
+readinessSystem (v0.9.0)
+
+Location: `/src/systems/readiness/readinessSystem.ts`
+
+Responsibilities
+
+* operational readiness score + survival band
+* factors for corruption, fatigue, XP debt, listening, mission type
+
+Consumers
+
+* `ContractHub` menu, `HunterProfilePanel`, `vocabularyPreparationOrchestrator` (when player known)
+* `/prepare` (`PreparationRingGauge`, survival band)
+* `preparationChecklistSystem` (checklist facet of readiness UI)
+
+Contracts
+
+* `readiness-contract.ts`
+
+⸻
+
+dungeonForecastSystem (v0.9.0)
+
+Location: `/src/systems/dungeons/dungeonForecastSystem.ts`
+
+Responsibilities
+
+* next locked/available gate preview
+* danger tier + readiness advisory
+
+Dependencies
+
+* `dungeonAccess`, `readinessSystem`, `dungeonConfig`
+
+⸻
+
+vocabularyThreatSystem (v0.9.0)
+
+Location: `/src/systems/vocabulary/vocabularyThreatSystem.ts`
+
+Responsibilities
+
+* map catalog + quest context → threat tier (ROUTINE → SECTOR_CRITICAL)
+* display labels for briefing UI
+
+Dependencies
+
+* `vocabularyCatalog`, `vocabularyExplanationSystem`
+
+⸻
+
+systemMessagingSystem (v0.9.0)
+
+Location: `/src/systems/messaging/systemMessagingSystem.ts`
+
+Responsibilities
+
+* contextual system lines from pools (`systemMessages` config)
+* daily rotation via player id + date seed
+
+UI
+
+* `SystemMessageRail` (hunter status menu, profile dossier)
+
+⸻
+
+hunterPresentationSystem (v0.9.0)
+
+Location: `/src/systems/presentation/hunterPresentationSystem.ts`
+
+Responsibilities
+
+* rank aura, corruption portrait, sync-at-risk, readiness shell classes
+* extends penalty presentation for `HunterShell` / portrait slot
+
+⸻
+
+playerActivitySystem (v0.9.0)
+
+Location: `/src/systems/player/playerActivitySystem.ts`
+
+Responsibilities
+
+* record synchronization activity on quest/dungeon complete
+* emit discipline title unlocks
+
+⸻
+
+dungeonSectorMapSystem (v0.9.1)
+
+Location: `/src/systems/dungeons/dungeonSectorMapSystem.ts`
+
+Responsibilities
+
+* vertical breach map nodes (depth, danger, next gate)
+* `resolveDungeonDeployAdvisory` for readiness warnings
+
+UI
+
+* `SectorMapRail`
+
+⸻
+
+vocabularyThreatMetadata (config, v0.9.1)
+
+Location: `/src/config/vocabularyThreatMetadata.ts`
+
+Responsibilities
+
+* boss-critical and per-dungeon sector-critical word id sets
+
+⸻
+
+economyLayer (v1.0.0)
+
+Location: `/src/systems/economy/staminaSystem.ts`, `/src/services/supabase/economyRepository.ts`, migration `006_economy_inventory.sql`
+
+Responsibilities
+
+* player economy fields: credits, stamina, staminaMax, brewTokens
+* guarded RPCs: `spend_stamina_guarded`, `brew_word_guarded`, `clear_pending_rewards_guarded`
+* `grant_inventory_items` on quest completion (via extended `complete_quest_guarded`)
+* `seed_starter_inventory` on first hydrate
+
+Dependencies
+
+* `player-contract.ts` (`PlayerEconomyContract`)
+* `economy-contract.ts`
+
+Contracts
+
+* `economy-contract.ts`
+* `player-contract.ts` (`economy`, `pendingRewards`, `inventory`)
+
+⸻
+
+inventorySystem (v1.0.0)
+
+Location: `/src/systems/inventory/inventorySystem.ts`, `/src/services/supabase/inventoryRepository.ts`
+
+Responsibilities
+
+* capacity, equipped count, consumable/equipment readiness checks
+* merge grants into local inventory slots
+* load inventory on hydrate / post-completion
+
+Dependencies
+
+* `inventoryConfig`, `item_catalog` table
+
+Contracts
+
+* `economy-contract.ts` (`InventorySlotContract`, `ItemCatalogEntryContract`)
+
+UI
+
+* `/inventory` grid
+
+⸻
+
+staminaSystem (v1.0.0)
+
+Location: `/src/systems/economy/staminaSystem.ts`
+
+Responsibilities
+
+* `canSpendStamina`, `staminaAfterSpend`, `defaultEconomy`
+* dungeon enter cost from `staminaConfig`
+
+Consumers
+
+* `/dungeons/[key]` enter flow → `spend_stamina_guarded`
+
+⸻
+
+brewSystem (v1.0.0)
+
+Location: `/src/systems/vocabulary/brewSystem.ts`
+
+Responsibilities
+
+* brew token eligibility, random unknown-word candidate from curated catalog
+* local token decrement after `brew_word_guarded` (updates `word_mastery` only)
+
+Dependencies
+
+* `brewConfig`, JMDICT curated pool
+
+UI
+
+* `/vocabulary` Brew action
+
+⸻
+
+hunterPowerSystem (v1.0.0)
+
+Location: `/src/systems/power/hunterPowerSystem.ts`
+
+Responsibilities
+
+* compute attack/defense/crit from stats, level, equipped gear
+* `recommendedPowerForDungeon` for sector advisory on dungeon detail
+
+Consumers
+
+* `/stats`, dungeon detail deploy warning, `PowerComparison` on `/prepare`
+
+⸻
+
+missionCatalogSystem (v1.0.0)
+
+Location: `/src/systems/quests/missionCatalogSystem.ts`
+
+Responsibilities
+
+* partition active quests into main story / side / completed views
+* infer `narrativeTier` (MAIN | SIDE)
+* objective display text with hidden objectives
+
+Consumers
+
+* `/missions`, `/missions/[id]`
+
+Contracts
+
+* `quest-contract.ts` (`QuestNarrativeTier`)
+
+⸻
+
+missionTrackingSystem (v1.0.0)
+
+Location: `/src/systems/quests/missionTrackingSystem.ts`
+
+Responsibilities
+
+* `trackedQuestId` on player; resolve tracked quest from board
+* persist via `profiles.tracked_quest_id` + `updateTrackedQuestRow`
+
+Consumers
+
+* mission detail “Track” action, home hub highlight
+
+⸻
+
+rewardClaimSystem (v1.0.0)
+
+Location: `/src/systems/rewards/rewardClaimSystem.ts`
+
+Responsibilities
+
+* parse / stage / clear `pendingRewards` bundle (XP, credits, items)
+* overlay claim flow after guarded completion
+
+Dependencies
+
+* `complete_quest_guarded` writes `progression.pending_rewards`
+* `clear_pending_rewards_guarded` RPC
+
+UI
+
+* `RewardClaimOverlay` in `HunterSessionProvider`
+
+Contracts
+
+* `economy-contract.ts` (`PendingRewardBundleContract`)
+
+⸻
+
+preparationChecklistSystem (v1.0.0)
+
+Location: `/src/systems/readiness/preparationChecklistSystem.ts`
+
+Responsibilities
+
+* equipment, skill loadout, consumables, vocabulary checklist booleans
+* `checklistComplete` gate for deploy advisory
+
+Dependencies
+
+* `inventorySystem`, player stats, vocabulary prep readiness
+
+Contracts
+
+* `readiness-contract.ts` (`PreparationChecklistContract`)
+
+UI
+
+* `/prepare` (`PreparationChecklist`, `PreparationRingGauge`)
+
+⸻
+
+shopSystem (v1.1.0)
+
+Location: `/src/systems/economy/shopSystem.ts`
+
+Responsibilities
+
+* shop listings from catalog `credit_price`
+* `canPurchase`, `purchaseQuote`
+
+Dependencies
+
+* `inventorySystem` capacity checks
+
+RPC
+
+* `purchase_item_guarded`
+
+UI
+
+* `/inventory` Shop tab
+
+Contracts
+
+* `economy-contract.ts` (`ShopListingContract`)
+
+⸻
+
+achievementSystem (v1.1.0)
+
+Location: `/src/systems/progression/achievementSystem.ts`
+
+Responsibilities
+
+* derive unlocked achievements from progression, sync, dungeons, titles
+
+UI
+
+* `/achievements`
+
+⸻
+
+hunterSessionLayer (v1.0.0, app — not gameplay logic)
+
+Location: `/src/features/hunter/context/HunterSessionContext.tsx`
+
+Responsibilities
+
+* single hydrate: player, quests, event handlers, audio unlock
+* shell: `HunterShellLayout` + page children + `EncounterHost` + progression notices
+* `trackMission`, `claimRewards`, `hubView` for ContractHub overlays
+
+Dependencies
+
+* player store, quest/dungeon hooks, economy repository

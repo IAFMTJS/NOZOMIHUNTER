@@ -1,0 +1,5 @@
+export const BREW_CONFIG = {
+  TOKEN_COST: 5,
+  INITIAL_MASTERY: 10,
+  LEARNED_MASTERY_THRESHOLD: 80,
+} as const

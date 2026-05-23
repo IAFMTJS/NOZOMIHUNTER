@@ -8,7 +8,6 @@ import { VOCABULARY_ENCOUNTER_CONFIG } from "@/config/vocabularyEncounterConfig"
 import { MOTION } from "@/config/motionPresets"
 import { useJapaneseTts } from "@/hooks/useJapaneseTts"
 import { stopJapaneseSpeech } from "@/systems/listening/japaneseTtsSystem"
-import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { EncounterTargetRail } from "@/components/ui/EncounterTargetRail"
@@ -82,16 +81,20 @@ export function ListeningEncounter({
   }
 
   return (
-    <Panel tone="inset" className={`mt-3 ${flashClassName}`}>
-      <p className="mb-2 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-        Audio intercept
-      </p>
-      <p className="mb-4 text-sm text-[var(--muted)]">{encounter.briefing}</p>
-      {signalDegraded && (
-        <p className="mb-3 text-xs text-[var(--warning)]">
-          Signal degraded — fewer retries and tighter error budget.
+    <div className={`mt-3 flex flex-col gap-6 ${flashClassName}`}>
+      <div>
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
+          Audio intercept
         </p>
-      )}
+        <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
+          {encounter.briefing}
+        </p>
+        {signalDegraded && (
+          <p className="mt-3 text-xs text-[var(--warning)]">
+            Signal degraded — fewer retries and tighter error budget.
+          </p>
+        )}
+      </div>
 
       <EncounterTargetRail
         items={encounter.fragments.map((f, i) => {
@@ -105,19 +108,19 @@ export function ListeningEncounter({
         })}
       />
 
-      <p className="mb-1 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+      <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
         Transmission {encounter.currentIndex + 1} / {encounter.fragments.length}
       </p>
 
-      <div className="mb-4 rounded-lg border border-[var(--border-accent)] bg-[var(--accent-dim)] px-4 py-6">
+      <div className="nozomi-signal-well rounded-[var(--radius-panel)] px-4 py-8">
         <div
-          className="mb-4 flex h-12 items-end justify-center gap-1"
+          className="mb-6 flex h-14 items-end justify-center gap-1"
           aria-hidden
         >
           {Array.from({ length: 12 }).map((_, i) => (
             <motion.span
               key={i}
-              className="w-1 rounded-full bg-[var(--accent)]"
+              className="w-1 rounded-full bg-[var(--accent)]/80"
               animate={
                 tts.playing
                   ? {
@@ -138,7 +141,7 @@ export function ListeningEncounter({
             />
           ))}
         </div>
-        <p className="text-center text-sm text-[var(--muted)]">
+        <p className="text-center text-sm text-[var(--foreground)]">
           {tts.playing
             ? "Receiving signal…"
             : heardOnce
@@ -148,7 +151,7 @@ export function ListeningEncounter({
         {tts.error && (
           <p className="mt-2 text-center text-xs text-[var(--danger)]">{tts.error}</p>
         )}
-        <div className="mt-4 flex justify-center">
+        <div className="mt-6 flex justify-center">
           <Button
             type="button"
             size="md"
@@ -168,23 +171,23 @@ export function ListeningEncounter({
           </Button>
         </div>
         {heardOnce && replaysLeft > 0 && (
-          <p className="mt-2 text-center text-xs text-[var(--muted)]">
+          <p className="mt-3 text-center text-xs text-[var(--muted)]">
             Replays remaining: {replaysLeft}
           </p>
         )}
         {replayCount >= maxReplays && !tts.playing && (
-          <p className="mt-2 text-center text-xs text-[var(--warning)]">
+          <p className="mt-3 text-center text-xs text-[var(--warning)]">
             Replay buffer exhausted for this transmission.
           </p>
         )}
         {!tts.supported && (
-          <p className="mt-2 text-center text-xs text-[var(--warning)]">
+          <p className="mt-3 text-center text-xs text-[var(--warning)]">
             TTS unavailable — use a browser with Japanese speech synthesis.
           </p>
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <Input
           label="Transmit decode (romaji, kana, or English)"
           type="text"
@@ -194,10 +197,10 @@ export function ListeningEncounter({
           placeholder="e.g. mizu"
           autoComplete="off"
         />
-        <p className="text-xs text-[var(--muted)]">
+        <p className="text-xs text-[var(--danger)]">
           Signal errors remaining: {wrongLeft}
         </p>
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+        <div className="flex flex-col gap-3">
           <Button
             type="submit"
             size="md"
@@ -218,6 +221,6 @@ export function ListeningEncounter({
           </Button>
         </div>
       </form>
-    </Panel>
+    </div>
   )
 }

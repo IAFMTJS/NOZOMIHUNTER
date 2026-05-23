@@ -1,25 +1,12 @@
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import type { QuestContract } from "@/contracts/quest-contract"
-import {
-  advanceObjective,
-  canCompleteQuest,
-  isQuestComplete,
-} from "./questValidator"
-import {
-  applyQuestReward,
-  type ProgressionState,
-  type ProgressionUpdateResult,
-} from "@/systems/progression/progressionOrchestrator"
+import { advanceObjective } from "./questValidator"
 import { applyQuestFailurePenalties } from "@/systems/penalties/penaltySystem"
 import type { PlayerPenaltyContract } from "@/contracts/player-contract"
-import { markTutorialComplete } from "@/systems/tutorial/tutorialSystem"
 import { attachVocabularyPreparation } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
 
-export interface QuestCompleteResult {
-  quest: QuestContract
-  progression: ProgressionUpdateResult | null
-}
+/** Quest accept / progress / fail only. Completion: questLifecycle + completeQuestGuarded. */
 
 export interface QuestFailResult {
   quest: QuestContract
@@ -29,7 +16,7 @@ export interface QuestFailResult {
 export function acceptQuest(quest: QuestContract, playerId: string): QuestContract {
   const prepared = quest.vocabularyPreparation
     ? quest
-    : attachVocabularyPreparation(quest, playerId)
+    : attachVocabularyPreparation(quest, { playerId })
   eventBus.emit(GAME_EVENTS.QUEST_ACCEPTED, { playerId, questId: quest.id })
   return prepared
 }
@@ -42,45 +29,6 @@ export function progressQuestObjective(
     ...quest,
     objectives: advanceObjective(quest.objectives, objectiveId),
   }
-}
-
-export function completeQuest(
-  quest: QuestContract,
-  progressionState: ProgressionState,
-  playerId: string
-): QuestCompleteResult {
-  if (!canCompleteQuest(quest) && !isQuestComplete(quest)) {
-    throw new Error("Quest objectives not complete")
-  }
-
-  const completedQuest: QuestContract = {
-    ...quest,
-    objectives: quest.objectives.map((o) => ({
-      ...o,
-      completed: true,
-      currentProgress: o.requiredProgress,
-    })),
-  }
-
-  eventBus.emit(GAME_EVENTS.QUEST_COMPLETED, {
-    playerId,
-    questId: quest.id,
-  })
-
-  let progression = applyQuestReward(
-    progressionState,
-    quest.rewards,
-    playerId
-  )
-
-  if (progression && quest.isTutorial) {
-    progression = {
-      ...progression,
-      progression: markTutorialComplete(progression.progression),
-    }
-  }
-
-  return { quest: completedQuest, progression }
 }
 
 export function failQuest(

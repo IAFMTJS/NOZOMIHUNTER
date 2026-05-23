@@ -8,8 +8,10 @@ export interface GuardedQuestCompletionResult {
   level: number
   rank: HunterRank
   xp_gained: number
+  credits_gained?: number
   previous_xp: number
   previous_level: number
+  pending_rewards?: unknown
 }
 
 function requireClient() {
@@ -58,8 +60,10 @@ export async function completeQuestGuarded(
     level: Number(row.level),
     rank: String(row.rank) as HunterRank,
     xp_gained: Number(row.xp_gained),
+    credits_gained: Number(row.credits_gained ?? 0),
     previous_xp: Number(row.previous_xp),
     previous_level: Number(row.previous_level),
+    pending_rewards: row.pending_rewards,
   }
 }
 

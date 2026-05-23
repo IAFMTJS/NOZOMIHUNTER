@@ -5,10 +5,10 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "NOZOMI — Hunter System",
     short_name: "NOZOMI",
     description: "Immersive Japanese-learning RPG",
-    start_url: "/dashboard",
+    start_url: "/home",
     display: "standalone",
-    background_color: "#0f172a",
-    theme_color: "#0f172a",
+    background_color: "#05070b",
+    theme_color: "#05070b",
     orientation: "portrait-primary",
     icons: [
       {

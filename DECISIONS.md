@@ -36,6 +36,15 @@
 | Events | `eventBus` + `GAME_EVENTS` |
 | Multiplayer | Feature flags off until Phase 6 |
 
+## Completion & economy (v1.0 audit)
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Post-completion sync | `activityCompletionOrchestrator` + `loadPlayer` | Avoid double-merging credits; dungeon and missions share one path |
+| Hidden objectives | Excluded from `canCompleteQuest` + RPC | Flavor objectives must not block extraction |
+| Dungeon enter | `assignQuest` then `spend_stamina_guarded` | Roll back quest row if stamina spend fails |
+| Stamina unlock check | `unlocked_dungeons @> jsonb_build_array(key)` | `progression.unlocked_dungeons` is a JSON array |
+
 ## Redirect URLs (Supabase Auth)
 
 - Local: `http://localhost:3000/auth/callback`

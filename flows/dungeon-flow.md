@@ -1,8 +1,12 @@
-# Dungeon Flow (Phase 5)
+# Dungeon Flow (Phase 5+)
 
+`/dungeons` → `/dungeons/[key]` → Enter (`spend_stamina_guarded`, migration 006)
+↓
+`/prepare?dungeonKey=` — readiness ring, power advisory, checklist
+↓
 Enter Dungeon (DUNGEON quest assigned)
 ↓
-PREPARATION — briefing, Deploy
+PREPARATION — briefing, Deploy (`EncounterHost` sector view; `/prepare` may block if checklist/readiness fail)
 ↓
 EXPLORATION — Enter sector
 ↓
@@ -16,7 +20,9 @@ BOSS — vocabulary phase → speech phase
 ↓
 EXTRACTION — `ExtractionCeremony` (breach → sync → extract) + themed audio
 ↓
-`resolveRewardProgression` — merge dungeon reward unlocks, `UNLOCK_GRANTED`
+Assign quest → `spend_stamina_guarded` (JSONB unlock check) → extract uses same `applyActivityCompletion` + `pending_rewards` as missions
+↓
+`RewardClaimOverlay` (if bundle staged)
 ↓
 DUNGEON_COMPLETED
 

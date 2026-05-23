@@ -7,6 +7,7 @@ import {
   getPreparationDisplayVocabulary,
   shouldShowPreparationBriefing,
 } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
+import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
 import { StatusChip } from "@/components/ui/StatusChip"
 
@@ -44,17 +45,14 @@ export function QuestPreparationGate({
   const allTargetsKnown = prep.newVocabulary.length === 0
 
   return (
-    <div className="space-y-4">
-      <section
-        className="relative overflow-hidden rounded-lg border border-[var(--border-accent)] bg-gradient-to-b from-[var(--accent-dim)] to-[var(--surface-2)] p-4 shadow-[0_0_40px_var(--glow-accent)] sm:p-5"
-        role="region"
+    <div className="flex flex-col gap-8">
+      <Panel
+        as="section"
+        tone="accent"
+        className="nozomi-screen-prep"
         aria-label="Quest vocabulary preparation"
       >
-        <div
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,transparent_40%,var(--glow-accent)_50%,transparent_60%)]"
-          aria-hidden
-        />
-        <div className="relative mb-4">
+        <div className="mb-6">
           <StatusChip label="Awaiting deploy" tone="accent" pulse />
         </div>
 
@@ -66,7 +64,7 @@ export function QuestPreparationGate({
           allTargetsKnown={allTargetsKnown}
         />
 
-        <div className="relative mt-6 flex flex-col gap-2 border-t border-[var(--border-subtle)] pt-4 sm:flex-row sm:flex-wrap">
+        <div className="mt-10 flex flex-col gap-3">
           <Button
             size="md"
             disabled={disabled}
@@ -85,9 +83,9 @@ export function QuestPreparationGate({
             Skip briefing
           </Button>
         </div>
-      </section>
+      </Panel>
 
-      <p className="text-center text-xs uppercase tracking-wider text-[var(--muted)]">
+      <p className="text-center text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
         Encounter locked · complete briefing to continue
       </p>
     </div>

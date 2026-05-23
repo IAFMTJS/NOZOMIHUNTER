@@ -31,6 +31,11 @@ Alternatively, apply SQL manually in the dashboard SQL Editor, in order:
 2. [`supabase/migrations/002_jmdict_vocabulary.sql`](../supabase/migrations/002_jmdict_vocabulary.sql)
 3. [`supabase/migrations/003_progression_guards.sql`](../supabase/migrations/003_progression_guards.sql) — speech rate limits + legacy XP delta guard
 4. [`supabase/migrations/004_quest_completion_and_analytics.sql`](../supabase/migrations/004_quest_completion_and_analytics.sql) — `complete_quest_guarded`, strict autosave XP, `gameplay_events`
+5. [`supabase/migrations/005_hunter_identity_sync.sql`](../supabase/migrations/005_hunter_identity_sync.sql) — codename, registry ID, discipline sync chain on `profiles`
+6. [`supabase/migrations/006_economy_inventory.sql`](../supabase/migrations/006_economy_inventory.sql) — credits/stamina/brew, `item_catalog`, `player_inventory`, `tracked_quest_id`, guarded `spend_stamina_guarded`, `brew_word_guarded`, `clear_pending_rewards_guarded`, inventory grants on completion
+7. [`supabase/migrations/007_economy_fixes.sql`](../supabase/migrations/007_economy_fixes.sql) — stamina unlock JSONB fix, refund RPC, hidden-objective completion
+8. [`supabase/migrations/008_shop_and_guards.sql`](../supabase/migrations/008_shop_and_guards.sql) — shop (`credit_price`, `purchase_item_guarded`), server daily stamina, starter blade equipped
+9. [`supabase/migrations/009_unlock_home_key.sql`](../supabase/migrations/009_unlock_home_key.sql) — rename legacy `dashboard` unlock key to `home`
 
 ## 3. Auth providers
 
@@ -66,7 +71,7 @@ You do not need any AI API keys.
 1. `npm run dev`
 2. Open `/login`
 3. Sign in with **email/password**, **magic link**, **Google** (OAuth via Supabase), or **guest** (anonymous)
-4. You should land on `/dashboard` with a session cookie
+4. You should land on `/home` with a session cookie
 
 If guest login fails, confirm Anonymous sign-in is enabled in the Supabase dashboard.
 

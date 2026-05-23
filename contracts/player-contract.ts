@@ -1,7 +1,35 @@
+import type {
+  InventorySlotContract,
+  PendingRewardBundleContract,
+  PlayerEconomyContract,
+} from "./economy-contract"
+
+export interface HunterIdentityContract {
+  codename: string
+  registryId: string
+}
+
+export type SynchronizationStatus =
+  | "STABLE"
+  | "AT_RISK"
+  | "BROKEN"
+  | "DORMANT"
+
+export interface SynchronizationContract {
+  chainDays: number
+  lastActiveDate: string | null
+  status: SynchronizationStatus
+  atRisk: boolean
+}
+
 export interface PlayerContract {
   id: string
 
   username: string
+
+  identity: HunterIdentityContract
+
+  synchronization: SynchronizationContract
 
   level: number
   xp: number
@@ -12,6 +40,14 @@ export interface PlayerContract {
   penalties: PlayerPenaltyContract
 
   progression: PlayerProgressionContract
+
+  economy: PlayerEconomyContract
+
+  inventory: InventorySlotContract[]
+
+  trackedQuestId: string | null
+
+  pendingRewards: PendingRewardBundleContract | null
 
   createdAt: string
   updatedAt: string

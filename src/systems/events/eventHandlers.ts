@@ -91,4 +91,28 @@ export function registerCoreEventHandlers(): void {
   eventBus.on(GAME_EVENTS.QUEST_ACCEPTED, (payload) => {
     track(GAME_EVENTS.QUEST_ACCEPTED, payload)
   })
+
+  eventBus.on(GAME_EVENTS.STAMINA_SPENT, (payload) => {
+    track(GAME_EVENTS.STAMINA_SPENT, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.ITEM_GRANTED, (payload) => {
+    track(GAME_EVENTS.ITEM_GRANTED, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.REWARDS_PENDING, (payload) => {
+    track(GAME_EVENTS.REWARDS_PENDING, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.REWARDS_CLAIMED, (payload) => {
+    track(GAME_EVENTS.REWARDS_CLAIMED, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.WORD_BREWED, (payload) => {
+    track(GAME_EVENTS.WORD_BREWED, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.QUEST_TRACKED, (payload) => {
+    track(GAME_EVENTS.QUEST_TRACKED, payload)
+  })
 }

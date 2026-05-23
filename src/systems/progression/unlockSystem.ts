@@ -29,9 +29,19 @@ export function mergeUnlocks(
 export function defaultProgression(): PlayerProgressionContract {
   return {
     unlockedDungeons: ["dungeon:neon-corridor"],
-    unlockedSystems: ["quests", "dashboard"],
+    unlockedSystems: ["quests", "home"],
     titles: [],
   }
+}
+
+/** Map legacy unlock keys on hydrate (dashboard → home). */
+export function normalizeUnlockedSystems(systems: string[]): string[] {
+  const out = new Set(
+    systems.map((key) => (key === "dashboard" ? "home" : key))
+  )
+  if (!out.has("quests")) out.add("quests")
+  if (!out.has("home")) out.add("home")
+  return [...out]
 }
 
 /** Sync level-gated registry entries on hydrate. */

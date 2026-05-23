@@ -62,7 +62,7 @@ export function PenaltyStatus({ penalties, className = "" }: PenaltyStatusProps)
       <h2 className="mb-3 font-display text-xs uppercase tracking-[0.2em] text-[var(--danger)]">
         System strain
       </h2>
-      <ul className="flex flex-wrap gap-4">
+      <ul className="flex flex-col gap-4">
         {corruption > 0 && (
           <PenaltyMeter
             label="Corruption"

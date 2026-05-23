@@ -1,0 +1,49 @@
+import type { QuestContract, QuestNarrativeTier } from "@/contracts/quest-contract"
+
+export interface MissionCatalogView {
+  mainStory: QuestContract | null
+  sideQuests: QuestContract[]
+  completed: QuestContract[]
+}
+
+function inferTier(quest: QuestContract): QuestNarrativeTier {
+  if (quest.narrativeTier) return quest.narrativeTier
+  if (quest.isTutorial) return "MAIN"
+  if (quest.type === "LISTENING" || quest.difficulty === "HARD") return "MAIN"
+  return "SIDE"
+}
+
+export function withNarrativeTier(quest: QuestContract): QuestContract {
+  return { ...quest, narrativeTier: inferTier(quest) }
+}
+
+export function buildMissionCatalog(
+  quests: QuestContract[],
+  completedIds: string[] = []
+): MissionCatalogView {
+  const active = quests.filter((q) => !completedIds.includes(q.id)).map(withNarrativeTier)
+  const main = active.find((q) => inferTier(q) === "MAIN") ?? null
+  const side = active.filter((q) => q.id !== main?.id && inferTier(q) === "SIDE")
+  const completed = quests.filter((q) => completedIds.includes(q.id))
+
+  return { mainStory: main, sideQuests: side, completed }
+}
+
+export function objectiveDisplayText(
+  objective: QuestContract["objectives"][number]
+): string {
+  if (
+    objective.hidden &&
+    objective.currentProgress < (objective.revealAt ?? 1)
+  ) {
+    return "???"
+  }
+  return objective.description
+}
+
+export function isObjectiveRevealed(
+  objective: QuestContract["objectives"][number]
+): boolean {
+  if (!objective.hidden) return true
+  return objective.currentProgress >= (objective.revealAt ?? 1)
+}

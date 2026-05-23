@@ -16,6 +16,8 @@ Player Reviews Vocabulary
 ↓
 Preparation Score Calculated
 ↓
+`/prepare` deploy gate (ring gauge + checklist; deploy blocked until checklist complete and readiness above CRITICAL)
+↓
 Quest Starts
 ↓
 Natural Reinforcement During Gameplay

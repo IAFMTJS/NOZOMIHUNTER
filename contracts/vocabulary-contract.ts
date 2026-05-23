@@ -18,6 +18,12 @@ export interface WordMasteryContract {
   lastSeenAt: string
 }
 
+export type VocabularyThreatLevel =
+  | "ROUTINE"
+  | "ELEVATED"
+  | "CRITICAL"
+  | "SECTOR_CRITICAL"
+
 /** Learner-facing word explanation shown before a quest encounter. */
 export interface VocabularyExplanationContract {
   kanji: string
@@ -25,6 +31,7 @@ export interface VocabularyExplanationContract {
   meaning: string
   context: string
   importance: "LOW" | "MEDIUM" | "HIGH"
+  threatLevel: VocabularyThreatLevel
 }
 
 /** Mission briefing generated from unknown / critical vocabulary. */

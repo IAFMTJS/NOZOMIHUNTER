@@ -7,6 +7,8 @@ import type {
 import type { DungeonRunContract } from "./dungeon-contract"
 import type { QuestVocabularyPreparationContract } from "./vocabulary-contract"
 
+export type QuestNarrativeTier = "MAIN" | "SIDE"
+
 export interface QuestContract {
   id: string
 
@@ -16,6 +18,8 @@ export interface QuestContract {
   description: string
 
   difficulty: QuestDifficulty
+
+  narrativeTier?: QuestNarrativeTier
 
   rewards: QuestRewardContract
 
@@ -54,7 +58,6 @@ export type QuestType =
   | "CONVERSATION"
   | "LISTENING"
   | "SPEECH"
-  | "GRAMMAR"
   | "DUNGEON"
   | "RAID"
 
@@ -65,10 +68,15 @@ export type QuestDifficulty =
   | "ELITE"
   | "NIGHTMARE"
 
+export interface QuestRewardItemContract {
+  itemKey: string
+  quantity: number
+}
+
 export interface QuestRewardContract {
   xp: number
   credits?: number
-  items?: string[]
+  items?: (string | QuestRewardItemContract)[]
   unlocks?: string[]
 }
 
@@ -87,6 +95,10 @@ export interface QuestObjectiveContract {
   requiredProgress: number
 
   completed: boolean
+
+  /** Hidden until currentProgress reaches revealAt */
+  hidden?: boolean
+  revealAt?: number
 }
 
 export interface QuestRequirementContract {

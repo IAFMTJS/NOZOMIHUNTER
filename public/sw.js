@@ -1,5 +1,5 @@
 const CACHE = "nozomi-static-v1"
-const PRECACHE = ["/", "/dashboard", "/login"]
+const PRECACHE = ["/", "/home", "/login"]
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -45,7 +45,7 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((res) => res)
-        .catch(() => caches.match("/dashboard").then((r) => r ?? caches.match("/")))
+        .catch(() => caches.match("/home").then((r) => r ?? caches.match("/")))
     )
   }
 })

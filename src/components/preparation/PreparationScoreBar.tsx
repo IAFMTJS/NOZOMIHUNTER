@@ -5,7 +5,7 @@ interface PreparationScoreBarProps {
 
 export function PreparationScoreBar({
   score,
-  label = "Mission readiness",
+  label = "Operational readiness",
 }: PreparationScoreBarProps) {
   const clamped = Math.min(100, Math.max(0, score))
   const tone =
@@ -26,7 +26,7 @@ export function PreparationScoreBar({
         </span>
       </div>
       <div
-        className="h-2 overflow-hidden rounded-full border border-white/10 bg-black/40"
+        className="h-2 overflow-hidden rounded-full bg-black/50"
         role="progressbar"
         aria-valuenow={clamped}
         aria-valuemin={0}

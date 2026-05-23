@@ -8,6 +8,8 @@ export interface DungeonDefinitionConfig {
   name: string
   description: string
   minLevel: number
+  staminaCost: number
+  recommendedPower: number
   /** Must appear in player.progression.unlockedDungeons before entry. */
   requiredDungeon?: string
   encounterPlan: { id: string; type: EncounterType; difficulty: number }[]
@@ -37,6 +39,8 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
     description:
       "A unstable sector of the network. Decode signals, hold dialogue under pressure, and breach the core.",
     minLevel: 2,
+    staminaCost: 20,
+    recommendedPower: 1040,
     encounterPlan: [
       { id: "sector-vocab", type: "VOCAB", difficulty: 1 },
       { id: "sector-listen", type: "LISTENING", difficulty: 2 },
@@ -58,6 +62,8 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
     description:
       "Cold storage beneath the grid. Listening ghosts, sealed dialogue, and the Archive Warden.",
     minLevel: 4,
+    staminaCost: 25,
+    recommendedPower: 1520,
     requiredDungeon: "dungeon:neon-corridor",
     encounterPlan: [
       { id: "sector-listen", type: "LISTENING", difficulty: 2 },

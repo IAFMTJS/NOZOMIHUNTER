@@ -4,11 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:clean": "npm run clean && npm run dev",
     "dev:mobile": "next dev --hostname 0.0.0.0 --experimental-https",
+    "clean": "node -e \"const fs=require('fs');for (const p of ['.next','node_modules/.cache'])try{fs.rmSync(p,{recursive:true,force:true});console.log('removed '+p)}catch(e){if(e.code!=='ENOENT')throw e}\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "check:architecture": "node scripts/check-architecture.mjs",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "supabase": "supabase",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
@@ -43,6 +47,7 @@
     "supabase": "^2.101.0",
     "tailwindcss": "^4.0.17",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "vitest": "^4.1.7"
   }
 }

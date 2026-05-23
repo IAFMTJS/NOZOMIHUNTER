@@ -11,7 +11,7 @@ const TONE_CLASS: Record<ChipTone, string> = {
   accent: "bg-[var(--accent)]/20 text-[var(--accent)]",
   danger: "bg-[var(--danger)]/20 text-[var(--danger)]",
   warning: "bg-[var(--warning)]/20 text-[var(--warning)]",
-  success: "bg-[var(--success)]/30 text-emerald-300/90",
+  success: "bg-[var(--success)]/20 text-[var(--success)]",
 }
 
 export function StatusChip({

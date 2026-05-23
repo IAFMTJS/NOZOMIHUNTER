@@ -13,6 +13,7 @@ import { SpeechEncounter } from "@/features/speech/components/SpeechEncounter"
 import { ListeningEncounter } from "@/features/dungeons/components/ListeningEncounter"
 import { QuestPreparationGate } from "./QuestPreparationGate"
 import { hasActivePreparationPhase } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
+import { canCompleteQuest } from "@/systems/quests/questValidator"
 import { EncounterFocusShell } from "@/components/ui/EncounterFocusShell"
 import { QuestContractActions } from "./QuestContractActions"
 import {
@@ -75,10 +76,7 @@ export function QuestCard({
   const [lastResult, setLastResult] = useState<string | null>(null)
   const [flash, setFlash] = useState<"success" | "danger" | null>(null)
 
-  const objective = quest.objectives[0]
-  const canComplete =
-    objective &&
-    objective.currentProgress >= objective.requiredProgress
+  const canComplete = canCompleteQuest(quest)
 
   const hasWords = (quest.vocabularyEncounter?.words.length ?? 0) > 0
   const hasConversation = (quest.conversationEncounter?.messages.length ?? 0) > 0

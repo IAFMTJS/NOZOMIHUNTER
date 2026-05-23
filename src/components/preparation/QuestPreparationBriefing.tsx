@@ -1,14 +1,16 @@
 import type { VocabularyExplanationContract } from "@/contracts/vocabulary-contract"
 import { JapaneseText } from "@/components/JapaneseText"
 import { PreparationScoreBar } from "./PreparationScoreBar"
+import { threatDisplayLabel } from "@/systems/vocabulary/vocabularyThreatSystem"
 
-const IMPORTANCE_STYLES: Record<
-  VocabularyExplanationContract["importance"],
+const THREAT_CLASS: Record<
+  VocabularyExplanationContract["threatLevel"],
   string
 > = {
-  HIGH: "border-[var(--border-accent)] bg-[var(--accent-dim)] shadow-[0_0_24px_var(--glow-accent)]",
-  MEDIUM: "border-white/25 bg-white/5",
-  LOW: "border-white/10 bg-black/30 opacity-90",
+  SECTOR_CRITICAL: "nozomi-embedded-accent ring-1 ring-[var(--danger)]/40",
+  CRITICAL: "nozomi-embedded-accent",
+  ELEVATED: "nozomi-embedded",
+  ROUTINE: "nozomi-embedded opacity-85",
 }
 
 interface QuestPreparationBriefingProps {
@@ -27,50 +29,51 @@ export function QuestPreparationBriefing({
   allTargetsKnown,
 }: QuestPreparationBriefingProps) {
   return (
-    <div className="relative space-y-5">
-      <div
-        className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[var(--accent)]/10 blur-2xl"
-        aria-hidden
-      />
-
-      <header className="relative space-y-3 border-b border-white/10 pb-4">
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-[var(--muted)]">
-          Hunter briefing · {questType}
+    <div className="nozomi-screen-prep relative space-y-8">
+      <header className="relative space-y-4">
+        <p className="text-xs font-medium uppercase tracking-[0.28em] text-[var(--muted)]">
+          Mission prep · {questType}
         </p>
-        <h3 className="font-display text-xl font-bold leading-tight text-[var(--foreground)]">
+        <h3 className="font-display text-2xl font-bold leading-tight text-[var(--foreground)]">
           {questTitle}
         </h3>
-        <p className="text-sm text-[var(--muted)]">
+        <p className="text-sm leading-relaxed text-[var(--muted)]">
           {allTargetsKnown
-            ? "Registry match complete. Review targets, then deploy into the contract."
-            : "Study critical vocabulary before tension rises — the encounter stays locked until you deploy."}
+            ? "Threat index synchronized. Review targets before deployment."
+            : "Unknown targets flagged. Encounter locked until you deploy."}
         </p>
-        <PreparationScoreBar score={preparationScore} />
+        <PreparationScoreBar
+          score={preparationScore}
+          label="Operational readiness"
+        />
       </header>
 
       {vocabulary.length === 0 ? (
-        <p className="rounded border border-dashed border-white/15 p-4 text-sm text-[var(--muted)]">
-          No vocabulary intel attached to this contract. Deploy when ready.
+        <p className="nozomi-embedded rounded-[var(--radius-panel)] p-4 text-sm text-[var(--muted)]">
+          No threat intel on file. Deploy when ready.
         </p>
       ) : (
-        <ul className="grid gap-3 sm:grid-cols-2">
+        <ul className="flex flex-col gap-4">
           {vocabulary.map((word, index) => (
             <li
               key={`${word.kanji}-${word.romaji}-${index}`}
-              className={`rounded-lg border p-4 ${IMPORTANCE_STYLES[word.importance]}`}
+              className={`rounded-[var(--radius-panel)] p-4 ${THREAT_CLASS[word.threatLevel]}`}
             >
-              <div className="mb-2 flex items-center justify-between gap-2">
+              <div className="mb-3 flex items-center justify-between gap-2">
                 <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--muted)]">
                   Target {index + 1}
                 </span>
                 <span
                   className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
-                    word.importance === "HIGH"
-                      ? "bg-[var(--accent)]/25 text-[var(--accent)]"
-                      : "bg-white/10 text-[var(--muted)]"
+                    word.threatLevel === "SECTOR_CRITICAL" ||
+                    word.threatLevel === "CRITICAL"
+                      ? "bg-[var(--danger)]/15 text-[var(--danger)]"
+                      : word.threatLevel === "ELEVATED"
+                        ? "bg-[var(--accent)]/20 text-[var(--accent-bright)]"
+                        : "bg-white/5 text-[var(--muted)]"
                   }`}
                 >
-                  {word.importance}
+                  {threatDisplayLabel(word.threatLevel)}
                 </span>
               </div>
               <JapaneseText
@@ -78,7 +81,9 @@ export function QuestPreparationBriefing({
                 romaji={word.romaji}
                 size="md"
               />
-              <p className="mt-3 text-sm leading-snug">{word.meaning}</p>
+              <p className="mt-3 text-sm leading-snug text-[var(--foreground)]">
+                {word.meaning}
+              </p>
               <p className="mt-2 text-xs italic text-[var(--muted)]">
                 {word.context}
               </p>

@@ -1,12 +1,27 @@
-import { failUserQuest, updateUserQuest } from "@/services/supabase/playerRepository"
+import {
+  failUserQuest,
+  loadPlayer,
+  updateUserQuest,
+} from "@/services/supabase/playerRepository"
 import { completeQuestGuarded } from "@/services/supabase/progressionRepository"
+import {
+  refundStaminaGuarded,
+  spendStaminaGuarded,
+} from "@/services/supabase/economyRepository"
 import { acceptQuest } from "@/systems/quests/questOrchestrator"
 import { calculateQuestReward } from "@/systems/progression/rewardSystem"
 import { fatigueXpMultiplier } from "@/systems/penalties/penaltySystem"
-import { applyFatigueRecoveryOnComplete } from "@/systems/penalties/penaltyGameplaySystem"
 import { canCompleteQuest } from "@/systems/quests/questValidator"
 import { generateDungeonQuest } from "@/systems/dungeons/dungeonQuestGenerator"
 import { canStartDungeon } from "@/systems/dungeons/dungeonAccess"
+import { getDungeonDefinition } from "@/config/dungeonConfig"
+import { canSpendStamina } from "@/systems/economy/staminaSystem"
+import {
+  applyActivityCompletion,
+  emitStandardCompletionEvents,
+} from "@/features/rewards/services/completionService"
+import { eventBus } from "@/systems/events/eventBus"
+import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import {
   beginDungeonSector,
   continueAfterReward,
@@ -14,12 +29,7 @@ import {
   failDungeonRun,
   finalizeDungeonExtraction,
 } from "@/systems/dungeons/dungeonOrchestrator"
-import { eventBus } from "@/systems/events/eventBus"
-import { GAME_EVENTS } from "@/systems/events/eventTypes"
-import {
-  emitUnlockGrants,
-  resolveRewardProgression,
-} from "@/systems/progression/resolveQuestCompletion"
+import { resolveRewardProgression } from "@/systems/progression/resolveQuestCompletion"
 import { triggerSave } from "@/systems/save/saveSystem"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import {
@@ -42,9 +52,37 @@ export async function enterDungeon(userId: string, dungeonKey: string) {
     throw new Error(gate.reason ?? "Cannot enter dungeon")
   }
 
-  const quest = generateDungeonQuest(player.level, dungeonKey)
+  const def = getDungeonDefinition(dungeonKey)
+  const cost = def?.staminaCost ?? 20
+  if (!canSpendStamina(player, cost)) {
+    throw new Error("Insufficient stamina")
+  }
+
+  let quest = generateDungeonQuest(player.level, dungeonKey)
+  if (quest.dungeonRun) {
+    quest = {
+      ...quest,
+      dungeonRun: { ...quest.dungeonRun, staminaSpent: cost },
+    }
+  }
   acceptQuest(quest, userId)
-  await assignQuest(userId, quest)
+
+  try {
+    await assignQuest(userId, quest)
+    await spendStaminaGuarded(cost, dungeonKey)
+  } catch (err) {
+    await failUserQuest(userId, quest.id)
+    throw err
+  }
+
+  const fresh = await loadPlayer(userId)
+  if (fresh) {
+    store.setPlayer(fresh.player)
+  }
+
+  eventBus.emit(GAME_EVENTS.STAMINA_SPENT, { playerId: userId, amount: cost, dungeonKey })
+  eventBus.emit(GAME_EVENTS.DUNGEON_ENTERED, { playerId: userId, dungeonKey })
+
   store.setQuests(dedupeActiveQuests([...store.activeQuests, quest]))
   await persistDungeonState()
   return quest
@@ -91,6 +129,22 @@ export async function abandonDungeon(userId: string) {
   const { quest, store, player } = getDungeonQuest()
   if (!quest || !player) return null
 
+  const spent = quest.dungeonRun?.staminaSpent ?? 0
+  if (spent > 0) {
+    try {
+      await refundStaminaGuarded(spent)
+      eventBus.emit(GAME_EVENTS.STAMINA_REFUNDED, {
+        playerId: userId,
+        amount: spent,
+        dungeonId: quest.dungeonRun?.dungeon.id,
+      })
+      const fresh = await loadPlayer(userId)
+      if (fresh) store.setPlayer(fresh.player)
+    } catch {
+      /* refund best-effort */
+    }
+  }
+
   const failResult = failDungeonRun(quest, player.penalties, userId)
   store.applyPenalties(failResult.penalties)
   const remaining = store.activeQuests.filter((q) => q.id !== quest.id)
@@ -118,38 +172,25 @@ export async function extractDungeonRewards(userId: string) {
   )
 
   const server = await completeQuestGuarded(ready.id, rewardPayload.xp)
-  const leveledUp = server.level > server.previous_level
-  const rankUp = server.rank !== progressionState.rank
 
   const { progression, newUnlocks } = resolveRewardProgression(
     progressionState.progression,
     ready.rewards
   )
 
-  eventBus.emit(GAME_EVENTS.DUNGEON_COMPLETED, {
-    playerId: userId,
-    dungeonId: quest.dungeonRun.dungeon.id,
-    xp: server.xp_gained,
-  })
-
-  store.applyProgressionUpdate({
-    xp: server.xp,
-    level: server.level,
-    rank: server.rank,
+  const { leveledUp, rankUp } = await applyActivityCompletion({
+    userId,
+    quest: ready,
+    server,
     progression,
-    penalties: applyFatigueRecoveryOnComplete({
-      ...progressionState.penalties,
-      xpDebt: Math.max(
-        0,
-        progressionState.penalties.xpDebt - server.xp_gained
-      ),
-    }),
-    leveledUp,
-    rankUp,
     newUnlocks,
+    penaltiesBefore: progressionState.penalties,
+    rankBefore: progressionState.rank,
   })
 
-  emitUnlockGrants(userId, newUnlocks)
+  emitStandardCompletionEvents(userId, ready.id, server, leveledUp, rankUp, {
+    dungeonId: quest.dungeonRun.dungeon.id,
+  })
 
   const remaining = store.activeQuests.filter((q) => q.id !== quest.id)
   store.setQuests(remaining)

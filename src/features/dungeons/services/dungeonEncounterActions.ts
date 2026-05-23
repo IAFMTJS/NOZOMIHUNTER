@@ -1,20 +1,22 @@
-import { submitVocabularyAnswer } from "@/systems/quests/vocabularyEncounterSystem"
 import { submitConversationMessage } from "@/systems/quests/conversationEncounterSystem"
 import { applySpeechAnalysis, getCurrentPhrase } from "@/systems/quests/speechEncounterSystem"
-import { submitListeningAnswer } from "@/systems/dungeons/listeningEncounterSystem"
 import {
   loadPlayerAiState,
   savePlayerAiState,
 } from "@/services/supabase/conversationRepository"
 import { transcribeAndAnalyze } from "@/services/speech/transcribe"
-import { upsertWordMastery } from "@/services/supabase/vocabularyRepository"
+import {
+  persistMasteryUpdate,
+  runVocabularySubmit,
+  runListeningSubmit,
+  maxWrongForPenalties,
+} from "@/features/encounters/encounterSubmitAdapter"
 import {
   getDungeonQuest,
   handleDungeonFailure,
   onSectorCleared,
   persistDungeonQuest,
 } from "./dungeonPersistence"
-import { maxWrongAttemptsForPenalties } from "@/systems/penalties/penaltyGameplaySystem"
 
 export async function submitDungeonVocabulary(
   userId: string,
@@ -23,15 +25,8 @@ export async function submitDungeonVocabulary(
   const { quest, player } = getDungeonQuest()
   if (!quest?.vocabularyEncounter || !player) return null
 
-  const maxWrong = maxWrongAttemptsForPenalties(player.penalties)
-  const result = submitVocabularyAnswer(quest, answer, userId, maxWrong)
-  if (result.masteryUpdate) {
-    try {
-      await upsertWordMastery(userId, result.masteryUpdate)
-    } catch {
-      /* non-blocking */
-    }
-  }
+  const result = runVocabularySubmit(quest, answer, userId, player.penalties)
+  await persistMasteryUpdate(userId, result.masteryUpdate)
 
   if (result.encounterFailed) {
     await handleDungeonFailure(userId, result.quest)
@@ -54,8 +49,7 @@ export async function submitDungeonListening(
   const { quest, player } = getDungeonQuest()
   if (!quest?.listeningEncounter || !player) return null
 
-  const maxWrong = maxWrongAttemptsForPenalties(player.penalties)
-  const result = submitListeningAnswer(quest, answer, maxWrong)
+  const result = runListeningSubmit(quest, answer, player.penalties)
 
   if (result.encounterFailed) {
     await handleDungeonFailure(userId, result.quest)
@@ -151,8 +145,11 @@ export async function submitDungeonSpeech(
     difficulty: quest.difficulty,
   })
 
-  const maxWrong = maxWrongAttemptsForPenalties(player.penalties)
-  const result = applySpeechAnalysis(quest, analysis, maxWrong)
+  const result = applySpeechAnalysis(
+    quest,
+    analysis,
+    maxWrongForPenalties(player.penalties)
+  )
 
   if (result.encounterFailed) {
     await handleDungeonFailure(userId, result.quest)

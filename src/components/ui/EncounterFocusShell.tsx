@@ -57,7 +57,7 @@ export function EncounterFocusShell({
       aria-label={focused ? `${title} — focused encounter` : undefined}
     >
       {focused && (
-        <header className="mx-auto mb-4 flex w-full max-w-3xl shrink-0 items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-3">
+        <header className="mx-auto mb-6 flex w-full max-w-3xl shrink-0 items-center justify-between gap-3 pb-2">
           <h2 className="min-w-0 truncate font-display text-lg font-semibold text-[var(--foreground)]">
             {title}
           </h2>
@@ -79,7 +79,7 @@ export function EncounterFocusShell({
 
       {focused ? (
         footer && (
-          <div className="mx-auto mt-4 w-full max-w-3xl shrink-0 border-t border-[var(--border-subtle)] pt-4">
+          <div className="mx-auto mt-6 w-full max-w-3xl shrink-0 pt-4">
             {footer}
           </div>
         )

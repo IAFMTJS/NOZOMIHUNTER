@@ -40,8 +40,8 @@ export function LoginForm() {
     }
   }, [searchParams])
 
-  async function goToDashboard() {
-    window.location.href = "/dashboard"
+  async function goToHome() {
+    window.location.href = "/home"
   }
 
   async function handleEmailSubmit(e: React.FormEvent) {
@@ -58,7 +58,7 @@ export function LoginForm() {
         setMode("signin")
       } else {
         await signInWithEmail(email.trim(), password)
-        await goToDashboard()
+        await goToHome()
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Email sign-in failed")
@@ -100,7 +100,7 @@ export function LoginForm() {
     setNotice(null)
     try {
       await signInAsGuest()
-      await goToDashboard()
+      await goToHome()
     } catch (err) {
       setError(err instanceof Error ? err.message : "Guest sign-in failed")
     } finally {

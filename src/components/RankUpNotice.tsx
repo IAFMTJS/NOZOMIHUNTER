@@ -27,8 +27,8 @@ export function RankUpNotice({ rank, onDismiss }: RankUpNoticeProps) {
         transition={MOTION.panel}
         className="mb-6"
       >
-        <Panel tone="accent" role="status">
-          <p className="text-xs uppercase tracking-[0.2em] text-[var(--accent-bright)]">
+        <Panel tone="reward" role="status">
+          <p className="text-xs uppercase tracking-[0.2em] text-[var(--reward)]">
             Rank promotion
           </p>
           <p className="mt-1 font-display text-3xl font-bold text-[var(--foreground)]">

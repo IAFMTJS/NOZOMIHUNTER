@@ -1,10 +1,23 @@
 import { createClient } from "@/lib/supabase/client"
 import type { PlayerContract, HunterRank } from "@/contracts/player-contract"
 import type { QuestContract } from "@/contracts/quest-contract"
-import { defaultProgression } from "@/systems/progression/unlockSystem"
+import type { ProfileRow } from "@/types/database"
+import {
+  defaultProgression,
+  normalizeUnlockedSystems,
+} from "@/systems/progression/unlockSystem"
 import { dedupeActiveQuests } from "@/systems/quests/questListUtils"
 import { mergeQuestRow } from "@/systems/quests/questEncounterRepair"
 import { applyGuardedProgression } from "@/services/supabase/progressionRepository"
+import { loadPlayerInventory } from "@/services/supabase/inventoryRepository"
+import { applyDailyStaminaGuarded } from "@/services/supabase/economyRepository"
+import { resolveHunterIdentity } from "@/systems/identity/hunterIdentitySystem"
+import { computeSynchronizationStatus } from "@/systems/synchronization/synchronizationSystem"
+import { defaultEconomy } from "@/systems/economy/staminaSystem"
+import { parsePendingRewards } from "@/systems/rewards/rewardClaimSystem"
+import { PlayerSchema } from "@/systems/validation/playerSchema"
+import { logSystemEvent } from "@/systems/logger/logger"
+import type { ProgressionRow } from "@/types/database"
 
 function requireClient() {
   const supabase = createClient()
@@ -14,15 +27,44 @@ function requireClient() {
   return supabase
 }
 
+function mapEconomy(prog: Record<string, unknown>) {
+  const row = prog as unknown as ProgressionRow
+  const base = defaultEconomy()
+  return {
+    credits: row.credits ?? base.credits,
+    stamina: row.stamina ?? base.stamina,
+    staminaMax: row.stamina_max ?? base.staminaMax,
+    brewTokens: row.brew_tokens ?? base.brewTokens,
+  }
+}
+
 function mapPlayer(
-  profile: { id: string; username: string; created_at: string; updated_at: string },
+  profile: ProfileRow,
   stats: Record<string, number>,
   prog: Record<string, unknown>,
-  penalties: Record<string, number>
+  penalties: Record<string, number>,
+  inventory: PlayerContract["inventory"],
+  trackedQuestSnapshotId: string | null,
+  pendingRaw: unknown
 ): PlayerContract {
+  const identity = resolveHunterIdentity(profile.id, {
+    codename: profile.hunter_codename ?? undefined,
+    registryId: profile.registry_id ?? undefined,
+  })
+  const chainDays = profile.sync_chain_days ?? 0
+  const lastActive = profile.last_active_date ?? null
+  const syncView = computeSynchronizationStatus(lastActive, chainDays)
+
   return {
     id: profile.id,
     username: profile.username,
+    identity,
+    synchronization: {
+      chainDays,
+      lastActiveDate: lastActive,
+      status: syncView.status,
+      atRisk: syncView.atRisk,
+    },
     level: prog.level as number,
     xp: prog.xp as number,
     rank: prog.rank as HunterRank,
@@ -42,9 +84,17 @@ function mapPlayer(
     },
     progression: {
       unlockedDungeons: (prog.unlocked_dungeons as string[]) ?? [],
-      unlockedSystems: (prog.unlocked_systems as string[]) ?? defaultProgression().unlockedSystems,
+      unlockedSystems: normalizeUnlockedSystems(
+        (prog.unlocked_systems as string[]) ?? defaultProgression().unlockedSystems
+      ),
       titles: (prog.titles as string[]) ?? [],
     },
+    economy: mapEconomy(prog),
+    inventory,
+    trackedQuestId: trackedQuestSnapshotId,
+    pendingRewards: parsePendingRewards(
+      pendingRaw ?? (prog as unknown as ProgressionRow).pending_rewards
+    ),
     createdAt: profile.created_at,
     updatedAt: profile.updated_at,
   }
@@ -53,6 +103,7 @@ function mapPlayer(
 export async function loadPlayer(userId: string): Promise<{
   player: PlayerContract
   activeQuests: QuestContract[]
+  identityBackfill: boolean
 } | null> {
   const supabase = requireClient()
 
@@ -70,12 +121,45 @@ export async function loadPlayer(userId: string): Promise<{
 
   if (profileRes.error || !profileRes.data) return null
 
-  const player = mapPlayer(
+  try {
+    await applyDailyStaminaGuarded()
+  } catch {
+    /* offline / migration pending */
+  }
+
+  const inventory = await loadPlayerInventory(userId)
+
+  let trackedSnapshotId: string | null = null
+  if (profileRes.data.tracked_quest_id && questsRes.data?.length) {
+    const row = questsRes.data.find((r) => r.id === profileRes.data.tracked_quest_id)
+    if (row) {
+      trackedSnapshotId = (row.quest_snapshot as { id?: string })?.id ?? null
+    }
+  }
+
+  let player = mapPlayer(
     profileRes.data,
     statsRes.data ?? {},
     progRes.data ?? { level: 1, xp: 0, rank: "E" },
-    penRes.data ?? {}
+    penRes.data ?? {},
+    inventory,
+    trackedSnapshotId,
+    (progRes.data as unknown as ProgressionRow | null)?.pending_rewards
   )
+
+  const parsed = PlayerSchema.safeParse({
+    id: player.id,
+    username: player.username,
+    level: player.level,
+    xp: player.xp,
+    rank: player.rank,
+    economy: player.economy,
+    inventory: player.inventory,
+    trackedQuestId: player.trackedQuestId,
+  })
+  if (!parsed.success) {
+    logSystemEvent("validation", "player_schema_drift", parsed.error.flatten())
+  }
 
   const activeQuests = dedupeActiveQuests(
     (questsRes.data ?? []).map((row) =>
@@ -86,7 +170,10 @@ export async function loadPlayer(userId: string): Promise<{
     )
   )
 
-  return { player, activeQuests }
+  const identityBackfill =
+    !profileRes.data.hunter_codename || !profileRes.data.registry_id
+
+  return { player, activeQuests, identityBackfill }
 }
 
 export async function savePlayer(
@@ -100,6 +187,10 @@ export async function savePlayer(
       .from("profiles")
       .update({
         username: player.username,
+        hunter_codename: player.identity.codename,
+        registry_id: player.identity.registryId,
+        last_active_date: player.synchronization.lastActiveDate,
+        sync_chain_days: player.synchronization.chainDays,
         updated_at: new Date().toISOString(),
       })
       .eq("id", player.id),
@@ -114,6 +205,16 @@ export async function savePlayer(
       consistency: player.stats.consistency,
     }),
     applyGuardedProgression(player),
+    supabase
+      .from("progression")
+      .update({
+        credits: player.economy.credits,
+        stamina: player.economy.stamina,
+        stamina_max: player.economy.staminaMax,
+        brew_tokens: player.economy.brewTokens,
+        pending_rewards: player.pendingRewards,
+      })
+      .eq("user_id", player.id),
     supabase.from("player_penalties").upsert({
       user_id: player.id,
       corruption: player.penalties.corruption,
@@ -152,6 +253,31 @@ export async function assignQuest(
       dungeonRun: quest.dungeonRun,
     },
   })
+}
+
+export async function findActiveQuestRowId(
+  userId: string,
+  questId: string
+): Promise<string | null> {
+  const row = await findActiveQuestRow(userId, questId)
+  return row?.id ?? null
+}
+
+export async function loadCompletedQuestSnapshots(
+  userId: string,
+  limit = 20
+): Promise<QuestContract[]> {
+  const supabase = requireClient()
+  const { data, error } = await supabase
+    .from("user_quests")
+    .select("quest_snapshot")
+    .eq("user_id", userId)
+    .eq("status", "completed")
+    .order("updated_at", { ascending: false })
+    .limit(limit)
+
+  if (error) throw new Error(error.message)
+  return (data ?? []).map((row) => row.quest_snapshot as QuestContract)
 }
 
 async function findActiveQuestRow(

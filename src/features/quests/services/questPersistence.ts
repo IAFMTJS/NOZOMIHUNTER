@@ -37,7 +37,10 @@ export async function hydratePlayerFromDb(userId: string) {
   const repairedQuests = data.activeQuests.map((q) => {
     const repaired = repairQuestSnapshot(q)
     const dismissed = repaired.vocabularyPreparation?.briefingDismissed ?? false
-    const withPrep = attachVocabularyPreparation(repaired, userId)
+    const withPrep = attachVocabularyPreparation(repaired, {
+      playerId: userId,
+      player: data.player,
+    })
     if (!withPrep.vocabularyPreparation) return withPrep
     return {
       ...withPrep,
@@ -70,7 +73,7 @@ export async function hydratePlayerFromDb(userId: string) {
     )
   })
 
-  if (needsRepairSave) {
+  if (needsRepairSave || data.identityBackfill) {
     await persistQuestState()
   }
 

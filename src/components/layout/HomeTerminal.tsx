@@ -30,8 +30,8 @@ export function HomeTerminal() {
   }, [visibleLines])
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-12">
-      <div className="mb-10 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-2)] p-5 font-mono text-sm shadow-[0_0_40px_var(--glow-accent)]">
+    <main className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-16">
+      <div className="nozomi-embedded mb-12 rounded-[var(--radius-panel)] p-6 font-mono text-sm">
         {BOOT_LINES.slice(0, visibleLines).map((line, i) => (
           <motion.p
             key={line}
@@ -40,7 +40,7 @@ export function HomeTerminal() {
             transition={MOTION.feedback}
             className={
               i === 0
-                ? "font-display text-lg font-bold tracking-[0.12em] text-[var(--accent-bright)]"
+                ? "font-display text-lg font-bold tracking-[0.14em] text-[var(--accent-bright)]"
                 : "text-[var(--muted)]"
             }
           >
@@ -66,7 +66,7 @@ export function HomeTerminal() {
         transition={MOTION.panel}
         className="text-center"
       >
-        <p className="mb-6 text-[var(--muted)]">
+        <p className="mb-8 text-sm leading-relaxed text-[var(--muted)]">
           Language is gameplay. Initialize your hunter session.
         </p>
         <Link

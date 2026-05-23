@@ -1,0 +1,6 @@
+export const STAMINA_CONFIG = {
+  DEFAULT_MAX: 100,
+  DEFAULT_START: 100,
+  DUNGEON_ENTER_COST: 20,
+  DAILY_REGEN: 100,
+} as const

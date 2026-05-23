@@ -20,7 +20,7 @@ Dismiss the install banner with **Dismiss**; it stays hidden until local storage
 ## Service worker
 
 - Registered in production only (`ServiceWorkerRegister` in root layout).
-- Caches: `/`, `/dashboard`, `/login`, and `/_next/static/*` on fetch.
+- Caches: `/`, `/home`, `/login`, and `/_next/static/*` on fetch.
 - Does **not** cache Supabase or `/auth/` routes.
 
 Test locally:
@@ -42,5 +42,5 @@ npm run start
 
 ## Manifest
 
-- [`src/app/manifest.ts`](../src/app/manifest.ts) — `standalone`, theme `#0f172a`, start `/dashboard`
+- [`src/app/manifest.ts`](../src/app/manifest.ts) — `standalone`, theme `#05070b`, start `/home`
 - Icons: [`public/icons/icon.svg`](../public/icons/icon.svg), dynamic `/icon` route

@@ -44,6 +44,11 @@ export function generateDungeon(
     },
     rewards: {
       xp: definition.rewardXpBase + xpBonus,
+      credits: Math.floor((definition.rewardXpBase + xpBonus) / 5),
+      items: [
+        { itemKey: "shadow-shard", quantity: 2 },
+        { itemKey: "signal-cache", quantity: 1 },
+      ],
       unlocks: definition.unlocks,
     },
     penalties: { corruption: 5, fatigue: 4 },

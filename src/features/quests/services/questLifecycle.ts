@@ -1,6 +1,10 @@
 import { failUserQuest, updateUserQuest } from "@/services/supabase/playerRepository"
 import { completeQuestGuarded } from "@/services/supabase/progressionRepository"
 import {
+  applyActivityCompletion,
+  emitStandardCompletionEvents,
+} from "@/features/rewards/services/completionService"
+import {
   acceptQuest,
   failQuest,
   progressQuestObjective,
@@ -11,18 +15,13 @@ import {
 } from "@/systems/quests/questGenerator"
 import { calculateQuestReward } from "@/systems/progression/rewardSystem"
 import { fatigueXpMultiplier } from "@/systems/penalties/penaltySystem"
-import { applyFatigueRecoveryOnComplete } from "@/systems/penalties/penaltyGameplaySystem"
-import { markTutorialComplete } from "@/systems/tutorial/tutorialSystem"
 import { canCompleteQuest } from "@/systems/quests/questValidator"
+import { QuestSnapshotSchema } from "@/systems/validation/playerSchema"
+import { logSystemEvent } from "@/systems/logger/logger"
 import { shouldAssignTutorialQuest } from "@/systems/tutorial/tutorialSystem"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { triggerSave } from "@/systems/save/saveSystem"
-import { GAME_EVENTS } from "@/systems/events/eventTypes"
-import { eventBus } from "@/systems/events/eventBus"
-import {
-  emitUnlockGrants,
-  resolveRewardProgression,
-} from "@/systems/progression/resolveQuestCompletion"
+import { resolveRewardProgression } from "@/systems/progression/resolveQuestCompletion"
 import {
   assignQuest,
   dedupeActiveQuests,
@@ -143,6 +142,11 @@ export async function finishQuest(userId: string, questId: string) {
 
   await updateUserQuest(userId, quest)
 
+  const snapshotCheck = QuestSnapshotSchema.safeParse(quest)
+  if (!snapshotCheck.success) {
+    logSystemEvent("validation", "quest_snapshot_drift", snapshotCheck.error.flatten())
+  }
+
   const rewardPayload = calculateQuestReward(
     quest.rewards,
     fatigueXpMultiplier(progressionState.penalties.fatigue)
@@ -153,49 +157,17 @@ export async function finishQuest(userId: string, questId: string) {
   const { progression: mergedProgression, newUnlocks } =
     resolveRewardProgression(progressionState.progression, quest.rewards)
 
-  let progression = mergedProgression
-  if (quest.isTutorial) {
-    progression = markTutorialComplete(progression)
-  }
-
-  const leveledUp = server.level > server.previous_level
-  const rankUp = server.rank !== progressionState.rank
-
-  store.applyProgressionUpdate({
-    xp: server.xp,
-    level: server.level,
-    rank: server.rank,
-    progression,
-    penalties: applyFatigueRecoveryOnComplete({
-      ...progressionState.penalties,
-      xpDebt: Math.max(
-        0,
-        progressionState.penalties.xpDebt - server.xp_gained
-      ),
-    }),
-    leveledUp,
-    rankUp,
+  const { leveledUp, rankUp } = await applyActivityCompletion({
+    userId,
+    quest,
+    server,
+    progression: mergedProgression,
     newUnlocks,
+    penaltiesBefore: progressionState.penalties,
+    rankBefore: progressionState.rank,
   })
 
-  emitUnlockGrants(userId, newUnlocks)
-
-  eventBus.emit(GAME_EVENTS.QUEST_COMPLETED, { playerId: userId, questId })
-  eventBus.emit(GAME_EVENTS.XP_GAINED, {
-    playerId: userId,
-    xpGained: server.xp_gained,
-    totalXp: server.xp,
-  })
-  if (leveledUp) {
-    eventBus.emit(GAME_EVENTS.LEVEL_UP, {
-      playerId: userId,
-      level: server.level,
-      previousLevel: server.previous_level,
-    })
-  }
-  if (rankUp) {
-    eventBus.emit(GAME_EVENTS.RANK_UP, { playerId: userId, rank: server.rank })
-  }
+  emitStandardCompletionEvents(userId, questId, server, leveledUp, rankUp)
 
   const remaining = store.activeQuests.filter((q) => q.id !== questId)
   store.setQuests(remaining)
@@ -217,7 +189,7 @@ export async function finishQuest(userId: string, questId: string) {
       level: server.level,
       rank: server.rank,
       penalties: usePlayerStore.getState().player!.penalties,
-      progression,
+      progression: usePlayerStore.getState().player!.progression,
       xpGained: server.xp_gained,
       leveledUp,
       rankUp,
