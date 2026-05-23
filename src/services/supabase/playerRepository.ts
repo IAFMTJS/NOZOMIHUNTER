@@ -147,7 +147,7 @@ export async function loadPlayer(userId: string): Promise<{
     }
   }
 
-  let player = mapPlayer(
+  const player = mapPlayer(
     profileRes.data,
     statsRes.data ?? {},
     progRes.data ?? { level: 1, xp: 0, rank: "E" },

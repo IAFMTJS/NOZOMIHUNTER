@@ -105,11 +105,11 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (user?.id) void quest.hydrate()
-  }, [user?.id, quest.hydrate])
+  }, [user?.id, quest])
 
   useEffect(() => {
     if (player) syncCorruptionAudio(player.penalties.corruption)
-  }, [player?.penalties.corruption])
+  }, [player])
 
   const { readiness, forecast } = useHunterReadiness(player, activeQuests)
 

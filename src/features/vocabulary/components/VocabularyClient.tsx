@@ -23,7 +23,7 @@ import { GAME_EVENTS } from "@/systems/events/eventTypes"
 type Tab = "ALL" | "DETECTED" | "LEARNED"
 
 export function VocabularyClient() {
-  const { player, user, hunterPresentation } = useHunterSession()
+  const { player, user } = useHunterSession()
   const setPlayer = usePlayerStore((s) => s.setPlayer)
   const [tab, setTab] = useState<Tab>("ALL")
   const [mastery, setMastery] = useState<WordMasteryContract[]>([])

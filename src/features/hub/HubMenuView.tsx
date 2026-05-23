@@ -13,10 +13,7 @@ import { ReadinessSummary } from "@/components/hunter/ReadinessSummary"
 import { SynchronizationStatus } from "@/components/hunter/SynchronizationStatus"
 import { NextGateForecast } from "@/components/hunter/NextGateForecast"
 import { minDungeonLevel } from "@/systems/dungeons/dungeonAccess"
-import {
-  selectSystemMessage,
-  systemMessageSubline,
-} from "@/systems/messaging/systemMessagingSystem"
+import { systemMessageSubline } from "@/systems/messaging/systemMessagingSystem"
 import { questReadyForHunt } from "./questReadyForHunt"
 import type { HubView } from "./hubTypes"
 

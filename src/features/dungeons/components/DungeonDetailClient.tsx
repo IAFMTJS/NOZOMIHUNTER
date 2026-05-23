@@ -20,7 +20,7 @@ interface DungeonDetailClientProps {
 
 export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
   const router = useRouter()
-  const { player, activeQuests, dungeon, hunterPresentation } = useHunterSession()
+  const { player, activeQuests, dungeon } = useHunterSession()
   const def = getDungeonDefinition(dungeonKey)
 
   if (!player) {

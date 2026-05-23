@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
 import { HunterPageBack } from "@/components/layout/HunterPageBack"
@@ -12,7 +11,7 @@ import { selectSystemMessage, systemMessageSubline } from "@/systems/messaging/s
 import { computeReadiness } from "@/systems/readiness/readinessSystem"
 
 export function SystemStatusClient() {
-  const { player, activeQuests, hunterPresentation } = useHunterSession()
+  const { player, activeQuests } = useHunterSession()
 
   if (!player) {
     return (

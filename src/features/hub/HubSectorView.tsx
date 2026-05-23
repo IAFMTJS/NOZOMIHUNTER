@@ -6,10 +6,7 @@ import type { PlayerContract } from "@/contracts/player-contract"
 import { HubScreenFrame } from "@/components/layout/HubScreenFrame"
 import { SectorMapRail } from "@/components/dungeons/SectorMapRail"
 import { DungeonRunner } from "@/features/dungeons/components/DungeonRunner"
-import {
-  buildSectorMap,
-  resolveDungeonDeployAdvisory,
-} from "@/systems/dungeons/dungeonSectorMapSystem"
+import { resolveDungeonDeployAdvisory } from "@/systems/dungeons/dungeonSectorMapSystem"
 import type { SectorMapNode } from "@/systems/dungeons/dungeonSectorMapSystem"
 import { HubBack } from "./HubBack"
 import type { ContractHubProps, PenaltyMods } from "./hubTypes"

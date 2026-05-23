@@ -18,7 +18,7 @@ const LINKS = [
 ]
 
 export function ProfileMenuClient() {
-  const { player, hunterPresentation, signOut } = useHunterSession()
+  const { player, signOut } = useHunterSession()
 
   if (!player) {
     return (
