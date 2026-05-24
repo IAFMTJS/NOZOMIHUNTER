@@ -16,6 +16,7 @@ import { transition } from "./dungeonStateMachine"
 import {
   advanceExploration,
   initExplorationFields,
+  isPursuitCaught,
   isReadyToEngage,
 } from "./explorationSystem"
 import { resolveDungeonGameMode } from "@/systems/gameModes/gameModeSystem"
@@ -107,7 +108,10 @@ export function advanceExplorationBeat(
     progress: result.run.explorationProgress,
   })
 
-  return patchRun(quest, result.run)
+  return patchRun(quest, {
+    ...result.run,
+    explorationSystemLine: result.systemLine,
+  })
 }
 
 /** @deprecated Use engageSectorEncounter — kept for internal continuity */
@@ -123,6 +127,13 @@ export function engageSectorEncounter(quest: QuestContract): QuestContract {
 
   if (run.machineState === "EXPLORATION" && !isReadyToEngage(run)) {
     throw new Error("Complete corridor traversal before breaching the sector")
+  }
+
+  if (
+    run.dungeonMode === "VOID_PURSUIT" &&
+    isPursuitCaught(run.pursuitDistance)
+  ) {
+    throw new Error("Hostile closed distance — sector breach failed.")
   }
 
   const allSectorsDone = run.dungeon.encounters.every((e) => e.completed)

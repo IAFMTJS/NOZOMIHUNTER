@@ -27,6 +27,8 @@ import {
 } from "@/features/rewards/services/completionService"
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
+import { playAmbience, type AmbienceCue } from "@/systems/audio/audioSystem"
+import type { GameModeId } from "@/contracts/game-mode-contract"
 import {
   advanceExplorationBeat,
   continueAfterReward,
@@ -96,11 +98,25 @@ export async function enterDungeon(userId: string, dungeonKey: string) {
   return quest
 }
 
+function ambienceForDungeonMode(mode: GameModeId | undefined): AmbienceCue {
+  switch (mode) {
+    case "VOID_PURSUIT":
+      return "pursuit"
+    case "CORRUPTION_RUN":
+      return "corruption"
+    default:
+      return "sector"
+  }
+}
+
 export async function deployDungeonRun(userId: string) {
   const { quest } = getDungeonQuest()
   if (!quest) return null
   let updated = deployDungeon(quest, userId)
   updated = initDungeonTimer(updated)
+  if (typeof window !== "undefined") {
+    playAmbience(ambienceForDungeonMode(updated.dungeonRun?.dungeonMode))
+  }
   await persistDungeonQuest(userId, updated)
   return updated
 }

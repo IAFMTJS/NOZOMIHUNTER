@@ -118,6 +118,8 @@ export interface DungeonRunContract {
   pursuitDistance?: number
   /** Corruption run: sectors cleared in endless loop. */
   endlessSectorCount?: number
+  /** Latest exploration system line for UI. */
+  explorationSystemLine?: string
 }
 
 export type DungeonMachineState =

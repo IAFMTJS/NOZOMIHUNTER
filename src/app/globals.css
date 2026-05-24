@@ -671,3 +671,111 @@ body {
   backdrop-filter: blur(12px);
 }
 
+/* Dungeon run — live corridor presentation */
+.nozomi-dungeon-run {
+  background: rgba(5, 7, 11, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+.nozomi-dungeon-run--pursuit {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 77, 109, 0.12),
+    0 0 40px rgba(255, 77, 109, 0.08);
+}
+
+.nozomi-dungeon-run--corruption {
+  box-shadow:
+    inset 0 0 0 1px rgba(168, 85, 247, 0.15),
+    0 0 36px rgba(168, 85, 247, 0.1);
+}
+
+.nozomi-dungeon-run--unstable {
+  animation: nozomi-dungeon-unstable 4s ease-in-out infinite;
+}
+
+@keyframes nozomi-dungeon-unstable {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.06);
+  }
+}
+
+.nozomi-dungeon-scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.12) 2px,
+    rgba(0, 0, 0, 0.12) 4px
+  );
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+}
+
+.nozomi-corridor-viewport {
+  background:
+    linear-gradient(180deg, rgba(122, 92, 255, 0.08) 0%, transparent 40%),
+    rgba(0, 0, 0, 0.45);
+}
+
+.nozomi-corridor-grid {
+  background-image:
+    linear-gradient(rgba(122, 92, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(122, 92, 255, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(180deg, black 0%, transparent 85%);
+}
+
+.nozomi-corridor-horizon {
+  background: linear-gradient(180deg, rgba(122, 92, 255, 0.2), transparent);
+}
+
+.nozomi-pursuit-fill--neutral {
+  background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+}
+
+.nozomi-pursuit-fill--warning {
+  background: linear-gradient(90deg, #a855f7, var(--accent-bright));
+}
+
+.nozomi-pursuit-fill--danger,
+.nozomi-pursuit-fill--critical {
+  background: linear-gradient(90deg, var(--danger), #ff8fa3);
+  box-shadow: 0 0 12px rgba(255, 77, 109, 0.5);
+}
+
+.nozomi-pursuit-fill--safe {
+  background: linear-gradient(90deg, var(--success), var(--accent-bright));
+  opacity: 0.7;
+}
+
+.nozomi-sector-reward {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, var(--glow-reward), transparent 55%),
+    rgba(11, 16, 32, 0.9);
+}
+
+.nozomi-sector-reward-glow {
+  background: radial-gradient(circle at 50% 0%, var(--glow-reward), transparent 70%);
+  animation: nozomi-reward-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes nozomi-reward-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.nozomi-boss-frame {
+  box-shadow: 0 0 32px rgba(255, 77, 109, 0.15);
+}
+

@@ -1,0 +1,105 @@
+import type { DungeonRunContract, EncounterType } from "@/contracts/dungeon-contract"
+import type { GameModeId } from "@/contracts/game-mode-contract"
+import { modifierSummary } from "@/systems/dungeons/dungeonModifierSystem"
+import {
+  isPursuitCaught,
+  isPursuitEscaped,
+  pursuitThreatLabel,
+} from "@/systems/dungeons/explorationSystem"
+
+export function resolveDungeonModeLabel(mode: GameModeId | undefined): string {
+  switch (mode) {
+    case "CORRUPTION_RUN":
+      return "Corruption Run"
+    case "VOID_PURSUIT":
+      return "Void Pursuit"
+    case "ROGUELIKE_SECTOR":
+      return "Roguelike Sector"
+    case "ARCHIVIST_BOSS":
+      return "Archivist Protocol"
+    default:
+      return "Sector Breach"
+  }
+}
+
+export function encounterTypeGlyph(type: EncounterType): string {
+  switch (type) {
+    case "VOCAB":
+      return "語"
+    case "LISTENING":
+      return "♪"
+    case "SPEECH":
+      return "声"
+    case "NPC":
+      return "話"
+    case "BOSS":
+      return "核"
+    default:
+      return "?"
+  }
+}
+
+export function encounterTypeLabel(type: EncounterType): string {
+  switch (type) {
+    case "VOCAB":
+      return "Lexicon breach"
+    case "LISTENING":
+      return "Signal intercept"
+    case "SPEECH":
+      return "Voice relay"
+    case "NPC":
+      return "Hostile dialogue"
+    case "BOSS":
+      return "Warden"
+    default:
+      return "Unknown"
+  }
+}
+
+export function dungeonRunShellClass(run: DungeonRunContract): string {
+  const parts = ["nozomi-dungeon-run"]
+  const mode = run.dungeonMode
+  if (mode === "VOID_PURSUIT") parts.push("nozomi-dungeon-run--pursuit")
+  if (mode === "CORRUPTION_RUN") parts.push("nozomi-dungeon-run--corruption")
+  if (mode === "ROGUELIKE_SECTOR") parts.push("nozomi-dungeon-run--roguelike")
+  if ((run.endlessSectorCount ?? 0) >= 3) parts.push("nozomi-dungeon-run--unstable")
+  return parts.join(" ")
+}
+
+export function pursuitBarTone(distance: number | undefined): string {
+  const d = distance ?? 72
+  if (isPursuitCaught(d)) return "critical"
+  if (d < 35) return "danger"
+  if (d < 55) return "warning"
+  if (isPursuitEscaped(d)) return "safe"
+  return "neutral"
+}
+
+export function formatRunPressure(run: DungeonRunContract): {
+  modeLabel: string
+  modifierText: string
+  pursuitLabel: string | null
+  loopLabel: string | null
+} {
+  return {
+    modeLabel: resolveDungeonModeLabel(run.dungeonMode),
+    modifierText: modifierSummary(run.modifiers),
+    pursuitLabel:
+      run.pursuitDistance != null
+        ? pursuitThreatLabel(run.pursuitDistance)
+        : null,
+    loopLabel:
+      run.dungeonMode === "CORRUPTION_RUN" && (run.endlessSectorCount ?? 0) > 0
+        ? `Loop ${run.endlessSectorCount} — system instability rising`
+        : null,
+  }
+}
+
+export function sectorNodeLabel(
+  index: number,
+  type: EncounterType,
+  completed: boolean
+): string {
+  const status = completed ? "cleared" : "locked"
+  return `S${index + 1} · ${encounterTypeLabel(type)} · ${status}`
+}

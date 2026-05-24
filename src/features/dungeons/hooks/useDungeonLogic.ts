@@ -59,15 +59,8 @@ export function useDungeonLogic(userId: string | undefined) {
       setBusy(true)
       try {
         const updated = await advanceDungeonExploration(userId, action)
-        if (updated?.dungeonRun?.explorationBeat === "ENGAGE") {
-          setExplorationLine("Breach point locked. Engage when ready.")
-        } else {
-          setExplorationLine(
-            action === "LISTEN"
-              ? "Channel held. Sector depth increasing."
-              : "Forward momentum logged."
-          )
-        }
+        const line = updated?.dungeonRun?.explorationSystemLine
+        if (line) setExplorationLine(line)
       } catch (e) {
         setError(e instanceof Error ? e.message : "Exploration advance failed")
       } finally {

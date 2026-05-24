@@ -3,6 +3,7 @@ import type { PlayerContract } from "@/contracts/player-contract"
 import type { DungeonRunContract } from "@/contracts/dungeon-contract"
 import { buildQuestRewards } from "@/systems/quests/questRewardFactory"
 import { estimatedDungeonTimeLimitMinutes } from "@/systems/presentation/questPresentationSystem"
+import { combinedTimerMultiplier } from "@/systems/dungeons/dungeonModifierSystem"
 import {
   hasActiveBoost,
   rewardAmplifierMultiplier,
@@ -66,12 +67,13 @@ export function initDungeonTimer(quest: QuestContract): QuestContract {
   if (!run) return quest
 
   const minutes = estimatedDungeonTimeLimitMinutes(run.dungeon.encounters.length)
+  const mult = combinedTimerMultiplier(run.modifiers)
   return {
     ...quest,
     dungeonRun: {
       ...run,
       runStartedAt: new Date().toISOString(),
-      timeLimitMs: minutes * 60_000,
+      timeLimitMs: Math.floor(minutes * 60_000 * mult),
       frozenTimeMs: 0,
       frozenUntil: null,
     },

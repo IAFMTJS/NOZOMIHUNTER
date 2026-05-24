@@ -4,8 +4,8 @@ import { useState, useEffect } from "react"
 import type { QuestContract } from "@/contracts/quest-contract"
 import {
   dungeonTimeRemaining,
-  formatDungeonTimeRemaining,
 } from "@/systems/economy/shopEffectSystem"
+import { hasReplayBan } from "@/systems/dungeons/dungeonModifierSystem"
 import { VocabularyEncounter } from "@/features/quests/components/VocabularyEncounter"
 import { ConversationEncounter } from "@/features/conversation/components/ConversationEncounter"
 import { SpeechEncounter } from "@/features/speech/components/SpeechEncounter"
@@ -13,13 +13,18 @@ import { ListeningEncounter } from "./ListeningEncounter"
 import { getDungeonBriefing } from "@/systems/dungeons/dungeonOrchestrator"
 import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
-import { StatusChip } from "@/components/ui/StatusChip"
 import { DungeonPhaseStepper } from "@/components/ui/DungeonPhaseStepper"
 import { DungeonCorridorRail } from "@/components/ui/DungeonCorridorRail"
 import { EncounterFocusShell } from "@/components/ui/EncounterFocusShell"
-import { ExplorationLayer } from "@/features/dungeons/components/ExplorationLayer"
+import { CorridorStage } from "@/features/dungeons/components/CorridorStage"
+import { DungeonRunShell } from "@/features/dungeons/components/DungeonRunShell"
+import { DungeonRunHud } from "@/features/dungeons/components/DungeonRunHud"
 import { SectorRewardInterstitial } from "@/features/dungeons/components/SectorRewardInterstitial"
 import { ExtractionCeremony } from "@/features/dungeons/components/ExtractionCeremony"
+import {
+  encounterTypeGlyph,
+  sectorNodeLabel,
+} from "@/systems/dungeons/dungeonPresentationSystem"
 import type { ExplorationAction } from "@/contracts/dungeon-contract"
 
 interface DungeonRunnerProps {
@@ -48,7 +53,7 @@ export function DungeonRunner({
   disabled,
   encounterClassName = "",
   maxWrongAttempts,
-  maxListeningReplays,
+  maxListeningReplays = 3,
   signalDegraded,
   onDeploy,
   onAdvanceExploration,
@@ -84,11 +89,13 @@ export function DungeonRunner({
   const encounters = run.dungeon.encounters
   const sectorsDone = encounters.filter((e) => e.completed).length
   const sectorTotal = encounters.length
-  const objective = quest.objectives[0]
   const activeSectorIndex = encounters.findIndex((e) => !e.completed)
   const state = run.machineState
   const inEncounter =
     state === "ENCOUNTER" || state === "BOSS" || state === "REWARD"
+  const systemLine =
+    explorationLine ?? run.explorationSystemLine ?? null
+  const replayCap = hasReplayBan(run.modifiers) ? 1 : maxListeningReplays
 
   async function wrap<T>(fn: () => Promise<T>, okMsg?: string): Promise<T | undefined> {
     try {
@@ -103,7 +110,8 @@ export function DungeonRunner({
 
   const corridorSectors = encounters.map((e, i) => ({
     id: e.id,
-    label: `Sector ${i + 1} · ${e.type}`,
+    label: sectorNodeLabel(i, e.type, e.completed),
+    glyph: encounterTypeGlyph(e.type),
     completed: e.completed,
     current:
       !e.completed &&
@@ -118,13 +126,16 @@ export function DungeonRunner({
   const encounterBody = (
     <>
       {state === "PREPARATION" && (
-        <div className="nozomi-embedded flex flex-col gap-3 rounded-[var(--radius-panel)] p-4">
-          <p className="text-sm text-[var(--muted)]">
-            Corridor synchronized. Deploy into the sector grid when operational
-            readiness is acceptable — failures stack corruption fast.
+        <div className="nozomi-dungeon-deploy flex flex-col gap-4 p-1">
+          <p className="text-sm leading-relaxed text-[var(--muted)]">
+            {getDungeonBriefing(quest)}
+          </p>
+          <p className="text-xs uppercase tracking-[0.2em] text-[var(--accent-bright)]">
+            Corridor synchronized — awaiting deployment
           </p>
           <Button
             disabled={disabled}
+            className="w-full shadow-[0_0_20px_var(--glow-accent)]"
             onClick={() => wrap(onDeploy, "Deployed into sector grid.")}
           >
             Deploy to sector
@@ -133,10 +144,10 @@ export function DungeonRunner({
       )}
 
       {state === "EXPLORATION" && (
-        <ExplorationLayer
+        <CorridorStage
           run={run}
           disabled={disabled}
-          statusLine={explorationLine}
+          statusLine={systemLine}
           onAdvance={(action) => wrap(() => onAdvanceExploration(action))}
           onEngage={() => wrap(onEngageSector, "Sector engaged.")}
         />
@@ -164,7 +175,7 @@ export function DungeonRunner({
           quest={quest}
           disabled={disabled}
           maxWrongAttempts={maxWrongAttempts}
-          maxReplays={maxListeningReplays}
+          maxReplays={replayCap}
           signalDegraded={signalDegraded}
           focusMode
           onSubmit={onSubmitListening}
@@ -198,8 +209,11 @@ export function DungeonRunner({
       )}
 
       {state === "BOSS" && (
-        <Panel tone="boss" className="mb-3">
-          <p className="mb-3 text-sm font-semibold text-[var(--danger)]">
+        <Panel tone="boss" className="nozomi-boss-frame border-[var(--danger)]/40">
+          <p className="mb-1 text-[10px] uppercase tracking-[0.28em] text-[var(--danger)]">
+            Warden encounter
+          </p>
+          <p className="mb-4 font-display text-lg text-[var(--foreground)]">
             {boss?.name ?? "Boss"} — phase {run.bossPhase + 1} / {boss?.phases ?? 2}
           </p>
           {run.bossPhase === 0 && quest.vocabularyEncounter && (
@@ -236,67 +250,63 @@ export function DungeonRunner({
   )
 
   return (
-    <Panel as="article" tone={state === "BOSS" ? "boss" : "default"}>
-      <div className="mb-4 flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-display text-lg font-semibold text-[var(--foreground)]">
+    <DungeonRunShell run={run} minimal={inEncounter && state !== "REWARD"}>
+      <Panel
+        as="article"
+        tone={state === "BOSS" ? "boss" : "default"}
+        className="!bg-transparent !shadow-none !ring-0"
+      >
+        <div className="mb-4 flex flex-col gap-3 border-b border-[var(--border-subtle)]/60 pb-4">
+          <h3 className="font-display text-xl font-semibold tracking-tight text-[var(--foreground)]">
             {quest.title}
           </h3>
-          <StatusChip
-            label={state.replace(/_/g, " ")}
-            tone={state === "BOSS" ? "danger" : "neutral"}
+          <DungeonRunHud
+            run={run}
+            machineState={state}
+            sectorsDone={sectorsDone}
+            sectorTotal={sectorTotal}
+            timeRemainingMs={timeRemainingMs}
+            compact={inEncounter}
           />
         </div>
-        <p className="font-display text-sm leading-relaxed text-[var(--muted)]">
-          {getDungeonBriefing(quest)}
-        </p>
-      </div>
 
-      <div className="mb-8 flex flex-col gap-6">
-        <DungeonPhaseStepper machineState={state} />
-        <DungeonCorridorRail sectors={corridorSectors} />
-      </div>
+        {!inEncounter && (
+          <div className="mb-6 flex flex-col gap-5">
+            <DungeonPhaseStepper machineState={state} />
+            <DungeonCorridorRail sectors={corridorSectors} />
+          </div>
+        )}
 
-      <p className="mb-6 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-        Sectors {sectorsDone}/{sectorTotal}
-        {objective
-          ? ` · Progress ${objective.currentProgress}/${objective.requiredProgress}`
-          : ""}
-        {boss ? ` · Boss: ${boss.name}` : ""}
-        {timeRemainingMs != null && run.runStartedAt
-          ? ` · Time ${formatDungeonTimeRemaining(timeRemainingMs)}`
-          : ""}
-      </p>
+        {inEncounter && state !== "REWARD" ? (
+          <EncounterFocusShell
+            title={quest.title}
+            enabled
+            autoFocus
+            encounterClassName={encounterClassName}
+          >
+            {encounterBody}
+          </EncounterFocusShell>
+        ) : (
+          encounterBody
+        )}
 
-      {inEncounter ? (
-        <EncounterFocusShell
-          title={quest.title}
-          enabled
-          autoFocus
-          encounterClassName={encounterClassName}
-        >
-          {encounterBody}
-        </EncounterFocusShell>
-      ) : (
-        encounterBody
-      )}
+        {status && (
+          <p className="mt-3 text-sm text-[var(--muted)]" role="status">
+            {status}
+          </p>
+        )}
 
-      {status && (
-        <p className="mt-3 text-sm text-[var(--muted)]" role="status">
-          {status}
-        </p>
-      )}
-
-      {state !== "EXTRACTION" && state !== "PREPARATION" && (
-        <Button
-          variant="danger"
-          disabled={disabled}
-          onClick={() => wrap(onAbandon)}
-          className="mt-4"
-        >
-          {escapeBeaconActive ? "Emergency extract" : "Abort dungeon"}
-        </Button>
-      )}
-    </Panel>
+        {state !== "EXTRACTION" && state !== "PREPARATION" && (
+          <Button
+            variant="danger"
+            disabled={disabled}
+            onClick={() => wrap(onAbandon)}
+            className="mt-4 opacity-90"
+          >
+            {escapeBeaconActive ? "Emergency extract" : "Abort dungeon"}
+          </Button>
+        )}
+      </Panel>
+    </DungeonRunShell>
   )
 }
