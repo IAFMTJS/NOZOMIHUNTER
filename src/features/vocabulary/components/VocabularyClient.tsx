@@ -9,29 +9,45 @@ import { loadCompletedQuestSnapshots } from "@/services/supabase/playerRepositor
 import type { QuestContract } from "@/contracts/quest-contract"
 import { HunterPage } from "@/components/layout/HunterPage"
 import { Button } from "@/components/ui/Button"
+import { LearnerWordLine } from "@/components/ui/LearnerWordLine"
 import { JMDICT_CURATED } from "@/data/jmdictCurated"
 import { loadWordMastery } from "@/services/supabase/vocabularyRepository"
 import type { WordMasteryContract } from "@/contracts/vocabulary-contract"
 import { brewWordGuarded } from "@/services/supabase/economyRepository"
 import { canBrewWord, pickBrewCandidate, brewTokensAfterSpend } from "@/systems/vocabulary/brewSystem"
 import {
-  resolveVocabularyThreat,
-  threatDisplayLabel,
-} from "@/systems/vocabulary/vocabularyThreatSystem"
+  filterVocabularyCatalog,
+  mapCuratedToCatalogEntry,
+  type VocabularyCatalogTab,
+} from "@/systems/vocabulary/vocabularyCatalogSystem"
+import { threatDisplayLabel } from "@/systems/vocabulary/vocabularyThreatSystem"
+import { instabilityLabel } from "@/systems/vocabulary/memoryDecaySystem"
+import { learnerPartsFromCurated } from "@/services/jmdict/learnerFormat"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { hydratePlayerFromDb } from "@/features/quests/services/questService"
 import { BREW_CONFIG } from "@/config/brewConfig"
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
 
-type Tab = "ALL" | "DETECTED" | "LEARNED"
+const TABS: { id: VocabularyCatalogTab; label: string }[] = [
+  { id: "THREATS", label: "Threats" },
+  { id: "CONQUERED", label: "Conquered" },
+  { id: "ALL", label: "All" },
+]
+
+const THREAT_ROW_CLASS: Record<string, string> = {
+  ROUTINE: "",
+  ELEVATED: "border-[var(--warning)]/30",
+  CRITICAL: "nozomi-threat-critical",
+  SECTOR_CRITICAL: "nozomi-threat-sector-critical",
+}
 
 export function VocabularyClient() {
   const searchParams = useSearchParams()
   const sessionMode = searchParams.get("session")
   const { player, user } = useHunterSession()
   const setPlayer = usePlayerStore((s) => s.setPlayer)
-  const [tab, setTab] = useState<Tab>("ALL")
+  const [tab, setTab] = useState<VocabularyCatalogTab>("THREATS")
   const [mastery, setMastery] = useState<WordMasteryContract[]>([])
   const [busy, setBusy] = useState(false)
   const [lastRun, setLastRun] = useState<QuestContract | null>(null)
@@ -49,27 +65,11 @@ export function VocabularyClient() {
 
   const entries = useMemo(() => {
     const known = new Map(mastery.map((m) => [m.wordId, m]))
-    return JMDICT_CURATED.map((e) => ({
-      entSeq: e.entSeq,
-      wordId: String(e.entSeq),
-      kanji: e.japanese,
-      romaji: e.reading,
-      meaning: e.meanings[0] ?? "",
-      mastery: known.get(String(e.entSeq))?.mastery ?? 0,
-    }))
-  }, [mastery])
-
-  const filtered = useMemo(() => {
-    if (tab === "LEARNED") {
-      return entries.filter((e) => e.mastery >= BREW_CONFIG.LEARNED_MASTERY_THRESHOLD)
-    }
-    if (tab === "DETECTED") {
-      return entries.filter(
-        (e) => e.mastery > 0 && e.mastery < BREW_CONFIG.LEARNED_MASTERY_THRESHOLD
-      )
-    }
-    return entries.slice(0, 80)
-  }, [entries, tab])
+    const mapped = JMDICT_CURATED.map((e) =>
+      mapCuratedToCatalogEntry(e, known.get(String(e.entSeq)))
+    )
+    return filterVocabularyCatalog(mapped, tab)
+  }, [mastery, tab])
 
   async function handleBrew() {
     if (!player || !user?.id || !canBrewWord(player)) return
@@ -119,41 +119,63 @@ export function VocabularyClient() {
       )}
 
       <div className="nozomi-embedded mb-4 flex gap-2 rounded-xl p-3">
-        {(["ALL", "DETECTED", "LEARNED"] as Tab[]).map((t) => (
+        {TABS.map((t) => (
           <button
-            key={t}
+            key={t.id}
             type="button"
-            onClick={() => setTab(t)}
+            onClick={() => setTab(t.id)}
             className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-wider ${
-              tab === t
+              tab === t.id
                 ? "bg-[var(--accent)]/30 text-[var(--accent-bright)]"
                 : "text-[var(--muted)]"
             }`}
           >
-            {t}
+            {t.label}
           </button>
         ))}
       </div>
 
       <ul className="nozomi-embedded space-y-2 rounded-xl p-2 pb-20">
-        {filtered.map((e) => (
-          <li key={e.wordId}>
-            <Link
-              href={`/vocabulary/${e.entSeq}`}
-              className="flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-black/20 px-4 py-3"
-            >
-              <div>
-                <p className="font-japanese text-lg text-[var(--foreground)]">{e.kanji}</p>
-                <p className="text-xs text-[var(--muted)]">
-                  {e.romaji} · {e.meaning}
-                </p>
-              </div>
-              <span className="text-[10px] uppercase text-[var(--warning)]">
-                THREAT · {threatDisplayLabel(resolveVocabularyThreat(e.wordId))}
-              </span>
-            </Link>
+        {entries.length === 0 ? (
+          <li className="px-4 py-6 text-center text-sm text-[var(--muted)]">
+            {tab === "THREATS"
+              ? "No active threats — stabilize words in contracts or training."
+              : tab === "CONQUERED"
+                ? "No conquered entries yet."
+                : "Threat index empty."}
           </li>
-        ))}
+        ) : (
+          entries.map((e) => {
+            const parts = learnerPartsFromCurated({
+              entSeq: e.entSeq,
+              japanese: [e.japanese],
+              reading: [e.reading],
+              romaji: e.romaji,
+              meanings: [e.meaning],
+            })
+            const decay = instabilityLabel(e.instability)
+            return (
+              <li key={e.wordId}>
+                <Link
+                  href={`/vocabulary/${e.entSeq}`}
+                  className={`flex items-center justify-between gap-3 rounded-xl border border-[var(--border-subtle)] bg-black/20 px-4 py-3 ${THREAT_ROW_CLASS[e.threat] ?? ""}`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <LearnerWordLine parts={parts} layout="stacked" size="sm" audio />
+                    {decay && (
+                      <p className="mt-1 text-[10px] uppercase text-[var(--danger)]">
+                        {decay}
+                      </p>
+                    )}
+                  </div>
+                  <span className="shrink-0 text-[10px] uppercase text-[var(--warning)]">
+                    {threatDisplayLabel(e.threat)}
+                  </span>
+                </Link>
+              </li>
+            )
+          })
+        )}
       </ul>
 
       <div className="hunter-fab-above-nav fixed left-0 right-0 z-30 mx-auto max-w-lg px-4">

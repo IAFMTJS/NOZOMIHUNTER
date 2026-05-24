@@ -13,6 +13,10 @@ import {
 } from "@/services/supabase/vocabularyRepository"
 import { resolveVocabularyThreat, threatDisplayLabel } from "@/systems/vocabulary/vocabularyThreatSystem"
 import { BREW_CONFIG } from "@/config/brewConfig"
+import { LearnerWordLine } from "@/components/ui/LearnerWordLine"
+import { learnerPartsFromCurated } from "@/services/jmdict/learnerFormat"
+import { computeWordInstability, instabilityLabel } from "@/systems/vocabulary/memoryDecaySystem"
+import type { WordMasteryContract } from "@/contracts/vocabulary-contract"
 
 interface WordDetailClientProps {
   entSeq: number
@@ -21,7 +25,7 @@ interface WordDetailClientProps {
 export function WordDetailClient({ entSeq }: WordDetailClientProps) {
   const { user } = useHunterSession()
   const entry = JMDICT_CURATED.find((e) => e.entSeq === entSeq)
-  const [mastery, setMastery] = useState(0)
+  const [masteryRow, setMasteryRow] = useState<WordMasteryContract | undefined>()
   const [tab, setTab] = useState<"MEANING" | "USAGE">("MEANING")
   const [marking, setMarking] = useState(false)
 
@@ -29,7 +33,7 @@ export function WordDetailClient({ entSeq }: WordDetailClientProps) {
     if (!user?.id) return
     void loadWordMastery(user.id).then((rows) => {
       const row = rows.find((r) => r.wordId === String(entSeq))
-      setMastery(row?.mastery ?? 0)
+      setMasteryRow(row)
     })
   }, [user?.id, entSeq])
 
@@ -43,17 +47,23 @@ export function WordDetailClient({ entSeq }: WordDetailClientProps) {
   }
 
   const threat = resolveVocabularyThreat(String(entSeq))
+  const mastery = masteryRow?.mastery ?? 0
   const learned = mastery >= BREW_CONFIG.LEARNED_MASTERY_THRESHOLD
+  const instability = computeWordInstability(masteryRow)
+  const decayLabel = instabilityLabel(instability)
+  const parts = learnerPartsFromCurated(entry)
 
   return (
     <HunterPage>
       <HunterPageBack href="/vocabulary" label="Threat index" />
       <div className="space-y-5 text-center">
-        <p className="font-japanese text-5xl text-[var(--foreground)]">{entry.japanese}</p>
-        <p className="text-[var(--muted)]">{entry.reading}</p>
+        <LearnerWordLine parts={parts} layout="stacked" size="lg" audio className="justify-center" />
         <span className="inline-block rounded px-2 py-0.5 text-[10px] uppercase tracking-wider text-[var(--warning)]">
           {threatDisplayLabel(threat)}
         </span>
+        {decayLabel && (
+          <p className="text-[10px] uppercase tracking-wider text-[var(--danger)]">{decayLabel}</p>
+        )}
 
         <div className="flex justify-center gap-4">
           {(["MEANING", "USAGE"] as const).map((t) => (
@@ -96,7 +106,15 @@ export function WordDetailClient({ entSeq }: WordDetailClientProps) {
                   String(entSeq),
                   BREW_CONFIG.LEARNED_MASTERY_THRESHOLD
                 )
-                  .then(() => setMastery(BREW_CONFIG.LEARNED_MASTERY_THRESHOLD))
+                  .then(() =>
+                    setMasteryRow({
+                      wordId: String(entSeq),
+                      mastery: BREW_CONFIG.LEARNED_MASTERY_THRESHOLD,
+                      correctCount: 1,
+                      wrongCount: 0,
+                      lastSeenAt: new Date().toISOString(),
+                    })
+                  )
                   .finally(() => setMarking(false))
               }}
             >

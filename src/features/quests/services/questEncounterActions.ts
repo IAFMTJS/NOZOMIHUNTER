@@ -192,7 +192,8 @@ export async function submitListeningAnswerForQuest(
     quest,
     answer,
     store.player.penalties,
-    store.player
+    store.player,
+    userId
   )
   store.updateQuest(result.quest)
   await updateUserQuest(userId, result.quest)

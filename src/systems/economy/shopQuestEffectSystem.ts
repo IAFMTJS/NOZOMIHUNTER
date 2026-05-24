@@ -115,17 +115,7 @@ export function skipCurrentObjective(quest: QuestContract): QuestContract {
     }
   }
 
-  if (next.listeningEncounter) {
-    const enc = next.listeningEncounter
-    next = {
-      ...next,
-      listeningEncounter: {
-        ...enc,
-        currentIndex: enc.fragments.length,
-        wrongAttempts: 0,
-      },
-    }
-  }
+  /* Listening objectives cannot be skipped — handled in questLifecycle */
 
   if (next.dungeonRun && next.dungeonRun.machineState === "ENCOUNTER") {
     next = skipDungeonEncounter(next)

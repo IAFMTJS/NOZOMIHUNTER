@@ -75,6 +75,18 @@ export function HomeClient() {
       {readiness && <ReadinessSummary readiness={readiness} />}
       {forecast && <NextGateForecast forecast={forecast} />}
 
+      <Link
+        href="/training"
+        className="block rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:border-[var(--accent)]/40"
+      >
+        <p className="text-xs uppercase tracking-widest text-[var(--muted)]">
+          Training channel
+        </p>
+        <p className="mt-1 text-sm text-[var(--foreground)]">
+          Repeatable drills — safe stat progression
+        </p>
+      </Link>
+
       {tracked && (
         <Link
           href={`/contracts/${tracked.id}`}

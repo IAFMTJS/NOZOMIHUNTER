@@ -23,6 +23,7 @@ import {
   selectSystemMessage,
 } from "@/systems/messaging/systemMessagingSystem"
 import { getTrackedQuest } from "@/systems/quests/contractTrackingSystem"
+import { buildMissionOpsPresentation } from "@/systems/presentation/missionOpsPresentationSystem"
 import type { QuestContract } from "@/contracts/quest-contract"
 
 export type QuestChannelTab = "daily" | "story" | "side" | "achievements"
@@ -85,7 +86,7 @@ export function ContractsClient() {
   )
   const achievements = resolveAchievements(player)
   const tracked = getTrackedQuest(activeQuests, player)
-  const dailyQuests = catalog.sideQuests
+  const dailyQuests = catalog.dailyQuests
 
   return (
     <HunterPage className="pb-4">
@@ -99,7 +100,9 @@ export function ContractsClient() {
           trackedHref={tracked ? `/contracts/${tracked.id}` : null}
           showRequest={tab === "daily" || tab === "side"}
           requestBusy={quest.busy}
-          onRequest={() => void quest.newQuest()}
+          onRequest={() =>
+            void quest.newQuest(tab === "daily" ? "daily" : "side")
+          }
         />
 
         <TabBar tabs={TABS} active={tab} onChange={setTab} />
@@ -203,6 +206,7 @@ export function ContractsClient() {
               dailyQuests.map((q) => {
                 const prog = aggregateQuestProgress(q)
                 const meta = getQuestCatalogMeta(q)
+                const ops = buildMissionOpsPresentation(q)
                 return (
                   <li key={q.id} className="flex items-stretch gap-2">
                     <ContractTypeIcon type={q.type} />
@@ -211,6 +215,8 @@ export function ContractsClient() {
                         index={meta.missionIndex ?? 1}
                         title={q.title}
                         titleJa={meta.titleJa}
+                        sectorBlurb={ops.sectorBlurb}
+                        dangerTier={ops.dangerTier}
                         progressCurrent={prog.current}
                         progressRequired={prog.required}
                         rewardXp={q.rewards.xp}
@@ -232,12 +238,11 @@ export function ContractsClient() {
                 No side contracts active.
               </p>
             ) : (
-              regularQuests
-                .filter((q) => q.id !== catalog.mainStory?.id)
-                .filter((q) => q.narrativeTier === "SIDE" || !q.narrativeTier)
+              catalog.sideQuests
                 .map((q) => {
                   const prog = aggregateQuestProgress(q)
                   const meta = getQuestCatalogMeta(q)
+                  const ops = buildMissionOpsPresentation(q)
                   return (
                     <li key={q.id} className="flex items-stretch gap-2">
                       <ContractTypeIcon type={q.type} />
@@ -246,6 +251,8 @@ export function ContractsClient() {
                           index={meta.missionIndex ?? 1}
                           title={q.title}
                           titleJa={meta.titleJa}
+                          sectorBlurb={ops.sectorBlurb}
+                          dangerTier={ops.dangerTier}
                           progressCurrent={prog.current}
                           progressRequired={prog.required}
                           rewardXp={q.rewards.xp}

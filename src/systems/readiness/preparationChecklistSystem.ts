@@ -5,6 +5,18 @@ import {
   hasConsumables,
   hasEquipmentReady,
 } from "@/systems/inventory/inventorySystem"
+import { isTutorialComplete } from "@/systems/tutorial/tutorialSystem"
+
+function skillLoadoutReady(player: PlayerContract): boolean {
+  if (player.level >= 2 || isTutorialComplete(player)) return true
+  const { vocabulary, listening, speaking, grammar } = player.stats
+  return (
+    vocabulary >= 1 ||
+    listening >= 1 ||
+    speaking >= 1 ||
+    grammar >= 1
+  )
+}
 
 export function computePreparationChecklist(
   player: PlayerContract,
@@ -13,7 +25,7 @@ export function computePreparationChecklist(
 ): PreparationChecklistContract {
   return {
     equipment: hasEquipmentReady(player.inventory, catalog),
-    skillLoadout: player.stats.speaking >= 1 || player.stats.listening >= 1,
+    skillLoadout: skillLoadoutReady(player),
     consumables: hasConsumables(player.inventory, catalog),
     vocabulary: vocabularyReady,
   }

@@ -7,7 +7,9 @@ import type {
 import type { DungeonRunContract } from "./dungeon-contract"
 import type { QuestVocabularyPreparationContract } from "./vocabulary-contract"
 
-export type QuestNarrativeTier = "MAIN" | "SIDE"
+export type QuestNarrativeTier = "MAIN" | "SIDE" | "DAILY"
+
+export type QuestRequestChannel = "daily" | "side" | "story"
 
 export interface QuestContract {
   id: string

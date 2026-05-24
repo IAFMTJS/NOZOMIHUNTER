@@ -26,6 +26,7 @@ interface PlayerStore {
     leveledUp: boolean
     rankUp?: boolean
     newUnlocks?: string[]
+    stats?: PlayerContract["stats"]
   }) => void
   applyPenalties: (penalties: PlayerContract["penalties"]) => void
   updateQuest: (quest: QuestContract) => void
@@ -73,6 +74,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         rpgStats,
         progression: update.progression,
         penalties: update.penalties,
+        stats: update.stats ?? player.stats,
         updatedAt: new Date().toISOString(),
       },
       levelUpNotice: update.leveledUp ? update.level : get().levelUpNotice,

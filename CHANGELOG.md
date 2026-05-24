@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.2.3 (unreleased) — Updates 2405 integration
+
+### Critical gameplay
+- **Daily vs Side quests** — separate `DAILY` narrative tier, `dailyQuestSystem`, channel-aware `requestNewQuest`
+- **Progression softlock** — stat growth on completion, starter bootstrap (dungeons + inventory), softened prepare checklist, `/training` drills
+- **Listening** — submit requires listen first; skip token blocked on listening; mastery on correct decode
+- **Quest data** — playability check + corrupted-mission fallback copy
+- **Vocabulary tabs** — Threats (default) / Conquered / All via `vocabularyCatalogSystem`
+
+### Global learner UX
+- **`LearnerWordLine` + `WordAudioButton`** — Japanese / romaji / meaning + TTS on vocab list, detail, prep tiles
+- **Memory decay** — instability % from `last_seen_at` on threat index
+
+### Immersion
+- **Mission cards** — sector blurbs and danger tier on daily/side contracts
+- **Profile** — registry status rail, penalty/sync widgets, system module cards
+- **Reactive feedback** — XP / penalty / glitch toasts via `ReactiveFeedbackHost`
+- **Threat visuals** — CSS pulse tiers on vocab rows; fatigue-high shell blur
+
+### Docs & tests
+- `rules/learner-display-rules.md`, migration `014_starter_bootstrap.sql`, `tests/updates2405Systems.test.ts`
+
 ## v1.2.2 (unreleased) — shop remediation + reference gap closure
 
 ### Quest Channel UI (full mockup pass)

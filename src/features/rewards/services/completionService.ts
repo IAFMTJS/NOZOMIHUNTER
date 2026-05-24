@@ -14,6 +14,7 @@ import { applyFatigueRecoveryOnComplete } from "@/systems/penalties/penaltyGamep
 import { applyPlayerActivityRecord } from "@/systems/player/playerActivitySystem"
 import { emitUnlockGrants } from "@/systems/progression/resolveQuestCompletion"
 import { markTutorialComplete } from "@/systems/tutorial/tutorialSystem"
+import { applyQuestStatRewards } from "@/systems/progression/playerStatProgressionSystem"
 
 export interface ActivityCompletionInput {
   userId: string
@@ -50,6 +51,8 @@ export async function applyActivityCompletion(
   const leveledUp = input.server.level > input.server.previous_level
   const rankUp = input.server.rank !== input.rankBefore
 
+  const withStats = applyQuestStatRewards(player, input.quest)
+
   store.applyProgressionUpdate({
     xp: input.server.xp,
     level: input.server.level,
@@ -62,6 +65,7 @@ export async function applyActivityCompletion(
     leveledUp,
     rankUp,
     newUnlocks: input.newUnlocks,
+    stats: withStats.stats,
   })
 
   emitUnlockGrants(input.userId, input.newUnlocks)

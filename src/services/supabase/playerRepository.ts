@@ -6,10 +6,12 @@ import {
   defaultProgression,
   normalizeUnlockedSystems,
 } from "@/systems/progression/unlockSystem"
+import { bootstrapPlayerState } from "@/systems/progression/playerBootstrapSystem"
 import { dedupeActiveQuests } from "@/systems/quests/questListUtils"
 import { mergeQuestRow } from "@/systems/quests/questEncounterRepair"
 import { applyGuardedProgression } from "@/services/supabase/progressionRepository"
 import { loadPlayerInventory } from "@/services/supabase/inventoryRepository"
+import { persistInventorySlots } from "@/services/supabase/inventoryGrantRepository"
 import { applyDailyStaminaGuarded } from "@/services/supabase/economyRepository"
 import { resolveHunterIdentity } from "@/systems/identity/hunterIdentitySystem"
 import { computeSynchronizationStatus } from "@/systems/synchronization/synchronizationSystem"
@@ -96,13 +98,18 @@ function mapPlayer(
       fatigue: penalties.fatigue ?? 0,
       xpDebt: penalties.xp_debt ?? 0,
     },
-    progression: {
-      unlockedDungeons: (prog.unlocked_dungeons as string[]) ?? [],
-      unlockedSystems: normalizeUnlockedSystems(
-        (prog.unlocked_systems as string[]) ?? defaultProgression().unlockedSystems
-      ),
-      titles: (prog.titles as string[]) ?? [],
-    },
+    progression: (() => {
+      const rawDungeons = (prog.unlocked_dungeons as string[]) ?? []
+      const defaults = defaultProgression()
+      return {
+        unlockedDungeons:
+          rawDungeons.length > 0 ? rawDungeons : defaults.unlockedDungeons,
+        unlockedSystems: normalizeUnlockedSystems(
+          (prog.unlocked_systems as string[]) ?? defaults.unlockedSystems
+        ),
+        titles: (prog.titles as string[]) ?? [],
+      }
+    })(),
     economy: mapEconomy(prog),
     inventory,
     trackedQuestId: trackedQuestSnapshotId,
@@ -141,7 +148,7 @@ export async function loadPlayer(userId: string): Promise<{
     /* offline / migration pending */
   }
 
-  const inventory = await loadPlayerInventory(userId)
+  let inventory = await loadPlayerInventory(userId)
 
   let trackedSnapshotId: string | null = null
   if (profileRes.data.tracked_quest_id && questsRes.data?.length) {
@@ -151,7 +158,7 @@ export async function loadPlayer(userId: string): Promise<{
     }
   }
 
-  const player = mapPlayer(
+  let player = mapPlayer(
     profileRes.data,
     statsRes.data ?? {},
     progRes.data ?? { level: 1, xp: 0, rank: "E" },
@@ -160,6 +167,20 @@ export async function loadPlayer(userId: string): Promise<{
     trackedSnapshotId,
     (progRes.data as unknown as ProgressionRow | null)?.pending_rewards
   )
+
+  const boot = bootstrapPlayerState(player, inventory)
+  player = boot.player
+  inventory = boot.inventory
+  if (boot.changed) {
+    try {
+      if (boot.inventory.length > 0) {
+        await persistInventorySlots(userId, boot.inventory)
+      }
+      await savePlayer(player, [])
+    } catch {
+      /* offline */
+    }
+  }
 
   const parsed = PlayerSchema.safeParse({
     id: player.id,

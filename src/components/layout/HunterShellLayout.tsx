@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { BottomNav } from "@/components/layout/BottomNav"
 import { AudioMuteToggle } from "@/components/ui/AudioMuteToggle"
 import { AtmosphericBackground } from "@/components/layout/AtmosphericBackground"
+import { ReactiveFeedbackHost } from "@/components/layout/ReactiveFeedbackHost"
 
 function resolvePageTitle(pathname: string): string {
   if (pathname === "/home" || pathname === "/dashboard") return "NOZOMI HUNTER SYSTEM"
@@ -72,6 +73,7 @@ export function HunterShellLayout({
           {children}
         </main>
 
+        <ReactiveFeedbackHost />
         <BottomNav />
       </div>
     </AtmosphericBackground>

@@ -9,10 +9,12 @@ import {
   failQuest,
   progressQuestObjective,
 } from "@/systems/quests/questOrchestrator"
+import { generateTutorialQuest } from "@/systems/quests/questGenerator"
+import type { QuestRequestChannel } from "@/contracts/quest-contract"
 import {
-  generateQuestForPlayer,
-  generateTutorialQuest,
-} from "@/systems/quests/questGenerator"
+  generateQuestForChannel,
+  meetsQuestRequirements,
+} from "@/systems/quests/questChannelSystem"
 import { hasActiveBoost } from "@/systems/economy/boostSystem"
 import {
   resetQuestForRetry,
@@ -53,21 +55,30 @@ export async function ensureTutorialQuest(userId: string) {
   return quest
 }
 
-export async function requestNewQuest(userId: string) {
+export async function requestNewQuest(
+  userId: string,
+  channel: QuestRequestChannel = "side"
+) {
   const store = usePlayerStore.getState()
   const player = store.player
   if (!player) return null
 
-  const generated = generateQuestForPlayer(
-    player.level,
-    player.progression.unlockedSystems
+  const generated = generateQuestForChannel(
+    channel,
+    player,
+    store.activeQuests
   )
+
+  if (!meetsQuestRequirements(generated, player)) {
+    throw new Error("Hunter level too low for this contract")
+  }
+
+  if (store.activeQuests.some((q) => q.id === generated.id)) {
+    return store.activeQuests.find((q) => q.id === generated.id) ?? null
+  }
+
   const quest = acceptQuest(generated, userId)
   await assignQuest(userId, quest)
-
-  if (store.activeQuests.some((q) => q.id === quest.id)) {
-    return quest
-  }
 
   store.setQuests(dedupeActiveQuests([...store.activeQuests, quest]))
   await persistQuestState()
@@ -240,6 +251,10 @@ export async function skipQuestObjectiveForPlayer(
   if (!player || !quest) return null
   if (!hasActiveBoost(player, "SKIP_TOKEN")) {
     throw new Error("Skip token not active")
+  }
+
+  if (quest.type === "LISTENING" && quest.listeningEncounter) {
+    throw new Error("Skip token cannot bypass listening calibration")
   }
 
   const updated = skipCurrentObjective(quest)

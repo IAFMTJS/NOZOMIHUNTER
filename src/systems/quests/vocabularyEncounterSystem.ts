@@ -54,6 +54,7 @@ export function checkVocabularyAnswer(
     normalizeAnswer(word.romaji),
     readingToRomaji(word.reading),
     normalizeJapanese(word.reading),
+    normalizeJapanese(word.japanese),
     ...word.meanings.map(normalizeAnswer),
   ])
 

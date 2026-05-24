@@ -9,23 +9,27 @@ import { CollapsibleSection } from "@/components/ui/screen/CollapsibleSection"
 import { XPBar } from "@/components/XPBar"
 import { GlassCard } from "@/components/ui/GlassCard"
 import { RankChip } from "@/components/ui/screen/RankChip"
+import { StatusChip } from "@/components/ui/StatusChip"
 import { AudioMuteToggle } from "@/components/ui/AudioMuteToggle"
+import { PenaltyStatus } from "@/components/PenaltyStatus"
+import { SynchronizationStatus } from "@/components/hunter/SynchronizationStatus"
 import { xpProgressInCurrentLevel } from "@/systems/progression/levelSystem"
 import { getHunterPresentation } from "@/systems/presentation/hunterPresentationSystem"
 import { rankDisplayTitle } from "@/systems/presentation/rankPresentationSystem"
 import { buildProfileStats } from "@/features/profile/profileStatsPresentation"
 import { getUnlockEntry } from "@/config/unlockRegistry"
 import { profileSummary } from "@/features/profile/profilePresentation"
+import { computeReadiness } from "@/systems/readiness/readinessSystem"
 
-const LINKS = [
-  { href: "/achievements", label: "Achievements" },
-  { href: "/records", label: "Records" },
-  { href: "/inventory", label: "Inventory" },
-  { href: "/settings", label: "Registry controls" },
-  { href: "/stats", label: "Core stats" },
-  { href: "/system", label: "System status" },
-  { href: "/vocabulary", label: "Threat index" },
-]
+const MODULES = [
+  { href: "/achievements", label: "Achievements", icon: "★", status: "Registry honors" },
+  { href: "/records", label: "Records", icon: "▣", status: "Mission archive" },
+  { href: "/inventory", label: "Inventory", icon: "◈", status: "Loadout + store" },
+  { href: "/vocabulary", label: "Threat index", icon: "⚠", status: "Active containment" },
+  { href: "/stats", label: "Core stats", icon: "◎", status: "Skill telemetry" },
+  { href: "/system", label: "System status", icon: "◇", status: "Full diagnostics" },
+  { href: "/settings", label: "Registry controls", icon: "⚙", status: "Interface config" },
+] as const
 
 export function ProfileMenuClient() {
   const { player, signOut } = useHunterSession()
@@ -45,6 +49,7 @@ export function ProfileMenuClient() {
   const titleLabel = stats.equippedTitle
     ? getUnlockEntry(stats.equippedTitle).label
     : null
+  const readiness = computeReadiness({ player })
 
   return (
     <HunterPage>
@@ -81,6 +86,24 @@ export function ProfileMenuClient() {
           </div>
         </GlassCard>
       </div>
+
+      <GlassCard className="mt-4 space-y-3 nozomi-embedded p-4">
+        <p className="text-[10px] uppercase tracking-widest text-[var(--muted)]">
+          Registry status
+        </p>
+        <ul className="space-y-1.5 text-xs text-[var(--foreground)]">
+          {player.penalties.xpDebt > 0 && (
+            <li>• XP debt active ({player.penalties.xpDebt})</li>
+          )}
+          {player.penalties.fatigue >= 40 && (
+            <li>• Neural fatigue detected ({player.penalties.fatigue}%)</li>
+          )}
+          <li>• Audio synchronization stable</li>
+          <li>• Readiness {readiness.preparationScore}% · {readiness.survivalLabel}</li>
+        </ul>
+        <PenaltyStatus penalties={player.penalties} />
+        <SynchronizationStatus synchronization={player.synchronization} />
+      </GlassCard>
 
       <GlassCard className="mt-4 nozomi-embedded">
         <h2 className="mb-3 font-display text-xs uppercase tracking-widest text-[var(--muted)]">
@@ -131,32 +154,35 @@ export function ProfileMenuClient() {
         </GlassCard>
       )}
 
-      <ul className="nozomi-embedded mt-6 divide-y divide-[var(--border-subtle)] rounded-xl border border-[var(--border-subtle)]">
-        {LINKS.map((link) => (
-          <li key={link.href}>
-            <Link
-              href={link.href}
-              className="flex items-center justify-between px-4 py-3 text-sm text-[var(--foreground)] hover:bg-white/5"
-            >
-              {link.label}
-              <span className="text-[var(--muted)]">›</span>
-            </Link>
-          </li>
+      <div className="mt-6 grid gap-2">
+        {MODULES.map((mod) => (
+          <Link key={mod.href} href={mod.href}>
+            <GlassCard className="flex items-center gap-3 p-3 transition-colors hover:border-[var(--accent)]/30">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-black/30 text-[var(--accent-bright)]">
+                {mod.icon}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-[var(--foreground)]">{mod.label}</p>
+                <p className="text-[10px] text-[var(--muted)]">{mod.status}</p>
+              </div>
+              <StatusChip label="Open" tone="neutral" />
+            </GlassCard>
+          </Link>
         ))}
-        <li className="flex items-center justify-between px-4 py-3 text-sm">
-          <span>Audio</span>
-          <AudioMuteToggle />
-        </li>
-        <li>
-          <button
-            type="button"
-            onClick={() => void signOut()}
-            className="w-full px-4 py-3 text-left text-sm text-[var(--danger)] hover:bg-white/5"
-          >
-            Logout
-          </button>
-        </li>
-      </ul>
+      </div>
+
+      <GlassCard className="mt-4 flex items-center justify-between p-3 nozomi-embedded">
+        <span className="text-sm">Audio</span>
+        <AudioMuteToggle />
+      </GlassCard>
+
+      <button
+        type="button"
+        onClick={() => void signOut()}
+        className="mt-4 w-full rounded-xl border border-[var(--danger)]/30 px-4 py-3 text-sm text-[var(--danger)] hover:bg-[var(--danger)]/10"
+      >
+        Logout
+      </button>
     </HunterPage>
   )
 }

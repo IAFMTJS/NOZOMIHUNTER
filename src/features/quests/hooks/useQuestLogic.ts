@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useState } from "react"
+import type { QuestRequestChannel } from "@/contracts/quest-contract"
 import {
   hydratePlayerFromDb,
   requestNewQuest,
@@ -32,18 +33,21 @@ export function useQuestLogic(userId: string | undefined) {
     }
   }, [userId])
 
-  const newQuest = useCallback(async () => {
-    if (!userId) return
-    setBusy(true)
-    setQuestMessage(null)
-    try {
-      await requestNewQuest(userId)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to assign quest")
-    } finally {
-      setBusy(false)
-    }
-  }, [userId])
+  const newQuest = useCallback(
+    async (channel: QuestRequestChannel = "side") => {
+      if (!userId) return
+      setBusy(true)
+      setQuestMessage(null)
+      try {
+        await requestNewQuest(userId, channel)
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Failed to assign quest")
+      } finally {
+        setBusy(false)
+      }
+    },
+    [userId]
+  )
 
   const progress = useCallback(
     async (questId: string, objectiveId = "obj-1") => {

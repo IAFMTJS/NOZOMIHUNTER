@@ -3,6 +3,8 @@ import { overlayCatalogMetadata } from "@/config/missionCatalogMetadata"
 
 export interface ContractCatalogView {
   mainStory: QuestContract | null
+  mainStoryQuests: QuestContract[]
+  dailyQuests: QuestContract[]
   sideQuests: QuestContract[]
   completed: QuestContract[]
 }
@@ -25,13 +27,26 @@ export function buildContractCatalog(
   const active = quests
     .filter((q) => !completedIds.includes(q.id))
     .map(withNarrativeTier)
-  const main = active.find((q) => inferTier(q) === "MAIN") ?? null
-  const side = active.filter((q) => q.id !== main?.id && inferTier(q) === "SIDE")
+  const mainQuests = active.filter((q) => inferTier(q) === "MAIN")
+  const main = mainQuests[0] ?? null
+  const daily = active.filter((q) => inferTier(q) === "DAILY")
+  const side = active.filter(
+    (q) =>
+      inferTier(q) === "SIDE" &&
+      q.id !== main?.id &&
+      !daily.some((d) => d.id === q.id)
+  )
   const completed = quests
     .filter((q) => completedIds.includes(q.id))
     .map(withNarrativeTier)
 
-  return { mainStory: main, sideQuests: side, completed }
+  return {
+    mainStory: main,
+    mainStoryQuests: mainQuests,
+    dailyQuests: daily,
+    sideQuests: side,
+    completed,
+  }
 }
 
 export function objectiveDisplayText(

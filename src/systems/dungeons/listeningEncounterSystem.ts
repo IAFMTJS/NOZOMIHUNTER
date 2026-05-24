@@ -13,6 +13,7 @@ import { VOCABULARY_ENCOUNTER_CONFIG } from "@/config/vocabularyEncounterConfig"
 import { advanceObjective } from "@/systems/quests/questValidator"
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
+import { recordWordAnswer } from "@/systems/mastery/masterySystem"
 
 export function createListeningEncounter(
   fragmentCount: number,
@@ -69,16 +70,25 @@ export interface ListeningAnswerResult {
   encounterComplete: boolean
 }
 
+export function canSubmitListeningAnswer(
+  encounter: ListeningEncounterContract,
+  heardOnce: boolean
+): boolean {
+  return heardOnce && getCurrentFragment(encounter) != null
+}
+
 export function submitListeningAnswer(
   quest: QuestContract,
   answer: string,
-  maxWrongAttempts: number = VOCABULARY_ENCOUNTER_CONFIG.MAX_WRONG_ATTEMPTS
+  maxWrongAttempts: number = VOCABULARY_ENCOUNTER_CONFIG.MAX_WRONG_ATTEMPTS,
+  userId?: string
 ): ListeningAnswerResult {
   const encounter = quest.listeningEncounter
   if (!encounter) {
     throw new Error("Quest has no listening encounter")
   }
 
+  const fragment = getCurrentFragment(encounter)
   const correct = checkListeningAnswer(encounter, answer)
   let wrongAttempts = encounter.wrongAttempts
   let currentIndex = encounter.currentIndex
@@ -101,6 +111,11 @@ export function submitListeningAnswer(
       encounterFailed,
       encounterComplete: false,
     }
+  }
+
+  const fragmentId = fragment?.id
+  if (userId && fragmentId) {
+    recordWordAnswer(fragmentId, true, userId)
   }
 
   currentIndex += 1

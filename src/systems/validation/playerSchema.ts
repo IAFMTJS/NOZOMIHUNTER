@@ -38,7 +38,7 @@ export const QuestSnapshotSchema = z.object({
   id: z.string(),
   type: z.string(),
   title: z.string(),
-  narrativeTier: z.enum(["MAIN", "SIDE"]).optional(),
+  narrativeTier: z.enum(["MAIN", "SIDE", "DAILY"]).optional(),
   rewards: z.object({
     xp: z.number(),
     credits: z.number().optional(),

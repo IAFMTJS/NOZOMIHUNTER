@@ -47,11 +47,13 @@ export function runListeningSubmit(
   quest: QuestContract,
   answer: string,
   penalties: PlayerPenaltyContract,
-  player?: PlayerContract
+  player?: PlayerContract,
+  userId?: string
 ) {
   return submitListeningAnswer(
     quest,
     answer,
-    maxWrongForPenalties(penalties, player)
+    maxWrongForPenalties(penalties, player),
+    userId
   )
 }

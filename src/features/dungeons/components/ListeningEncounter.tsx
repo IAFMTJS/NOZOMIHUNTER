@@ -39,7 +39,7 @@ export function ListeningEncounter({
   const [answer, setAnswer] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [heardOnce, setHeardOnce] = useState(false)
-  const [replayCount, setReplayCount] = useState(0)
+  const [playCount, setPlayCount] = useState(0)
   const tts = useJapaneseTts()
 
   const encounter = quest.listeningEncounter
@@ -47,20 +47,20 @@ export function ListeningEncounter({
   const wrongLeft = encounter
     ? Math.max(0, maxWrongAttempts - encounter.wrongAttempts)
     : 0
-  const replaysLeft = Math.max(0, maxReplays - replayCount)
+  const playsLeft = Math.max(0, maxReplays - playCount)
 
   useEffect(() => {
     setHeardOnce(false)
-    setReplayCount(0)
+    setPlayCount(0)
     return () => stopJapaneseSpeech()
   }, [encounter?.currentIndex, fragment?.id])
 
   async function playSignal() {
-    if (!fragment || replayCount >= maxReplays) return
+    if (!fragment || playCount >= maxReplays) return
     await tts.play(fragment.japanese, fragment.reading)
     if (!tts.error) {
       setHeardOnce(true)
-      setReplayCount((n) => n + 1)
+      setPlayCount((n) => n + 1)
     }
   }
 
@@ -70,7 +70,7 @@ export function ListeningEncounter({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!answer.trim() || submitting) return
+    if (!answer.trim() || submitting || !heardOnce) return
     setSubmitting(true)
     try {
       await onSubmit(answer.trim())
@@ -167,7 +167,7 @@ export function ListeningEncounter({
                 disabled ||
                 tts.playing ||
                 !tts.supported ||
-                replayCount >= maxReplays
+                playCount >= maxReplays
               }
               onClick={() => void playSignal()}
             >
@@ -179,9 +179,9 @@ export function ListeningEncounter({
             </Button>
           )}
         </div>
-        {heardOnce && replaysLeft > 0 && !focusMode && (
+        {heardOnce && playsLeft > 0 && !focusMode && (
           <p className="mt-3 text-center text-xs text-[var(--muted)]">
-            Replays remaining: {replaysLeft}
+            Plays remaining: {playsLeft}
           </p>
         )}
         {!tts.supported && (
@@ -208,7 +208,7 @@ export function ListeningEncounter({
           <Button
             type="submit"
             size="md"
-            disabled={disabled || submitting || !answer.trim()}
+            disabled={disabled || submitting || !answer.trim() || !heardOnce}
             className="w-full sm:w-auto"
           >
             {submitting ? "Verifying…" : "Transmit decode"}

@@ -3,6 +3,7 @@ import type { PlayerPenaltyContract } from "@/contracts/player-contract"
 export const CORRUPTION_UI_THRESHOLD = 25
 export const CORRUPTION_HIGH_THRESHOLD = 50
 export const FATIGUE_UI_THRESHOLD = 40
+export const FATIGUE_HIGH_THRESHOLD = 65
 
 export interface PenaltyPresentation {
   shellClass: string
@@ -26,6 +27,9 @@ export function getPenaltyPresentation(
   }
   if (penalties.fatigue >= FATIGUE_UI_THRESHOLD) {
     classes.push("nozomi-fatigue")
+  }
+  if (penalties.fatigue >= FATIGUE_HIGH_THRESHOLD) {
+    classes.push("nozomi-fatigue-high")
   }
 
   return {

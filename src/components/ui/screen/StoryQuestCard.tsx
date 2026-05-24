@@ -7,6 +7,8 @@ interface StoryQuestCardProps {
   index: number
   title: string
   titleJa?: string
+  sectorBlurb?: string
+  dangerTier?: string
   progressCurrent: number
   progressRequired: number
   rewardXp: number
@@ -18,6 +20,8 @@ export function StoryQuestCard({
   index,
   title,
   titleJa,
+  sectorBlurb,
+  dangerTier,
   progressCurrent,
   progressRequired,
   rewardXp,
@@ -56,6 +60,14 @@ export function StoryQuestCard({
         </p>
         {titleJa && (
           <p className="font-japanese mt-0.5 text-xs text-[var(--muted)]">{titleJa}</p>
+        )}
+        {sectorBlurb && (
+          <p className="mt-1 text-[10px] leading-snug text-[var(--muted)]">{sectorBlurb}</p>
+        )}
+        {dangerTier && (
+          <span className="mt-1 inline-block text-[9px] uppercase tracking-wider text-[var(--warning)]">
+            {dangerTier}
+          </span>
         )}
         {!locked && (
           <div className="mt-2 h-1 overflow-hidden rounded-full bg-black/50">

@@ -259,6 +259,34 @@ body {
   animation: nozomi-feedback-flash-danger var(--duration-feedback) var(--ease-game);
 }
 
+.nozomi-fatigue-high {
+  filter: blur(0.3px);
+}
+
+.nozomi-fatigue-high .nozomi-embedded {
+  opacity: 0.92;
+}
+
+@keyframes nozomi-threat-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 12px 2px rgba(255, 77, 109, 0.25);
+  }
+}
+
+.nozomi-threat-critical {
+  animation: nozomi-threat-pulse 2.4s ease-in-out infinite;
+  border-color: rgba(255, 77, 109, 0.35) !important;
+}
+
+.nozomi-threat-sector-critical {
+  animation: nozomi-threat-pulse 1.6s ease-in-out infinite;
+  border-color: rgba(168, 85, 247, 0.45) !important;
+}
+
 /* Screen moods (visual-direction-v2) */
 .nozomi-screen-prep {
   background:

@@ -125,18 +125,23 @@ export function InventoryClient() {
     <HunterPage>
       <div className="mb-4 flex items-center justify-between">
         <div className="flex gap-2">
-          {(["LOADOUT", "SHOP"] as View[]).map((v) => (
+          {(
+            [
+              { id: "LOADOUT" as View, label: "Inventory" },
+              { id: "SHOP" as View, label: "Store" },
+            ] as const
+          ).map(({ id, label }) => (
             <button
-              key={v}
+              key={id}
               type="button"
-              onClick={() => setView(v)}
+              onClick={() => setView(id)}
               className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase ${
-                view === v
+                view === id
                   ? "bg-[var(--accent)]/30 text-[var(--accent-bright)]"
                   : "text-[var(--muted)]"
               }`}
             >
-              {v}
+              {label}
             </button>
           ))}
         </div>

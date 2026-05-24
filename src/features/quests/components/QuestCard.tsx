@@ -13,6 +13,10 @@ import { ListeningEncounter } from "@/features/dungeons/components/ListeningEnco
 import { QuestPreparationGate } from "./QuestPreparationGate"
 import { hasActivePreparationPhase } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
 import { canCompleteQuest } from "@/systems/quests/questValidator"
+import {
+  isQuestEncounterPlayable,
+  MISSION_DATA_CORRUPTED_COPY,
+} from "@/systems/quests/questPlayabilitySystem"
 import { EncounterFocusShell } from "@/components/ui/EncounterFocusShell"
 import { QuestContractActions } from "./QuestContractActions"
 import {
@@ -86,6 +90,12 @@ export function QuestCard({
   const isSpeechEncounter = quest.type === "SPEECH" && hasSpeech
   const hasListening = (quest.listeningEncounter?.fragments.length ?? 0) > 0
   const isListeningEncounter = quest.type === "LISTENING" && hasListening
+  const needsEncounter =
+    quest.type === "VOCABULARY" ||
+    quest.type === "CONVERSATION" ||
+    quest.type === "SPEECH" ||
+    quest.type === "LISTENING"
+  const dataCorrupted = needsEncounter && !isQuestEncounterPlayable(quest)
 
   const prep = quest.vocabularyPreparation
   const inPreparationPhase = hasActivePreparationPhase(quest)
@@ -260,8 +270,10 @@ export function QuestCard({
       />
     ) : (
       <Panel tone="inset" className="mb-3 !p-3">
-        <p className="text-sm text-[var(--muted)]">
-          Encounter data is loading — refresh the contract board.
+        <p className="text-sm text-[var(--warning)]">
+          {dataCorrupted
+            ? MISSION_DATA_CORRUPTED_COPY
+            : "Encounter data is loading — refresh the contract board."}
         </p>
       </Panel>
     )
