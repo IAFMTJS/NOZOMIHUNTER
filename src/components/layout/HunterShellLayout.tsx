@@ -9,12 +9,12 @@ import { AtmosphericBackground } from "@/components/layout/AtmosphericBackground
 
 function resolvePageTitle(pathname: string): string {
   if (pathname === "/home" || pathname === "/dashboard") return "NOZOMI HUNTER SYSTEM"
-  if (pathname === "/contracts" || pathname === "/missions") return "QUESTS"
+  if (pathname === "/contracts" || pathname === "/missions") return "MISSION LOG"
   if (pathname.startsWith("/contracts/") || pathname.startsWith("/missions/"))
-    return "CONTRACT"
+    return "CONTRACT FILE"
   if (pathname === "/dungeons") return "DUNGEONS"
   if (pathname.startsWith("/dungeons/")) return "SECTOR"
-  if (pathname === "/prepare") return "PREPARATION"
+  if (pathname === "/prepare") return "DEPLOYMENT"
   if (pathname === "/vocabulary") return "VOCABULARY"
   if (pathname.startsWith("/vocabulary/")) return "WORD"
   if (pathname === "/inventory") return "INVENTORY"

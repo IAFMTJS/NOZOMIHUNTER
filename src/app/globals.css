@@ -285,6 +285,22 @@ body {
     transparent;
 }
 
+.nozomi-screen-quests {
+  background:
+    radial-gradient(ellipse 80% 35% at 50% -5%, rgba(122, 92, 255, 0.1), transparent 65%),
+    transparent;
+}
+
+.nozomi-screen-contract {
+  background:
+    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(122, 92, 255, 0.12), transparent 70%),
+    transparent;
+}
+
+.nozomi-contract-nav-dim nav {
+  opacity: 0.72;
+}
+
 .nozomi-sector-map {
   position: relative;
 }

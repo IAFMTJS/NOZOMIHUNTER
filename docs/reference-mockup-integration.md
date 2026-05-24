@@ -2,6 +2,8 @@
 
 Last updated: 2026-05-24
 
+**Holistic UI plan (quest list → detail → deploy → run → extraction):** [`quest-channel-ui-plan.md`](quest-channel-ui-plan.md)
+
 | Mockup screen | Route | Systems |
 |---------------|-------|---------|
 | Home | `/home` | `systemMessagingSystem`, `synchronizationSystem`, `readinessSystem`, `dungeonForecastSystem`, `SyncDisciplineChestTeaser` |

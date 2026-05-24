@@ -1,9 +1,9 @@
 "use client"
 
+import Link from "next/link"
 import type { QuestContract } from "@/contracts/quest-contract"
 import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
-import { StatusChip } from "@/components/ui/StatusChip"
 import { HubScreenFrame } from "@/components/layout/HubScreenFrame"
 import { HubBack } from "./HubBack"
 import { questReadyForHunt } from "./questReadyForHunt"
@@ -27,6 +27,8 @@ export function HubDispatchView({
   onNewQuest,
   onSelectQuest,
 }: HubDispatchViewProps) {
+  const resumable = regularQuests.filter(questReadyForHunt)
+
   return (
     <>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -48,18 +50,25 @@ export function HubDispatchView({
 
       <HubScreenFrame
         variant="dispatch"
-        title="Contract dispatch"
-        subtitle="Request new contracts. Select an active file to resume the hunt channel."
+        title="Active operations"
+        subtitle="Resume an in-progress hunt. Browse and request contracts from the mission log."
       >
-        {regularQuests.length === 0 ? (
+        <Link
+          href="/contracts"
+          className="mb-4 block rounded-xl border border-[var(--accent)]/35 bg-[var(--accent-dim)] px-4 py-3 text-center text-sm text-[var(--accent-bright)] transition-opacity hover:opacity-90"
+        >
+          Open mission log →
+        </Link>
+
+        {resumable.length === 0 ? (
           <Panel tone="inset">
             <p className="text-sm text-[var(--muted)]">
-              Dispatch queue empty. Request a contract to begin operations.
+              No live hunt channel. Open the mission log to deploy a contract.
             </p>
           </Panel>
         ) : (
           <ul className="flex flex-col gap-3">
-            {regularQuests.map((quest) => (
+            {resumable.map((quest) => (
               <li key={quest.id}>
                 <button
                   type="button"
@@ -67,23 +76,15 @@ export function HubDispatchView({
                   onClick={() => onSelectQuest(quest.id)}
                 >
                   <Panel
-                    tone="default"
-                    className="transition-[box-shadow] duration-200 hover:shadow-[inset_3px_0_0_rgba(122,92,255,0.35)]"
+                    tone="accent"
+                    className="transition-[box-shadow] duration-200 hover:shadow-[0_0_20px_var(--glow-accent)]"
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-display font-semibold text-[var(--foreground)]">
-                        {quest.title}
-                      </span>
-                      <StatusChip label={quest.type} tone="neutral" />
-                    </div>
-                    <p className="mt-1 line-clamp-2 text-sm text-[var(--muted)]">
-                      {quest.description}
+                    <p className="font-display font-semibold text-[var(--foreground)]">
+                      Resume · {quest.title}
                     </p>
-                    {questReadyForHunt(quest) && (
-                      <p className="mt-2 text-xs text-[var(--accent)]">
-                        Open hunt channel →
-                      </p>
-                    )}
+                    <p className="mt-2 text-xs text-[var(--accent-bright)]">
+                      Open hunt channel →
+                    </p>
                   </Panel>
                 </button>
               </li>

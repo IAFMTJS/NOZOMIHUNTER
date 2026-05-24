@@ -60,8 +60,8 @@ export function HubMenuView({
       },
       {
         id: "contracts" as const,
-        title: "Contract dispatch",
-        desc: `${contractCount} active · request new contracts from dispatch.`,
+        title: "Mission log",
+        desc: `${contractCount} active · browse story, daily, and side contracts.`,
         disabled: false,
         badge: String(contractCount),
       },

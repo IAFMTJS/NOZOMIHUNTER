@@ -2,7 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
+import { DungeonVocabLog } from "@/features/vocabulary/components/DungeonVocabLog"
+import { loadCompletedQuestSnapshots } from "@/services/supabase/playerRepository"
+import type { QuestContract } from "@/contracts/quest-contract"
 import { HunterPage } from "@/components/layout/HunterPage"
 import { Button } from "@/components/ui/Button"
 import { JMDICT_CURATED } from "@/data/jmdictCurated"
@@ -23,15 +27,25 @@ import { GAME_EVENTS } from "@/systems/events/eventTypes"
 type Tab = "ALL" | "DETECTED" | "LEARNED"
 
 export function VocabularyClient() {
+  const searchParams = useSearchParams()
+  const sessionMode = searchParams.get("session")
   const { player, user } = useHunterSession()
   const setPlayer = usePlayerStore((s) => s.setPlayer)
   const [tab, setTab] = useState<Tab>("ALL")
   const [mastery, setMastery] = useState<WordMasteryContract[]>([])
   const [busy, setBusy] = useState(false)
+  const [lastRun, setLastRun] = useState<QuestContract | null>(null)
 
   useEffect(() => {
     if (user?.id) void loadWordMastery(user.id).then(setMastery)
   }, [user?.id])
+
+  useEffect(() => {
+    if (sessionMode !== "last" || !user?.id) return
+    void loadCompletedQuestSnapshots(user.id, 1).then((quests) => {
+      setLastRun(quests[0] ?? null)
+    })
+  }, [sessionMode, user?.id])
 
   const entries = useMemo(() => {
     const known = new Map(mastery.map((m) => [m.wordId, m]))
@@ -85,8 +99,25 @@ export function VocabularyClient() {
     )
   }
 
+  const dungeonWords =
+    lastRun?.vocabularyEncounter?.words.map((w) => ({
+      id: w.id,
+      japanese: w.japanese,
+      reading: w.reading,
+      romaji: w.romaji,
+      meaning: w.meanings[0] ?? "",
+    })) ?? []
+
   return (
     <HunterPage>
+      {sessionMode === "last" && dungeonWords.length > 0 && (
+        <DungeonVocabLog
+          dungeonName={lastRun?.title ?? "Last contract"}
+          clearedAgoLabel="recently"
+          words={dungeonWords}
+        />
+      )}
+
       <div className="nozomi-embedded mb-4 flex gap-2 rounded-xl p-3">
         {(["ALL", "DETECTED", "LEARNED"] as Tab[]).map((t) => (
           <button

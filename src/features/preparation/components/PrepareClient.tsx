@@ -9,6 +9,8 @@ import { ScreenCTA } from "@/components/ui/ScreenCTA"
 import { PreparationRingGauge } from "@/components/preparation/PreparationRingGauge"
 import { PreparationChecklist } from "@/components/preparation/PreparationChecklist"
 import { PowerComparison } from "@/components/preparation/PowerComparison"
+import { LoadoutSlotGrid } from "@/components/preparation/LoadoutSlotGrid"
+import { HeroBanner } from "@/components/ui/screen/HeroBanner"
 import { computeReadiness } from "@/systems/readiness/readinessSystem"
 import {
   checklistComplete,
@@ -16,7 +18,12 @@ import {
 } from "@/systems/readiness/preparationChecklistSystem"
 import { computeHunterPower, recommendedPowerForDungeon } from "@/systems/power/hunterPowerSystem"
 import { getDungeonDefinition } from "@/config/dungeonConfig"
+import { getQuestCatalogMeta } from "@/config/missionCatalogMetadata"
 import { hasActivePreparationPhase } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
+import { resolveQuestStaminaCost } from "@/systems/presentation/questRewardPresentation"
+import {
+  estimatedDungeonTimeLimitMinutes,
+} from "@/systems/presentation/questPresentationSystem"
 import { fetchItemCatalog } from "@/features/inventory/services/inventoryActions"
 import type { ItemCatalogEntryContract } from "@/contracts/economy-contract"
 
@@ -45,6 +52,7 @@ export function PrepareClient() {
     regularQuests.find((q) => q.id === questId) ??
     activeQuests.find((q) => q.id === questId)
   const def = dungeonKey ? getDungeonDefinition(dungeonKey) : null
+  const questMeta = missionQuest ? getQuestCatalogMeta(missionQuest) : null
 
   if (!player) {
     return (
@@ -76,7 +84,13 @@ export function PrepareClient() {
   const deployBlocked =
     readiness.survivalBand === "CRITICAL" || !checklistComplete(checklist)
   const underPower = power.total < recommended
-  const staminaCost = def?.staminaCost
+  const staminaCost =
+    def?.staminaCost ??
+    (missionQuest ? resolveQuestStaminaCost(missionQuest) : undefined)
+
+  const timeLimitMin = def
+    ? estimatedDungeonTimeLimitMinutes(def.encounterPlan.length)
+    : 15
 
   async function handleDeploy() {
     if (deployBlocked) return
@@ -105,12 +119,55 @@ export function PrepareClient() {
     }
   }
 
+  const deploymentTitle = def?.name ?? missionQuest?.title ?? "Deployment"
+  const rankLabel = def ? "D" : missionQuest?.difficulty?.slice(0, 1) ?? "C"
+
   return (
-    <HunterPage className="pb-28">
+    <HunterPage className="nozomi-screen-prep pb-28">
       <HunterPageBack
-        href={dungeonKey ? "/dungeons" : "/contracts"}
-        label={dungeonKey ? "Sectors" : "Contracts"}
+        href={
+          missionQuest
+            ? `/contracts/${missionQuest.id}`
+            : dungeonKey
+              ? `/dungeons`
+              : "/contracts"
+        }
+        label="Mission file"
       />
+
+      <HeroBanner
+        theme={questMeta?.heroTheme ?? def?.theme}
+        rankLabel={rankLabel}
+        title={deploymentTitle}
+        tall
+      />
+
+      <div className="nozomi-embedded rounded-xl px-4 py-3 text-sm text-[var(--muted)]">
+        <p className="font-display text-xs uppercase tracking-widest text-[var(--accent-bright)]">
+          Sector briefing
+        </p>
+        <p className="mt-2">
+          {def?.description ??
+            missionQuest?.description ??
+            "Confirm loadout and readiness before entering the gate."}
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2 text-[10px] uppercase tracking-wider">
+          {staminaCost != null && <span>Stamina {staminaCost}</span>}
+          <span>Time limit {timeLimitMin}:00</span>
+          {def && <span>Rank {rankLabel}</span>}
+        </div>
+      </div>
+
+      <LoadoutSlotGrid
+        buildName={
+          missionQuest?.type === "LISTENING"
+            ? "Listening Build"
+            : missionQuest?.type === "VOCABULARY"
+              ? "Extraction Build"
+              : "Hunter Build"
+        }
+      />
+
       <div className="space-y-6">
         <PreparationRingGauge
           score={readiness.preparationScore}
@@ -133,7 +190,7 @@ export function PrepareClient() {
       </div>
 
       <ScreenCTA
-        label={dungeonKey ? "Enter dungeon" : "Start mission"}
+        label="Enter dungeon"
         staminaCost={staminaCost ?? undefined}
         disabled={deployBlocked || dungeon.busy}
         className={hunterPresentation.huntCtaClass}

@@ -11,6 +11,7 @@ import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { EncounterTargetRail } from "@/components/ui/EncounterTargetRail"
+import { WordExtractionPanel } from "@/components/ui/screen/WordExtractionPanel"
 
 interface VocabularyEncounterProps {
   quest: QuestContract
@@ -68,6 +69,17 @@ export function VocabularyEncounter({
       {briefing && !hideLegacyBriefing && (
         <p className="mb-3 text-sm italic text-[var(--muted)]">{briefing}</p>
       )}
+
+      <WordExtractionPanel
+        words={encounter.words.map((w) => ({
+          id: w.id,
+          japanese: w.japanese,
+          reading: w.reading,
+          romaji: w.romaji,
+          meaning: w.meanings[0] ?? "",
+        }))}
+        currentIndex={encounter.currentIndex}
+      />
 
       <EncounterTargetRail
         items={encounter.words.map((w, i) => {

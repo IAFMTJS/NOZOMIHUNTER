@@ -1,33 +1,53 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import Link from "next/link"
+import { useEffect, useMemo, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
-import { Button } from "@/components/ui/Button"
 import { TabBar } from "@/components/ui/TabBar"
 import { QuestListCard } from "@/components/ui/screen/QuestListCard"
-import { HeroBanner } from "@/components/ui/screen/HeroBanner"
+import { StoryQuestCard } from "@/components/ui/screen/StoryQuestCard"
+import { StoryChapterSection } from "@/components/ui/screen/StoryChapterSection"
+import { StoryChapterHero } from "@/components/ui/screen/StoryChapterHero"
 import { ContractTypeIcon } from "@/components/ui/screen/ContractTypeIcon"
-import { GlassCard } from "@/components/ui/GlassCard"
+import { QuestChannelShell } from "@/features/contracts/components/QuestChannelShell"
+import { QuestChannelHeader } from "@/features/contracts/components/QuestChannelHeader"
+import { QuestOpsStrip } from "@/features/contracts/components/QuestOpsStrip"
 import { buildContractCatalog } from "@/systems/quests/contractCatalogSystem"
 import { aggregateQuestProgress } from "@/systems/presentation/questPresentationSystem"
+import { buildStoryChapters } from "@/systems/presentation/storyChapterSystem"
+import { getQuestCatalogMeta } from "@/config/missionCatalogMetadata"
 import { resolveAchievements } from "@/systems/progression/achievementSystem"
 import { loadCompletedQuestSnapshots } from "@/services/supabase/playerRepository"
+import {
+  selectSystemMessage,
+} from "@/systems/messaging/systemMessagingSystem"
+import { getTrackedQuest } from "@/systems/quests/contractTrackingSystem"
 import type { QuestContract } from "@/contracts/quest-contract"
 
-type ContractTab = "daily" | "weekly" | "achievements"
+export type QuestChannelTab = "daily" | "story" | "side" | "achievements"
 
-const TABS: { id: ContractTab; label: string }[] = [
+const TABS: { id: QuestChannelTab; label: string }[] = [
   { id: "daily", label: "Daily" },
-  { id: "weekly", label: "Weekly" },
+  { id: "story", label: "Story" },
+  { id: "side", label: "Side" },
   { id: "achievements", label: "Achievements" },
 ]
 
+function parseTab(value: string | null): QuestChannelTab {
+  if (value === "story" || value === "side" || value === "achievements" || value === "daily") {
+    return value
+  }
+  if (value === "weekly") return "story"
+  return "daily"
+}
+
 export function ContractsClient() {
-  const { user, player, regularQuests, quest } = useHunterSession()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { user, player, regularQuests, activeQuests, quest } = useHunterSession()
   const [completedQuests, setCompletedQuests] = useState<QuestContract[]>([])
-  const [tab, setTab] = useState<ContractTab>("daily")
+  const tab = parseTab(searchParams.get("tab"))
 
   useEffect(() => {
     if (!user?.id) return
@@ -36,54 +56,166 @@ export function ContractsClient() {
     })
   }, [user?.id, regularQuests.length])
 
+  function setTab(next: QuestChannelTab) {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("tab", next)
+    router.replace(`/contracts?${params.toString()}`, { scroll: false })
+  }
+
+  const systemLine = useMemo(() => {
+    if (!player) return null
+    const seed = `${player.id}:${new Date().toISOString().slice(0, 10)}`
+    return selectSystemMessage({ player, activeQuests, seed })
+  }, [player, activeQuests])
+
   if (!player) {
     return (
       <HunterPage>
-        <p className="text-[var(--muted)]">Loading contracts…</p>
+        <p className="text-[var(--muted)]">Loading mission log…</p>
       </HunterPage>
     )
   }
 
-  const catalog = buildContractCatalog(
-    regularQuests,
-    completedQuests.map((q) => q.id)
+  const completedIds = completedQuests.map((q) => q.id)
+  const catalog = buildContractCatalog(regularQuests, completedIds)
+  const storyChapters = buildStoryChapters(
+    catalog.mainStory,
+    completedQuests,
+    completedIds
   )
   const achievements = resolveAchievements(player)
+  const tracked = getTrackedQuest(activeQuests, player)
+  const dailyQuests = catalog.sideQuests
 
   return (
-    <HunterPage>
-      <div className="space-y-5">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm text-[var(--muted)]">
-            Missions · contract dispatch
-          </p>
-          <Button variant="ghost" size="sm" onClick={() => void quest.newQuest()} disabled={quest.busy}>
-            Request
-          </Button>
-        </div>
+    <HunterPage className="pb-4">
+      <QuestChannelShell>
+        <QuestChannelHeader systemLine={systemLine} />
+
+        <QuestOpsStrip
+          stamina={player.economy.stamina}
+          staminaMax={player.economy.staminaMax}
+          trackedTitle={tracked?.title}
+          trackedHref={tracked ? `/contracts/${tracked.id}` : null}
+          showRequest={tab === "daily" || tab === "side"}
+          requestBusy={quest.busy}
+          onRequest={() => void quest.newQuest()}
+        />
 
         <TabBar tabs={TABS} active={tab} onChange={setTab} />
 
-        {tab === "daily" && (
-          <ul className="space-y-3">
-            {catalog.sideQuests.length === 0 ? (
+        {tab === "story" && (
+          <div className="space-y-5">
+            {storyChapters.length === 0 ? (
               <p className="text-center text-sm text-[var(--muted)]">
-                No daily contracts. Request deployment from dispatch.
+                No story files indexed. Request a contract or complete the tutorial.
               </p>
             ) : (
-              catalog.sideQuests.map((q) => {
+              storyChapters.map((chapter) => (
+                <div key={chapter.chapterId} className="space-y-4">
+                  <StoryChapterHero
+                    chapterTitle={chapter.chapterTitle}
+                    progressPercent={chapter.progressPercent}
+                    currentMission={chapter.currentMissionIndex}
+                    totalMissions={chapter.totalMissions}
+                  />
+                  <StoryChapterSection chapterTitle={chapter.chapterTitle}>
+                    {chapter.missions.map((row) => {
+                      if (row.kind === "placeholder") {
+                        const p = row.placeholder
+                        return (
+                          <li key={p.id}>
+                            <StoryQuestCard
+                              index={p.missionIndex}
+                              title={p.title}
+                              titleJa={p.titleJa}
+                              progressCurrent={0}
+                              progressRequired={1}
+                              rewardXp={p.rewardXp}
+                              state="locked"
+                            />
+                          </li>
+                        )
+                      }
+                      const q = row.quest
+                      const meta = getQuestCatalogMeta(q)
+                      const prog = aggregateQuestProgress(q)
+                      return (
+                        <li key={q.id}>
+                          <StoryQuestCard
+                            index={row.missionIndex}
+                            title={q.title}
+                            titleJa={meta.titleJa}
+                            progressCurrent={prog.current}
+                            progressRequired={prog.required}
+                            rewardXp={q.rewards.xp}
+                            state={
+                              row.locked
+                                ? "locked"
+                                : prog.complete
+                                  ? "complete"
+                                  : "active"
+                            }
+                            href={row.locked ? undefined : `/contracts/${q.id}`}
+                          />
+                        </li>
+                      )
+                    })}
+                  </StoryChapterSection>
+                </div>
+              ))
+            )}
+            {catalog.completed.length > 0 && (
+              <section>
+                <p className="mb-2 text-xs uppercase tracking-widest text-[var(--muted)]">
+                  Extracted ({catalog.completed.length})
+                </p>
+                <ul className="space-y-2">
+                  {catalog.completed.map((q) => {
+                    const meta = getQuestCatalogMeta(q)
+                    return (
+                      <li key={q.id}>
+                        <StoryQuestCard
+                          index={meta.missionIndex ?? 0}
+                          title={q.title}
+                          titleJa={meta.titleJa}
+                          progressCurrent={1}
+                          progressRequired={1}
+                          rewardXp={q.rewards.xp}
+                          state="complete"
+                        />
+                      </li>
+                    )
+                  })}
+                </ul>
+              </section>
+            )}
+          </div>
+        )}
+
+        {tab === "daily" && (
+          <ul className="space-y-3">
+            {dailyQuests.length === 0 ? (
+              <p className="text-center text-sm text-[var(--muted)]">
+                No daily contracts. Request deployment from the ops strip.
+              </p>
+            ) : (
+              dailyQuests.map((q) => {
                 const prog = aggregateQuestProgress(q)
+                const meta = getQuestCatalogMeta(q)
                 return (
                   <li key={q.id} className="flex items-stretch gap-2">
                     <ContractTypeIcon type={q.type} />
                     <div className="min-w-0 flex-1">
-                      <QuestListCard
+                      <StoryQuestCard
+                        index={meta.missionIndex ?? 1}
                         title={q.title}
+                        titleJa={meta.titleJa}
                         progressCurrent={prog.current}
                         progressRequired={prog.required}
                         rewardXp={q.rewards.xp}
+                        state={prog.complete ? "complete" : "active"}
                         href={`/contracts/${q.id}`}
-                        completed={prog.complete}
                       />
                     </div>
                   </li>
@@ -93,56 +225,39 @@ export function ContractsClient() {
           </ul>
         )}
 
-        {tab === "weekly" && (
-          <div className="space-y-4">
-            {catalog.mainStory ? (
-              <>
-                <Link href={`/contracts/${catalog.mainStory.id}`} className="block space-y-3">
-                  <HeroBanner title={catalog.mainStory.title} tall />
-                  <GlassCard tone="accent" className="transition-opacity hover:opacity-90">
-                    <p className="text-[10px] uppercase tracking-widest text-[var(--accent-bright)]">
-                      Main story
-                    </p>
-                    <p className="mt-2 line-clamp-2 text-sm text-[var(--muted)]">
-                      {catalog.mainStory.description}
-                    </p>
-                  </GlassCard>
-                </Link>
-                <QuestListCard
-                  title={catalog.mainStory.title}
-                  progressCurrent={aggregateQuestProgress(catalog.mainStory).current}
-                  progressRequired={aggregateQuestProgress(catalog.mainStory).required}
-                  rewardXp={catalog.mainStory.rewards.xp}
-                  href={`/contracts/${catalog.mainStory.id}`}
-                  completed={aggregateQuestProgress(catalog.mainStory).complete}
-                />
-              </>
-            ) : (
+        {tab === "side" && (
+          <ul className="space-y-3">
+            {catalog.sideQuests.length === 0 && !catalog.mainStory ? (
               <p className="text-center text-sm text-[var(--muted)]">
-                No active main story contract.
+                No side contracts active.
               </p>
-            )}
-            {catalog.completed.length > 0 && (
-              <section>
-                <p className="mb-2 text-xs uppercase tracking-widest text-[var(--muted)]">
-                  Extracted ({catalog.completed.length})
-                </p>
-                <ul className="space-y-2">
-                  {catalog.completed.map((q) => (
-                    <li key={q.id}>
-                      <QuestListCard
-                        title={q.title}
-                        progressCurrent={1}
-                        progressRequired={1}
-                        rewardXp={q.rewards.xp}
-                        completed
-                      />
+            ) : (
+              regularQuests
+                .filter((q) => q.id !== catalog.mainStory?.id)
+                .filter((q) => q.narrativeTier === "SIDE" || !q.narrativeTier)
+                .map((q) => {
+                  const prog = aggregateQuestProgress(q)
+                  const meta = getQuestCatalogMeta(q)
+                  return (
+                    <li key={q.id} className="flex items-stretch gap-2">
+                      <ContractTypeIcon type={q.type} />
+                      <div className="min-w-0 flex-1">
+                        <StoryQuestCard
+                          index={meta.missionIndex ?? 1}
+                          title={q.title}
+                          titleJa={meta.titleJa}
+                          progressCurrent={prog.current}
+                          progressRequired={prog.required}
+                          rewardXp={q.rewards.xp}
+                          state={prog.complete ? "complete" : "active"}
+                          href={`/contracts/${q.id}`}
+                        />
+                      </div>
                     </li>
-                  ))}
-                </ul>
-              </section>
+                  )
+                })
             )}
-          </div>
+          </ul>
         )}
 
         {tab === "achievements" && (
@@ -161,7 +276,7 @@ export function ContractsClient() {
             ))}
           </ul>
         )}
-      </div>
+      </QuestChannelShell>
     </HunterPage>
   )
 }

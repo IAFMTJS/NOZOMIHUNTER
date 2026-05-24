@@ -2,6 +2,18 @@
 
 ## v1.2.2 (unreleased) — shop remediation + reference gap closure
 
+### Quest Channel UI (full mockup pass)
+
+- **Mission log** (`/contracts`) — `QuestChannelShell`, tabs Daily / Story / Side / Achievements, chapter sections, `StoryQuestCard`, ops strip (stamina, tracked, request), URL `?tab=`
+- **Contract file** (`/contracts/[id]`) — `QuestFileDetail`: breadcrumb, themed hero, objectives checklist, reward icon grid, sticky **Enter dungeon** CTA
+- **Systems** — `storyChapterSystem`, `questUnlockSystem`, `missionCatalogMetadata` overlays, `questRewardPresentation`, `gateClearedPresentation`
+- **Deployment** (`/prepare`) — loadout grid, sector briefing block, enter dungeon CTA copy
+- **In-run** — `ListeningStationDisplay`, `AudioWaveform`, `WordExtractionPanel`, `WordRarityChip`
+- **Extraction** — `GateClearedScreen` in reward overlay; **dungeon vocab log** at `/vocabulary?session=last`
+- **Hub** — dispatch deduped to resume-hunt + link to mission log; shell titles MISSION LOG / CONTRACT FILE / DEPLOYMENT
+- **CSS** — `.nozomi-screen-quests`, `.nozomi-screen-contract`
+- Docs: [`docs/quest-channel-ui-plan.md`](docs/quest-channel-ui-plan.md)
+
 ### Shop economy remediation
 - **Server completion boosts** — `013_completion_boosts.sql` applies fatigue, XP boost, reward amplifier, and system breach in `complete_quest_guarded`; consumes boosts atomically
 - **Catalog dedupe** — `item_catalog.effect_duration_ms` / `effect_uses`; `use_consumable_guarded` reads catalog instead of hardcoded cases

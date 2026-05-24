@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { EncounterTargetRail } from "@/components/ui/EncounterTargetRail"
 import { ListeningFocusShell } from "@/components/ui/ListeningFocusShell"
+import { AudioWaveform } from "@/components/ui/screen/AudioWaveform"
+import { ListeningStationDisplay } from "@/components/ui/screen/ListeningStationDisplay"
 
 interface ListeningEncounterProps {
   quest: QuestContract
@@ -46,7 +48,6 @@ export function ListeningEncounter({
     ? Math.max(0, maxWrongAttempts - encounter.wrongAttempts)
     : 0
   const replaysLeft = Math.max(0, maxReplays - replayCount)
-  const waveColor = "bg-[var(--accent)]/80"
 
   useEffect(() => {
     setHeardOnce(false)
@@ -124,23 +125,19 @@ export function ListeningEncounter({
         </p>
       )}
 
+      {focusMode && fragment && (
+        <ListeningStationDisplay
+          primaryLabel={fragment.japanese.slice(0, 8) || "秋葉原"}
+          secondaryLabel={fragment.reading ?? "Signal corridor"}
+        />
+      )}
+
       <div
         className={`rounded-[var(--radius-panel)] px-4 py-8 ${
           focusMode ? "" : "nozomi-signal-well"
         }`}
       >
-        <div
-          className="mb-6 flex h-14 items-end justify-center gap-1"
-          aria-hidden
-        >
-          {tts.waveformLevels.map((level, i) => (
-            <span
-              key={i}
-              className={`w-1 rounded-full transition-[height] duration-75 ${waveColor}`}
-              style={{ height: `${8 + level * 28}px` }}
-            />
-          ))}
-        </div>
+        <AudioWaveform levels={tts.waveformLevels} active={tts.playing} className="mb-6" />
         <p className="text-center text-sm text-[var(--foreground)]">
           {tts.playing
             ? "Receiving signal…"

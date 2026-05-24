@@ -32,7 +32,9 @@ Save Progress (stats, penalties, remaining quests — XP already on server)
 ↓
 Trigger Events
 
-Optional (v1.0+ shell): `/contracts` → Track contract → `/prepare?questId=` → Deploy → `EncounterHost` hunt view
+Quest Channel (v1.2.2+): `/contracts?tab=story` → `/contracts/[id]` → **Enter dungeon** → `/prepare?questId=` → Deploy → `EncounterHost` hunt view → `GateClearedScreen` claim → `/contracts?tab=story` or `/vocabulary?session=last`
+
+Optional track: secondary **Track on home** on contract file (tracked card on `/home`).
 
 Events:
 - QUEST_GENERATED
