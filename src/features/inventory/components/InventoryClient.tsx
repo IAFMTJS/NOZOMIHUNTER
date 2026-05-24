@@ -112,7 +112,7 @@ export function InventoryClient() {
   }
 
   async function handleSell(itemKey: string) {
-    if (busy || !user) return
+    if (busy || !player || !user) return
     const entry = catalogMap.get(itemKey)
     if (!entry || !canSell(player, entry, 1)) return
     setBusy(true)
