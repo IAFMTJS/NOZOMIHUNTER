@@ -1,3 +1,10 @@
+export interface ConversationResponseFamily {
+  /** Normalized answer fragments accepted for this scenario. */
+  patterns: string[]
+  style: "formal" | "casual" | "english" | "hybrid"
+  qualityBonus: number
+}
+
 export interface ConversationScenarioConfig {
   id: string
   title: string
@@ -7,6 +14,7 @@ export interface ConversationScenarioConfig {
   openingLine: string
   openingLineReading: string
   requiredExchanges: number
+  responseFamilies?: ConversationResponseFamily[]
 }
 
 export const CONVERSATION_SCENARIOS: ConversationScenarioConfig[] = [
@@ -21,6 +29,23 @@ export const CONVERSATION_SCENARIOS: ConversationScenarioConfig[] = [
       "Hunter. State your status. 準備はいいですか？",
     openingLineReading: "junbi wa ii desu ka?",
     requiredExchanges: 3,
+    responseFamilies: [
+      {
+        patterns: ["junbi dekite imasu", "準備できています", "prepared", "ready"],
+        style: "formal",
+        qualityBonus: 0.15,
+      },
+      {
+        patterns: ["ikemasu", "いけます", "yes", "go"],
+        style: "casual",
+        qualityBonus: 0.1,
+      },
+      {
+        patterns: ["ready", "yes", "ok", "hai"],
+        style: "english",
+        qualityBonus: 0.05,
+      },
+    ],
   },
   {
     id: "signal-relay",
@@ -33,6 +58,13 @@ export const CONVERSATION_SCENARIOS: ConversationScenarioConfig[] = [
       "Signal unstable. Report what you understand. 何が見えますか？",
     openingLineReading: "nani ga miemasu ka?",
     requiredExchanges: 3,
+    responseFamilies: [
+      {
+        patterns: ["mieru", "見える", "see", "signal", "corridor"],
+        style: "hybrid",
+        qualityBonus: 0.1,
+      },
+    ],
   },
   {
     id: "shadow-briefing",
@@ -44,6 +76,13 @@ export const CONVERSATION_SCENARIOS: ConversationScenarioConfig[] = [
     openingLine: "You're late. Explain—簡潔に。",
     openingLineReading: "kanketsu ni.",
     requiredExchanges: 4,
+    responseFamilies: [
+      {
+        patterns: ["traffic", "delay", "sorry", "遅れ", "すみません"],
+        style: "formal",
+        qualityBonus: 0.1,
+      },
+    ],
   },
 ]
 

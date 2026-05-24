@@ -23,6 +23,8 @@ import {
 import { threatDisplayLabel } from "@/systems/vocabulary/vocabularyThreatSystem"
 import { instabilityLabel } from "@/systems/vocabulary/memoryDecaySystem"
 import { learnerPartsFromCurated } from "@/services/jmdict/learnerFormat"
+import { MasteryTierBadge } from "@/components/ui/screen/MasteryTierBadge"
+import { masteryCardClass } from "@/systems/presentation/masteryPresentationSystem"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { hydratePlayerFromDb } from "@/features/quests/services/questService"
 import { BREW_CONFIG } from "@/config/brewConfig"
@@ -158,9 +160,12 @@ export function VocabularyClient() {
               <li key={e.wordId}>
                 <Link
                   href={`/vocabulary/${e.entSeq}`}
-                  className={`flex items-center justify-between gap-3 rounded-xl border border-[var(--border-subtle)] bg-black/20 px-4 py-3 ${THREAT_ROW_CLASS[e.threat] ?? ""}`}
+                  className={`${masteryCardClass(e.mastery)} flex items-center justify-between gap-3 rounded-xl border border-[var(--border-subtle)] bg-black/20 px-4 py-3 ${THREAT_ROW_CLASS[e.threat] ?? ""}`}
                 >
                   <div className="min-w-0 flex-1">
+                    <div className="mb-1 flex items-center gap-2">
+                      <MasteryTierBadge masteryPercent={e.mastery} />
+                    </div>
                     <LearnerWordLine parts={parts} layout="stacked" size="sm" audio />
                     {decay && (
                       <p className="mt-1 text-[10px] uppercase text-[var(--danger)]">

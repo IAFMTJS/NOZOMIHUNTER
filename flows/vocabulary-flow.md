@@ -14,7 +14,11 @@ Quest generation → `pickWordsByFrequency` (low mastery, high frequency)
 ↓
 **Preparation** (`vocabulary-preparation-flow.md`): detect unknown → prioritize critical → mission briefing
 ↓
-Encounter answer → normalize → validate
+Encounter answer → `matchesChallengeAnswer` (locked input mode from `promptDirection`)
+↓
+Challenge UI: ACTIVE masks glosses per direction; brief REVEALED phase after correct (`VocabularyEncounter` local reveal)
+↓
+Wrong answers → +1 corruption (`corruptionDeltaForWrongAnswer`); pressure copy from `encounterPressureSystem`
 ↓
 Mastery delta (+12 correct / -4 wrong)
 ↓

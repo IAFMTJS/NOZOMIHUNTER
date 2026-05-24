@@ -7,6 +7,11 @@ import {
   nextReactiveToast,
   type ReactiveToast,
 } from "@/systems/presentation/reactiveFeedbackSystem"
+import { usePlayerStore } from "@/stores/usePlayerStore"
+import {
+  dungeonFailureConsequenceLines,
+  dungeonFailureHeadline,
+} from "@/systems/presentation/dungeonFailurePresentation"
 
 function reducedMotionPreferred(): boolean {
   if (typeof document === "undefined") return false
@@ -15,27 +20,47 @@ function reducedMotionPreferred(): boolean {
 
 export function ReactiveFeedbackHost() {
   const [toast, setToast] = useState<ReactiveToast | null>(null)
+  const ceremonyActive = usePlayerStore((s) => s.levelUpCeremony != null)
 
   useEffect(() => {
     const onXp = (p: unknown) =>
       setToast(nextReactiveToast("xp", p as { xpGained?: number }))
     const onPenalty = () => setToast(nextReactiveToast("warning"))
     const onWrong = () => setToast(nextReactiveToast("glitch"))
-    const onLevel = (p: unknown) =>
-      setToast(nextReactiveToast("level", p as { level?: number }))
+    const onLevel = () => {
+      if (usePlayerStore.getState().levelUpCeremony) return
+      setToast(nextReactiveToast("level"))
+    }
+    const onDungeonFail = () => {
+      const player = usePlayerStore.getState().player
+      const lines = player
+        ? dungeonFailureConsequenceLines(player.penalties)
+        : []
+      setToast(
+        nextReactiveToast("dungeonFail", {
+          message: `${dungeonFailureHeadline()} — ${lines[0] ?? "Penalties applied"}`,
+        })
+      )
+    }
 
     eventBus.on(GAME_EVENTS.XP_GAINED, onXp)
     eventBus.on(GAME_EVENTS.PENALTY_TRIGGERED, onPenalty)
     eventBus.on(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, onWrong)
     eventBus.on(GAME_EVENTS.LEVEL_UP, onLevel)
+    eventBus.on(GAME_EVENTS.DUNGEON_FAILED, onDungeonFail)
 
     return () => {
       eventBus.off(GAME_EVENTS.XP_GAINED, onXp)
       eventBus.off(GAME_EVENTS.PENALTY_TRIGGERED, onPenalty)
       eventBus.off(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, onWrong)
       eventBus.off(GAME_EVENTS.LEVEL_UP, onLevel)
+      eventBus.off(GAME_EVENTS.DUNGEON_FAILED, onDungeonFail)
     }
   }, [])
+
+  useEffect(() => {
+    if (ceremonyActive) setToast(null)
+  }, [ceremonyActive])
 
   useEffect(() => {
     if (!toast) return

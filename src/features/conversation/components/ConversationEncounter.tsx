@@ -123,7 +123,7 @@ export function ConversationEncounter({
             disabled={disabled || sending}
             rows={2}
             className="mt-1 min-h-11 w-full resize-none rounded border border-[var(--border-subtle)] bg-[var(--surface-2)] px-3 py-2 text-base text-[var(--foreground)] outline-none focus:border-[var(--accent)]/60 sm:min-h-0 sm:text-sm"
-            placeholder="e.g. junbi dekite imasu (準備できています) or I am ready"
+            placeholder="Respond to the operator…"
           />
         </label>
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">

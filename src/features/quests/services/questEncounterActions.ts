@@ -9,6 +9,7 @@ import {
   savePlayerAiState,
 } from "@/services/supabase/conversationRepository"
 import {
+  applyWrongAnswerCorruption,
   persistMasteryUpdate,
   runVocabularySubmit,
   runListeningSubmit,
@@ -62,6 +63,7 @@ export async function submitVocabularyAnswerForQuest(
   correct: boolean
   encounterFailed: boolean
   encounterComplete: boolean
+  pressureLine?: string | null
 } | null> {
   const store = usePlayerStore.getState()
   const quest = store.activeQuests.find((q) => q.id === questId)
@@ -78,12 +80,23 @@ export async function submitVocabularyAnswerForQuest(
   await updateUserQuest(userId, result.quest)
   await persistMasteryUpdate(userId, result.masteryUpdate)
 
+  if (!result.correct && !result.encounterFailed) {
+    const nextPenalties = applyWrongAnswerCorruption(
+      store.player.penalties,
+      quest.isTutorial
+    )
+    if (nextPenalties !== store.player.penalties) {
+      store.applyPenalties(nextPenalties)
+    }
+  }
+
   if (result.encounterFailed) {
     await failQuestForPlayer(userId, questId)
     return {
       correct: false,
       encounterFailed: true,
       encounterComplete: false,
+      pressureLine: result.pressureLine,
     }
   }
 
@@ -92,6 +105,7 @@ export async function submitVocabularyAnswerForQuest(
     correct: result.correct,
     encounterFailed: false,
     encounterComplete: result.encounterComplete,
+    pressureLine: result.pressureLine,
   }
 }
 
@@ -218,6 +232,7 @@ export async function submitListeningAnswerForQuest(
   correct: boolean
   encounterFailed: boolean
   encounterComplete: boolean
+  pressureLine?: string | null
 } | null> {
   const store = usePlayerStore.getState()
   const quest = store.activeQuests.find((q) => q.id === questId)
@@ -233,12 +248,23 @@ export async function submitListeningAnswerForQuest(
   store.updateQuest(result.quest)
   await updateUserQuest(userId, result.quest)
 
+  if (!result.correct && !result.encounterFailed) {
+    const nextPenalties = applyWrongAnswerCorruption(
+      store.player.penalties,
+      quest.isTutorial
+    )
+    if (nextPenalties !== store.player.penalties) {
+      store.applyPenalties(nextPenalties)
+    }
+  }
+
   if (result.encounterFailed) {
     await failQuestForPlayer(userId, questId)
     return {
       correct: false,
       encounterFailed: true,
       encounterComplete: false,
+      pressureLine: result.pressureLine,
     }
   }
 
@@ -247,5 +273,6 @@ export async function submitListeningAnswerForQuest(
     correct: result.correct,
     encounterFailed: false,
     encounterComplete: result.encounterComplete,
+    pressureLine: result.pressureLine,
   }
 }

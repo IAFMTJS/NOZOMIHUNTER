@@ -27,6 +27,7 @@ interface QuestCardProps {
   onSubmitAnswer?: (answer: string) => Promise<{
     correct: boolean
     encounterFailed: boolean
+    pressureLine?: string | null
   } | null>
   onSendMessage?: (message: string) => Promise<{
     passed: boolean
@@ -45,6 +46,7 @@ interface QuestCardProps {
   onSubmitListening?: (answer: string) => Promise<{
     correct: boolean
     encounterFailed: boolean
+    pressureLine?: string | null
   } | null>
   onGameModeAction?: (action: string, payload?: string) => Promise<void>
   player?: PlayerContract | null
@@ -126,7 +128,10 @@ export function QuestCard({
       pulseFlash("danger")
       return result
     }
-    setLastResult(result.correct ? "Lock confirmed." : "Signal degraded.")
+    setLastResult(
+      result.pressureLine ??
+        (result.correct ? "Lock confirmed." : "Signal degraded.")
+    )
     pulseFlash(result.correct ? "success" : "danger")
     return result
   }
@@ -157,7 +162,10 @@ export function QuestCard({
       pulseFlash("danger")
       return result
     }
-    setLastResult(result.correct ? "Transmission decoded." : "Signal mismatch.")
+    setLastResult(
+      result.pressureLine ??
+        (result.correct ? "Transmission decoded." : "Signal mismatch.")
+    )
     pulseFlash(result.correct ? "success" : "danger")
     return result
   }

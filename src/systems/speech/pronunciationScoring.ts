@@ -17,6 +17,7 @@ function phraseAcceptanceSet(phrase: SpeechPhraseContract): Set<string> {
   const tokens = new Set<string>()
   tokens.add(normalizeRomaji(phrase.romaji))
   tokens.add(normalizeJapanese(phrase.japanese))
+  tokens.add(normalizeJapanese(phrase.reading))
   for (const meaning of phrase.meanings) {
     tokens.add(normalizeAnswer(meaning))
   }

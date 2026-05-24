@@ -10,6 +10,7 @@ import {
 } from "@/config/conversationContentConfig"
 import { CONVERSATION_ENCOUNTER_CONFIG } from "@/config/conversationEncounterConfig"
 import { processDialogue } from "@/systems/ai/dialogueOrchestrator"
+import { detectIntent } from "@/systems/ai/intentSystem"
 import { scoreConversationExchange } from "@/systems/ai/conversationScoring"
 import { updateMemory } from "@/systems/ai/memorySystem"
 import { advanceObjective } from "./questValidator"
@@ -98,15 +99,22 @@ export async function submitConversationMessage(
     }
   }
 
+  const intent = detectIntent(playerMessage)
+  const score = scoreConversationExchange(
+    playerMessage,
+    intent,
+    encounter.scenarioId
+  )
+
   const aiResponse = await processDialogue({
     message: playerMessage,
     playerId,
     memory,
     scenarioId: encounter.scenarioId,
     recentMessages: encounter.messages,
+    responseStyle: score.style,
+    exchangePassed: score.passed,
   })
-
-  const score = scoreConversationExchange(playerMessage, aiResponse.intent)
 
   const playerMsg = createMessage("player", playerMessage)
   const directorMsg = createMessage("director", aiResponse.response)
@@ -143,6 +151,15 @@ export async function submitConversationMessage(
 
   if (quest.gameMode === "DEEP_COVER" || encounter.relationshipTrust != null) {
     updatedEncounter = applyExchangeToEncounterTrust(updatedEncounter, score.passed)
+    if (score.trustDelta != null && updatedEncounter.relationshipTrust != null) {
+      updatedEncounter = {
+        ...updatedEncounter,
+        relationshipTrust: Math.min(
+          100,
+          Math.max(0, updatedEncounter.relationshipTrust + score.trustDelta * 100)
+        ),
+      }
+    }
     try {
       await upsertNpcRelationship({
         ...toNpcRelationshipRow(playerId, encounter.scenarioId, updatedEncounter),

@@ -1,7 +1,9 @@
 "use client"
 
+import { SequentialRewardReveal } from "@/components/ceremonies/SequentialRewardReveal"
 import { RewardIconGrid, type RewardIconItem } from "@/components/ui/screen/RewardIconGrid"
 import { Button } from "@/components/ui/Button"
+import type { RewardRevealMode } from "@/systems/presentation/ceremonies/ceremonyTypes"
 
 export interface GateClearedStats {
   timeLabel: string
@@ -15,21 +17,57 @@ interface GateClearedScreenProps {
   stats: GateClearedStats
   rewards: RewardIconItem[]
   onContinue: () => void
+  revealMode?: RewardRevealMode
+  headline?: string
+  subheadline?: string
+  performanceLabel?: string
+  intensityClass?: string
 }
 
 export function GateClearedScreen({
   stats,
   rewards,
   onContinue,
+  revealMode = "sequential",
+  headline = "Gate Cleared",
+  subheadline,
+  performanceLabel,
+  intensityClass = "",
 }: GateClearedScreenProps) {
+  const slam = headline === "Dungeon Cleared"
+
   return (
-    <div className="nozomi-screen-extraction space-y-5 py-4 text-center">
-      <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border border-[var(--accent)]/50 bg-[var(--accent-dim)] shadow-[0_0_40px_var(--glow-accent)]">
-        <span className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent-bright)]">
-          Gate
-          <br />
-          Cleared
-        </span>
+    <div className={`nozomi-screen-extraction space-y-5 py-4 text-center ${intensityClass}`}>
+      <div
+        className={
+          slam
+            ? "nozomi-dungeon-clear-slam mx-auto max-w-md py-4"
+            : "mx-auto flex h-24 w-24 items-center justify-center rounded-full border border-[var(--accent)]/50 bg-[var(--accent-dim)] shadow-[0_0_40px_var(--glow-accent)]"
+        }
+      >
+        {slam ? (
+          <>
+            <p className="text-[10px] uppercase tracking-[0.36em] text-[var(--danger)]">
+              {headline}
+            </p>
+            {subheadline && (
+              <p className="mt-2 font-display text-xl font-bold text-[var(--foreground)]">
+                {subheadline}
+              </p>
+            )}
+            {performanceLabel && (
+              <p className="mt-2 text-sm font-semibold uppercase tracking-widest text-[var(--reward)]">
+                {performanceLabel}
+              </p>
+            )}
+          </>
+        ) : (
+          <span className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent-bright)]">
+            Gate
+            <br />
+            Cleared
+          </span>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-2 text-left">
@@ -38,7 +76,11 @@ export function GateClearedScreen({
         <StatBlock label="Grade" value={stats.grade} highlight />
       </div>
 
-      <RewardIconGrid items={rewards} />
+      {revealMode === "sequential" ? (
+        <SequentialRewardReveal items={rewards} mode="sequential" />
+      ) : (
+        <RewardIconGrid items={rewards} />
+      )}
 
       {(stats.newWordsUnlocked != null || stats.masteryIncreasePercent != null) && (
         <div className="space-y-1 text-sm text-[var(--muted)]">

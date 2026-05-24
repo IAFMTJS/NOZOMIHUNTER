@@ -3,7 +3,11 @@ import type { PlayerContract, PlayerPenaltyContract } from "@/contracts/player-c
 import type { WordMasteryContract } from "@/contracts/vocabulary-contract"
 import { submitVocabularyAnswer } from "@/systems/quests/vocabularyEncounterSystem"
 import { submitListeningAnswer } from "@/systems/dungeons/listeningEncounterSystem"
-import { maxWrongAttemptsForPenalties } from "@/systems/penalties/penaltyGameplaySystem"
+import {
+  corruptionDeltaForWrongAnswer,
+  maxWrongAttemptsForPenalties,
+} from "@/systems/penalties/penaltyGameplaySystem"
+import { mergePenalties } from "@/systems/penalties/penaltySystem"
 import { maxWrongAttemptsWithBoosts } from "@/systems/economy/boostSystem"
 import { upsertWordMastery } from "@/services/supabase/vocabularyRepository"
 
@@ -41,6 +45,15 @@ export function runVocabularySubmit(
     userId,
     maxWrongForPenalties(penalties, player)
   )
+}
+
+export function applyWrongAnswerCorruption(
+  penalties: PlayerPenaltyContract,
+  isTutorial = false
+): PlayerPenaltyContract {
+  const delta = corruptionDeltaForWrongAnswer(isTutorial)
+  if (!delta) return penalties
+  return mergePenalties(penalties, delta)
 }
 
 export function runListeningSubmit(

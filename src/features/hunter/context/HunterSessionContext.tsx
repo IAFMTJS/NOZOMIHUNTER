@@ -24,7 +24,7 @@ import { HunterShellLayout } from "@/components/layout/HunterShellLayout"
 import { HunterPage } from "@/components/layout/HunterPage"
 import { EncounterHost } from "@/features/hunter/components/EncounterHost"
 import { RewardClaimOverlay } from "@/features/rewards/components/RewardClaimOverlay"
-import { LevelUpNotice } from "@/components/LevelUpNotice"
+import { LevelUpCeremony } from "@/components/ceremonies/LevelUpCeremony"
 import { RankUpNotice } from "@/components/RankUpNotice"
 import { UnlockNotice } from "@/components/UnlockNotice"
 import { InstallPrompt } from "@/components/InstallPrompt"
@@ -73,8 +73,8 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
   const { user, signOut, loading, configured } = useAuth()
   const player = usePlayerStore((s) => s.player)
   const activeQuests = usePlayerStore((s) => s.activeQuests)
-  const levelUpNotice = usePlayerStore((s) => s.levelUpNotice)
-  const clearLevelUpNotice = usePlayerStore((s) => s.clearLevelUpNotice)
+  const levelUpCeremony = usePlayerStore((s) => s.levelUpCeremony)
+  const clearLevelUpCeremony = usePlayerStore((s) => s.clearLevelUpCeremony)
   const rankUpNotice = usePlayerStore((s) => s.rankUpNotice)
   const clearRankUpNotice = usePlayerStore((s) => s.clearRankUpNotice)
   const unlockNoticeQueue = usePlayerStore((s) => s.unlockNoticeQueue)
@@ -272,13 +272,17 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
         <RewardClaimOverlay
           player={player}
           bundle={player.pendingRewards}
+          activeQuests={activeQuests}
           claimError={claimError}
           onClaimAll={() => void claimRewards()}
         />
       )}
 
-      {levelUpNotice != null && (
-        <LevelUpNotice level={levelUpNotice} onDismiss={clearLevelUpNotice} />
+      {levelUpCeremony != null && (
+        <LevelUpCeremony
+          data={levelUpCeremony}
+          onDismiss={clearLevelUpCeremony}
+        />
       )}
       {rankUpNotice != null && (
         <RankUpNotice rank={rankUpNotice} onDismiss={clearRankUpNotice} />

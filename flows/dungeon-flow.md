@@ -8,7 +8,7 @@ Enter Dungeon (DUNGEON quest assigned)
 ↓
 PREPARATION — briefing, Deploy (`initDungeonTimer` sets `runStartedAt` + `timeLimitMs`)
 ↓
-EXPLORATION — corridor transit (APPROACH → SCAN → ENGAGE beats via `ExplorationLayer`)
+EXPLORATION — corridor transit (APPROACH → SCAN → ENGAGE beats via `ExplorationLayer`); **Hold channel** LISTEN action requires ~1.8s press-and-hold before intel unlocks
 ↓
 ENCOUNTER — vocab / listening / NPC / speech (after `engageSectorEncounter`)
 ↓
@@ -18,7 +18,7 @@ EXPLORATION — next sector transit (repeat)
 ↓
 BOSS — vocabulary phase → speech phase
 ↓
-EXTRACTION — `ExtractionCeremony` (breach → sync → extract) + themed audio
+EXTRACTION — `DungeonClearCeremony` (slam title, sequential rewards, extract CTA) + themed audio
 ↓
 Assign quest → `spend_stamina_guarded` (JSONB unlock check) → extract uses same `applyActivityCompletion` + `pending_rewards` as missions
 ↓
@@ -42,7 +42,7 @@ Events:
 - `ENCOUNTER_COMPLETED`
 - `ENCOUNTER_ANSWER_CORRECT` / `ENCOUNTER_ANSWER_WRONG` (sector encounters)
 - `DUNGEON_COMPLETED`
-- `DUNGEON_FAILED`
+- `DUNGEON_FAILED` — reactive toast with XP debt / corruption / streak consequence copy
 
 UI (v0.6.7): `DungeonPhaseStepper`, `DungeonCorridorRail`, hunt-mode focus during ENCOUNTER/BOSS; audio cues via event bus.
 

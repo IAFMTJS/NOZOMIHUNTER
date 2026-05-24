@@ -33,6 +33,7 @@ import { logSystemEvent } from "@/systems/logger/logger"
 import { shouldAssignTutorialQuest } from "@/systems/tutorial/tutorialSystem"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { triggerSave } from "@/systems/save/saveSystem"
+import { applyEncounterStreakToQuestRewards } from "@/systems/quests/questCompletionRewardSystem"
 import { resolveRewardProgression } from "@/systems/progression/resolveQuestCompletion"
 import {
   assignQuest,
@@ -170,21 +171,22 @@ export async function finishQuest(userId: string, questId: string) {
     throw new Error("Quest objectives not complete")
   }
 
-  await updateUserQuest(userId, quest)
+  const questForComplete = applyEncounterStreakToQuestRewards(quest)
+  await updateUserQuest(userId, questForComplete)
 
-  const snapshotCheck = QuestSnapshotSchema.safeParse(quest)
+  const snapshotCheck = QuestSnapshotSchema.safeParse(questForComplete)
   if (!snapshotCheck.success) {
     logSystemEvent("validation", "quest_snapshot_drift", snapshotCheck.error.flatten())
   }
 
-  const server = await completeQuestGuarded(quest.id, 0)
+  const server = await completeQuestGuarded(questForComplete.id, 0)
 
   const { progression: mergedProgression, newUnlocks } =
     resolveRewardProgression(progressionState.progression, quest.rewards)
 
   const { leveledUp, rankUp } = await applyActivityCompletion({
     userId,
-    quest,
+    quest: questForComplete,
     server,
     progression: mergedProgression,
     newUnlocks,

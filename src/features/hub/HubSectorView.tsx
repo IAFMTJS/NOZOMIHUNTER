@@ -99,6 +99,7 @@ export function HubSectorView({
         >
           <DungeonRunner
             quest={activeDungeon}
+            player={player}
             disabled={dungeonBusy}
             encounterClassName={encounterClassName}
             maxWrongAttempts={penaltyMods.maxWrongAttempts}

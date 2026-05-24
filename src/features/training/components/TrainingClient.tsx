@@ -89,7 +89,9 @@ function trainingBlurb(mode: GameModeId): string {
     case "MEMORY_CASCADE":
       return "High-speed sequence recall — spot the intruder."
     case "SHADOW_ECHO":
-      return "Mirror operator pacing and pronunciation."
+      return "Mirror operator pacing before the signal decays."
+    case "KANA_DASH":
+      return "Rapid kana recognition with combo multiplier chains."
     default:
       return "Training simulation."
   }

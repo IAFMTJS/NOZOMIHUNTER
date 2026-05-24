@@ -5,12 +5,14 @@ import type { ProgressionState } from "@/systems/progression/progressionTypes"
 import type { HunterRank } from "@/contracts/player-contract"
 import { dedupeActiveQuests } from "@/systems/quests/questListUtils"
 import { applyLevelUpDelta } from "@/systems/progression/rpgStatsSystem"
+import { buildLevelUpCeremonyViewModel } from "@/systems/presentation/ceremonies/levelUpCeremonyData"
+import type { LevelUpCeremonyViewModel } from "@/systems/presentation/ceremonies/ceremonyTypes"
 
 interface PlayerStore {
   player: PlayerContract | null
   activeQuests: QuestContract[]
   isHydrated: boolean
-  levelUpNotice: number | null
+  levelUpCeremony: LevelUpCeremonyViewModel | null
   rankUpNotice: HunterRank | null
   unlockNoticeQueue: string[]
 
@@ -31,7 +33,7 @@ interface PlayerStore {
   applyPenalties: (penalties: PlayerContract["penalties"]) => void
   updateQuest: (quest: QuestContract) => void
   setQuests: (quests: QuestContract[]) => void
-  clearLevelUpNotice: () => void
+  clearLevelUpCeremony: () => void
   clearRankUpNotice: () => void
   dismissUnlockNotice: () => void
   reset: () => void
@@ -42,7 +44,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   player: null,
   activeQuests: [],
   isHydrated: false,
-  levelUpNotice: null,
+  levelUpCeremony: null,
   rankUpNotice: null,
   unlockNoticeQueue: [],
 
@@ -65,6 +67,16 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         ? applyLevelUpDelta(player.rpgStats, levelsGained, update.rank)
         : player.rpgStats
 
+    const previousLevel = player.level
+    const unlockKeys = update.newUnlocks ?? []
+    const levelUpCeremony = update.leveledUp
+      ? buildLevelUpCeremonyViewModel(previousLevel, update.level, unlockKeys)
+      : get().levelUpCeremony
+
+    const unlockQueue = update.newUnlocks?.length
+      ? [...get().unlockNoticeQueue, ...update.newUnlocks]
+      : get().unlockNoticeQueue
+
     set({
       player: {
         ...player,
@@ -77,12 +89,11 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         stats: update.stats ?? player.stats,
         updatedAt: new Date().toISOString(),
       },
-      levelUpNotice: update.leveledUp ? update.level : get().levelUpNotice,
+      levelUpCeremony,
       rankUpNotice: update.rankUp ? update.rank : get().rankUpNotice,
-      unlockNoticeQueue:
-        update.newUnlocks?.length
-          ? [...get().unlockNoticeQueue, ...update.newUnlocks]
-          : get().unlockNoticeQueue,
+      unlockNoticeQueue: update.leveledUp
+        ? unlockQueue.filter((k) => !unlockKeys.includes(k))
+        : unlockQueue,
     })
   },
 
@@ -109,7 +120,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   setQuests: (activeQuests) =>
     set({ activeQuests: dedupeActiveQuests(activeQuests) }),
 
-  clearLevelUpNotice: () => set({ levelUpNotice: null }),
+  clearLevelUpCeremony: () => set({ levelUpCeremony: null }),
 
   clearRankUpNotice: () => set({ rankUpNotice: null }),
 
@@ -121,7 +132,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       player: null,
       activeQuests: [],
       isHydrated: false,
-      levelUpNotice: null,
+      levelUpCeremony: null,
       rankUpNotice: null,
       unlockNoticeQueue: [],
     }),

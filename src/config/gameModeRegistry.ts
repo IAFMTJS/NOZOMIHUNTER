@@ -70,7 +70,17 @@ export const GAME_MODE_REGISTRY: Record<GameModeId, GameModeDefinition> = {
     parentSystem: "training",
     questType: "SPEECH",
     minLevel: 3,
-    pressure: {},
+    pressure: { timed: true },
+    enabled: true,
+  },
+  KANA_DASH: {
+    id: "KANA_DASH",
+    label: "Kana Dash",
+    emotion: "DOPAMINE",
+    parentSystem: "training",
+    questType: "VOCABULARY",
+    minLevel: 2,
+    pressure: { timed: true },
     enabled: true,
   },
   TERMINAL_BREACH: {
@@ -217,6 +227,7 @@ export function isGameModeUnlocked(
 
 export const TRAINING_GAME_MODES: GameModeId[] = [
   "SIGNAL_CALIBRATION",
+  "KANA_DASH",
   "KANJI_SURGERY",
   "MEMORY_CASCADE",
   "SHADOW_ECHO",

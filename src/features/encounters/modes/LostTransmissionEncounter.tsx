@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import type { QuestContract } from "@/contracts/quest-contract"
+import type { PlayerContract } from "@/contracts/player-contract"
 import { ListeningEncounter } from "@/features/dungeons/components/ListeningEncounter"
 import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
@@ -10,6 +11,7 @@ import { ModeEncounterShell } from "@/features/encounters/modes/ModeEncounterShe
 
 interface LostTransmissionEncounterProps {
   quest: QuestContract
+  player?: PlayerContract | null
   disabled?: boolean
   maxWrongAttempts?: number
   maxReplays?: number

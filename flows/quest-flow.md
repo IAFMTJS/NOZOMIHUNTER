@@ -30,7 +30,9 @@ Persist quest snapshot (`updateUserQuest`)
 ↓
 Client sync store + tutorial unlocks (non-XP fields via `apply_guarded_progression`)
 ↓
-`RewardClaimOverlay` → `clear_pending_rewards_guarded` (credits/items applied server-side; local `pendingRewards` cleared)
+`LevelUpCeremony` (fullscreen, stat deltas, unlocks) when `applyProgressionUpdate` levels up — suppresses duplicate level toast
+↓
+`RewardClaimOverlay` (tiered: daily instant, side/story/dungeon sequential reveal) → `clear_pending_rewards_guarded` (credits/items applied server-side; local `pendingRewards` cleared)
 ↓
 Fatigue recovery (−1 on complete, cap 0) via `penaltyGameplaySystem`
 ↓

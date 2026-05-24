@@ -66,6 +66,11 @@ export function DungeonRunHud({
       <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
         Sectors {sectorsDone}/{sectorTotal}
         {pressure.loopLabel ? ` · ${pressure.loopLabel}` : ""}
+        {sectorsDone >= 2 && (
+          <span className="nozomi-dungeon-escalation ml-1 text-[var(--danger)]">
+            · pressure rising
+          </span>
+        )}
       </p>
 
       {run.modifiers && run.modifiers.length > 0 && (

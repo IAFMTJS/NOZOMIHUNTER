@@ -2,6 +2,14 @@
 
 ## v1.3.0 (unreleased) — Gameplay evolution integration
 
+### Game feel (update2)
+- Ceremony layer: fullscreen `LevelUpCeremony`, `DungeonClearCeremony`, `SequentialRewardReveal`, tiered `RewardClaimOverlay` (daily light / story+dungeon sequential)
+- Encounter impact: `ComboMeter`, combo milestone audio (`combo2`/`combo5`/`comboBreak`), wrong-answer glitch CSS
+- Vocabulary: `MasteryTierBadge` + per-tier card glow on threat index
+- Quest channel screen utilities (daily / story / side list differentiation)
+- Dungeon: corridor atmosphere classes, escalation HUD copy, failure consequence toasts
+- Training: new `KANA_DASH` mode; Shadow Echo decay timer; Memory Cascade grid layout
+
 ### Design
 - Adopted [`docs/GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md`](docs/GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md) as north star for mechanical differentiation
 - Mode-aware core loop in `docs/core-loop.md`; system differentiation rules in `rules/gameplay-rules.md`
@@ -22,6 +30,13 @@
 - Expanded system message pools; tiered corruption presentation; audio ambience layer
 - Blackout assist level on player progression
 - Operational home feed rails
+- **Challenge display overhaul** (`challengeDisplaySystem`, `encounterPressureSystem`): dynamic information masking on vocab/listening/speech encounters; locked input modes; target-lock streak feedback; post-success reveal animation
+- **Listening**: masked station intercept, mic tap-to-play in focus shell, replay degradation copy
+- **Speech**: default `ja-JP` recognition, kana/kanji normalization, meaning-only prompts
+- **Dungeon corridor**: hold-to-listen channel (1.8s), flex-safe action buttons, LISTEN vs PUSH intel divergence
+- **Conversation**: response families in config, trust deltas, neutral placeholder (no answer leak)
+- **Audit follow-up**: shared `answerValidationSystem`; legacy quest patch for challenge fields; vocab pressure UI; per-wrong corruption tick; `player` on training-mode wrappers; flow/architecture doc sync
+- **Deferred polish**: corridor ambient audio; extraction mastery recap; encounter streak XP multiplier on completion; `CHALLENGE_REVEALED` / `REPLAY_PENALTY` analytics; director style variants in `dialogueOrchestrator`; PUSH corridor corruption tick
 
 ### Retention (flagged)
 - Corrupted language validators; live sector events; language invasions; dual operator scaffold

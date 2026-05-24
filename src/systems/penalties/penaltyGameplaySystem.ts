@@ -1,4 +1,5 @@
 import type { PlayerPenaltyContract } from "@/contracts/player-contract"
+import type { QuestPenaltyContract } from "@/contracts/quest-contract"
 import { PENALTY_CONFIG } from "@/config/penaltyConfig"
 import { DUNGEON_CONFIG } from "@/config/dungeonConfig"
 
@@ -47,4 +48,16 @@ export function hasSignalDegradation(penalties: PlayerPenaltyContract): boolean 
     penalties.corruption >= PENALTY_CONFIG.CORRUPTION_SIGNAL_DEGRADED ||
     penalties.fatigue >= PENALTY_CONFIG.FATIGUE_SIGNAL_DEGRADED
   )
+}
+
+/** Small corruption tick per wrong answer (not encounter failure). */
+export function corruptionDeltaForWrongAnswer(
+  isTutorial = false
+): QuestPenaltyContract | null {
+  if (isTutorial) return null
+  return {
+    corruption: PENALTY_CONFIG.WRONG_ANSWER_CORRUPTION,
+    fatigue: 0,
+    xpDebt: 0,
+  }
 }

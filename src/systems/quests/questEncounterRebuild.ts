@@ -3,11 +3,17 @@ import { JMDICT_CURATED } from "@/data/jmdictCurated"
 import { VOCABULARY_ENCOUNTER_CONFIG } from "@/config/vocabularyEncounterConfig"
 import { LISTENING_QUEST_CONFIG } from "@/config/listeningQuestConfig"
 import { toEncounterWord } from "@/services/jmdict/normalize"
+import {
+  attachChallengeFields,
+  defaultListeningDirection,
+  resolveInputMode,
+} from "@/systems/learning/challengeDisplaySystem"
+import { getMasteryMap } from "@/systems/mastery/masterySystem"
+import { resolveQuestGameMode } from "@/systems/gameModes/gameModeSystem"
 import { createVocabularyEncounter } from "./vocabularyEncounterSystem"
 import { createConversationEncounter } from "./conversationEncounterSystem"
 import { createSpeechEncounter } from "./speechEncounterSystem"
 import { createListeningEncounter } from "@/systems/dungeons/listeningEncounterSystem"
-import { resolveQuestGameMode } from "@/systems/gameModes/gameModeSystem"
 import { rebuildQuestForGameMode } from "@/systems/gameModes/gameModeEncounterSystem"
 import { applyGameModeToQuest } from "@/systems/gameModes/gameModeQuestBuilder"
 import {
@@ -42,12 +48,22 @@ export function patchVocabularyWords(quest: QuestContract): QuestContract {
   const encounter = quest.vocabularyEncounter
   if (!encounter?.words.length) return quest
 
+  const mode = resolveQuestGameMode(quest)
+  const masteryMap = getMasteryMap()
   let changed = false
   const words = encounter.words.map((w) => {
-    if (w.reading) return w
-    changed = true
-    const entry = curatedById.get(w.id)
-    return entry ? toEncounterWord(entry) : { ...w, reading: w.romaji }
+    let word = w
+    if (!w.reading) {
+      changed = true
+      const entry = curatedById.get(w.id)
+      word = entry ? toEncounterWord(entry) : { ...w, reading: w.romaji }
+    }
+    if (!word.promptDirection || !word.inputMode) {
+      changed = true
+      const mastery = masteryMap.get(word.id) ?? 0
+      word = attachChallengeFields(word, mastery, undefined, mode)
+    }
+    return word
   })
 
   if (!changed) return quest
@@ -58,16 +74,47 @@ export function patchSpeechPhrases(quest: QuestContract): QuestContract {
   const encounter = quest.speechEncounter
   if (!encounter?.phrases.length) return quest
 
+  const mode = resolveQuestGameMode(quest)
+  const masteryMap = getMasteryMap()
   let changed = false
   const phrases = encounter.phrases.map((p) => {
-    if (p.reading) return p
-    changed = true
-    const entry = curatedById.get(p.id)
-    return entry ? toEncounterWord(entry) : { ...p, reading: p.romaji }
+    let phrase = p
+    if (!p.reading) {
+      changed = true
+      const entry = curatedById.get(p.id)
+      phrase = entry ? toEncounterWord(entry) : { ...p, reading: p.romaji }
+    }
+    if (!phrase.promptDirection || !phrase.inputMode) {
+      changed = true
+      const mastery = masteryMap.get(phrase.id) ?? 0
+      phrase = attachChallengeFields(phrase, mastery, undefined, mode)
+    }
+    return phrase
   })
 
   if (!changed) return quest
   return { ...quest, speechEncounter: { ...encounter, phrases } }
+}
+
+export function patchListeningFragments(quest: QuestContract): QuestContract {
+  const encounter = quest.listeningEncounter
+  if (!encounter?.fragments.length) return quest
+
+  const direction = defaultListeningDirection()
+  const inputMode = resolveInputMode(direction)
+  let changed = false
+  const fragments = encounter.fragments.map((f) => {
+    if (f.promptDirection && f.inputMode) return f
+    changed = true
+    return {
+      ...f,
+      promptDirection: f.promptDirection ?? direction,
+      inputMode: f.inputMode ?? inputMode,
+    }
+  })
+
+  if (!changed) return quest
+  return { ...quest, listeningEncounter: { ...encounter, fragments } }
 }
 
 export function buildListeningPayload(quest: QuestContract): QuestContract {
@@ -236,7 +283,9 @@ export function rebuildQuestEncounter(quest: QuestContract): QuestContract {
       : buildConversationPayload(quest)
   }
   if (quest.type === "LISTENING") {
-    return hasPlayableListening(quest) ? quest : buildListeningPayload(quest)
+    return hasPlayableListening(quest)
+      ? patchListeningFragments(quest)
+      : buildListeningPayload(quest)
   }
 
   const wordCount = quest.isTutorial
@@ -259,6 +308,8 @@ function hasPlayableModePayload(
       return (quest.kanjiSurgeryEncounter?.length ?? 0) > 0
     case "MEMORY_CASCADE":
       return Boolean(quest.memoryCascadeEncounter)
+    case "KANA_DASH":
+      return hasPlayableVocabulary(quest)
     case "SEMANTIC_NETWORK":
       return Boolean(quest.semanticNetworkEncounter)
     case "SIGNAL_CALIBRATION":

@@ -1261,11 +1261,27 @@ Location: `/src/systems/presentation/reactiveFeedbackSystem.ts`
 
 Responsibilities
 
-* toast payloads for XP, penalties, mistakes, level-up
+* toast payloads for XP, penalties, mistakes, level-up (suppressed when `levelUpCeremony` active)
+* dungeon failure consequence toasts on `DUNGEON_FAILED`
 
 UI
 
 * `ReactiveFeedbackHost` in `HunterShellLayout`
+
+ceremonyPresentationSystem (v1.3.0)
+
+Location: `/src/systems/presentation/ceremonies/`, `/src/components/ceremonies/`
+
+Responsibilities
+
+* `LevelUpCeremony`, `DungeonClearCeremony`, `SequentialRewardReveal`
+* `completionCeremonyTierSystem` — maps `narrativeTier` → light / medium / full / dungeon overlays
+* `levelPresentationSystem` — level-based hunter titles
+* `masteryPresentationSystem` — learner-facing mastery tier labels
+
+UI
+
+* `HunterSessionProvider` mounts ceremonies; `RewardClaimOverlay` uses tiered reveal
 
 Events
 
@@ -1345,3 +1361,49 @@ Location: `/src/systems/retention/*`, `/src/config/eventScheduleConfig.ts`
 
 * `corruptedLanguageSystem`, `languageInvasionSystem`
 * `FEATURE_FLAGS.LIVE_SECTOR_EVENTS`, `FEATURE_FLAGS.DUAL_OPERATOR`
+
+⸻
+
+challengeDisplaySystem (v1.3.1)
+
+Location: `/src/systems/learning/challengeDisplaySystem.ts`
+
+Responsibilities
+
+* resolve visible word layers by prompt direction, assist level, and phase
+* pick per-word prompt direction from mastery
+* lock answer input mode (english / romaji / kana / japanese)
+
+Consumers
+
+* `LearnerWordLine`, `EncounterRailWord`, `WordExtractionPanel`, `EncounterDisplayProvider`
+
+⸻
+
+answerValidationSystem (v1.3.1)
+
+Location: `/src/systems/learning/answerValidationSystem.ts`
+
+Responsibilities
+
+* build accepted answer sets per locked input mode
+* normalize and match player submissions for vocab and listening fragments
+
+Consumers
+
+* `vocabularyEncounterSystem`, `listeningEncounterSystem`
+
+⸻
+
+encounterPressureSystem (v1.3.1)
+
+Location: `/src/systems/learning/encounterPressureSystem.ts`
+
+Responsibilities
+
+* streak / wrong-attempt pressure copy
+* replay degradation lines for listening
+
+Consumers
+
+* vocabulary, listening, speech encounter systems and UI feedback

@@ -10,6 +10,10 @@ Any learner-facing Japanese **must** include romaji:
 
 Never show Japanese alone in the UI.
 
+### Active challenges (recall over recognition)
+
+During **ACTIVE** encounter prompts, do not show kanji + romaji + English together. Use `challengeDisplaySystem` + `ChallengeDisplayProvider`. Full triple is allowed in catalog browse and **REVEALED** post-success states only. See `rules/learner-display-rules.md`.
+
 ---
 
 ## Core Philosophy

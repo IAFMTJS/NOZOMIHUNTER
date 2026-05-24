@@ -8,6 +8,12 @@ type AudioCue =
   | "sectorClear"
   | "questComplete"
   | "corruption"
+  | "combo2"
+  | "combo5"
+  | "comboBreak"
+  | "rewardTick"
+
+export type AmbienceCue = "sector" | "pursuit" | "corruption" | "corridor"
 
 let ctx: AudioContext | null = null
 let muted = false
@@ -15,7 +21,7 @@ let corruptionLoop: OscillatorNode | null = null
 let corruptionGain: GainNode | null = null
 let ambienceLoop: OscillatorNode | null = null
 let ambienceGain: GainNode | null = null
-let activeAmbience: "sector" | "pursuit" | "corruption" | null = null
+let activeAmbience: AmbienceCue | null = null
 
 function readMuted(): boolean {
   if (typeof window === "undefined") return false
@@ -118,6 +124,21 @@ export function playAudioCue(cue: AudioCue): void {
     case "corruption":
       startCorruptionHum()
       break
+    case "combo2":
+      tone(523, 70)
+      setTimeout(() => tone(659, 80), 60)
+      break
+    case "combo5":
+      tone(587, 80)
+      setTimeout(() => tone(740, 90), 70)
+      setTimeout(() => tone(880, 100), 150)
+      break
+    case "comboBreak":
+      tone(140, 120, "square", 0.035)
+      break
+    case "rewardTick":
+      tone(494, 60, "triangle", 0.05)
+      break
     default:
       break
   }
@@ -153,8 +174,6 @@ export function stopCorruptionHum(): void {
   corruptionGain = null
 }
 
-export type AmbienceCue = "sector" | "pursuit" | "corruption"
-
 const AMBIENCE_PROFILE: Record<
   AmbienceCue,
   { frequency: number; type: OscillatorType; gain: number }
@@ -162,6 +181,7 @@ const AMBIENCE_PROFILE: Record<
   sector: { frequency: 88, type: "triangle", gain: 0.008 },
   pursuit: { frequency: 64, type: "sawtooth", gain: 0.01 },
   corruption: { frequency: 48, type: "sawtooth", gain: 0.012 },
+  corridor: { frequency: 72, type: "sine", gain: 0.006 },
 }
 
 export function playAmbience(cue: AmbienceCue): void {

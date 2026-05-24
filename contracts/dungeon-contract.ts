@@ -120,6 +120,10 @@ export interface DungeonRunContract {
   endlessSectorCount?: number
   /** Latest exploration system line for UI. */
   explorationSystemLine?: string
+  /** Word ids cleared during this run (extraction mastery recap). */
+  stabilizedWordIds?: string[]
+  /** Highest correct-answer streak seen this run (XP multiplier at extract). */
+  peakEncounterStreak?: number
 }
 
 export type DungeonMachineState =

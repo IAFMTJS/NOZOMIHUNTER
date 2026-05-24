@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import type { QuestContract } from "@/contracts/quest-contract"
+import type { PlayerContract } from "@/contracts/player-contract"
 import {
   dungeonTimeRemaining,
 } from "@/systems/economy/shopEffectSystem"
@@ -20,15 +21,20 @@ import { CorridorStage } from "@/features/dungeons/components/CorridorStage"
 import { DungeonRunShell } from "@/features/dungeons/components/DungeonRunShell"
 import { DungeonRunHud } from "@/features/dungeons/components/DungeonRunHud"
 import { SectorRewardInterstitial } from "@/features/dungeons/components/SectorRewardInterstitial"
-import { ExtractionCeremony } from "@/features/dungeons/components/ExtractionCeremony"
+import { DungeonClearCeremony } from "@/components/ceremonies/DungeonClearCeremony"
+import { buildDungeonClearFromRun } from "@/systems/presentation/ceremonies/dungeonClearCeremonyData"
 import {
   encounterTypeGlyph,
   sectorNodeLabel,
 } from "@/systems/dungeons/dungeonPresentationSystem"
 import type { ExplorationAction } from "@/contracts/dungeon-contract"
+import { getMasteryMap } from "@/systems/mastery/masterySystem"
+import { getVocabularyCatalog } from "@/systems/mastery/vocabularyCatalog"
+import { buildExtractionMasteryRecap } from "@/systems/dungeons/dungeonLexiconRecapSystem"
 
 interface DungeonRunnerProps {
   quest: QuestContract
+  player?: PlayerContract | null
   disabled?: boolean
   encounterClassName?: string
   maxWrongAttempts?: number
@@ -50,6 +56,7 @@ interface DungeonRunnerProps {
 
 export function DungeonRunner({
   quest,
+  player,
   disabled,
   encounterClassName = "",
   maxWrongAttempts,
@@ -82,6 +89,21 @@ export function DungeonRunner({
     const id = window.setInterval(tick, 1000)
     return () => window.clearInterval(id)
   }, [run?.runStartedAt, run?.timeLimitMs, run?.frozenTimeMs, run?.frozenUntil, run])
+
+  const extractionRecap = useMemo(() => {
+    const ids = run?.stabilizedWordIds ?? []
+    if (ids.length === 0) return []
+    const catalog = getVocabularyCatalog()
+    return buildExtractionMasteryRecap(ids, getMasteryMap(), (id) => {
+      const entry = catalog.byId.get(id)
+      return entry
+        ? {
+            japanese: entry.japanese[0] ?? entry.japanese.join(""),
+            meanings: entry.meanings,
+          }
+        : null
+    })
+  }, [run?.stabilizedWordIds])
 
   if (!run) return null
 
@@ -164,6 +186,7 @@ export function DungeonRunner({
       {state === "ENCOUNTER" && run.activeType === "VOCAB" && (
         <VocabularyEncounter
           quest={quest}
+          player={player}
           disabled={disabled}
           onSubmit={onSubmitAnswer}
           onAbandon={onAbandon}
@@ -173,6 +196,7 @@ export function DungeonRunner({
       {state === "ENCOUNTER" && run.activeType === "LISTENING" && (
         <ListeningEncounter
           quest={quest}
+          player={player}
           disabled={disabled}
           maxWrongAttempts={maxWrongAttempts}
           maxReplays={replayCap}
@@ -202,6 +226,7 @@ export function DungeonRunner({
       {state === "ENCOUNTER" && run.activeType === "SPEECH" && (
         <SpeechEncounter
           quest={quest}
+          player={player}
           disabled={disabled}
           onSubmit={onSubmitSpeech}
           onAbandon={onAbandon}
@@ -219,6 +244,7 @@ export function DungeonRunner({
           {run.bossPhase === 0 && quest.vocabularyEncounter && (
             <VocabularyEncounter
               quest={quest}
+              player={player}
               disabled={disabled}
               onSubmit={onSubmitAnswer}
               onAbandon={onAbandon}
@@ -227,6 +253,7 @@ export function DungeonRunner({
           {run.bossPhase >= 1 && quest.speechEncounter && (
             <SpeechEncounter
               quest={quest}
+              player={player}
               disabled={disabled}
               onSubmit={onSubmitSpeech}
               onAbandon={onAbandon}
@@ -235,9 +262,19 @@ export function DungeonRunner({
         </Panel>
       )}
 
-      {state === "EXTRACTION" && (
-        <ExtractionCeremony
-          xp={quest.rewards.xp}
+      {state === "EXTRACTION" && player && (
+        <DungeonClearCeremony
+          data={buildDungeonClearFromRun(
+            quest,
+            {
+              xpGained: quest.rewards.xp,
+              items: [],
+              claimed: false,
+              questId: quest.id,
+            },
+            player,
+            { masteryRecap: extractionRecap }
+          )}
           theme={run.dungeon.theme}
           disabled={disabled}
           onExtract={async () => {

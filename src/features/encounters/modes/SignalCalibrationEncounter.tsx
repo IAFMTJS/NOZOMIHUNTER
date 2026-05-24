@@ -1,6 +1,7 @@
 "use client"
 
 import type { QuestContract } from "@/contracts/quest-contract"
+import type { PlayerContract } from "@/contracts/player-contract"
 import { ListeningEncounter } from "@/features/dungeons/components/ListeningEncounter"
 import { Panel } from "@/components/ui/Panel"
 import { StatusChip } from "@/components/ui/StatusChip"
@@ -8,6 +9,7 @@ import { ModeEncounterShell } from "@/features/encounters/modes/ModeEncounterShe
 
 interface SignalCalibrationEncounterProps {
   quest: QuestContract
+  player?: PlayerContract | null
   disabled?: boolean
   maxWrongAttempts?: number
   maxReplays?: number

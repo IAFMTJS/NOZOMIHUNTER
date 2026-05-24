@@ -2,7 +2,7 @@
 
 Player opens SPEECH quest or dungeon speech sector
 ↓
-Phrase displayed (from vocabulary catalog)
+Phrase displayed (from vocabulary catalog) — meaning-only prompt (`SPEAK_JAPANESE`); masked rails via `EncounterDisplayProvider`
 ↓
 **Recording state machine** (`recordingStateSystem`)
 - IDLE → REQUESTING_PERMISSION → RECORDING → PROCESSING → COMPLETED | ERROR

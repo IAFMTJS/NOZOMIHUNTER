@@ -31,3 +31,4 @@ Implemented (Phase 2):
 - Quest-embedded conversation encounters
 - Memory persisted to `conversations` table
 - Successful exchanges advance quest objectives
+- Neutral input placeholder (no leaked correct answer); `responseFamilies` in `conversationContentConfig` for scoring/trust

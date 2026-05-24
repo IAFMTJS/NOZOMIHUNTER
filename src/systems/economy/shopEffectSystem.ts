@@ -10,6 +10,10 @@ import {
   xpGainMultiplier,
 } from "@/systems/economy/boostSystem"
 import { fatigueXpMultiplier } from "@/systems/penalties/penaltySystem"
+import {
+  peakEncounterStreak,
+  xpMultiplierFromStreak,
+} from "@/systems/learning/encounterPressureSystem"
 
 /** Hard-tier reward uplift when playing on easy difficulty (System Breach). */
 export const DIFFICULTY_OVERRIDE_REWARD_MULT = 1.4
@@ -115,10 +119,12 @@ export function previewCompletionRewards(
 ): { xp: number; credits: number } {
   const base = boostedQuestRewards(player, quest)
   const fatMult = fatigueXpMultiplier(fatigue)
+  const streakMult = xpMultiplierFromStreak(peakEncounterStreak(quest))
   return {
     xp: Math.floor(
       base.xp *
         fatMult *
+        streakMult *
         xpGainMultiplier(player) *
         rewardAmplifierMultiplier(player)
     ),

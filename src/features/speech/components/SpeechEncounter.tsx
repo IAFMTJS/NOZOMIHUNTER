@@ -14,10 +14,15 @@ import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { EncounterTargetRail } from "@/components/ui/EncounterTargetRail"
+import { EncounterDisplayProvider } from "@/features/encounters/EncounterDisplayProvider"
+import { defaultSpeechDirection } from "@/systems/learning/challengeDisplaySystem"
+import type { PlayerContract } from "@/contracts/player-contract"
+
 import { useSpeechEncounterController } from "@/features/speech/hooks/useSpeechEncounterController"
 
 interface SpeechEncounterProps {
   quest: QuestContract
+  player?: PlayerContract | null
   disabled?: boolean
   onSubmit: (transcript: string, responseTimeMs: number) => Promise<void>
   onAbandon: () => Promise<void>
@@ -44,6 +49,7 @@ function statusLabel(state: string, transcriptionStatus: string): string {
 
 export function SpeechEncounter({
   quest,
+  player,
   disabled,
   onSubmit,
   onAbandon,
@@ -87,7 +93,7 @@ export function SpeechEncounter({
 
   const status = statusLabel(speech.state, speech.transcriptionStatus)
 
-  return (
+  const panel = (
     <Panel tone="inset" className="mt-3">
       {briefing && !hideLegacyBriefing && (
         <p className="mb-3 text-sm italic text-[var(--muted)]">{briefing}</p>
@@ -106,6 +112,8 @@ export function SpeechEncounter({
                 reading={p.reading}
                 romaji={p.romaji}
                 meanings={p.meanings}
+                slotState={done ? "done" : current ? "current" : "pending"}
+                index={i}
               />
             ),
           }
@@ -131,7 +139,7 @@ export function SpeechEncounter({
               })}
               layout="stacked"
               size="lg"
-              audio
+              audio={false}
               className="justify-center"
             />
           </div>
@@ -150,29 +158,9 @@ export function SpeechEncounter({
           </p>
 
           <div className="mb-4 flex flex-col gap-3">
-            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-              <span className="text-xs text-[var(--muted)]">Recognition</span>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  size="md"
-                  variant={speech.lang === "en-US" ? "primary" : "ghost"}
-                  disabled={busy || !speech.supported}
-                  onClick={() => speech.setLang("en-US")}
-                >
-                  Romaji (en)
-                </Button>
-                <Button
-                  type="button"
-                  size="md"
-                  variant={speech.lang === "ja-JP" ? "primary" : "ghost"}
-                  disabled={busy || !speech.supported}
-                  onClick={() => speech.setLang("ja-JP")}
-                >
-                  Japanese
-                </Button>
-              </div>
-            </div>
+            <p className="text-xs text-[var(--muted)]">
+              Speak Japanese — typed romaji/kana fallback below if voice fails.
+            </p>
 
             <Button
               type="button"
@@ -283,5 +271,19 @@ export function SpeechEncounter({
         </p>
       )}
     </Panel>
+  )
+
+  if (!phrase) return panel
+
+  return (
+    <EncounterDisplayProvider
+      quest={quest}
+      player={player}
+      promptDirection={phrase.promptDirection ?? defaultSpeechDirection()}
+      inputMode="japanese"
+      phase="ACTIVE"
+    >
+      {panel}
+    </EncounterDisplayProvider>
   )
 }

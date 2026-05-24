@@ -1,5 +1,6 @@
 "use client"
 
+import { useCallback, useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import type { DungeonRunContract, ExplorationAction } from "@/contracts/dungeon-contract"
 import { Button } from "@/components/ui/Button"
@@ -10,12 +11,15 @@ import {
   isPursuitCaught,
 } from "@/systems/dungeons/explorationSystem"
 import {
+  corridorAtmosphereClass,
   encounterTypeGlyph,
   encounterTypeLabel,
 } from "@/systems/dungeons/dungeonPresentationSystem"
 import { MOTION } from "@/config/motionPresets"
+import { playAmbience, stopAmbience } from "@/systems/audio/audioSystem"
 
 const BEATS = ["APPROACH", "SCAN", "ENGAGE"] as const
+const HOLD_MS = 1800
 
 interface CorridorStageProps {
   run: DungeonRunContract
@@ -41,8 +45,61 @@ export function CorridorStage({
   const pursuitBlocked =
     run.dungeonMode === "VOID_PURSUIT" && isPursuitCaught(run.pursuitDistance)
 
+  const [holdProgress, setHoldProgress] = useState(0)
+  const [holdFailed, setHoldFailed] = useState(false)
+  const holdStartRef = useRef<number | null>(null)
+  const holdFrameRef = useRef<number | null>(null)
+
+  const cancelHold = useCallback(() => {
+    holdStartRef.current = null
+    if (holdFrameRef.current != null) {
+      cancelAnimationFrame(holdFrameRef.current)
+      holdFrameRef.current = null
+    }
+    setHoldProgress(0)
+  }, [])
+
+  const tickHold = useCallback(() => {
+    if (holdStartRef.current == null) return
+    const elapsed = Date.now() - holdStartRef.current
+    const pct = Math.min(100, (elapsed / HOLD_MS) * 100)
+    setHoldProgress(pct)
+    if (pct >= 100) {
+      cancelHold()
+      void onAdvance("LISTEN")
+      return
+    }
+    holdFrameRef.current = requestAnimationFrame(tickHold)
+  }, [cancelHold, onAdvance])
+
+  const startHold = useCallback(() => {
+    if (disabled) return
+    setHoldFailed(false)
+    holdStartRef.current = Date.now()
+    holdFrameRef.current = requestAnimationFrame(tickHold)
+  }, [disabled, tickHold])
+
+  const endHold = useCallback(() => {
+    if (holdStartRef.current != null && holdProgress < 100) {
+      setHoldFailed(true)
+    }
+    cancelHold()
+  }, [cancelHold, holdProgress])
+
+  useEffect(() => () => cancelHold(), [cancelHold])
+
+  useEffect(() => {
+    playAmbience("corridor")
+    return () => stopAmbience()
+  }, [])
+
+  const atmosphere = corridorAtmosphereClass(
+    run.dungeon.theme,
+    run.currentEncounterIndex
+  )
+
   return (
-    <div className="nozomi-corridor-stage flex flex-col gap-4">
+    <div className={`${atmosphere} flex flex-col gap-4`}>
       <div className="nozomi-corridor-viewport relative overflow-hidden rounded-xl border border-[var(--border-subtle)] p-4">
         <div className="nozomi-corridor-grid pointer-events-none absolute inset-0" aria-hidden />
         <div className="nozomi-corridor-horizon pointer-events-none absolute inset-x-0 top-0 h-24" aria-hidden />
@@ -136,29 +193,46 @@ export function CorridorStage({
         </p>
       )}
 
+      {holdFailed && (
+        <p className="text-xs text-[var(--warning)]">
+          Channel lost — hold steady to intercept the signal.
+        </p>
+      )}
+
       {!ready ? (
         <div className="grid gap-2 sm:grid-cols-2">
           <Button
             variant="ghost"
             disabled={disabled}
-            className="nozomi-corridor-action !border-[var(--accent)]/30"
-            onClick={() => void onAdvance("LISTEN")}
+            className="nozomi-corridor-action flex flex-col items-center gap-1 !border-[var(--accent)]/30 !py-3"
+            onPointerDown={startHold}
+            onPointerUp={endHold}
+            onPointerLeave={endHold}
+            onPointerCancel={endHold}
           >
             <span className="block text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]">
               Hold channel
             </span>
-            Listen
+            <span className="block text-sm font-medium">Listen</span>
+            {holdProgress > 0 && (
+              <span className="mt-1 block h-1 w-full max-w-[8rem] overflow-hidden rounded-full bg-black/40">
+                <span
+                  className="block h-full bg-[var(--accent-bright)] transition-all"
+                  style={{ width: `${holdProgress}%` }}
+                />
+              </span>
+            )}
           </Button>
           <Button
             variant="primary"
             disabled={disabled || pursuitBlocked}
-            className="nozomi-corridor-action shadow-[0_0_20px_var(--glow-accent)]"
+            className="nozomi-corridor-action flex flex-col items-center gap-1 shadow-[0_0_20px_var(--glow-accent)] !py-3"
             onClick={() => void onAdvance("PUSH")}
           >
             <span className="block text-[10px] uppercase tracking-[0.2em] text-white/70">
               Advance
             </span>
-            Push forward
+            <span className="block text-sm font-medium">Push forward</span>
           </Button>
         </div>
       ) : (

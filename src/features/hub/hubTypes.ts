@@ -37,7 +37,11 @@ export interface ContractHubProps {
   onSubmitAnswer?: (
     questId: string,
     answer: string
-  ) => Promise<{ correct: boolean; encounterFailed: boolean } | null>
+  ) => Promise<{
+    correct: boolean
+    encounterFailed: boolean
+    pressureLine?: string | null
+  } | null>
   onSendMessage?: (
     questId: string,
     message: string
@@ -59,7 +63,11 @@ export interface ContractHubProps {
   onSubmitListening?: (
     questId: string,
     answer: string
-  ) => Promise<{ correct: boolean; encounterFailed: boolean } | null>
+  ) => Promise<{
+    correct: boolean
+    encounterFailed: boolean
+    pressureLine?: string | null
+  } | null>
   onGameModeAction?: (
     questId: string,
     action: string,

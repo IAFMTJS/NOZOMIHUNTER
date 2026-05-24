@@ -131,4 +131,16 @@ export function registerCoreEventHandlers(): void {
   eventBus.on(GAME_EVENTS.QUEST_TRACKED, (payload) => {
     track(GAME_EVENTS.QUEST_TRACKED, payload)
   })
+
+  eventBus.on(GAME_EVENTS.CHALLENGE_REVEALED, (payload) => {
+    track(GAME_EVENTS.CHALLENGE_REVEALED, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.REPLAY_PENALTY, (payload) => {
+    track(GAME_EVENTS.REPLAY_PENALTY, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.EXPLORATION_BEAT_ADVANCED, (payload) => {
+    track(GAME_EVENTS.EXPLORATION_BEAT_ADVANCED, payload)
+  })
 }

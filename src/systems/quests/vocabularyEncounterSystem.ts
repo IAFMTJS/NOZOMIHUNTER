@@ -1,12 +1,17 @@
-import type { VocabularyEncounterContract } from "@/contracts/encounter-contract"
+import type {
+  VocabularyEncounterContract,
+  VocabularyWordContract,
+} from "@/contracts/encounter-contract"
 import type { QuestContract } from "@/contracts/quest-contract"
 import { VOCABULARY_ENCOUNTER_CONFIG } from "@/config/vocabularyEncounterConfig"
+import { attachChallengeFields } from "@/systems/learning/challengeDisplaySystem"
 import {
-  normalizeAnswer,
-  normalizeJapanese,
-  readingToRomaji,
-  toEncounterWord,
-} from "@/services/jmdict/normalize"
+  afterCorrectAnswer,
+  afterWrongAnswer,
+  pressureFeedbackLine,
+} from "@/systems/learning/encounterPressureSystem"
+import { matchesChallengeAnswer } from "@/systems/learning/answerValidationSystem"
+import { toEncounterWord } from "@/services/jmdict/normalize"
 import { getVocabularyCatalog } from "@/systems/mastery/vocabularyCatalog"
 import { pickWordsByFrequency } from "@/systems/mastery/frequencySystem"
 import { getMasteryMap, recordWordAnswer } from "@/systems/mastery/masterySystem"
@@ -14,13 +19,18 @@ import { advanceObjective } from "./questValidator"
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
 
-export function pickVocabularyWords(count: number): VocabularyEncounterContract["words"] {
+export function pickVocabularyWords(count: number): VocabularyWordContract[] {
   const index = getVocabularyCatalog()
+  const masteryMap = getMasteryMap()
   const picked = pickWordsByFrequency(index, {
     count,
-    masteryByWord: getMasteryMap(),
+    masteryByWord: masteryMap,
   })
-  return picked.map(toEncounterWord)
+  return picked.map((entry) => {
+    const word = toEncounterWord(entry)
+    const mastery = masteryMap.get(word.id) ?? 0
+    return attachChallengeFields(word, mastery)
+  })
 }
 
 export function createVocabularyEncounter(
@@ -31,12 +41,13 @@ export function createVocabularyEncounter(
     words,
     currentIndex: 0,
     wrongAttempts: 0,
+    correctStreak: 0,
   }
 }
 
 export function getCurrentWord(
   encounter: VocabularyEncounterContract
-): VocabularyEncounterContract["words"][number] | null {
+): VocabularyWordContract | null {
   return encounter.words[encounter.currentIndex] ?? null
 }
 
@@ -46,19 +57,7 @@ export function checkVocabularyAnswer(
 ): boolean {
   const word = getCurrentWord(encounter)
   if (!word) return false
-
-  const normalized = normalizeAnswer(answer)
-  if (!normalized) return false
-
-  const accepted = new Set<string>([
-    normalizeAnswer(word.romaji),
-    readingToRomaji(word.reading),
-    normalizeJapanese(word.reading),
-    normalizeJapanese(word.japanese),
-    ...word.meanings.map(normalizeAnswer),
-  ])
-
-  return accepted.has(normalized)
+  return matchesChallengeAnswer(word, answer, "RETRIEVE_ENGLISH")
 }
 
 export interface VocabularyAnswerResult {
@@ -68,6 +67,7 @@ export interface VocabularyAnswerResult {
   encounterComplete: boolean
   wordId: string | null
   masteryUpdate: ReturnType<typeof recordWordAnswer> | null
+  pressureLine: string | null
 }
 
 export function submitVocabularyAnswer(
@@ -88,7 +88,13 @@ export function submitVocabularyAnswer(
     ? recordWordAnswer(wordId, correct, playerId)
     : null
 
+  const pressureState = {
+    correctStreak: encounter.correctStreak ?? 0,
+    wrongAttempts: encounter.wrongAttempts,
+  }
+
   if (!correct) {
+    const nextPressure = afterWrongAnswer(pressureState)
     const wrongAttempts = encounter.wrongAttempts + 1
     const encounterFailed = wrongAttempts >= maxWrongAttempts
 
@@ -96,25 +102,34 @@ export function submitVocabularyAnswer(
       questId: quest.id,
       wordId,
       encounterFailed,
+      previousStreak: pressureState.correctStreak,
     })
 
     return {
       quest: {
         ...quest,
-        vocabularyEncounter: { ...encounter, wrongAttempts },
+        vocabularyEncounter: {
+          ...encounter,
+          wrongAttempts,
+          correctStreak: 0,
+        },
       },
       correct: false,
       encounterFailed,
       encounterComplete: false,
       wordId,
       masteryUpdate,
+      pressureLine: pressureFeedbackLine(nextPressure),
     }
   }
 
+  const nextPressure = afterCorrectAnswer(pressureState)
   const nextIndex = encounter.currentIndex + 1
   const updatedEncounter: VocabularyEncounterContract = {
     ...encounter,
     currentIndex: nextIndex,
+    correctStreak: nextPressure.correctStreak,
+    wrongAttempts: encounter.wrongAttempts,
   }
 
   const updatedObjectives = advanceObjective(quest.objectives, "obj-1", 1)
@@ -124,6 +139,7 @@ export function submitVocabularyAnswer(
     questId: quest.id,
     wordId,
     encounterComplete,
+    correctStreak: nextPressure.correctStreak,
   })
 
   return {
@@ -137,5 +153,6 @@ export function submitVocabularyAnswer(
     encounterComplete,
     wordId,
     masteryUpdate,
+    pressureLine: pressureFeedbackLine(nextPressure),
   }
 }

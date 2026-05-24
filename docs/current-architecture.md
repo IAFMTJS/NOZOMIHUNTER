@@ -2,7 +2,7 @@
 
 
 
-Last updated: v1.2.3 — Updates 2405 integration
+Last updated: v1.3.1 — Challenge display + audit wiring
 
 
 
@@ -73,7 +73,9 @@ Last updated: v1.2.3 — Updates 2405 integration
 
 | Unlock persistence + `UNLOCK_GRANTED` | Yes (`resolveQuestCompletion`) |
 
-| Penalty gameplay hooks | Yes (`penaltyGameplaySystem`) |
+| Penalty gameplay hooks | Yes (`penaltyGameplaySystem`; per-wrong corruption + failure bundles) |
+
+| Challenge display + answer validation | Yes (`challengeDisplaySystem`, `answerValidationSystem`, `encounterPressureSystem`, `EncounterDisplayProvider`) |
 
 | PWA (manifest, SW, install prompt) | Yes — see `docs/mobile-pwa.md` |
 

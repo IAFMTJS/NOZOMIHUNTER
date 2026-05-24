@@ -5,10 +5,16 @@ import type {
 import type { QuestContract } from "@/contracts/quest-contract"
 import { pickVocabularyWords } from "@/systems/quests/vocabularyEncounterSystem"
 import {
-  normalizeAnswer,
-  normalizeJapanese,
-  readingToRomaji,
-} from "@/services/jmdict/normalize"
+  defaultListeningDirection,
+  resolveInputMode,
+} from "@/systems/learning/challengeDisplaySystem"
+import {
+  afterCorrectAnswer,
+  afterWrongAnswer,
+  pressureFeedbackLine,
+  replayDegradationLine,
+} from "@/systems/learning/encounterPressureSystem"
+import { matchesChallengeAnswer } from "@/systems/learning/answerValidationSystem"
 import { VOCABULARY_ENCOUNTER_CONFIG } from "@/config/vocabularyEncounterConfig"
 import { advanceObjective } from "@/systems/quests/questValidator"
 import { eventBus } from "@/systems/events/eventBus"
@@ -20,12 +26,16 @@ export function createListeningEncounter(
   briefing: string
 ): ListeningEncounterContract {
   const words = pickVocabularyWords(fragmentCount)
+  const direction = defaultListeningDirection()
+  const inputMode = resolveInputMode(direction)
   const fragments: ListeningFragmentContract[] = words.map((w) => ({
     id: w.id,
     japanese: w.japanese,
     reading: w.reading,
     romaji: w.romaji,
     meanings: w.meanings,
+    promptDirection: direction,
+    inputMode,
   }))
 
   return {
@@ -33,6 +43,8 @@ export function createListeningEncounter(
     fragments,
     currentIndex: 0,
     wrongAttempts: 0,
+    correctStreak: 0,
+    replayCount: 0,
   }
 }
 
@@ -48,19 +60,7 @@ export function checkListeningAnswer(
 ): boolean {
   const fragment = getCurrentFragment(encounter)
   if (!fragment) return false
-
-  const normalized = normalizeAnswer(answer)
-  if (!normalized) return false
-
-  const accepted = new Set<string>([
-    normalizeAnswer(fragment.romaji),
-    readingToRomaji(fragment.reading),
-    normalizeJapanese(fragment.reading),
-    normalizeJapanese(fragment.japanese),
-    ...fragment.meanings.map(normalizeAnswer),
-  ])
-
-  return accepted.has(normalized)
+  return matchesChallengeAnswer(fragment, answer, "LISTEN_DECODE")
 }
 
 export interface ListeningAnswerResult {
@@ -68,6 +68,8 @@ export interface ListeningAnswerResult {
   correct: boolean
   encounterFailed: boolean
   encounterComplete: boolean
+  pressureLine: string | null
+  replayLine: string | null
 }
 
 export function canSubmitListeningAnswer(
@@ -75,6 +77,26 @@ export function canSubmitListeningAnswer(
   heardOnce: boolean
 ): boolean {
   return heardOnce && getCurrentFragment(encounter) != null
+}
+
+export function recordListeningReplay(
+  encounter: ListeningEncounterContract,
+  maxReplays: number,
+  questId?: string
+): { encounter: ListeningEncounterContract; replayLine: string | null } {
+  const replayCount = (encounter.replayCount ?? 0) + 1
+  const replayLine = replayDegradationLine(replayCount, maxReplays)
+  if (replayLine && questId) {
+    eventBus.emit(GAME_EVENTS.REPLAY_PENALTY, {
+      questId,
+      replayCount,
+      maxReplays,
+    })
+  }
+  return {
+    encounter: { ...encounter, replayCount },
+    replayLine,
+  }
 }
 
 export function submitListeningAnswer(
@@ -93,9 +115,15 @@ export function submitListeningAnswer(
   let wrongAttempts = encounter.wrongAttempts
   let currentIndex = encounter.currentIndex
 
+  const pressureState = {
+    correctStreak: encounter.correctStreak ?? 0,
+    wrongAttempts: encounter.wrongAttempts,
+  }
+
   if (!correct) {
     wrongAttempts += 1
     const encounterFailed = wrongAttempts >= maxWrongAttempts
+    const nextPressure = afterWrongAnswer(pressureState)
 
     eventBus.emit(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, {
       questId: quest.id,
@@ -105,11 +133,17 @@ export function submitListeningAnswer(
     return {
       quest: {
         ...quest,
-        listeningEncounter: { ...encounter, wrongAttempts },
+        listeningEncounter: {
+          ...encounter,
+          wrongAttempts,
+          correctStreak: 0,
+        },
       },
       correct: false,
       encounterFailed,
       encounterComplete: false,
+      pressureLine: pressureFeedbackLine(nextPressure),
+      replayLine: null,
     }
   }
 
@@ -118,6 +152,7 @@ export function submitListeningAnswer(
     recordWordAnswer(fragmentId, true, userId)
   }
 
+  const nextPressure = afterCorrectAnswer(pressureState)
   currentIndex += 1
   const encounterComplete = currentIndex >= encounter.fragments.length
   const updatedObjectives = advanceObjective(quest.objectives, "obj-1", 1)
@@ -134,11 +169,16 @@ export function submitListeningAnswer(
         ...encounter,
         currentIndex,
         wrongAttempts,
+        correctStreak: nextPressure.correctStreak,
+        revealFragmentId: fragmentId ?? null,
+        replayCount: 0,
       },
       objectives: updatedObjectives,
     },
     correct: true,
     encounterFailed: false,
     encounterComplete,
+    pressureLine: pressureFeedbackLine(nextPressure),
+    replayLine: null,
   }
 }

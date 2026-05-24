@@ -90,8 +90,17 @@ export function ContractsClient() {
   const tracked = getTrackedQuest(activeQuests, player)
   const dailyQuests = catalog.dailyQuests
 
+  const screenClass =
+    tab === "daily"
+      ? "nozomi-screen-daily"
+      : tab === "story"
+        ? "nozomi-screen-story"
+        : tab === "side"
+          ? "nozomi-screen-side"
+          : ""
+
   return (
-    <HunterPage className="pb-4">
+    <HunterPage className={`pb-4 ${screenClass}`}>
       <QuestChannelShell>
         <QuestChannelHeader systemLine={systemLine} />
 
@@ -200,7 +209,7 @@ export function ContractsClient() {
         )}
 
         {tab === "daily" && (
-          <ul className="space-y-3">
+          <ul className="nozomi-contract-list-daily space-y-2">
             {dailyQuests.length === 0 ? (
               <p className="text-center text-sm text-[var(--muted)]">
                 No daily contracts. Request deployment from the ops strip.
@@ -235,7 +244,7 @@ export function ContractsClient() {
         )}
 
         {tab === "side" && (
-          <ul className="space-y-3">
+          <ul className="nozomi-contract-list-side space-y-3">
             {catalog.sideQuests.length === 0 && !catalog.mainStory ? (
               <p className="text-center text-sm text-[var(--muted)]">
                 No side contracts active.

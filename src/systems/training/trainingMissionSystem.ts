@@ -8,6 +8,7 @@ export type TrainingMissionKind = GameModeId
 
 const TRAINING_MODES: GameModeId[] = [
   "SIGNAL_CALIBRATION",
+  "KANA_DASH",
   "KANJI_SURGERY",
   "MEMORY_CASCADE",
   "SHADOW_ECHO",
@@ -59,6 +60,8 @@ function trainingTitle(kind: GameModeId): string {
       return "Memory Cascade"
     case "SHADOW_ECHO":
       return "Shadow Echo"
+    case "KANA_DASH":
+      return "Kana Dash"
     default:
       return "Stabilization Training"
   }
@@ -73,7 +76,9 @@ function trainingDescription(kind: GameModeId): string {
     case "MEMORY_CASCADE":
       return "High-speed memory overload — identify intruder words."
     case "SHADOW_ECHO":
-      return "Voice mimic drill — mirror operator pacing."
+      return "Voice mimic drill — mirror operator pacing before signal decay."
+    case "KANA_DASH":
+      return "Rapid kana recognition — build combo chains under pressure."
     default:
       return "Repeatable training drill."
   }

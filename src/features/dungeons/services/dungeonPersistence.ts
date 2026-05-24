@@ -23,6 +23,11 @@ import {
 import { hasReviveToken } from "@/systems/economy/boostSystem"
 import { isDungeonTimedOut } from "@/systems/economy/shopEffectSystem"
 import { consumeShopBoost } from "@/features/inventory/services/shopEffectActions"
+import {
+  appendStabilizedWordIds,
+  extractEncounterWordIds,
+} from "@/systems/dungeons/dungeonLexiconRecapSystem"
+import { nextPeakEncounterStreak } from "@/systems/learning/encounterPressureSystem"
 import type { QuestContract } from "@/contracts/quest-contract"
 
 let saveRegistered = false
@@ -137,6 +142,20 @@ export async function onSectorCleared(
   | { quest: QuestContract; phase: "reward" }
 > {
   const run = quest.dungeonRun!
+  const wordIds = extractEncounterWordIds(quest)
+  const peakStreak = nextPeakEncounterStreak(run.peakEncounterStreak, quest)
+  let questWithRecap = quest
+  if (wordIds.length > 0 || peakStreak > (run.peakEncounterStreak ?? 0)) {
+    questWithRecap = {
+      ...quest,
+      dungeonRun: {
+        ...run,
+        stabilizedWordIds: appendStabilizedWordIds(run, wordIds).stabilizedWordIds,
+        peakEncounterStreak: peakStreak,
+      },
+    }
+  }
+
   eventBus.emit(GAME_EVENTS.ENCOUNTER_COMPLETED, {
     playerId: userId,
     dungeonId: run.dungeon.id,
@@ -144,7 +163,7 @@ export async function onSectorCleared(
   })
 
   if (run.activeType === "BOSS") {
-    const updated = advanceBossPhase(quest)
+    const updated = advanceBossPhase(questWithRecap)
     if (updated.dungeonRun?.machineState === "EXTRACTION") {
       await persistDungeonQuest(userId, updated)
       return { quest: updated, phase: "extraction" }
@@ -153,7 +172,7 @@ export async function onSectorCleared(
     return { quest: updated, phase: "boss_continue" }
   }
 
-  const updated = completeDungeonSector(quest)
+  const updated = completeDungeonSector(questWithRecap)
   await persistDungeonQuest(userId, updated)
   return { quest: updated, phase: "reward" }
 }

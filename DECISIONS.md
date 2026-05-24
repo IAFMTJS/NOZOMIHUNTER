@@ -26,6 +26,14 @@
 | Guest mode | Supabase anonymous sign-in |
 | Session | `@supabase/ssr` cookies |
 
+## Challenge display (v1.3.1)
+
+| Decision | Choice |
+|----------|--------|
+| Masking vs reveal | Systems resolve layers; UI uses `EncounterDisplayProvider` + brief local reveal animation after correct |
+| Answer validation | `answerValidationSystem` shared by vocab and listening |
+| Wrong-answer penalty | +1 corruption per wrong (not encounter fail); tutorial exempt |
+
 ## Architecture
 
 | Decision | Choice |

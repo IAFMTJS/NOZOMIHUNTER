@@ -6,11 +6,15 @@ import {
 } from "@/services/supabase/conversationRepository"
 import { transcribeAndAnalyze } from "@/services/speech/transcribe"
 import {
+  applyWrongAnswerCorruption,
   persistMasteryUpdate,
   runVocabularySubmit,
   runListeningSubmit,
   maxWrongForPenalties,
 } from "@/features/encounters/encounterSubmitAdapter"
+import type { QuestContract } from "@/contracts/quest-contract"
+import { usePlayerStore } from "@/stores/usePlayerStore"
+import { nextPeakEncounterStreak } from "@/systems/learning/encounterPressureSystem"
 import {
   getDungeonQuest,
   handleDungeonFailure,
@@ -38,6 +42,17 @@ export async function submitDungeonVocabulary(
   )
   await persistMasteryUpdate(userId, result.masteryUpdate)
 
+  if (!result.correct && !result.encounterFailed) {
+    const store = usePlayerStore.getState()
+    const nextPenalties = applyWrongAnswerCorruption(
+      player.penalties,
+      quest.isTutorial
+    )
+    if (nextPenalties !== player.penalties) {
+      store.applyPenalties(nextPenalties)
+    }
+  }
+
   if (result.encounterFailed) {
     await handleDungeonFailure(userId, result.quest)
     return { correct: false, encounterFailed: true }
@@ -48,7 +63,8 @@ export async function submitDungeonVocabulary(
     return { correct: true, encounterFailed: false }
   }
 
-  await persistDungeonQuest(userId, result.quest)
+  const withStreak = patchDungeonPeakStreak(result.quest)
+  await persistDungeonQuest(userId, withStreak)
   return { correct: result.correct, encounterFailed: false }
 }
 
@@ -64,6 +80,17 @@ export async function submitDungeonListening(
 
   const result = runListeningSubmit(quest, answer, player.penalties, player)
 
+  if (!result.correct && !result.encounterFailed) {
+    const store = usePlayerStore.getState()
+    const nextPenalties = applyWrongAnswerCorruption(
+      player.penalties,
+      quest.isTutorial
+    )
+    if (nextPenalties !== player.penalties) {
+      store.applyPenalties(nextPenalties)
+    }
+  }
+
   if (result.encounterFailed) {
     await handleDungeonFailure(userId, result.quest)
     return { correct: false, encounterFailed: true }
@@ -74,8 +101,17 @@ export async function submitDungeonListening(
     return { correct: true, encounterFailed: false }
   }
 
-  await persistDungeonQuest(userId, result.quest)
+  const withStreak = patchDungeonPeakStreak(result.quest)
+  await persistDungeonQuest(userId, withStreak)
   return { correct: result.correct, encounterFailed: false }
+}
+
+function patchDungeonPeakStreak(quest: QuestContract) {
+  const run = quest.dungeonRun
+  if (!run) return quest
+  const peak = nextPeakEncounterStreak(run.peakEncounterStreak, quest)
+  if (peak === (run.peakEncounterStreak ?? 0)) return quest
+  return { ...quest, dungeonRun: { ...run, peakEncounterStreak: peak } }
 }
 
 export async function submitDungeonConversation(

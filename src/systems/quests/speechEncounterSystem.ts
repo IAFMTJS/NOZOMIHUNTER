@@ -3,6 +3,10 @@ import type { QuestContract } from "@/contracts/quest-contract"
 import type { SpeechAnalysisContract } from "@/contracts/speech-contract"
 import { SPEECH_ENCOUNTER_CONFIG } from "@/config/speechEncounterConfig"
 import { getSpeechScenario } from "@/config/speechContentConfig"
+import {
+  defaultSpeechDirection,
+  resolveInputMode,
+} from "@/systems/learning/challengeDisplaySystem"
 import { pickVocabularyWords } from "./vocabularyEncounterSystem"
 import { advanceObjective } from "./questValidator"
 import { eventBus } from "@/systems/events/eventBus"
@@ -11,7 +15,12 @@ import { GAME_EVENTS } from "@/systems/events/eventTypes"
 export function pickSpeechPhrases(
   count: number
 ): SpeechEncounterContract["phrases"] {
-  return pickVocabularyWords(count)
+  const direction = defaultSpeechDirection()
+  return pickVocabularyWords(count).map((w) => ({
+    ...w,
+    promptDirection: direction,
+    inputMode: resolveInputMode(direction),
+  }))
 }
 
 export function createSpeechEncounter(

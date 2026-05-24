@@ -15,7 +15,7 @@ export function useSpeechEncounterController({
   const [typed, setTyped] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const phaseStartRef = useRef(Date.now())
-  const speech = useSpeechRecording("en-US")
+  const speech = useSpeechRecording("ja-JP")
 
   const busy =
     speech.recording || speech.processing || submitting || disabled

@@ -2,10 +2,20 @@
 
 import { useEffect, useState } from "react"
 import type { QuestContract } from "@/contracts/quest-contract"
-import { getCurrentFragment } from "@/systems/dungeons/listeningEncounterSystem"
+import {
+  getCurrentFragment,
+  recordListeningReplay,
+} from "@/systems/dungeons/listeningEncounterSystem"
+import {
+  inputModeLabel,
+  inputModePlaceholder,
+} from "@/systems/learning/challengeDisplaySystem"
+import { pressureFeedbackLine } from "@/systems/learning/encounterPressureSystem"
 import { VOCABULARY_ENCOUNTER_CONFIG } from "@/config/vocabularyEncounterConfig"
 import { useJapaneseTts } from "@/hooks/useJapaneseTts"
 import { stopJapaneseSpeech } from "@/systems/listening/japaneseTtsSystem"
+import { EncounterDisplayProvider } from "@/features/encounters/EncounterDisplayProvider"
+import type { PlayerContract } from "@/contracts/player-contract"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { EncounterTargetRail } from "@/components/ui/EncounterTargetRail"
@@ -15,6 +25,7 @@ import { ListeningStationDisplay } from "@/components/ui/screen/ListeningStation
 
 interface ListeningEncounterProps {
   quest: QuestContract
+  player?: PlayerContract | null
   disabled?: boolean
   maxWrongAttempts?: number
   maxReplays?: number
@@ -27,6 +38,7 @@ interface ListeningEncounterProps {
 
 export function ListeningEncounter({
   quest,
+  player,
   disabled,
   maxWrongAttempts = VOCABULARY_ENCOUNTER_CONFIG.MAX_WRONG_ATTEMPTS,
   maxReplays = 3,
@@ -40,6 +52,7 @@ export function ListeningEncounter({
   const [submitting, setSubmitting] = useState(false)
   const [heardOnce, setHeardOnce] = useState(false)
   const [playCount, setPlayCount] = useState(0)
+  const [replayLine, setReplayLine] = useState<string | null>(null)
   const tts = useJapaneseTts()
 
   const encounter = quest.listeningEncounter
@@ -48,19 +61,33 @@ export function ListeningEncounter({
     ? Math.max(0, maxWrongAttempts - encounter.wrongAttempts)
     : 0
   const playsLeft = Math.max(0, maxReplays - playCount)
+  const inputMode = fragment?.inputMode ?? "romaji"
+  const pressureLine = encounter
+    ? pressureFeedbackLine({
+        correctStreak: encounter.correctStreak ?? 0,
+        wrongAttempts: encounter.wrongAttempts,
+      })
+    : null
 
   useEffect(() => {
     setHeardOnce(false)
-    setPlayCount(0)
+    setPlayCount(encounter?.replayCount ?? 0)
+    setReplayLine(null)
     return () => stopJapaneseSpeech()
-  }, [encounter?.currentIndex, fragment?.id])
+  }, [encounter?.currentIndex, encounter?.replayCount, fragment?.id])
 
   async function playSignal() {
     if (!fragment || playCount >= maxReplays) return
     await tts.play(fragment.japanese, fragment.reading)
-    if (!tts.error) {
+    if (!tts.error && encounter) {
       setHeardOnce(true)
-      setPlayCount((n) => n + 1)
+      const { encounter: nextEncounter, replayLine: line } = recordListeningReplay(
+        encounter,
+        maxReplays,
+        quest.id
+      )
+      setPlayCount(nextEncounter.replayCount ?? playCount + 1)
+      setReplayLine(line)
     }
   }
 
@@ -76,6 +103,8 @@ export function ListeningEncounter({
       await onSubmit(answer.trim())
       setAnswer("")
       setHeardOnce(false)
+      setPlayCount(0)
+      setReplayLine(null)
     } finally {
       setSubmitting(false)
     }
@@ -102,6 +131,9 @@ export function ListeningEncounter({
               Signal degraded — fewer retries and tighter error budget.
             </p>
           )}
+          {pressureLine && (
+            <p className="mt-2 text-xs italic text-[var(--accent-bright)]">{pressureLine}</p>
+          )}
         </div>
       )}
 
@@ -125,11 +157,8 @@ export function ListeningEncounter({
         </p>
       )}
 
-      {focusMode && fragment && (
-        <ListeningStationDisplay
-          primaryLabel={fragment.japanese.slice(0, 8) || "秋葉原"}
-          secondaryLabel={fragment.reading ?? "Signal corridor"}
-        />
+      {focusMode && (
+        <ListeningStationDisplay masked={!heardOnce && !tts.playing} />
       )}
 
       <div
@@ -137,7 +166,9 @@ export function ListeningEncounter({
           focusMode ? "" : "nozomi-signal-well"
         }`}
       >
-        <AudioWaveform levels={tts.waveformLevels} active={tts.playing} className="mb-6" />
+        {!focusMode && (
+          <AudioWaveform levels={tts.waveformLevels} active={tts.playing} className="mb-6" />
+        )}
         <p className="text-center text-sm text-[var(--foreground)]">
           {tts.playing
             ? "Receiving signal…"
@@ -145,40 +176,32 @@ export function ListeningEncounter({
               ? "Signal logged. Transmit your decode."
               : "No glyph on screen — listen first."}
         </p>
+        {replayLine && (
+          <p className="mt-2 text-center text-xs text-[var(--warning)]">{replayLine}</p>
+        )}
         {tts.error && (
           <p className="mt-2 text-center text-xs text-[var(--danger)]">{tts.error}</p>
         )}
-        <div className="mt-6 flex flex-col items-center gap-3">
-          {focusMode && tts.playing ? (
-            <Button
-              type="button"
-              size="md"
-              variant="primary"
-              className="!border-[var(--accent)] !bg-[var(--glow-accent)]"
-              onClick={stopSignal}
-            >
-              Tap to stop
-            </Button>
-          ) : (
-            <Button
-              type="button"
-              size="md"
-              disabled={
-                disabled ||
-                tts.playing ||
-                !tts.supported ||
-                playCount >= maxReplays
-              }
-              onClick={() => void playSignal()}
-            >
-              {tts.playing
-                ? "Playing…"
-                : heardOnce
-                  ? "Replay signal"
-                  : "Receive signal"}
-            </Button>
-          )}
-        </div>
+        {!focusMode && (
+          <div className="mt-6 flex flex-col items-center gap-3">
+            {tts.playing ? (
+              <Button type="button" size="md" variant="primary" onClick={stopSignal}>
+                Tap to stop
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                size="md"
+                disabled={
+                  disabled || tts.playing || !tts.supported || playCount >= maxReplays
+                }
+                onClick={() => void playSignal()}
+              >
+                {heardOnce ? "Replay signal" : "Receive signal"}
+              </Button>
+            )}
+          </div>
+        )}
         {heardOnce && playsLeft > 0 && !focusMode && (
           <p className="mt-3 text-center text-xs text-[var(--muted)]">
             Plays remaining: {playsLeft}
@@ -193,12 +216,12 @@ export function ListeningEncounter({
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <Input
-          label="Transmit decode (romaji, kana, or English)"
+          label={inputModeLabel(inputMode)}
           type="text"
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          disabled={disabled || submitting}
-          placeholder="e.g. mizu"
+          disabled={disabled || submitting || !heardOnce}
+          placeholder={inputModePlaceholder(inputMode)}
           autoComplete="off"
         />
         <p className="text-xs text-[var(--danger)]">
@@ -228,9 +251,31 @@ export function ListeningEncounter({
     </div>
   )
 
-  if (focusMode) {
-    return <ListeningFocusShell>{body}</ListeningFocusShell>
-  }
+  const wrapped = (
+    <EncounterDisplayProvider
+      quest={quest}
+      player={player}
+      promptDirection={fragment.promptDirection ?? "LISTEN_DECODE"}
+      inputMode={inputMode}
+      phase="ACTIVE"
+    >
+      {focusMode ? (
+        <ListeningFocusShell
+          onPlaySignal={() => void playSignal()}
+          playing={tts.playing}
+          disabled={disabled || playCount >= maxReplays || !tts.supported}
+          subtitle={
+            replayLine ??
+            (heardOnce ? "Decode what you heard." : "Tap the mic to intercept the transmission.")
+          }
+        >
+          {body}
+        </ListeningFocusShell>
+      ) : (
+        <div className="mt-3">{body}</div>
+      )}
+    </EncounterDisplayProvider>
+  )
 
-  return <div className="mt-3">{body}</div>
+  return wrapped
 }

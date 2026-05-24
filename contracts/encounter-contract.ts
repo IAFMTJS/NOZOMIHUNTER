@@ -1,4 +1,21 @@
-export interface VocabularyWordContract {
+export type ChallengePromptDirection =
+  | "RETRIEVE_ENGLISH"
+  | "RETRIEVE_JAPANESE"
+  | "RETRIEVE_READING"
+  | "LISTEN_DECODE"
+  | "SPEAK_JAPANESE"
+  | "SPEAK_FROM_PROMPT"
+
+export type ChallengeDisplayPhase = "ACTIVE" | "REVEALED"
+
+export type AnswerInputMode = "english" | "romaji" | "kana" | "japanese"
+
+export interface ChallengeWordFields {
+  promptDirection?: ChallengePromptDirection
+  inputMode?: AnswerInputMode
+}
+
+export interface VocabularyWordContract extends ChallengeWordFields {
   id: string
   japanese: string
   /** Primary kana reading (reb). */
@@ -11,6 +28,8 @@ export interface VocabularyEncounterContract {
   words: VocabularyWordContract[]
   currentIndex: number
   wrongAttempts: number
+  /** Consecutive correct answers in this encounter. */
+  correctStreak?: number
 }
 
 export type ConversationRole = "director" | "player"
@@ -41,7 +60,7 @@ export interface ConversationEncounterContract {
   relationshipTrust?: number
 }
 
-export interface SpeechPhraseContract {
+export interface SpeechPhraseContract extends ChallengeWordFields {
   id: string
   japanese: string
   reading: string
@@ -71,7 +90,7 @@ export interface SpeechEncounterContract {
  * Correct decode updates `word_mastery` via `recordWordAnswer`.
  * Skip tokens cannot fast-forward listening objectives.
  */
-export interface ListeningFragmentContract {
+export interface ListeningFragmentContract extends ChallengeWordFields {
   id: string
   japanese: string
   reading: string
@@ -84,6 +103,9 @@ export interface ListeningEncounterContract {
   fragments: ListeningFragmentContract[]
   currentIndex: number
   wrongAttempts: number
+  correctStreak?: number
+  revealFragmentId?: string | null
+  replayCount?: number
   /** Signal calibration / lost transmission mode state */
   replayBudget?: number
   channelIsolated?: boolean

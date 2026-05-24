@@ -1,5 +1,7 @@
 # Learner display rules
 
+## Browse / catalog (Threat Index, dossiers)
+
 Every learner-facing word surface must show:
 
 1. **Japanese** (primary kanji or kana form)
@@ -7,7 +9,26 @@ Every learner-facing word surface must show:
 3. **Romaji** (derived from reading if not on the entry)
 4. **Meaning** (English gloss)
 
-Use `LearnerWordLine` from `src/components/ui/LearnerWordLine.tsx`.
+Use `LearnerWordLine` from `src/components/ui/LearnerWordLine.tsx` with `forceReveal` or non-challenge context.
+
+## Active challenge state (encounters)
+
+During **ACTIVE** challenge prompts, never show kanji + romaji + English together.
+
+Use `ChallengeDisplayProvider` + `challengeDisplaySystem.resolveVisibleLayers`:
+
+- **RETRIEVE_ENGLISH** → show Japanese + romaji; hide meaning
+- **RETRIEVE_JAPANESE / RETRIEVE_READING** → show meaning only; hide Japanese stack
+- **LISTEN_DECODE** → show no glyphs until after successful decode
+- **SPEAK_JAPANESE** → show meaning prompt only; expect spoken/typed Japanese
+
+Lock answer input to a single mode (`english`, `romaji`, `kana`, `japanese`) per prompt.
+
+## Post-success reveal
+
+After a correct answer, briefly set phase to **REVEALED** and show the full triple with `nozomi-mask-reveal` animation.
+
+## Components
 
 Map word data via `src/services/jmdict/learnerFormat.ts`:
 
@@ -15,12 +36,10 @@ Map word data via `src/services/jmdict/learnerFormat.ts`:
 - `learnerPartsFromEncounterWord` — encounter words, extraction rows
 - `learnerPartsFromExtractionRow` — `WordExtractionPanel` rows
 
-Encounter target rails: `EncounterRailWord` (compact triple, no audio).
+Encounter target rails: `EncounterRailWord` with `slotState` (`done` | `current` | `pending`).
 
-Active drill targets: `LearnerWordLine` with `layout="stacked"` and optional `audio`.
+Listening encounters: no visible gloss on the station until validation (`ListeningStationDisplay masked`).
 
-Listening encounters: no visible gloss on the station (listen-first); meaning appears after validation.
+Compact format (browse only): `水 • みず • Water`
 
-Compact format: `水 • みず • Water`
-
-Optional `audio` prop enables `WordAudioButton` (Web Speech API).
+Optional `audio` on reveal only during challenges (avoid leaking answers via TTS).

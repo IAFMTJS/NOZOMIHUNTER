@@ -58,7 +58,7 @@ export function MemoryCascadeEncounter({
           </p>
         )}
         {!revealed && (
-          <div className="grid gap-2">
+          <div className="nozomi-memory-grid grid grid-cols-2 gap-2">
             {[...round.words, ...(round.intruderId ? [{ id: round.intruderId }] : [])]
               .filter(
                 (w, i, arr) => arr.findIndex((x) => x.id === w.id) === i

@@ -28,6 +28,9 @@ import {
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import { playAmbience, type AmbienceCue } from "@/systems/audio/audioSystem"
+import { explorationCorruptionDelta } from "@/systems/dungeons/explorationSystem"
+import { mergePenalties } from "@/systems/penalties/penaltySystem"
+import { applyEncounterStreakToQuestRewards } from "@/systems/quests/questCompletionRewardSystem"
 import type { GameModeId } from "@/contracts/game-mode-contract"
 import {
   advanceExplorationBeat,
@@ -125,10 +128,23 @@ export async function advanceDungeonExploration(
   userId: string,
   action: ExplorationAction
 ) {
-  const { quest } = getDungeonQuest()
+  const { quest, player } = getDungeonQuest()
   if (!quest) return null
 
   const updated = advanceExplorationBeat(quest, action, userId)
+
+  const corruptionTick = explorationCorruptionDelta(action)
+  if (corruptionTick > 0 && player) {
+    const store = usePlayerStore.getState()
+    store.applyPenalties(
+      mergePenalties(player.penalties, {
+        corruption: corruptionTick,
+        fatigue: 0,
+        xpDebt: 0,
+      })
+    )
+  }
+
   await persistDungeonQuest(userId, updated)
   return updated
 }
@@ -226,7 +242,7 @@ export async function extractDungeonRewards(userId: string) {
   const progressionState = store.getProgressionState()
   if (!quest?.dungeonRun || !progressionState || !store.player) return null
 
-  const ready = finalizeDungeonExtraction(quest)
+  const ready = applyEncounterStreakToQuestRewards(finalizeDungeonExtraction(quest))
   if (!canCompleteQuest(ready)) {
     throw new Error("Dungeon objectives not complete")
   }

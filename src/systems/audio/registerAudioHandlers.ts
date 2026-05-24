@@ -1,5 +1,6 @@
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
+import { isComboMilestone } from "@/systems/learning/encounterPressureSystem"
 import { playAudioCue, stopCorruptionHum } from "./audioSystem"
 import { playThemedCue } from "./themedAudioSystem"
 import type { DungeonTheme } from "@/contracts/dungeon-contract"
@@ -11,9 +12,21 @@ export function registerAudioHandlers(): () => void {
   if (registered && unregister) return unregister
   registered = true
 
-  const onCorrect = () => playAudioCue("confirm")
-  const onWrong = () => playAudioCue("error")
-  const onLevelUp = () => playAudioCue("levelUp")
+  const onCorrect = (payload: unknown) => {
+    playAudioCue("confirm")
+    const streak = (payload as { correctStreak?: number } | undefined)?.correctStreak
+    if (streak != null && isComboMilestone(streak)) {
+      playAudioCue(streak >= 5 ? "combo5" : "combo2")
+    }
+  }
+  const onWrong = (payload: unknown) => {
+    const prev = (payload as { previousStreak?: number } | undefined)?.previousStreak ?? 0
+    if (prev >= 3) playAudioCue("comboBreak")
+    else playAudioCue("error")
+  }
+  const onLevelUp = () => {
+    /* LevelUpCeremony plays full sting */
+  }
   const onQuestComplete = () => playAudioCue("questComplete")
   const onQuestFailed = () => playAudioCue("error")
   const onEncounterStart = () => playAudioCue("encounterStart")

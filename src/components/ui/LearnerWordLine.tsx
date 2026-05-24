@@ -1,9 +1,9 @@
 "use client"
 
 import type { LearnerWordParts } from "@/services/jmdict/learnerFormat"
-import { formatLearnerTriple } from "@/services/jmdict/learnerFormat"
 import { WordAudioButton } from "@/components/ui/WordAudioButton"
-import { useLearnerAssist } from "@/features/encounters/context/LearnerAssistContext"
+import { useChallengeDisplay } from "@/features/encounters/context/LearnerAssistContext"
+import { resolveVisibleLayers } from "@/systems/learning/challengeDisplaySystem"
 
 interface LearnerWordLineProps {
   parts: LearnerWordParts
@@ -11,6 +11,7 @@ interface LearnerWordLineProps {
   size?: "sm" | "md" | "lg"
   audio?: boolean
   className?: string
+  forceReveal?: boolean
 }
 
 export function LearnerWordLine({
@@ -19,19 +20,36 @@ export function LearnerWordLine({
   size = "md",
   audio = false,
   className = "",
+  forceReveal = false,
 }: LearnerWordLineProps) {
-  const assist = useLearnerAssist()
-  const blackout = assist === "BLACKOUT"
+  const ctx = useChallengeDisplay()
+  const phase = forceReveal ? "REVEALED" : ctx.phase
+  const layers = resolveVisibleLayers(
+    ctx.promptDirection,
+    phase,
+    ctx.assistLevel,
+    ctx.challengeMode && !forceReveal
+  )
+
   const jpSize =
     size === "lg" ? "text-2xl" : size === "sm" ? "text-base" : "text-lg"
+  const revealClass =
+    phase === "REVEALED" && ctx.challengeMode ? "nozomi-mask-reveal" : ""
 
   if (layout === "compact") {
+    const segments: string[] = []
+    if (layers.japanese) segments.push(parts.japanese)
+    if (layers.reading && parts.reading) segments.push(parts.reading)
+    if (layers.romaji) segments.push(parts.romaji)
+    if (layers.meaning) segments.push(parts.meaning)
+    const text = segments.length > 0 ? segments.join(" • ") : "███"
+
     return (
-      <div className={`flex items-start gap-2 ${className}`}>
+      <div className={`flex items-start gap-2 ${className} ${revealClass}`}>
         <p className={`font-japanese ${jpSize} text-[var(--foreground)]`}>
-          {blackout ? parts.japanese : formatLearnerTriple(parts)}
+          {text}
         </p>
-        {audio && (
+        {audio && layers.japanese && (
           <WordAudioButton japanese={parts.japanese} reading={parts.reading} />
         )}
       </div>
@@ -39,21 +57,31 @@ export function LearnerWordLine({
   }
 
   return (
-    <div className={`space-y-0.5 ${className}`}>
-      <div className="flex items-center gap-2">
-        <p className={`font-japanese ${jpSize} text-[var(--foreground)]`}>
-          {parts.japanese}
-        </p>
-        {audio && (
-          <WordAudioButton japanese={parts.japanese} reading={parts.reading} />
-        )}
-      </div>
-      {!blackout && (
-        <>
-          <p className="text-xs text-[var(--muted)]">{parts.reading}</p>
-          <p className="text-xs text-[var(--muted)]">{parts.romaji}</p>
-          <p className="text-sm text-[var(--foreground)]">{parts.meaning}</p>
-        </>
+    <div className={`space-y-0.5 ${className} ${revealClass}`}>
+      {layers.japanese ? (
+        <div className="flex items-center gap-2">
+          <p className={`font-japanese ${jpSize} text-[var(--foreground)]`}>
+            {parts.japanese}
+          </p>
+          {audio && (
+            <WordAudioButton japanese={parts.japanese} reading={parts.reading} />
+          )}
+        </div>
+      ) : (
+        !layers.meaning && (
+          <p className={`nozomi-mask-glitch ${jpSize} font-display text-[var(--muted)]`}>
+            ███
+          </p>
+        )
+      )}
+      {layers.reading && (
+        <p className="text-xs text-[var(--muted)]">{parts.reading}</p>
+      )}
+      {layers.romaji && (
+        <p className="text-xs text-[var(--muted)]">{parts.romaji}</p>
+      )}
+      {layers.meaning && (
+        <p className="text-sm text-[var(--foreground)]">{parts.meaning}</p>
       )}
     </div>
   )

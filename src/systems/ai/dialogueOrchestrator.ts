@@ -2,6 +2,7 @@ import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import type { AIResponseContract, AIMemoryContract } from "@/contracts/ai-contract"
 import type { ConversationMessageContract } from "@/contracts/encounter-contract"
+import type { ConversationResponseFamily } from "@/config/conversationContentConfig"
 import { detectIntent } from "./intentSystem"
 import { detectEmotion } from "./emotionSystem"
 import { createEmptyMemory } from "./memorySystem"
@@ -18,6 +19,8 @@ export interface DialogueInput {
   memory?: AIMemoryContract
   scenarioId?: string
   recentMessages?: ConversationMessageContract[]
+  responseStyle?: ConversationResponseFamily["style"]
+  exchangePassed?: boolean
 }
 
 export async function processDialogue(
@@ -41,7 +44,9 @@ export async function processDialogue(
     emotion,
     input.scenarioId,
     memory,
-    input.recentMessages
+    input.recentMessages,
+    input.responseStyle,
+    input.exchangePassed
   )
 
   const result: AIResponseContract = {
@@ -55,12 +60,15 @@ export async function processDialogue(
     playerId: input.playerId,
     intent,
     emotion,
+    style: input.responseStyle,
   })
 
   eventBus.emit(GAME_EVENTS.AI_RESPONSE_GENERATED, {
     playerId: input.playerId,
     intent,
     emotion,
+    style: input.responseStyle,
+    passed: input.exchangePassed,
   })
 
   return result
@@ -71,7 +79,9 @@ function buildImmersiveResponse(
   emotion: AIResponseContract["emotion"],
   scenarioId?: string,
   memory?: AIMemoryContract,
-  recentMessages?: ConversationMessageContract[]
+  recentMessages?: ConversationMessageContract[],
+  responseStyle?: ConversationResponseFamily["style"],
+  exchangePassed?: boolean
 ): string {
   const scenario = scenarioId ? getConversationScenario(scenarioId) : null
   const director = scenario?.directorName ?? "Director"
@@ -83,6 +93,8 @@ function buildImmersiveResponse(
         : emotion === "CONFUSED"
           ? "Focus. "
           : ""
+
+  const styleNote = directorStyleNote(responseStyle, exchangePassed)
 
   const memoryNote =
     memory && memory.rememberedWords.length > 0 && FEATURE_FLAGS.ADVANCED_AI_MEMORY
@@ -99,17 +111,17 @@ function buildImmersiveResponse(
 
     switch (intent) {
       case "GREETING":
-        return `${tone}${director}: ${pairJapanese("ようこそ", "youkoso")}, Hunter. ${opening}${memoryNote}`
+        return `${tone}${styleNote}${director}: ${pairJapanese("ようこそ", "youkoso")}, Hunter. ${opening}${memoryNote}`
       case "QUESTION":
-        return `${tone}${director}: ${pairJapanese("いい質問だ。", "ii shitsumon da.")} Clarify your objective.${memoryNote}`
+        return `${tone}${styleNote}${director}: ${pairJapanese("いい質問だ。", "ii shitsumon da.")} Clarify your objective.${memoryNote}`
       case "CONFUSION":
-        return `${tone}${director}: ${pairJapanese("落ち着け。", "ochitsuke.")} Try again—${pairJapanese("日本語でも", "nihongo demo")} English ${pairJapanese("でも", "demo")}.${memoryNote}`
+        return `${tone}${styleNote}${director}: ${pairJapanese("落ち着け。", "ochitsuke.")} Try again—${pairJapanese("日本語でも", "nihongo demo")} English ${pairJapanese("でも", "demo")}.${memoryNote}`
       case "GOODBYE":
-        return `${tone}${director}: ${pairJapanese("またな。", "mata na.")} The gate remembers you.${memoryNote}`
+        return `${tone}${styleNote}${director}: ${pairJapanese("またな。", "mata na.")} The gate remembers you.${memoryNote}`
       case "REQUEST":
-        return `${tone}${director}: Request noted. ${exchangeCount >= 2 ? "You're almost cleared." : "Continue the briefing."}${memoryNote}`
+        return `${tone}${styleNote}${director}: Request noted. ${exchangeCount >= 2 ? "You're almost cleared." : "Continue the briefing."}${memoryNote}`
       default:
-        return `${tone}${director}: ${pickScenarioFollowUp(scenario.id, exchangeCount)}${memoryNote}`
+        return `${tone}${styleNote}${director}: ${pickScenarioFollowUp(scenario.id, exchangeCount, responseStyle, exchangePassed)}${memoryNote}`
     }
   }
 
@@ -127,15 +139,63 @@ function buildImmersiveResponse(
   }
 }
 
-function pickScenarioFollowUp(scenarioId: string, exchangeCount: number): string {
-  if (exchangeCount >= 2) {
-    return "Signal stable. One more clear exchange."
+function directorStyleNote(
+  style: ConversationResponseFamily["style"] | undefined,
+  passed?: boolean
+): string {
+  if (!style) return ""
+  if (passed === false) {
+    return "Channel discipline required. "
   }
+  switch (style) {
+    case "formal":
+      return "Formal register acknowledged. "
+    case "casual":
+      return "Relaxed tone noted. "
+    case "english":
+      return "English relay accepted. "
+    case "hybrid":
+      return "Mixed signal parsed. "
+    default:
+      return ""
+  }
+}
+
+function pickScenarioFollowUp(
+  scenarioId: string,
+  exchangeCount: number,
+  style?: ConversationResponseFamily["style"],
+  passed?: boolean
+): string {
+  if (exchangeCount >= 2) {
+    return style === "formal"
+      ? "Registry confirms stability. One more exchange."
+      : style === "casual"
+        ? "We're good. One more ping."
+        : "Signal stable. One more clear exchange."
+  }
+
+  if (passed === false) {
+    return style === "formal"
+      ? "Rephrase with precision. The channel rejects noise."
+      : "Try again—shorter and clearer."
+  }
+
   switch (scenarioId) {
     case "signal-relay":
-      return "Copy. Relay what you parsed from the fragment."
+      return style === "hybrid"
+        ? "Relay coherent. Expand what you parsed."
+        : "Copy. Relay what you parsed from the fragment."
     case "shadow-briefing":
-      return "Keep your voice low. What did you observe?"
+      return style === "formal"
+        ? "Understood. Continue the debrief."
+        : "Keep your voice low. What did you observe?"
+    case "gate-check":
+      return style === "english"
+        ? "English logged. Confirm readiness in your own words."
+        : style === "casual"
+          ? "Copy. Keep it short and clear."
+          : "State readiness for gate authorization."
     default:
       return "Noted. Report status again."
   }

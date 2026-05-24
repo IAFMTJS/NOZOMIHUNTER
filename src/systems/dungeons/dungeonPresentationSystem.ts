@@ -56,6 +56,16 @@ export function encounterTypeLabel(type: EncounterType): string {
   }
 }
 
+export function corridorAtmosphereClass(theme: string | undefined, sectorIndex: number): string {
+  const parts = ["nozomi-corridor-stage"]
+  if (theme === "SHADOW_ARCHIVE") parts.push("nozomi-corridor--archive")
+  else if (theme === "ABYSS_CORE") parts.push("nozomi-corridor--abyss")
+  else parts.push("nozomi-corridor--cyber")
+  if (sectorIndex >= 2) parts.push("nozomi-corridor--deep")
+  if (sectorIndex >= 3) parts.push("nozomi-corridor--unstable")
+  return parts.join(" ")
+}
+
 export function dungeonRunShellClass(run: DungeonRunContract): string {
   const parts = ["nozomi-dungeon-run"]
   const mode = run.dungeonMode

@@ -6,6 +6,7 @@ import { createConversationEncounter } from "@/systems/quests/conversationEncoun
 import { createTerminalBreachEncounter } from "@/systems/quests/terminalBreachSystem"
 import { createKanjiSurgeryTargets } from "@/systems/training/kanjiSurgerySystem"
 import { createMemoryCascadeRound } from "@/systems/training/memoryCascadeSystem"
+import { createKanaDashEncounter } from "@/systems/training/kanaDashSystem"
 import { createSemanticNetworkEncounter } from "@/systems/vocabulary/semanticNetworkSystem"
 import { LISTENING_QUEST_CONFIG } from "@/config/listeningQuestConfig"
 
@@ -92,6 +93,14 @@ export function applyGameModeToQuest(
         gameMode: modeId,
         type: "VOCABULARY",
         memoryCascadeEncounter: createMemoryCascadeRound(),
+      }
+    case "KANA_DASH":
+      return {
+        ...quest,
+        gameMode: modeId,
+        type: "VOCABULARY",
+        title: quest.title || "Kana Dash",
+        vocabularyEncounter: createKanaDashEncounter(),
       }
     case "SEMANTIC_NETWORK":
       return {

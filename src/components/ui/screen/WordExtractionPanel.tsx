@@ -54,22 +54,39 @@ export function WordExtractionPanel({ words, currentIndex }: WordExtractionPanel
         {list.length === 0 ? (
           <li className="text-center text-xs text-[var(--muted)]">No entries.</li>
         ) : (
-          list.map((w) => (
-            <li
-              key={w.id}
-              className="flex items-center gap-2 border-b border-[var(--border-subtle)]/50 pb-2 last:border-0"
-            >
-              <div className="min-w-0 flex-1">
-                <LearnerWordLine
-                  parts={learnerPartsFromExtractionRow(w)}
-                  layout="stacked"
-                  size="sm"
-                  audio
-                />
-              </div>
-              <WordRarityChip tier={wordRarityFromId(w.id)} />
-            </li>
-          ))
+          list.map((w, i) => {
+            const globalIndex = tab === "new" ? currentIndex + i : i
+            const isCurrent = tab === "new" && globalIndex === currentIndex
+            const masked = tab === "new" && !isCurrent && globalIndex >= currentIndex
+
+            return (
+              <li
+                key={w.id}
+                className="flex items-center gap-2 border-b border-[var(--border-subtle)]/50 pb-2 last:border-0"
+              >
+                <div className="min-w-0 flex-1">
+                  {masked ? (
+                    <p className="nozomi-mask-glitch text-xs text-[var(--muted)]">
+                      ███ encrypted signature · sector {globalIndex + 1}
+                    </p>
+                  ) : isCurrent ? (
+                    <p className="nozomi-mask-static text-xs text-[var(--accent-bright)]">
+                      ░░ target locked — decode to extract
+                    </p>
+                  ) : (
+                    <LearnerWordLine
+                      parts={learnerPartsFromExtractionRow(w)}
+                      layout="stacked"
+                      size="sm"
+                      audio
+                      forceReveal
+                    />
+                  )}
+                </div>
+                <WordRarityChip tier={wordRarityFromId(w.id)} />
+              </li>
+            )
+          })
         )}
       </ul>
     </div>

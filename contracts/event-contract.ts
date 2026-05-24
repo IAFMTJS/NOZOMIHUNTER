@@ -36,6 +36,8 @@ export const GAME_EVENTS = {
   WORD_BREWED: "WORD_BREWED",
   QUEST_TRACKED: "QUEST_TRACKED",
   EXPLORATION_BEAT_ADVANCED: "EXPLORATION_BEAT_ADVANCED",
+  CHALLENGE_REVEALED: "CHALLENGE_REVEALED",
+  REPLAY_PENALTY: "REPLAY_PENALTY",
 } as const
 
 export type GameEventType = (typeof GAME_EVENTS)[keyof typeof GAME_EVENTS]
@@ -57,6 +59,22 @@ export type LevelUpPayload = {
   playerId: string
   level: number
   previousLevel: number
+  statDeltas?: { label: string; delta: number }[]
+  unlockKeys?: string[]
+}
+
+export type EncounterAnswerCorrectPayload = {
+  questId: string
+  wordId?: string | null
+  encounterComplete?: boolean
+  correctStreak?: number
+}
+
+export type EncounterAnswerWrongPayload = {
+  questId: string
+  wordId?: string | null
+  encounterFailed?: boolean
+  previousStreak?: number
 }
 export type RankUpPayload = { playerId: string; rank: string }
 export type DungeonCompletedPayload = {

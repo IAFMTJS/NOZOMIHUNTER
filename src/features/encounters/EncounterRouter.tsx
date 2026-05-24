@@ -14,6 +14,7 @@ import { LostTransmissionEncounter } from "@/features/encounters/modes/LostTrans
 import { GhostInterrogationEncounter } from "@/features/encounters/modes/GhostInterrogationEncounter"
 import { KanjiSurgeryEncounter } from "@/features/encounters/modes/KanjiSurgeryEncounter"
 import { MemoryCascadeEncounter } from "@/features/encounters/modes/MemoryCascadeEncounter"
+import { KanaDashEncounter } from "@/features/encounters/modes/KanaDashEncounter"
 import { TerminalBreachEncounter } from "@/features/encounters/modes/TerminalBreachEncounter"
 import { SemanticNetworkEncounter } from "@/features/encounters/modes/SemanticNetworkEncounter"
 import { Panel } from "@/components/ui/Panel"
@@ -36,6 +37,7 @@ export interface EncounterRouterProps {
   onSubmitAnswer?: (answer: string) => Promise<{
     correct: boolean
     encounterFailed: boolean
+    pressureLine?: string | null
   } | null>
   onSendMessage?: (message: string) => Promise<{
     passed: boolean
@@ -54,6 +56,7 @@ export interface EncounterRouterProps {
   onSubmitListening?: (answer: string) => Promise<{
     correct: boolean
     encounterFailed: boolean
+    pressureLine?: string | null
   } | null>
   onModeAction?: (action: string, payload?: string) => Promise<void>
   onAbandon?: () => Promise<void>
@@ -95,6 +98,7 @@ export function EncounterRouter({
       {renderModeBody({
         mode,
         quest,
+        player,
         disabled,
         maxWrongAttempts,
         maxListeningReplays,
@@ -116,6 +120,7 @@ export function EncounterRouter({
 function renderModeBody(ctx: {
   mode: ReturnType<typeof resolveQuestGameMode>
   quest: QuestContract
+  player?: PlayerContract | null
   disabled?: boolean
   maxWrongAttempts?: number
   maxListeningReplays?: number
@@ -133,6 +138,7 @@ function renderModeBody(ctx: {
   const {
     mode,
     quest,
+    player,
     disabled,
     maxWrongAttempts,
     maxListeningReplays,
@@ -155,6 +161,7 @@ function renderModeBody(ctx: {
         <>
           <SignalCalibrationEncounter
             quest={quest}
+            player={player}
             disabled={disabled}
             maxWrongAttempts={maxWrongAttempts}
             maxReplays={maxListeningReplays}
@@ -174,6 +181,7 @@ function renderModeBody(ctx: {
         <>
           <LostTransmissionEncounter
             quest={quest}
+            player={player}
             disabled={disabled}
             maxWrongAttempts={maxWrongAttempts}
             maxReplays={maxListeningReplays}
@@ -193,6 +201,7 @@ function renderModeBody(ctx: {
         <>
           <ShadowEchoEncounter
             quest={quest}
+            player={player}
             disabled={disabled}
             onSubmit={async (t, ms) => {
               await onSubmitSpeech(t, ms)
@@ -240,6 +249,23 @@ function renderModeBody(ctx: {
           onAbandon={onAbandon}
         />
       )
+    case "KANA_DASH":
+      if (!onSubmitAnswer) break
+      return (
+        <>
+          <KanaDashEncounter
+            quest={quest}
+            player={player}
+            disabled={disabled}
+            flashClassName={flashClassName}
+            onSubmit={async (a) => {
+              await onSubmitAnswer(a)
+            }}
+            onAbandon={onAbandon}
+          />
+          {feedback}
+        </>
+      )
     case "TERMINAL_BREACH":
       return (
         <TerminalBreachEncounter
@@ -271,6 +297,7 @@ function renderModeBody(ctx: {
       <>
         <VocabularyEncounter
           quest={quest}
+          player={player}
           disabled={disabled}
           onSubmit={async (a) => {
             await onSubmitAnswer(a)
@@ -288,6 +315,7 @@ function renderModeBody(ctx: {
       <>
         <SpeechEncounter
           quest={quest}
+          player={player}
           disabled={disabled}
           onSubmit={async (t, ms) => {
             await onSubmitSpeech(t, ms)
@@ -304,6 +332,7 @@ function renderModeBody(ctx: {
       <>
         <ListeningEncounter
           quest={quest}
+          player={player}
           disabled={disabled}
           maxWrongAttempts={maxWrongAttempts}
           maxReplays={maxListeningReplays}

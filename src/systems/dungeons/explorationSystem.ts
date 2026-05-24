@@ -127,6 +127,11 @@ export function pursuitDeltaForExploration(action: ExplorationAction): number {
   return action === "LISTEN" ? 6 : -4
 }
 
+/** Corruption tick when pushing corridor without listening first. */
+export function explorationCorruptionDelta(action: ExplorationAction): number {
+  return action === "PUSH" ? 1 : 0
+}
+
 export function isPursuitCaught(distance: number | undefined): boolean {
   return (distance ?? PURSUIT_START_DISTANCE) <= PURSUIT_CAUGHT_THRESHOLD
 }
