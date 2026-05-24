@@ -2,6 +2,7 @@ import {
   convertXpToCreditsGuarded,
   consumeActiveBoostGuarded,
   purchaseItemGuarded,
+  sellItemGuarded,
   consumeItemGuarded,
 } from "@/services/supabase/economyRepository"
 import {
@@ -18,6 +19,31 @@ import { parseActiveBoosts } from "@/systems/economy/xpConversionSystem"
 import { getItemEffect } from "@/config/shopItemEffects"
 import type { BoostEffectType } from "@/contracts/economy-contract"
 import { consumeBoostUse } from "@/systems/economy/boostSystem"
+
+export async function sellInventoryItem(
+  userId: string,
+  itemKey: string,
+  quantity: number
+): Promise<void> {
+  const result = await sellItemGuarded(itemKey, quantity)
+  eventBus.emit(GAME_EVENTS.SHOP_ITEM_SOLD, {
+    playerId: userId,
+    itemKey,
+    quantity,
+    gained: result.gained,
+  })
+  const inventory = await loadPlayerInventory(userId)
+  const store = usePlayerStore.getState()
+  const player = store.player
+  if (player) {
+    store.setPlayer({
+      ...player,
+      economy: { ...player.economy, credits: result.credits },
+      inventory,
+    })
+  }
+  await hydratePlayerFromDb(userId)
+}
 
 export async function purchaseShopItem(
   userId: string,

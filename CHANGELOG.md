@@ -13,7 +13,11 @@
 - **`LearnerWordLine` + `WordAudioButton`** — Japanese / romaji / meaning + TTS on vocab list, detail, prep tiles
 - **Memory decay** — instability % from `last_seen_at` on threat index
 
+### Economy
+- **Inventory sell** — sell items for credits at 50% of catalog price (`sell_item_guarded`, `?mode=sell`)
+
 ### Immersion
+- **Home** — hunter power summary (total + battle stats) with link to `/stats`
 - **Mission cards** — sector blurbs and danger tier on daily/side contracts
 - **Profile** — registry status rail, penalty/sync widgets, system module cards
 - **Reactive feedback** — XP / penalty / glitch toasts via `ReactiveFeedbackHost`

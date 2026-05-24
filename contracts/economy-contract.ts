@@ -60,6 +60,16 @@ export interface PurchaseQuoteContract {
   rotationAvailable: boolean
 }
 
+export interface SellQuoteContract {
+  itemKey: string
+  quantity: number
+  unitPrice: number
+  totalCredits: number
+  hasStock: boolean
+  notEquipped: boolean
+  canSell: boolean
+}
+
 export interface InventorySlotContract {
   itemKey: string
   quantity: number

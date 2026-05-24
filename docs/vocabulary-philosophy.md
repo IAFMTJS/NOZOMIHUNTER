@@ -75,4 +75,4 @@ Human brains learn surprisingly well when they think they're surviving fictional
 
 Every learner-facing word surface shows **Japanese + reading + romaji + meaning** via `LearnerWordLine` (see `rules/learner-display-rules.md`).
 
-Tap-to-play uses **Web Speech API** (`WordAudioButton` / `useJapaneseTts`). Quality and voice availability depend on the browser and OS — there are no prerecorded audio assets in v1.2.3.
+Tap-to-play uses **Web Speech API** (`WordAudioButton` / `useJapaneseTts`). Quality and voice availability depend on the browser and OS — there are no prerecorded audio assets in v1.2.3. Chromium builds can queue or stall synthesis after a few plays; `japaneseTtsSystem` resets the engine before each utterance and keeps Google voices alive with periodic pause/resume.

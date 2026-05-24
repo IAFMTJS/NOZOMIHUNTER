@@ -64,6 +64,32 @@ export interface PurchaseItemResult {
   spent: number
 }
 
+export interface SellItemResult {
+  credits: number
+  itemKey: string
+  quantity: number
+  gained: number
+}
+
+export async function sellItemGuarded(
+  itemKey: string,
+  quantity: number
+): Promise<SellItemResult> {
+  const supabase = requireClient()
+  const { data, error } = await supabase.rpc("sell_item_guarded", {
+    p_item_key: itemKey,
+    p_quantity: quantity,
+  })
+  if (error) throw new Error(error.message)
+  const row = data as Record<string, unknown>
+  return {
+    credits: Number(row.credits ?? 0),
+    itemKey: String(row.item_key ?? itemKey),
+    quantity: Number(row.quantity ?? quantity),
+    gained: Number(row.gained ?? 0),
+  }
+}
+
 export async function purchaseItemGuarded(
   itemKey: string,
   quantity: number

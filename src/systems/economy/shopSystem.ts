@@ -1,9 +1,11 @@
 import type {
   ItemCatalogEntryContract,
   PurchaseQuoteContract,
+  SellQuoteContract,
   ShopListingContract,
 } from "@/contracts/economy-contract"
 import type { PlayerContract } from "@/contracts/player-contract"
+import { SHOP_CONFIG } from "@/config/shopConfig"
 import { inventoryCapacityRemaining } from "@/systems/inventory/inventorySystem"
 import {
   buildShopRotationContext,
@@ -72,6 +74,45 @@ export function canPurchase(
     q.rotationAvailable &&
     quantity > 0
   )
+}
+
+export function sellUnitPrice(entry: ItemCatalogEntryContract): number | null {
+  const base = entry.creditPrice
+  if (base == null || base <= 0) return null
+  return Math.max(1, Math.floor(base * SHOP_CONFIG.SELL_PRICE_RATE))
+}
+
+export function sellQuote(
+  player: PlayerContract,
+  entry: ItemCatalogEntryContract,
+  quantity: number
+): SellQuoteContract | null {
+  const unitPrice = sellUnitPrice(entry)
+  if (unitPrice == null || quantity < 1) return null
+
+  const slot = player.inventory.find((s) => s.itemKey === entry.key)
+  const stock = slot?.quantity ?? 0
+  const hasStock = stock >= quantity
+  const notEquipped = !slot?.equipped
+
+  return {
+    itemKey: entry.key,
+    quantity,
+    unitPrice,
+    totalCredits: unitPrice * quantity,
+    hasStock,
+    notEquipped,
+    canSell: hasStock && notEquipped,
+  }
+}
+
+export function canSell(
+  player: PlayerContract,
+  entry: ItemCatalogEntryContract,
+  quantity: number
+): boolean {
+  const q = sellQuote(player, entry, quantity)
+  return q?.canSell ?? false
 }
 
 export function listingsByCategory(

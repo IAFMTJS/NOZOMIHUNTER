@@ -16,6 +16,7 @@ import {
   isRotationAvailable,
 } from "@/systems/economy/shopRotationSystem"
 import { difficultyOverrideApplies, previewCompletionRewards } from "@/systems/economy/shopEffectSystem"
+import { canSell, sellQuote, sellUnitPrice } from "@/systems/economy/shopSystem"
 import type { PlayerContract } from "@/contracts/player-contract"
 import type { ItemCatalogEntryContract } from "@/contracts/economy-contract"
 import { defaultEconomy } from "@/systems/economy/staminaSystem"
@@ -171,5 +172,38 @@ describe("shopRotationSystem", () => {
       rotationEligible: false,
     } as ItemCatalogEntryContract
     expect(isRotationAvailable(item, [])).toBe(true)
+  })
+})
+
+describe("shopSystem sell", () => {
+  const blade = {
+    key: "hunter-blade",
+    name: "Hunter Blade",
+    category: "EQUIPMENT",
+    icon: "blade",
+    stackable: false,
+    creditPrice: 120,
+  } as ItemCatalogEntryContract
+
+  it("returns half of catalog base price floored", () => {
+    expect(sellUnitPrice(blade)).toBe(60)
+    expect(sellUnitPrice({ ...blade, creditPrice: 10 })).toBe(5)
+    expect(sellUnitPrice({ ...blade, creditPrice: 0 })).toBeNull()
+  })
+
+  it("blocks selling equipped gear", () => {
+    const player = testPlayer({
+      inventory: [{ itemKey: "hunter-blade", quantity: 1, equipped: true }],
+    })
+    expect(canSell(player, blade, 1)).toBe(false)
+    expect(sellQuote(player, blade, 1)?.notEquipped).toBe(false)
+  })
+
+  it("allows selling unequipped stock", () => {
+    const player = testPlayer({
+      inventory: [{ itemKey: "hunter-blade", quantity: 2, equipped: false }],
+    })
+    expect(canSell(player, blade, 1)).toBe(true)
+    expect(sellQuote(player, blade, 1)?.totalCredits).toBe(60)
   })
 })

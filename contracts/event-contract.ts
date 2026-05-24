@@ -28,6 +28,7 @@ export const GAME_EVENTS = {
   STAMINA_REFUNDED: "STAMINA_REFUNDED",
   ITEM_GRANTED: "ITEM_GRANTED",
   SHOP_PURCHASED: "SHOP_PURCHASED",
+  SHOP_ITEM_SOLD: "SHOP_ITEM_SOLD",
   BOOST_ACTIVATED: "BOOST_ACTIVATED",
   XP_CONVERTED: "XP_CONVERTED",
   REWARDS_PENDING: "REWARDS_PENDING",
@@ -83,6 +84,12 @@ export type ShopPurchasedPayload = {
   itemKey: string
   quantity: number
   spent: number
+}
+export type ShopItemSoldPayload = {
+  playerId: string
+  itemKey: string
+  quantity: number
+  gained: number
 }
 export type BoostActivatedPayload = {
   playerId: string

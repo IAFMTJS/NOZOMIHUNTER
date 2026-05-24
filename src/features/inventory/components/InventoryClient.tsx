@@ -7,17 +7,19 @@ import { ItemTile } from "@/components/ui/screen/ItemTile"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
 import type { ItemCatalogEntryContract, InventorySlotContract } from "@/contracts/economy-contract"
+import type { PlayerContract } from "@/contracts/player-contract"
 import {
   inventoryCapacityRemaining,
   inventoryUsed,
 } from "@/systems/inventory/inventorySystem"
-import { canPurchase, toShopListings } from "@/systems/economy/shopSystem"
+import { canPurchase, canSell, sellQuote, sellUnitPrice, toShopListings } from "@/systems/economy/shopSystem"
 import { getItemEffect } from "@/config/shopItemEffects"
 import {
   activateConsumable,
   convertXpToCredits,
   fetchItemCatalog,
   purchaseShopItem,
+  sellInventoryItem,
   toggleItemEquipped,
 } from "@/features/inventory/services/inventoryActions"
 import { ShopPanel } from "@/features/inventory/components/ShopPanel"
@@ -29,6 +31,7 @@ export function InventoryClient() {
   const { player, user } = useHunterSession()
   const searchParams = useSearchParams()
   const manageMode = searchParams.get("mode") === "manage"
+  const sellMode = searchParams.get("mode") === "sell"
   const [catalog, setCatalog] = useState<ItemCatalogEntryContract[]>([])
   const [view, setView] = useState<View>("LOADOUT")
   const [tab, setTab] = useState<Cat>("ALL")
@@ -108,6 +111,27 @@ export function InventoryClient() {
     }
   }
 
+  async function handleSell(itemKey: string) {
+    if (busy || !user) return
+    const entry = catalogMap.get(itemKey)
+    if (!entry || !canSell(player, entry, 1)) return
+    setBusy(true)
+    setMessage(null)
+    try {
+      const quote = sellQuote(player, entry, 1)
+      await sellInventoryItem(user.id, itemKey, 1)
+      setMessage(
+        quote
+          ? `Sold for ${quote.totalCredits} credits`
+          : "Item sold"
+      )
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Sale failed")
+    } finally {
+      setBusy(false)
+    }
+  }
+
   async function handleEquip(itemKey: string) {
     if (busy || !user) return
     setBusy(true)
@@ -154,6 +178,12 @@ export function InventoryClient() {
         <p className="mb-3 text-center text-xs text-[var(--muted)]">{message}</p>
       )}
 
+      {view === "LOADOUT" && sellMode && (
+        <p className="mb-3 text-center text-xs text-[var(--reward)]">
+          Tap an item to sell for 50% of shop value. Unequip gear first.
+        </p>
+      )}
+
       {view === "SHOP" ? (
         <ShopPanel
           player={player}
@@ -191,10 +221,13 @@ export function InventoryClient() {
             <LoadoutGrid
               slots={slots}
               catalogMap={catalogMap}
+              player={player}
               manageMode={manageMode}
+              sellMode={sellMode}
               busy={busy}
               onEquip={handleEquip}
               onActivate={handleActivate}
+              onSell={handleSell}
             />
           )}
         </>
@@ -204,7 +237,17 @@ export function InventoryClient() {
         <span className="text-[var(--muted)]">
           Capacity {used} / {used + remaining}
         </span>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap justify-end gap-3">
+          <Link
+            href={sellMode ? "/inventory" : "/inventory?mode=sell"}
+            className={
+              sellMode
+                ? "text-[var(--reward)]"
+                : "text-[var(--accent-bright)] hover:underline"
+            }
+          >
+            {sellMode ? "Done selling" : "Sell"}
+          </Link>
           <Link
             href={manageMode ? "/inventory" : "/inventory?mode=manage"}
             className="text-[var(--accent-bright)] hover:underline"
@@ -223,17 +266,23 @@ export function InventoryClient() {
 function LoadoutGrid({
   slots,
   catalogMap,
+  player,
   manageMode,
+  sellMode,
   busy,
   onEquip,
   onActivate,
+  onSell,
 }: {
   slots: InventorySlotContract[]
   catalogMap: Map<string, ItemCatalogEntryContract>
+  player: PlayerContract
   manageMode: boolean
+  sellMode: boolean
   busy: boolean
   onEquip: (key: string) => void
   onActivate: (key: string) => void
+  onSell: (key: string) => void
 }) {
   return (
     <div className="grid grid-cols-4 gap-2">
@@ -241,6 +290,18 @@ function LoadoutGrid({
         const meta = catalogMap.get(s.itemKey)
         const isGear = meta?.category === "EQUIPMENT"
         const activatable = Boolean(getItemEffect(s.itemKey))
+        const unitSell = meta ? sellUnitPrice(meta) : null
+        const sellable =
+          sellMode &&
+          meta != null &&
+          unitSell != null &&
+          canSell(player, meta, 1)
+        const sellBlocked =
+          sellMode &&
+          meta != null &&
+          unitSell != null &&
+          !canSell(player, meta, 1)
+
         return (
           <ItemTile
             key={s.itemKey}
@@ -248,13 +309,16 @@ function LoadoutGrid({
             name={meta?.name ?? s.itemKey}
             quantity={s.quantity}
             equipped={s.equipped}
-            disabled={busy}
+            sellPrice={sellMode ? unitSell ?? undefined : undefined}
+            disabled={busy || (sellMode && sellBlocked)}
             onClick={
-              manageMode && isGear
-                ? () => void onEquip(s.itemKey)
-                : activatable && manageMode
-                  ? () => void onActivate(s.itemKey)
-                  : undefined
+              sellable
+                ? () => void onSell(s.itemKey)
+                : manageMode && isGear
+                  ? () => void onEquip(s.itemKey)
+                  : activatable && manageMode
+                    ? () => void onActivate(s.itemKey)
+                    : undefined
             }
           />
         )

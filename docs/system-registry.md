@@ -954,6 +954,7 @@ Responsibilities
 
 * shop listings from catalog with daily black market rotation + featured discounts
 * `canPurchase`, `purchaseQuote`, category grouping
+* `sellUnitPrice`, `sellQuote`, `canSell` (50% of catalog base; migration `015`)
 * server price validation via `effective_shop_price` (migration `011`)
 
 Dependencies
@@ -964,6 +965,7 @@ Dependencies
 RPC
 
 * `purchase_item_guarded` (rotation-aware pricing)
+* `sell_item_guarded` (inventory → credits)
 
 UI
 

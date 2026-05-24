@@ -43,6 +43,7 @@ Last updated: v1.2.3 — Updates 2405 integration
 | Session layer (`HunterSessionProvider`, `EncounterHost`, `RewardClaimOverlay`) | Yes |
 
 | Command node hub (`features/hub/ContractHub` — split menu/hunt/dispatch/sector views) | Yes |
+| Home hunter power summary (`HunterPowerSummary` → `/stats`) | Yes |
 
 | Economy (stamina, credits, brew, inventory, shop, pending rewards, boosts) | Yes — migrations 006–013; completion rewards server-authoritative |
 | Credits shop + black market rotation + XP conversion + consumable boosts | Yes (`shopSystem`, `boostSystem`, `/inventory` Loadout+Shop) |

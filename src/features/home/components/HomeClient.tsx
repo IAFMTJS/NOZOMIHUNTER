@@ -11,8 +11,10 @@ import { SynchronizationStatus } from "@/components/hunter/SynchronizationStatus
 import { SyncDisciplineChestTeaser } from "@/components/hunter/SyncDisciplineChestTeaser"
 import { NextGateForecast } from "@/components/hunter/NextGateForecast"
 import { ReadinessSummary } from "@/components/hunter/ReadinessSummary"
+import { HunterPowerSummary } from "@/components/hunter/HunterPowerSummary"
 import { StatusChip } from "@/components/ui/StatusChip"
 import { xpProgressInCurrentLevel } from "@/systems/progression/levelSystem"
+import { computeHunterPower } from "@/systems/power/hunterPowerSystem"
 import { selectSystemMessage, systemMessageSubline } from "@/systems/messaging/systemMessagingSystem"
 import { getTrackedQuest } from "@/systems/quests/contractTrackingSystem"
 export function HomeClient() {
@@ -34,6 +36,7 @@ export function HomeClient() {
     "The system is observing."
   const subline = systemMessageSubline(player)
   const tracked = getTrackedQuest(activeQuests, player)
+  const power = computeHunterPower(player)
 
   return (
     <HunterPage
@@ -64,6 +67,8 @@ export function HomeClient() {
           />
         </div>
       </div>
+
+      <HunterPowerSummary power={power} />
 
       <CorruptionWidget penalties={player.penalties} />
 

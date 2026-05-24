@@ -1,6 +1,8 @@
 import type { ItemRarity } from "@/contracts/economy-contract"
 
 export const SHOP_CONFIG = {
+  /** Fraction of catalog base price returned when selling */
+  SELL_PRICE_RATE: 0.5,
   /** Black market featured slots per day */
   ROTATION_SLOT_COUNT: 8,
   /** Max discount on featured rotation items (percent) */

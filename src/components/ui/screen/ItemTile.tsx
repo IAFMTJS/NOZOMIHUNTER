@@ -6,6 +6,7 @@ interface ItemTileProps {
   quantity: number
   equipped?: boolean
   selected?: boolean
+  sellPrice?: number
   onClick?: () => void
   disabled?: boolean
 }
@@ -16,6 +17,7 @@ export function ItemTile({
   quantity,
   equipped,
   selected,
+  sellPrice,
   onClick,
   disabled,
 }: ItemTileProps) {
@@ -65,6 +67,11 @@ export function ItemTile({
       {equipped && (
         <span className="absolute bottom-1 left-1 text-[8px] uppercase text-[var(--accent-bright)]">
           EQ
+        </span>
+      )}
+      {sellPrice != null && sellPrice > 0 && (
+        <span className="absolute bottom-1 right-1 text-[8px] tabular-nums text-[var(--reward)]">
+          +{sellPrice}
         </span>
       )}
     </Tag>

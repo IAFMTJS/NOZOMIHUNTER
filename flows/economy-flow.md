@@ -10,6 +10,7 @@
 1. `complete_quest_guarded` grants `rewards.items` via `grant_inventory_items`
 2. `loadPlayerInventory` on hydrate / after completion
 3. `/inventory` displays grid + capacity
+4. **Sell** (`?mode=sell`) — tap item → `sell_item_guarded` returns 50% of catalog `credit_price` per unit; equipped items must be unequipped first
 
 ## Brew
 
