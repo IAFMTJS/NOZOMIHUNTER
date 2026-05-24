@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { JapaneseText } from "@/components/JapaneseText"
+import { LearnerWordLine } from "@/components/ui/LearnerWordLine"
+import { learnerPartsFromExtractionRow } from "@/services/jmdict/learnerFormat"
 import { WordRarityChip } from "@/components/ui/screen/WordRarityChip"
 import { wordRarityFromId } from "@/systems/presentation/wordRarityPresentation"
 
@@ -59,13 +60,12 @@ export function WordExtractionPanel({ words, currentIndex }: WordExtractionPanel
               className="flex items-center gap-2 border-b border-[var(--border-subtle)]/50 pb-2 last:border-0"
             >
               <div className="min-w-0 flex-1">
-                <JapaneseText
-                  japanese={w.japanese}
-                  reading={w.reading}
-                  romaji={w.romaji ?? ""}
+                <LearnerWordLine
+                  parts={learnerPartsFromExtractionRow(w)}
+                  layout="stacked"
                   size="sm"
+                  audio
                 />
-                <p className="mt-0.5 truncate text-xs text-[var(--muted)]">{w.meaning}</p>
               </div>
               <WordRarityChip tier={wordRarityFromId(w.id)} />
             </li>

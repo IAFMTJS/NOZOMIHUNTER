@@ -19,6 +19,12 @@ import {
   applyStatDeltas,
   statDeltasForQuest,
 } from "@/systems/progression/playerStatProgressionSystem"
+import { learnerPartsFromEncounterWord } from "@/services/jmdict/learnerFormat"
+import { eventBus } from "@/systems/events/eventBus"
+import { buildTrainingQuest, isTrainingQuest } from "@/systems/training/trainingMissionSystem"
+import { buildQuestRewards } from "@/systems/quests/questRewardFactory"
+import { generateQuestForChannel } from "@/systems/quests/questChannelSystem"
+import type { PlayerContract } from "@/contracts/player-contract"
 
 describe("dailyQuestSystem", () => {
   it("uses deterministic daily id per player and date", () => {
@@ -145,5 +151,78 @@ describe("playerStatProgressionSystem", () => {
       deltas
     )
     expect(next.vocabulary).toBe(2)
+  })
+})
+
+describe("learnerFormat", () => {
+  it("maps encounter words to triple parts", () => {
+    const parts = learnerPartsFromEncounterWord({
+      japanese: "水",
+      reading: "みず",
+      romaji: "mizu",
+      meanings: ["water"],
+    })
+    expect(parts).toEqual({
+      japanese: "水",
+      reading: "みず",
+      romaji: "mizu",
+      meaning: "water",
+    })
+  })
+})
+
+describe("eventBus", () => {
+  it("off removes a handler", () => {
+    let count = 0
+    const handler = () => {
+      count += 1
+    }
+    eventBus.on("test_off", handler)
+    eventBus.emit("test_off")
+    expect(count).toBe(1)
+    eventBus.off("test_off", handler)
+    eventBus.emit("test_off")
+    expect(count).toBe(1)
+  })
+})
+
+describe("trainingMissionSystem", () => {
+  it("excludes training quests from contract catalog", () => {
+    const training = buildTrainingQuest("vocabulary", 3)
+    expect(isTrainingQuest(training)).toBe(true)
+    const catalog = buildContractCatalog([
+      training,
+      {
+        id: "d1",
+        type: "VOCABULARY",
+        title: "Daily",
+        description: "",
+        difficulty: "EASY",
+        narrativeTier: "DAILY",
+        rewards: { xp: 30 },
+        objectives: [],
+      },
+    ])
+    expect(catalog.dailyQuests.map((q) => q.id)).toEqual(["d1"])
+  })
+})
+
+describe("questChannelSystem", () => {
+  const stubPlayer = {
+    id: "p1",
+    level: 10,
+    progression: { unlockedSystems: ["system:listening"], unlockedDungeons: [], titles: [] },
+  } as PlayerContract
+
+  it("applies SIDE rewards on side channel", () => {
+    const quest = generateQuestForChannel("side", stubPlayer, [])
+    expect(quest.rewards.xp).toBe(buildQuestRewards(10, "SIDE").xp)
+    expect(quest.narrativeTier).toBe("SIDE")
+  })
+
+  it("SIDE reward XP is below MAIN at same level", () => {
+    const side = buildQuestRewards(10, "SIDE").xp
+    const main = buildQuestRewards(10, "MAIN").xp
+    expect(side).toBeLessThan(main)
   })
 })

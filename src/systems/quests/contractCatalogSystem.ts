@@ -1,5 +1,6 @@
 import type { QuestContract, QuestNarrativeTier } from "@/contracts/quest-contract"
 import { overlayCatalogMetadata } from "@/config/missionCatalogMetadata"
+import { isTrainingQuest } from "@/systems/training/trainingMissionSystem"
 
 export interface ContractCatalogView {
   mainStory: QuestContract | null
@@ -25,7 +26,7 @@ export function buildContractCatalog(
   completedIds: string[] = []
 ): ContractCatalogView {
   const active = quests
-    .filter((q) => !completedIds.includes(q.id))
+    .filter((q) => !completedIds.includes(q.id) && !isTrainingQuest(q))
     .map(withNarrativeTier)
   const mainQuests = active.filter((q) => inferTier(q) === "MAIN")
   const main = mainQuests[0] ?? null

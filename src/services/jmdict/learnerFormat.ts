@@ -31,3 +31,30 @@ export function formatLearnerTriple(parts: LearnerWordParts): string {
   const mid = parts.romaji || parts.reading
   return `${parts.japanese} • ${mid} • ${parts.meaning}`
 }
+
+export function learnerPartsFromEncounterWord(word: {
+  japanese: string
+  reading?: string
+  romaji?: string
+  meanings?: string[]
+  meaning?: string
+}): LearnerWordParts {
+  const reading = word.reading ?? ""
+  return {
+    japanese: word.japanese,
+    reading,
+    romaji: deriveRomajiFromReading(reading, word.romaji),
+    meaning: word.meanings?.[0] ?? word.meaning ?? "",
+  }
+}
+
+export function learnerPartsFromExtractionRow(
+  row: {
+    japanese: string
+    reading?: string
+    romaji?: string
+    meaning: string
+  }
+): LearnerWordParts {
+  return learnerPartsFromEncounterWord(row)
+}

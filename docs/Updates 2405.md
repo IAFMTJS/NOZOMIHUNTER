@@ -870,6 +870,14 @@ IMMERSION PRIORITY
 
 ## Implementation status (May 2026)
 
+### Audit closure (May 2026)
+
+- [x] Documentation + system registry sync (v1.2.3)
+- [x] Global learner display (`LearnerWordLine`, `EncounterRailWord`, encounter rails)
+- [x] Mission ops, corrupted contract detail, vocabulary pool guard
+- [x] Training catalog exclusion, SIDE rewards, `eventBus.off`, reduced motion
+- [x] `questEncounterRebuild` module split; `registerAudioHandlers` cleanup
+
 - [x] Daily vs Side quest split
 - [x] Progression softlock fixes + training channel (`/training`)
 - [x] Listening gate + mastery + skip block

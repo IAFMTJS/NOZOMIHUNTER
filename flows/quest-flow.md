@@ -1,6 +1,11 @@
 # Quest Flow
 
-Quest Generation
+Quest Generation (`requestNewQuest(channel)` — `daily` | `side` | `story`)
+↓
+Daily channel → `dailyQuestSystem` (deterministic id per UTC date, `DAILY` tier)
+Side channel → vocabulary or conversation (`SIDE` tier, SIDE rewards)
+Story / default → `generateQuestForPlayer` (MAIN-tier mix)
+Training → `/training` → `trainingMissionSystem` (hidden, not in catalog)
 ↓
 Vocabulary preparation briefing (unknown / critical words)
 ↓
@@ -10,7 +15,8 @@ Player Assignment
 ↓
 Objective Tracking
 ↓
-Encounter (vocabulary / conversation / speech — validate → mastery or resonance score)
+Encounter (vocabulary / conversation / speech / listening — validate → mastery or resonance score)
+Listening: must play audio (`heardOnce`) before submit; skip token cannot bypass listening
 ↓
 Progress Validation
 ↓
@@ -28,11 +34,12 @@ Client sync store + tutorial unlocks (non-XP fields via `apply_guarded_progressi
 ↓
 Fatigue recovery (−1 on complete, cap 0) via `penaltyGameplaySystem`
 ↓
-Save Progress (stats, penalties, remaining quests — XP already on server)
+Save Progress (stats via `playerStatProgressionSystem`, penalties, remaining quests — XP already on server)
 ↓
 Trigger Events
 
-Quest Channel (v1.2.2+): `/contracts?tab=story` → `/contracts/[id]` → **Enter dungeon** → `/prepare?questId=` → Deploy → `EncounterHost` hunt view → `GateClearedScreen` claim → `/contracts?tab=story` or `/vocabulary?session=last`
+Quest Channel (v1.2.3+): `/contracts?tab=daily|side|story` → request from ops strip (channel-aware) → `/contracts/[id]` → **Enter** → `/prepare?questId=` → Deploy → `EncounterHost` → claim → `/vocabulary?session=last`
+Corrupted encounter: `questPlayabilitySystem` → "MISSION DATA CORRUPTED" on card + contract detail
 
 Optional track: secondary **Track on home** on contract file (tracked card on `/home`).
 

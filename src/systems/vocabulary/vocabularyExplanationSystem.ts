@@ -35,8 +35,10 @@ export function generateVocabularyExplanationForWord(
 
   const threatLevel = resolveVocabularyThreat(wordId, context)
   const kanji = entry.japanese[0] ?? entry.reading[0] ?? wordId
+  const reading = entry.reading[0]
   return {
     kanji,
+    reading,
     romaji: entry.romaji,
     meaning: entry.meanings[0] ?? "—",
     context:

@@ -50,6 +50,7 @@ export function QuestPreparationBriefing({
             <VocabTile
               key={`${word.kanji}-${word.romaji}-${index}`}
               kanji={word.kanji}
+              reading={word.reading}
               romaji={word.romaji}
               meaning={word.meaning}
               threatLevel={word.threatLevel}

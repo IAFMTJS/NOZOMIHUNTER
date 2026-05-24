@@ -6,6 +6,7 @@ import {
   generateConversationQuest,
   generateQuestForPlayer,
 } from "./questGenerator"
+import { buildQuestRewards } from "./questRewardFactory"
 
 export function meetsQuestRequirements(
   quest: QuestContract,
@@ -36,14 +37,14 @@ export function generateQuestForChannel(
 
   if (channel === "side") {
     const roll = Math.random()
-    const quest =
+    const base =
       roll < 0.35
         ? generateConversationQuest(player.level)
         : generateVocabularyQuest(player.level)
     return {
-      ...quest,
+      ...base,
       narrativeTier: "SIDE" as const,
-      rewards: quest.rewards,
+      rewards: buildQuestRewards(player.level, "SIDE"),
     }
   }
 

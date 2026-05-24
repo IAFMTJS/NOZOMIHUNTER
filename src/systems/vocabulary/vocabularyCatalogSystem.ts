@@ -45,7 +45,11 @@ export function mapCuratedToCatalogEntry(
     meaning: source.meanings[0] ?? "",
     mastery: masteryRow?.mastery ?? 0,
     instability: computeWordInstability(masteryRow),
-    threat: resolveVocabularyThreat(wordId),
+    threat: resolveVocabularyThreat(
+      wordId,
+      {},
+      computeWordInstability(masteryRow)
+    ),
   }
 }
 

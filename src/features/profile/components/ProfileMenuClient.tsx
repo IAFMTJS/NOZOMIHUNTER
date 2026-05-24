@@ -20,6 +20,7 @@ import { buildProfileStats } from "@/features/profile/profileStatsPresentation"
 import { getUnlockEntry } from "@/config/unlockRegistry"
 import { profileSummary } from "@/features/profile/profilePresentation"
 import { computeReadiness } from "@/systems/readiness/readinessSystem"
+import { synchronizationLabel } from "@/systems/synchronization/synchronizationSystem"
 
 const MODULES = [
   { href: "/achievements", label: "Achievements", icon: "★", status: "Registry honors" },
@@ -98,7 +99,9 @@ export function ProfileMenuClient() {
           {player.penalties.fatigue >= 40 && (
             <li>• Neural fatigue detected ({player.penalties.fatigue}%)</li>
           )}
-          <li>• Audio synchronization stable</li>
+          <li>
+            • Audio sync: {synchronizationLabel(player.synchronization.status)}
+          </li>
           <li>• Readiness {readiness.preparationScore}% · {readiness.survivalLabel}</li>
         </ul>
         <PenaltyStatus penalties={player.penalties} />

@@ -2,7 +2,7 @@
 
 
 
-Last updated: v1.2.1 — shop & economy expansion
+Last updated: v1.2.3 — Updates 2405 integration
 
 
 
@@ -24,13 +24,19 @@ Last updated: v1.2.1 — shop & economy expansion
 
 | Auth (Google + guest + email) | Yes |
 
-| DB migrations 001–013 | Yes (013 = server completion boosts, catalog effect metadata) |
+| DB migrations 001–014 | Yes (013 = completion boosts; 014 = starter bootstrap on signup) |
 
 | Progression systems | Yes (XP via `complete_quest_guarded`; autosave uses strict `apply_guarded_progression`) |
 
 | Player store | Yes (`economy`, `inventory`, `trackedQuestId`, `pendingRewards`, `identity`, `synchronization`) |
 
-| Quest system (vocabulary + conversation + speech + listening/TTS) | Yes |
+| Quest system (vocabulary + conversation + speech + listening/TTS) | Yes — Daily / Side / Story channels (`questChannelSystem`, `dailyQuestSystem`) |
+| Training drills (`/training`) | Yes — repeatable vocab/listening (`trainingMissionSystem`) |
+| Player stat growth on completion | Yes (`playerStatProgressionSystem`) |
+| New-player bootstrap (dungeons + starter inventory) | Yes (`playerBootstrapSystem`, migration 014) |
+| Vocabulary threat index tabs | Yes — Threats / Conquered / All (`vocabularyCatalogSystem`, `memoryDecaySystem`) |
+| Global learner display + TTS | Yes (`LearnerWordLine`, `EncounterRailWord`, `WordAudioButton`, `learnerFormat`) |
+| Reactive feedback toasts | Yes (`ReactiveFeedbackHost`, `reactiveFeedbackSystem`) |
 
 | Mobile shell (`HunterShellLayout`, `BottomNav`, `(hunter)` routes) | Yes |
 
@@ -100,9 +106,11 @@ Last updated: v1.2.1 — shop & economy expansion
 
 | `/prepare` | Deploy gate (`questId` or `dungeonKey` query) |
 
-| `/vocabulary`, `/vocabulary/[id]` | Brew + word detail |
+| `/vocabulary`, `/vocabulary/[id]` | Threat index (Threats default) + word detail |
 
-| `/inventory` | Inventory grid |
+| `/training` | Repeatable stabilization drills |
+
+| `/inventory` | Inventory + Store tabs |
 
 | `/profile` | Hunter dossier menu |
 
@@ -136,7 +144,7 @@ Route group `(hunter)/layout.tsx` wraps authenticated pages in `HunterSessionPro
 
 /docs
 
-/supabase/migrations   — 001–008
+/supabase/migrations   — 001–014
 
 /src/app
 
@@ -158,7 +166,8 @@ Route group `(hunter)/layout.tsx` wraps authenticated pages in `HunterSessionPro
 
   ai, mastery, vocabulary, speech, dungeons, presentation, audio, listening,
 
-  identity, synchronization, readiness, messaging, player, power, economy, inventory, rewards
+  identity, synchronization, readiness, messaging, player, power, economy, inventory, rewards,
+  training (trainingMissionSystem)
 
 /src/config
 

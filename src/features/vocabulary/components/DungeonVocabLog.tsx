@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { JapaneseText } from "@/components/JapaneseText"
+import { LearnerWordLine } from "@/components/ui/LearnerWordLine"
+import { learnerPartsFromEncounterWord } from "@/services/jmdict/learnerFormat"
 import { Button } from "@/components/ui/Button"
 import { WordRarityChip } from "@/components/ui/screen/WordRarityChip"
 import { wordRarityFromId } from "@/systems/presentation/wordRarityPresentation"
@@ -37,13 +38,12 @@ export function DungeonVocabLog({
         {words.map((w) => (
           <li key={w.id} className="flex items-start gap-2">
             <div className="min-w-0 flex-1">
-              <JapaneseText
-                japanese={w.japanese}
-                reading={w.reading}
-                romaji={w.romaji ?? ""}
+              <LearnerWordLine
+                parts={learnerPartsFromEncounterWord(w)}
+                layout="stacked"
                 size="sm"
+                audio
               />
-              <p className="text-xs text-[var(--muted)]">{w.meaning}</p>
             </div>
             <WordRarityChip tier={wordRarityFromId(w.id)} />
           </li>

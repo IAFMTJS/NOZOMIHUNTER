@@ -27,6 +27,8 @@ export type VocabularyThreatLevel =
 /** Learner-facing word explanation shown before a quest encounter. */
 export interface VocabularyExplanationContract {
   kanji: string
+  /** Kana reading when known (prep tiles + learner display). */
+  reading?: string
   romaji: string
   meaning: string
   context: string

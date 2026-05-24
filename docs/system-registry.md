@@ -613,11 +613,12 @@ Location: `/src/systems/vocabulary/vocabularyThreatSystem.ts`
 Responsibilities
 
 * map catalog + quest context → threat tier (ROUTINE → SECTOR_CRITICAL)
+* optional instability bump (≥ 70): ROUTINE → ELEVATED, ELEVATED → CRITICAL
 * display labels for briefing UI
 
 Dependencies
 
-* `vocabularyCatalog`, `vocabularyExplanationSystem`
+* `vocabularyCatalog`, `vocabularyExplanationSystem`, `memoryDecaySystem` (instability input)
 
 ⸻
 
@@ -1093,3 +1094,177 @@ Responsibilities
 Dependencies
 
 * player store, quest/dungeon hooks, economy repository
+
+⸻
+
+dailyQuestSystem (v1.2.3)
+
+Location: `/src/systems/quests/dailyQuestSystem.ts`
+
+Responsibilities
+
+* deterministic daily contract id per player + UTC date
+* maintenance templates (stabilize, corruption trace, listening drill)
+* `DAILY` narrative tier rewards
+
+Dependencies
+
+* `questGenerator` encounter builders, `questRewardFactory`
+
+Contracts
+
+* `quest-contract.ts`
+
+⸻
+
+questChannelSystem (v1.2.3)
+
+Location: `/src/systems/quests/questChannelSystem.ts`
+
+Responsibilities
+
+* `generateQuestForChannel(daily | side | story)`
+* `meetsQuestRequirements` (minimum level)
+
+Dependencies
+
+* `dailyQuestSystem`, `questGenerator`
+
+⸻
+
+questPlayabilitySystem (v1.2.3)
+
+Location: `/src/systems/quests/questPlayabilitySystem.ts`
+
+Responsibilities
+
+* `isQuestEncounterPlayable` by quest type
+* corrupted-mission copy constant
+
+⸻
+
+questVocabularyPoolGuard (v1.2.3)
+
+Location: `/src/systems/quests/questVocabularyPoolGuard.ts`
+
+Responsibilities
+
+* `assertVocabularyPoolAvailable` before accepting vocabulary contracts
+* user-facing error when curated pool cannot satisfy word count
+
+Dependencies
+
+* `vocabularyEncounterSystem.pickVocabularyWords`, `VOCABULARY_ENCOUNTER_CONFIG`
+
+⸻
+
+questEncounterRebuild (v1.2.3)
+
+Location: `/src/systems/quests/questEncounterRebuild.ts`
+
+Responsibilities
+
+* rebuild missing encounter payloads by quest type
+* patch readings on persisted vocabulary/speech snapshots
+
+Used by
+
+* `questEncounterRepair.repairQuestSnapshot`, `mergeQuestRow`
+
+⸻
+
+playerStatProgressionSystem (v1.2.3)
+
+Location: `/src/systems/progression/playerStatProgressionSystem.ts`
+
+Responsibilities
+
+* map quest type → skill stat deltas on completion
+* apply via `completionService`
+
+Events
+
+* (none — stats saved on `triggerSave`)
+
+⸻
+
+playerBootstrapSystem (v1.2.3)
+
+Location: `/src/systems/progression/playerBootstrapSystem.ts`
+
+Responsibilities
+
+* merge default `unlocked_dungeons` on hydrate when empty
+* grant starter inventory once (`bootstrap:starter-pack`)
+
+Dependencies
+
+* `unlockSystem`, `inventoryConfig`, migration 014
+
+⸻
+
+trainingMissionSystem (v1.2.3)
+
+Location: `/src/systems/training/trainingMissionSystem.ts`
+
+Responsibilities
+
+* repeatable hidden vocab/listening drills
+* excluded from contract catalog via `isTrainingQuest`
+
+UI
+
+* `/training`
+
+⸻
+
+vocabularyCatalogSystem (v1.2.3)
+
+Location: `/src/systems/vocabulary/vocabularyCatalogSystem.ts`
+
+Responsibilities
+
+* Threats / Conquered / All tab filters and sort
+
+Dependencies
+
+* `memoryDecaySystem`, `vocabularyThreatSystem`, `brewConfig`
+
+⸻
+
+memoryDecaySystem (v1.2.3)
+
+Location: `/src/systems/vocabulary/memoryDecaySystem.ts`
+
+Responsibilities
+
+* compute word instability % from `last_seen_at` and mastery
+* instability labels for UI
+
+⸻
+
+missionOpsPresentationSystem (v1.2.3)
+
+Location: `/src/systems/presentation/missionOpsPresentationSystem.ts`
+
+Responsibilities
+
+* sector blurb, danger tier, instability/signal presentation for contract cards and detail
+
+⸻
+
+reactiveFeedbackSystem (v1.2.3)
+
+Location: `/src/systems/presentation/reactiveFeedbackSystem.ts`
+
+Responsibilities
+
+* toast payloads for XP, penalties, mistakes, level-up
+
+UI
+
+* `ReactiveFeedbackHost` in `HunterShellLayout`
+
+Events
+
+* listens: `XP_GAINED`, `PENALTY_TRIGGERED`, `ENCOUNTER_ANSWER_WRONG`, `LEVEL_UP`

@@ -15,6 +15,7 @@ import {
   generateQuestForChannel,
   meetsQuestRequirements,
 } from "@/systems/quests/questChannelSystem"
+import { assertVocabularyPoolAvailable } from "@/systems/quests/questVocabularyPoolGuard"
 import { hasActiveBoost } from "@/systems/economy/boostSystem"
 import {
   resetQuestForRetry,
@@ -72,6 +73,8 @@ export async function requestNewQuest(
   if (!meetsQuestRequirements(generated, player)) {
     throw new Error("Hunter level too low for this contract")
   }
+
+  assertVocabularyPoolAvailable(generated)
 
   if (store.activeQuests.some((q) => q.id === generated.id)) {
     return store.activeQuests.find((q) => q.id === generated.id) ?? null

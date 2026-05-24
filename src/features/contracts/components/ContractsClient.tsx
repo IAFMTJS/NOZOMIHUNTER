@@ -20,7 +20,7 @@ import { getQuestCatalogMeta } from "@/config/missionCatalogMetadata"
 import { resolveAchievements } from "@/systems/progression/achievementSystem"
 import { loadCompletedQuestSnapshots } from "@/services/supabase/playerRepository"
 import {
-  selectSystemMessage,
+  selectChannelSystemMessage,
 } from "@/systems/messaging/systemMessagingSystem"
 import { getTrackedQuest } from "@/systems/quests/contractTrackingSystem"
 import { buildMissionOpsPresentation } from "@/systems/presentation/missionOpsPresentationSystem"
@@ -66,8 +66,10 @@ export function ContractsClient() {
   const systemLine = useMemo(() => {
     if (!player) return null
     const seed = `${player.id}:${new Date().toISOString().slice(0, 10)}`
-    return selectSystemMessage({ player, activeQuests, seed })
-  }, [player, activeQuests])
+    const channel =
+      tab === "daily" || tab === "side" ? tab : undefined
+    return selectChannelSystemMessage({ player, activeQuests, seed }, channel)
+  }, [player, activeQuests, tab])
 
   if (!player) {
     return (
@@ -99,6 +101,7 @@ export function ContractsClient() {
           trackedTitle={tracked?.title}
           trackedHref={tracked ? `/contracts/${tracked.id}` : null}
           showRequest={tab === "daily" || tab === "side"}
+          trainingHref={tab === "daily" || tab === "side" ? "/training" : undefined}
           requestBusy={quest.busy}
           onRequest={() =>
             void quest.newQuest(tab === "daily" ? "daily" : "side")

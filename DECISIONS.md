@@ -51,3 +51,14 @@
 
 - Local: `http://localhost:3000/auth/callback`
 - Production: `https://<your-domain>/auth/callback`
+
+## Updates 2405 (v1.2.3)
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Daily contracts | `DAILY` tier + `daily-{playerId}-{date}` id | One maintenance slot per UTC day; separate from Side pool |
+| Side rewards | `buildQuestRewards(level, "SIDE")` on channel | Avoid MAIN-tier XP on Side requests |
+| New-player bootstrap | Hydrate merges empty `unlocked_dungeons`; migration 014 grants starter inventory | Prevent dungeon/prepare softlock |
+| Listening integrity | `heardOnce` gate; skip blocked on LISTENING | Language learning requires audio |
+| Learner display | `LearnerWordLine` + `rules/learner-display-rules.md` | Japanese + romaji + meaning everywhere |
+| Training drills | `hidden: true`, id prefix `training-`, excluded from catalog | Repeatable grind without polluting Daily tab |

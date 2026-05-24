@@ -59,7 +59,11 @@ export interface SpeechEncounterContract {
   attempts: SpeechAttemptContract[]
 }
 
-/** Listening via browser TTS — player decodes spoken Japanese. */
+/**
+ * Listening via browser TTS. UI requires `heardOnce` before submit.
+ * Correct decode updates `word_mastery` via `recordWordAnswer`.
+ * Skip tokens cannot fast-forward listening objectives.
+ */
 export interface ListeningFragmentContract {
   id: string
   japanese: string

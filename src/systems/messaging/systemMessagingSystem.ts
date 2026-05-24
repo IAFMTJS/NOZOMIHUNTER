@@ -1,5 +1,5 @@
 import type { PlayerContract } from "@/contracts/player-contract"
-import type { QuestContract } from "@/contracts/quest-contract"
+import type { QuestContract, QuestRequestChannel } from "@/contracts/quest-contract"
 import { SYSTEM_MESSAGE_POOLS } from "@/config/systemMessages"
 import { computeReadiness } from "@/systems/readiness/readinessSystem"
 import { getNextDungeonForecast } from "@/systems/dungeons/dungeonForecastSystem"
@@ -21,6 +21,25 @@ function pickFromPool(
     h = (h * 31 + seed.charCodeAt(i)) >>> 0
   }
   return pool[h % pool.length]!
+}
+
+export function selectChannelSystemMessage(
+  context: SystemMessageContext,
+  channel?: QuestRequestChannel
+): string | null {
+  if (channel === "daily") {
+    return pickFromPool(
+      SYSTEM_MESSAGE_POOLS.DAILY_MAINTENANCE,
+      `${context.seed}:daily`
+    )
+  }
+  if (channel === "side") {
+    return pickFromPool(
+      SYSTEM_MESSAGE_POOLS.SIDE_OPERATIONS,
+      `${context.seed}:side`
+    )
+  }
+  return selectSystemMessage(context)
 }
 
 export function selectSystemMessage(

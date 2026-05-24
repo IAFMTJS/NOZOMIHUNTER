@@ -3,8 +3,6 @@ import { createQuestInstanceId } from "@/systems/quests/questIds"
 import { createVocabularyEncounter } from "@/systems/quests/vocabularyEncounterSystem"
 import { createListeningEncounter } from "@/systems/dungeons/listeningEncounterSystem"
 import { PENALTY_CONFIG } from "@/config/penaltyConfig"
-import { LISTENING_QUEST_CONFIG } from "@/config/listeningQuestConfig"
-
 export type TrainingMissionKind = "vocabulary" | "listening"
 
 export function buildTrainingQuest(
@@ -27,7 +25,6 @@ export function buildTrainingQuest(
       title: "Signal Training",
       description: "Repeatable listening drill — no contract penalty.",
       difficulty,
-      narrativeTier: "DAILY",
       rewards,
       penalties: PENALTY_CONFIG.TUTORIAL_QUEST_FAILURE,
       listeningEncounter: encounter,
@@ -51,7 +48,6 @@ export function buildTrainingQuest(
     title: "Stabilization Training",
     description: "Repeatable vocabulary drill for steady progression.",
     difficulty,
-    narrativeTier: "DAILY",
     rewards,
     penalties: PENALTY_CONFIG.TUTORIAL_QUEST_FAILURE,
     vocabularyEncounter: encounter,

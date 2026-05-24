@@ -4,6 +4,7 @@ Before generating code:
 
 1. Read:
 - /rules
+- /rules/learner-display-rules.md
 - /contracts
 - /flows
 - /docs/current-architecture.md

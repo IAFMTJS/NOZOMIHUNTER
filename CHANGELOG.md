@@ -19,6 +19,18 @@
 - **Reactive feedback** — XP / penalty / glitch toasts via `ReactiveFeedbackHost`
 - **Threat visuals** — CSS pulse tiers on vocab rows; fatigue-high shell blur
 
+### Audit closure (v1.2.3 follow-up)
+- Docs/registry/flows/contracts synced; DECISIONS ADRs for daily tier and bootstrap
+- `LearnerWordLine` + TTS on vocab/speech encounters, extraction panel, dungeon log
+- `QuestFileDetail` mission ops block; corrupted contract detail + pool guard
+- Channel system messages; training link on ops strip; `eventBus.off`; reduced-motion toasts
+- Training quests excluded from catalog; SIDE reward tier fix; instability threat bump
+
+### Audit gap closure
+- `EncounterRailWord` on vocab/speech target rails; learner-display rules updated
+- `questEncounterRebuild` split from `questEncounterRepair`; registry entries for pool guard + rebuild
+- `registerAudioHandlers` returns unsubscribe; SIDE &lt; MAIN XP test
+
 ### Docs & tests
 - `rules/learner-display-rules.md`, migration `014_starter_bootstrap.sql`, `tests/updates2405Systems.test.ts`
 

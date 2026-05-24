@@ -8,6 +8,11 @@ import {
   type ReactiveToast,
 } from "@/systems/presentation/reactiveFeedbackSystem"
 
+function reducedMotionPreferred(): boolean {
+  if (typeof document === "undefined") return false
+  return document.documentElement.classList.contains("nozomi-reduced-motion")
+}
+
 export function ReactiveFeedbackHost() {
   const [toast, setToast] = useState<ReactiveToast | null>(null)
 
@@ -23,6 +28,13 @@ export function ReactiveFeedbackHost() {
     eventBus.on(GAME_EVENTS.PENALTY_TRIGGERED, onPenalty)
     eventBus.on(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, onWrong)
     eventBus.on(GAME_EVENTS.LEVEL_UP, onLevel)
+
+    return () => {
+      eventBus.off(GAME_EVENTS.XP_GAINED, onXp)
+      eventBus.off(GAME_EVENTS.PENALTY_TRIGGERED, onPenalty)
+      eventBus.off(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, onWrong)
+      eventBus.off(GAME_EVENTS.LEVEL_UP, onLevel)
+    }
   }, [])
 
   useEffect(() => {
@@ -33,9 +45,13 @@ export function ReactiveFeedbackHost() {
 
   if (!toast) return null
 
+  const staticToast = reducedMotionPreferred()
+
   return (
     <div
-      className={`pointer-events-none fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-lg border px-4 py-2 text-sm font-medium shadow-lg ${toast.className}`}
+      className={`pointer-events-none fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-lg border px-4 py-2 text-sm font-medium shadow-lg ${
+        staticToast ? "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--foreground)]" : toast.className
+      }`}
       role="status"
     >
       {toast.message}

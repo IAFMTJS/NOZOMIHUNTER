@@ -26,9 +26,20 @@ export function threatFromFrequencyTier(tier: number): VocabularyThreatLevel {
   return "ROUTINE"
 }
 
+function applyInstabilityBump(
+  level: VocabularyThreatLevel,
+  instability: number
+): VocabularyThreatLevel {
+  if (instability < 70) return level
+  if (level === "ROUTINE") return "ELEVATED"
+  if (level === "ELEVATED") return "CRITICAL"
+  return level
+}
+
 export function resolveVocabularyThreat(
   wordId: string,
-  context: ThreatContext = {}
+  context: ThreatContext = {},
+  instability = 0
 ): VocabularyThreatLevel {
   const entry = getVocabularyCatalog().byId.get(wordId)
   let level = entry
@@ -52,7 +63,7 @@ export function resolveVocabularyThreat(
     level = "ELEVATED"
   }
 
-  return level
+  return applyInstabilityBump(level, instability)
 }
 
 export function threatDisplayLabel(level: VocabularyThreatLevel): string {

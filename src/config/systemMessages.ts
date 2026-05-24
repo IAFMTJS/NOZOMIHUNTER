@@ -3,6 +3,8 @@ export type SystemMessageCategory =
   | "WARNING"
   | "ANTICIPATION"
   | "ACKNOWLEDGMENT"
+  | "DAILY_MAINTENANCE"
+  | "SIDE_OPERATIONS"
 
 export const SYSTEM_MESSAGE_POOLS: Record<SystemMessageCategory, readonly string[]> = {
   OBSERVATION: [
@@ -31,5 +33,15 @@ export const SYSTEM_MESSAGE_POOLS: Record<SystemMessageCategory, readonly string
     "Level threshold crossed. System recalibrating.",
     "Discipline chain maintained. Continue.",
     "Discipline milestone unlocked. Registry updated.",
+  ],
+  DAILY_MAINTENANCE: [
+    "Daily maintenance contracts indexed. Stabilize before sector drift.",
+    "Registry requests routine containment. Complete today's sweep.",
+    "Low-intensity contracts available — maintain operator readiness.",
+  ],
+  SIDE_OPERATIONS: [
+    "Side operations channel open. Higher risk, higher yield.",
+    "Narrative contracts detected. Proceed with caution.",
+    "Exploratory deployments authorized from this channel.",
   ],
 }

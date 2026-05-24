@@ -7,7 +7,9 @@ import { getCurrentPhrase } from "@/systems/quests/speechEncounterSystem"
 import { resolveVocabularyThreat, threatDisplayLabel } from "@/systems/vocabulary/vocabularyThreatSystem"
 import { getQuestBriefing } from "@/systems/quests/questGenerator"
 import { SPEECH_ENCOUNTER_CONFIG } from "@/config/speechEncounterConfig"
-import { JapaneseText } from "@/components/JapaneseText"
+import { EncounterRailWord } from "@/components/ui/EncounterRailWord"
+import { LearnerWordLine } from "@/components/ui/LearnerWordLine"
+import { learnerPartsFromEncounterWord } from "@/services/jmdict/learnerFormat"
 import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
@@ -99,11 +101,11 @@ export function SpeechEncounter({
             id: p.id,
             state: done ? "done" : current ? "current" : "hidden",
             content: (
-              <JapaneseText
+              <EncounterRailWord
                 japanese={p.japanese}
                 reading={p.reading}
                 romaji={p.romaji}
-                size="sm"
+                meanings={p.meanings}
               />
             ),
           }
@@ -120,11 +122,17 @@ export function SpeechEncounter({
             THREAT · {threatDisplayLabel(resolveVocabularyThreat(phrase.id))}
           </p>
           <div className="mb-6 rounded-lg border border-[var(--border-accent)] bg-[var(--accent-dim)] px-4 py-6 text-center">
-            <JapaneseText
-              japanese={phrase.japanese}
-              reading={phrase.reading}
-              romaji={phrase.romaji}
+            <LearnerWordLine
+              parts={learnerPartsFromEncounterWord({
+                japanese: phrase.japanese,
+                reading: phrase.reading,
+                romaji: phrase.romaji,
+                meanings: phrase.meanings,
+              })}
+              layout="stacked"
               size="lg"
+              audio
+              className="justify-center"
             />
           </div>
 

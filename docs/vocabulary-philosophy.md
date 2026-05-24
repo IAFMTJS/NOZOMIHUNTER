@@ -68,3 +68,11 @@ Not:
 - classroom study
 
 Human brains learn surprisingly well when they think they're surviving fictional danger. Very normal species behavior.
+
+---
+
+# Display and audio (v1.2.3)
+
+Every learner-facing word surface shows **Japanese + reading + romaji + meaning** via `LearnerWordLine` (see `rules/learner-display-rules.md`).
+
+Tap-to-play uses **Web Speech API** (`WordAudioButton` / `useJapaneseTts`). Quality and voice availability depend on the browser and OS — there are no prerecorded audio assets in v1.2.3.

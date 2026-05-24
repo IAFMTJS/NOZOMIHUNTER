@@ -8,6 +8,7 @@ interface QuestOpsStripProps {
   trackedTitle?: string | null
   trackedHref?: string | null
   showRequest: boolean
+  trainingHref?: string
   requestBusy?: boolean
   onRequest?: () => void
 }
@@ -18,6 +19,7 @@ export function QuestOpsStrip({
   trackedTitle,
   trackedHref,
   showRequest,
+  trainingHref,
   requestBusy,
   onRequest,
 }: QuestOpsStripProps) {
@@ -33,6 +35,14 @@ export function QuestOpsStrip({
           className="min-w-0 flex-1 truncate rounded-lg border border-[var(--accent)]/30 bg-[var(--accent-dim)] px-2 py-1 text-[10px] uppercase tracking-wider text-[var(--accent-bright)]"
         >
           Tracked · {trackedTitle}
+        </Link>
+      )}
+      {trainingHref && (
+        <Link
+          href={trainingHref}
+          className="text-[10px] uppercase tracking-wider text-[var(--accent-bright)] hover:underline"
+        >
+          Training
         </Link>
       )}
       {showRequest && onRequest && (

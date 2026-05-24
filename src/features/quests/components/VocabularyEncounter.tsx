@@ -6,7 +6,9 @@ import { getCurrentWord } from "@/systems/quests/vocabularyEncounterSystem"
 import { resolveVocabularyThreat, threatDisplayLabel } from "@/systems/vocabulary/vocabularyThreatSystem"
 import { getQuestBriefing } from "@/systems/quests/questGenerator"
 import { VOCABULARY_ENCOUNTER_CONFIG } from "@/config/vocabularyEncounterConfig"
-import { JapaneseText } from "@/components/JapaneseText"
+import { EncounterRailWord } from "@/components/ui/EncounterRailWord"
+import { LearnerWordLine } from "@/components/ui/LearnerWordLine"
+import { learnerPartsFromEncounterWord } from "@/services/jmdict/learnerFormat"
 import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
@@ -89,11 +91,11 @@ export function VocabularyEncounter({
             id: w.id,
             state: done ? "done" : current ? "current" : "hidden",
             content: (
-              <JapaneseText
+              <EncounterRailWord
                 japanese={w.japanese}
                 reading={w.reading}
                 romaji={w.romaji}
-                size="sm"
+                meanings={w.meanings}
               />
             ),
           }
@@ -109,11 +111,17 @@ export function VocabularyEncounter({
             THREAT · {threatDisplayLabel(resolveVocabularyThreat(word.id))}
           </p>
           <div className="mb-6 rounded-lg border border-[var(--border-accent)] bg-[var(--accent-dim)] px-4 py-6 text-center">
-            <JapaneseText
-              japanese={word.japanese}
-              reading={word.reading}
-              romaji={word.romaji}
+            <LearnerWordLine
+              parts={learnerPartsFromEncounterWord({
+                japanese: word.japanese,
+                reading: word.reading,
+                romaji: word.romaji,
+                meanings: word.meanings,
+              })}
+              layout="stacked"
               size="lg"
+              audio
+              className="justify-center"
             />
           </div>
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">

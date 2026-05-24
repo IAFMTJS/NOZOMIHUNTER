@@ -11,6 +11,12 @@ class EventBus {
     this.listeners[event].push(handler)
   }
 
+  off(event: string, handler: EventHandler) {
+    const handlers = this.listeners[event]
+    if (!handlers) return
+    this.listeners[event] = handlers.filter((h) => h !== handler)
+  }
+
   emit(event: string, payload?: unknown) {
     const handlers = this.listeners[event]
 

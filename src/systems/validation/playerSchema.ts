@@ -62,4 +62,42 @@ export const QuestSnapshotSchema = z.object({
       revealAt: z.number().optional(),
     })
   ),
+  vocabularyEncounter: z
+    .object({ words: z.array(z.object({ id: z.string() })) })
+    .optional(),
+  conversationEncounter: z
+    .object({ messages: z.array(z.object({ id: z.string() })) })
+    .optional(),
+  speechEncounter: z
+    .object({ phrases: z.array(z.object({ id: z.string() })) })
+    .optional(),
+  listeningEncounter: z
+    .object({ fragments: z.array(z.object({ id: z.string() })) })
+    .optional(),
+}).superRefine((quest, ctx) => {
+  const t = quest.type
+  if (t === "VOCABULARY" && !(quest.vocabularyEncounter?.words.length ?? 0)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "VOCABULARY quest missing vocabularyEncounter.words",
+    })
+  }
+  if (t === "CONVERSATION" && !(quest.conversationEncounter?.messages.length ?? 0)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "CONVERSATION quest missing conversationEncounter.messages",
+    })
+  }
+  if (t === "SPEECH" && !(quest.speechEncounter?.phrases.length ?? 0)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "SPEECH quest missing speechEncounter.phrases",
+    })
+  }
+  if (t === "LISTENING" && !(quest.listeningEncounter?.fragments.length ?? 0)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "LISTENING quest missing listeningEncounter.fragments",
+    })
+  }
 })

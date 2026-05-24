@@ -7,8 +7,10 @@ import type {
 import type { DungeonRunContract } from "./dungeon-contract"
 import type { QuestVocabularyPreparationContract } from "./vocabulary-contract"
 
+/** MAIN = story; SIDE = narrative contracts; DAILY = maintenance slot (UTC date id). */
 export type QuestNarrativeTier = "MAIN" | "SIDE" | "DAILY"
 
+/** Which contract board channel requested generation. */
 export type QuestRequestChannel = "daily" | "side" | "story"
 
 export interface QuestContract {

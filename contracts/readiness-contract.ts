@@ -10,6 +10,10 @@ export interface ReadinessFactorContract {
   impact: number
 }
 
+/**
+ * Deploy checklist. `skillLoadout` is satisfied when tutorial is complete,
+ * player level ≥ 2, or any skill stat (vocabulary/listening/speaking/grammar) ≥ 1.
+ */
 export interface PreparationChecklistContract {
   equipment: boolean
   skillLoadout: boolean
