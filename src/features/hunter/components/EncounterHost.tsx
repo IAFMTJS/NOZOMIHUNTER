@@ -76,6 +76,9 @@ export function EncounterHost() {
         onSubmitListening={(questId, answer) =>
           quest.submitListening(questId, answer)
         }
+        onGameModeAction={(questId, action, payload) =>
+          quest.submitGameModeAction(questId, action, payload)
+        }
         onAbandon={quest.abandon}
         onDismissPreparation={quest.dismissPreparation}
       />

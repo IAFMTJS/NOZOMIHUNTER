@@ -1,26 +1,38 @@
 # NOZOMI Core Gameplay Loop
 
-## Primary Gameplay Loop
+## Primary Gameplay Loop (mode-aware)
 
 Login
 ↓
-Receive Quest
+Operational feed / contract board (live system state)
 ↓
-Enter Encounter
+Choose mode by emotion (training · quest · dungeon · contract · vocabulary)
 ↓
-Use Japanese
+Prepare (readiness, vocabulary briefing when required)
 ↓
-Complete Objective
+Enter encounter via `GameModeId` (not generic quiz)
 ↓
-Gain XP
+Use Japanese in mode-specific mechanics
 ↓
-Level Up
+Complete objective (pressure, corruption, timers vary by mode)
 ↓
-Unlock Systems
+Gain XP + mode-appropriate rewards
 ↓
-Access Harder Content
+Level up / unlock modes / entity capture
+↓
+Access harder content + live sector events
 ↓
 Repeat
+
+---
+
+# Invisible Learning Principle
+
+The player should never consciously feel: *"I am studying Japanese."*
+
+The player should feel: *"I am surviving sectors, decoding transmissions, and evolving through dangerous encounters."*
+
+Learning is contextualized inside each mode — not exposed as lessons.
 
 ---
 
@@ -32,6 +44,7 @@ The gameplay loop exists to reinforce:
 - consistency
 - tension
 - long-term progression
+- **mechanical differentiation** (each mode feels unique)
 
 The player should always feel:
 - forward momentum
@@ -44,11 +57,11 @@ The player should always feel:
 # Progression Structure
 
 The player progresses through:
-- vocabulary mastery
-- conversation confidence
-- listening comprehension
-- dungeon survival
-- raid coordination
+- vocabulary mastery (entity capture: Unknown → Stabilized → Mastered)
+- conversation confidence (relationship vectors in Deep Cover)
+- listening comprehension (signal calibration, lost transmission)
+- dungeon survival (corruption run, void pursuit, roguelike sectors)
+- raid coordination (future: Dual Operator)
 
 Language improvement IS character progression.
 
@@ -83,18 +96,22 @@ But:
 - never feel hopeless
 - never feel punished unfairly
 
+Mode-specific pressure (panic timers, pursuit distance, corruption hallucinations) must remain fair and purposeful.
+
 ---
 
 # Replayability Philosophy
 
 Replayability comes from:
+- distinct game modes (`gameModeRegistry`)
 - adaptive systems
 - hidden events
-- scaling dungeons
+- scaling dungeons + roguelike modifiers
 - relationship systems
 - evolving mastery
+- live sector events
 
-Not from repetitive grinding.
+Not from repetitive grinding or reskinned exercises.
 
 ---
 
@@ -103,23 +120,24 @@ Not from repetitive grinding.
 Priority order:
 1. gameplay clarity
 2. immersion
-3. progression
-4. tension
-5. visual polish
+3. mechanical differentiation
+4. progression
+5. tension
+6. visual polish
 
 ---
 
 # System Integration
 
-Every major system must reinforce the core loop.
+Every major system must reinforce the core loop via `GameModeId` routing:
 
-Examples:
-- AI systems reinforce immersion
-- penalties reinforce tension
-- dungeons reinforce mastery
-- progression reinforces motivation
+- Training → discipline drills (signal, kanji, memory, shadow echo)
+- Quests → environmental curiosity (terminal breach, ghost interrogation, lost transmission)
+- Dungeons → survival pressure (corruption run, void pursuit, roguelike)
+- Contracts → social tension (deep cover, panic channel)
+- Vocabulary → discovery (entity hunt, semantic network)
 
-Any feature that does not strengthen the loop is considered feature creep.
+Any feature that does not strengthen the loop or blur into another mode's identity is feature creep.
 
 ---
 
@@ -133,7 +151,13 @@ The player journey should evolve from:
 → obsession
 
 The player should eventually feel:
-“I became stronger because I actually improved.”
+"I became stronger because I actually improved."
 
 Not:
-“The app gave me dopamine stickers.”
+"The app gave me dopamine stickers."
+
+---
+
+# Reference
+
+North star: [`GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md`](GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md)

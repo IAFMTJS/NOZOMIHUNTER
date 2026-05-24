@@ -13,6 +13,9 @@ let ctx: AudioContext | null = null
 let muted = false
 let corruptionLoop: OscillatorNode | null = null
 let corruptionGain: GainNode | null = null
+let ambienceLoop: OscillatorNode | null = null
+let ambienceGain: GainNode | null = null
+let activeAmbience: "sector" | "pursuit" | "corruption" | null = null
 
 function readMuted(): boolean {
   if (typeof window === "undefined") return false
@@ -56,7 +59,10 @@ export function setAudioMuted(value: boolean): void {
       /* ignore */
     }
   }
-  if (value) stopCorruptionHum()
+  if (value) {
+    stopCorruptionHum()
+    stopAmbience()
+  }
 }
 
 function tone(
@@ -145,4 +151,55 @@ export function stopCorruptionHum(): void {
   corruptionGain.disconnect()
   corruptionLoop = null
   corruptionGain = null
+}
+
+export type AmbienceCue = "sector" | "pursuit" | "corruption"
+
+const AMBIENCE_PROFILE: Record<
+  AmbienceCue,
+  { frequency: number; type: OscillatorType; gain: number }
+> = {
+  sector: { frequency: 88, type: "triangle", gain: 0.008 },
+  pursuit: { frequency: 64, type: "sawtooth", gain: 0.01 },
+  corruption: { frequency: 48, type: "sawtooth", gain: 0.012 },
+}
+
+export function playAmbience(cue: AmbienceCue): void {
+  if (muted) return
+  if (activeAmbience === cue && ambienceLoop) return
+  stopAmbience()
+
+  const c = getContext()
+  if (!c) return
+  unlockAudio()
+
+  const profile = AMBIENCE_PROFILE[cue]
+  const osc = c.createOscillator()
+  const g = c.createGain()
+  osc.type = profile.type
+  osc.frequency.value = profile.frequency
+  g.gain.value = profile.gain
+  osc.connect(g)
+  g.connect(c.destination)
+  osc.start()
+  ambienceLoop = osc
+  ambienceGain = g
+  activeAmbience = cue
+}
+
+export function stopAmbience(): void {
+  if (!ambienceLoop || !ambienceGain) {
+    activeAmbience = null
+    return
+  }
+  try {
+    ambienceLoop.stop()
+  } catch {
+    /* already stopped */
+  }
+  ambienceLoop.disconnect()
+  ambienceGain.disconnect()
+  ambienceLoop = null
+  ambienceGain = null
+  activeAmbience = null
 }

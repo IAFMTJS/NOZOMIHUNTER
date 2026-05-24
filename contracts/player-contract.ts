@@ -92,4 +92,6 @@ export interface PlayerProgressionContract {
   unlockedDungeons: string[]
   unlockedSystems: string[]
   titles: string[]
+  /** Learner assist visibility — FULL shows romaji/meanings; BLACKOUT hides assists. */
+  assistLevel?: import("./game-mode-contract").AssistLevel
 }

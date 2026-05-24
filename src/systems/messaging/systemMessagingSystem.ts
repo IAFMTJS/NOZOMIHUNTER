@@ -1,6 +1,7 @@
 import type { PlayerContract } from "@/contracts/player-contract"
 import type { QuestContract, QuestRequestChannel } from "@/contracts/quest-contract"
 import { SYSTEM_MESSAGE_POOLS } from "@/config/systemMessages"
+import { CORRUPTION_EXTREME_THRESHOLD } from "@/systems/presentation/penaltyPresentationSystem"
 import { computeReadiness } from "@/systems/readiness/readinessSystem"
 import { getNextDungeonForecast } from "@/systems/dungeons/dungeonForecastSystem"
 import { synchronizationLabel } from "@/systems/synchronization/synchronizationSystem"
@@ -56,6 +57,10 @@ export function selectSystemMessage(
 
   if (sync.status === "BROKEN") {
     return "Discipline chain broken. Redeploy to re-establish synchronization."
+  }
+
+  if (player.penalties.corruption >= CORRUPTION_EXTREME_THRESHOLD) {
+    return "Corruption critical. Extreme presentation tier active."
   }
 
   if (player.penalties.corruption >= 50) {

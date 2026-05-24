@@ -56,6 +56,9 @@ This psychological distinction is critical.
 | Encounter presentation | Shipped (Transmit, listening waveform, focus shell) | — |
 | Navigation immersion | Shipped (Missions nav label, transition lines) | — |
 | System terminology consistency | Shipped (terminology.md + nav pass) | — |
+| Mechanical differentiation | In progress — [`GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md`](GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md) | **High** |
+| Live operational home network | Partial (status dashboard; no alert feed) | High |
+| Mode-specific encounter UIs | In progress (`gameModeRegistry`, `EncounterRouter`) | High |
 
 ---
 

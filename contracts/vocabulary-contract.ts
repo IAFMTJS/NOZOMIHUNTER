@@ -43,3 +43,23 @@ export interface QuestVocabularyPreparationContract {
   newVocabulary: VocabularyExplanationContract[]
   briefingDismissed: boolean
 }
+
+export type EntityCaptureState = "UNKNOWN" | "STABILIZED" | "MASTERED"
+
+/** Entity-hunt display metadata for Threat Index / vocabulary detail. */
+export interface WordEntityMetadata {
+  wordId: string
+  captureState: EntityCaptureState
+  encounterSource?: string
+  dangerClassification?: VocabularyThreatLevel
+  corruptionAffinity?: number
+  linkedSectors?: string[]
+  loreRef?: string
+  exampleTransmission?: string
+  /** UI headline on entity cards */
+  displayTitle?: string
+  /** Short system tag (e.g. "Anomaly", "Stabilized entity") */
+  displayTag?: string
+  /** Flavor line under the word */
+  displaySubtitle?: string
+}

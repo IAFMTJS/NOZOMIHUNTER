@@ -237,3 +237,38 @@ This is not a typical mobile game.
 
 Avoid:
 - casino
+
+---
+
+# System Differentiation
+
+Every major mode (training, quests, dungeons, contracts, vocabulary) must trigger a **different emotion** and use **different mechanics**.
+
+| System | Primary emotion |
+|--------|-----------------|
+| Training | Discipline |
+| Quests | Curiosity |
+| Dungeons | Stress / Survival |
+| Contracts | Social pressure |
+| Vocabulary | Discovery |
+| Bosses | Spectacle |
+| Corruption | Anxiety |
+| Loot | Dopamine |
+| Mastery | Pride |
+
+Language learning lives **underneath** the systems, not above them. Disguise learning as survival, recall as combat, listening as intelligence analysis.
+
+## Mode identity test
+
+Before shipping any mechanic, ask:
+
+> Would this still feel fun without the educational layer?
+
+If not, the mechanic is weak. Prefer tension, immersion, discovery, and mastery over answer→XP repetition.
+
+## Naming
+
+- `/vocabulary` UI label **Threat Index** = catalog tabs (Threats / Conquered / All)
+- Semantic-linking **game mode** in code = `SEMANTIC_NETWORK` (not "Threat Index")
+
+See [`docs/GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md`](../docs/GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md).

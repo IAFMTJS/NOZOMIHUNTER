@@ -3,13 +3,12 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import type { QuestContract } from "@/contracts/quest-contract"
+import type { PlayerContract } from "@/contracts/player-contract"
 import { PreparationScoreBar } from "@/components/preparation/PreparationScoreBar"
 import { Panel } from "@/components/ui/Panel"
 import { StatusChip } from "@/components/ui/StatusChip"
-import { VocabularyEncounter } from "./VocabularyEncounter"
-import { ConversationEncounter } from "@/features/conversation/components/ConversationEncounter"
-import { SpeechEncounter } from "@/features/speech/components/SpeechEncounter"
-import { ListeningEncounter } from "@/features/dungeons/components/ListeningEncounter"
+import { EncounterRouter } from "@/features/encounters/EncounterRouter"
+import { resolveQuestGameMode } from "@/systems/gameModes/gameModeSystem"
 import { QuestPreparationGate } from "./QuestPreparationGate"
 import { hasActivePreparationPhase } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
 import { canCompleteQuest } from "@/systems/quests/questValidator"
@@ -19,10 +18,6 @@ import {
 } from "@/systems/quests/questPlayabilitySystem"
 import { EncounterFocusShell } from "@/components/ui/EncounterFocusShell"
 import { QuestContractActions } from "./QuestContractActions"
-import {
-  EncounterFeedback,
-  feedbackToneFromMessage,
-} from "@/components/ui/EncounterFeedback"
 import { MOTION } from "@/config/motionPresets"
 
 interface QuestCardProps {
@@ -51,6 +46,8 @@ interface QuestCardProps {
     correct: boolean
     encounterFailed: boolean
   } | null>
+  onGameModeAction?: (action: string, payload?: string) => Promise<void>
+  player?: PlayerContract | null
   onAbandon?: () => Promise<void>
   onDismissPreparation?: (questId: string) => void | Promise<void>
   disabled?: boolean
@@ -68,7 +65,9 @@ export function QuestCard({
   onSendMessage,
   onSubmitSpeech,
   onSubmitListening,
+  onGameModeAction,
   onAbandon,
+  player,
   onDismissPreparation,
   disabled,
   encounterClassName = "",
@@ -80,6 +79,7 @@ export function QuestCard({
   const [flash, setFlash] = useState<"success" | "danger" | null>(null)
 
   const canComplete = canCompleteQuest(quest)
+  const mode = resolveQuestGameMode(quest)
 
   const hasWords = (quest.vocabularyEncounter?.words.length ?? 0) > 0
   const hasConversation = (quest.conversationEncounter?.messages.length ?? 0) > 0
@@ -94,7 +94,8 @@ export function QuestCard({
     quest.type === "VOCABULARY" ||
     quest.type === "CONVERSATION" ||
     quest.type === "SPEECH" ||
-    quest.type === "LISTENING"
+    quest.type === "LISTENING" ||
+    mode !== "STANDARD"
   const dataCorrupted = needsEncounter && !isQuestEncounterPlayable(quest)
 
   const prep = quest.vocabularyPreparation
@@ -117,30 +118,23 @@ export function QuestCard({
   }
 
   async function handleSubmit(answer: string) {
-    if (!onSubmitAnswer) return
+    if (!onSubmitAnswer) return null
     const result = await onSubmitAnswer(answer)
-    if (!result) return
-
+    if (!result) return null
     if (result.encounterFailed) {
       setLastResult("Contract failed. Penalties applied.")
       pulseFlash("danger")
-      return
+      return result
     }
-
-    if (result.correct) {
-      setLastResult("Lock confirmed.")
-      pulseFlash("success")
-    } else {
-      setLastResult("Signal degraded. The system is watching.")
-      pulseFlash("danger")
-    }
+    setLastResult(result.correct ? "Lock confirmed." : "Signal degraded.")
+    pulseFlash(result.correct ? "success" : "danger")
+    return result
   }
 
   async function handleSend(message: string) {
     if (!onSendMessage) return null
     const result = await onSendMessage(message)
     if (!result) return null
-
     if (result.encounterFailed) {
       setLastResult("Contract failed. Penalties applied.")
       pulseFlash("danger")
@@ -155,134 +149,93 @@ export function QuestCard({
   }
 
   async function handleListening(answer: string) {
-    if (!onSubmitListening) return
+    if (!onSubmitListening) return null
     const result = await onSubmitListening(answer)
-    if (!result) return
-
+    if (!result) return null
     if (result.encounterFailed) {
       setLastResult("Contract failed. Penalties applied.")
       pulseFlash("danger")
-      return
+      return result
     }
-
-    if (result.correct) {
-      setLastResult("Transmission decoded.")
-      pulseFlash("success")
-    } else {
-      setLastResult("Signal mismatch. Listen again.")
-      pulseFlash("danger")
-    }
+    setLastResult(result.correct ? "Transmission decoded." : "Signal mismatch.")
+    pulseFlash(result.correct ? "success" : "danger")
+    return result
   }
 
   async function handleSpeech(transcript: string, responseTimeMs: number) {
-    if (!onSubmitSpeech) return
+    if (!onSubmitSpeech) return null
     const result = await onSubmitSpeech(transcript, responseTimeMs)
-    if (!result) return
-
+    if (!result) return null
     if (result.encounterFailed) {
       setLastResult("Contract failed. Penalties applied.")
       pulseFlash("danger")
-      return
+      return result
     }
+    setLastResult(
+      result.passed
+        ? `${result.feedback} (resonance ${result.compositeScore})`
+        : result.feedback
+    )
+    pulseFlash(result.passed ? "success" : "danger")
+    return result
+  }
 
-    if (result.passed) {
-      setLastResult(`${result.feedback} (resonance ${result.compositeScore})`)
-      pulseFlash("success")
-    } else {
-      setLastResult(result.feedback)
-      pulseFlash("danger")
-    }
+  async function handleModeAction(action: string, payload?: string) {
+    if (!onGameModeAction) return
+    await onGameModeAction(action, payload)
   }
 
   const hasEncounterUi =
+    mode !== "STANDARD" ||
     isVocabularyEncounter ||
     isConversationEncounter ||
     isSpeechEncounter ||
     isListeningEncounter
 
-  const contractActions =
-    !inPreparationPhase ? (
-      <QuestContractActions
-        rewardXp={quest.rewards.xp}
-        disabled={disabled}
-        canComplete={!!canComplete}
-        showProgress={!hasEncounterUi}
-        onProgress={onProgress}
-        onComplete={onComplete}
-      />
-    ) : null
+  const contractActions = !inPreparationPhase ? (
+    <QuestContractActions
+      rewardXp={quest.rewards.xp}
+      disabled={disabled}
+      canComplete={!!canComplete}
+      showProgress={!hasEncounterUi}
+      onProgress={onProgress}
+      onComplete={onComplete}
+    />
+  ) : null
 
-  const encounterBlock =
-    isVocabularyEncounter && onSubmitAnswer && onAbandon ? (
-      <>
-        <VocabularyEncounter
-          quest={quest}
-          disabled={disabled}
-          onSubmit={handleSubmit}
-          onAbandon={onAbandon}
-          hideLegacyBriefing={inPreparationPhase}
-          flashClassName={flashClass}
-        />
-        <EncounterFeedback
-          message={lastResult}
-          tone={lastResult ? feedbackToneFromMessage(lastResult) : "neutral"}
-        />
-      </>
-    ) : isSpeechEncounter && onSubmitSpeech && onAbandon ? (
-      <>
-        <SpeechEncounter
-          quest={quest}
-          disabled={disabled}
-          onSubmit={handleSpeech}
-          onAbandon={onAbandon}
-          hideLegacyBriefing={inPreparationPhase}
-        />
-        <EncounterFeedback
-          message={lastResult}
-          tone={lastResult ? feedbackToneFromMessage(lastResult) : "neutral"}
-        />
-      </>
-    ) : isListeningEncounter && onSubmitListening && onAbandon ? (
-      <>
-        <ListeningEncounter
-          quest={quest}
-          disabled={disabled}
-          maxWrongAttempts={maxWrongAttempts}
-          maxReplays={maxListeningReplays}
-          signalDegraded={signalDegraded}
-          focusMode
-          onSubmit={handleListening}
-          onAbandon={onAbandon}
-          flashClassName={flashClass}
-        />
-        <EncounterFeedback
-          message={lastResult}
-          tone={lastResult ? feedbackToneFromMessage(lastResult) : "neutral"}
-        />
-      </>
-    ) : isConversationEncounter && onSendMessage && onAbandon ? (
-      <ConversationEncounter
-        quest={quest}
-        disabled={disabled}
-        onSend={handleSend}
-        onAbandon={onAbandon}
-        flashClassName={flashClass}
-      />
-    ) : (
-      <Panel tone="inset" className="mb-3 !p-3">
-        <p className="text-sm text-[var(--warning)]">
-          {dataCorrupted
-            ? MISSION_DATA_CORRUPTED_COPY
-            : "Encounter data is loading — refresh the contract board."}
-        </p>
-      </Panel>
-    )
+  const encounterBlock = dataCorrupted ? (
+    <Panel tone="inset" className="mb-3 !p-3">
+      <p className="text-sm text-[var(--warning)]">{MISSION_DATA_CORRUPTED_COPY}</p>
+    </Panel>
+  ) : (
+    <EncounterRouter
+      quest={quest}
+      player={player}
+      disabled={disabled}
+      maxWrongAttempts={maxWrongAttempts}
+      maxListeningReplays={maxListeningReplays}
+      signalDegraded={signalDegraded}
+      hideLegacyBriefing={inPreparationPhase}
+      flashClassName={flashClass}
+      lastResult={lastResult}
+      onSubmitAnswer={onSubmitAnswer ? handleSubmit : undefined}
+      onSendMessage={onSendMessage ? handleSend : undefined}
+      onSubmitSpeech={onSubmitSpeech ? handleSpeech : undefined}
+      onSubmitListening={onSubmitListening ? handleListening : undefined}
+      onModeAction={onGameModeAction ? handleModeAction : undefined}
+      onAbandon={onAbandon}
+    />
+  )
 
   return (
     <motion.div
       layout
       transition={MOTION.panel}
-      className={canComplete && !inPreparationPhase ? "nozomi-contract-ready rounded-[var(--radius-panel)]" : ""}
+      className={
+        canComplete && !inPreparationPhase
+          ? "nozomi-contract-ready rounded-[var(--radius-panel)]"
+          : ""
+      }
     >
       <Panel
         as="article"
@@ -303,15 +256,17 @@ export function QuestCard({
               </span>
             )}
           </h3>
-          <StatusChip label={quest.type} tone="neutral" />
+          <div className="flex gap-2">
+            {mode !== "STANDARD" && (
+              <StatusChip label={mode.replace(/_/g, " ")} tone="accent" />
+            )}
+            <StatusChip label={quest.type} tone="neutral" />
+          </div>
         </div>
 
         {showPrepBadge && prep && !inPreparationPhase && (
           <div className="mb-4">
-            <PreparationScoreBar
-              score={prep.preparationScore}
-              label="Contract readiness"
-            />
+            <PreparationScoreBar score={prep.preparationScore} label="Contract readiness" />
           </div>
         )}
 
@@ -324,13 +279,7 @@ export function QuestCard({
         >
           <EncounterFocusShell
             title={quest.title}
-            enabled={
-              !inPreparationPhase &&
-            (isVocabularyEncounter ||
-              isConversationEncounter ||
-              isSpeechEncounter ||
-              isListeningEncounter)
-            }
+            enabled={!inPreparationPhase && hasEncounterUi}
             autoFocus
             encounterClassName={encounterClassName}
             footer={hasEncounterUi ? contractActions ?? undefined : undefined}

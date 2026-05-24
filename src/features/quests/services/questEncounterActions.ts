@@ -18,6 +18,41 @@ import { usePlayerStore } from "@/stores/usePlayerStore"
 import { updateUserQuest } from "@/services/supabase/playerRepository"
 import { failQuestForPlayer } from "./questLifecycle"
 import { persistQuestState } from "./questPersistence"
+import { applyGameModeAction } from "@/systems/gameModes/gameModeEncounterSystem"
+import { recordGameModeAnalytics } from "@/systems/analytics/gameModeAnalytics"
+
+export async function submitGameModeActionForQuest(
+  userId: string,
+  questId: string,
+  action: string,
+  payload?: string
+): Promise<{ correct: boolean; encounterFailed: boolean; message?: string } | null> {
+  const store = usePlayerStore.getState()
+  const quest = store.activeQuests.find((q) => q.id === questId)
+  if (!quest || !store.player) return null
+
+  const result = applyGameModeAction(quest, action, payload)
+  store.updateQuest(result.quest)
+  await updateUserQuest(userId, result.quest)
+
+  recordGameModeAnalytics("ENCOUNTER_ANSWER_CORRECT", result.quest.gameMode, {
+    action,
+    correct: result.correct,
+  })
+
+  const complete = result.quest.objectives.every((o) => o.completed)
+  if (complete) {
+    await persistQuestState()
+  } else {
+    await persistQuestState()
+  }
+
+  return {
+    correct: result.correct ?? false,
+    encounterFailed: result.encounterFailed ?? false,
+    message: result.message,
+  }
+}
 
 export async function submitVocabularyAnswerForQuest(
   userId: string,

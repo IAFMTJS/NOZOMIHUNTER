@@ -3,6 +3,8 @@ import type { DungeonRunContract } from "@/contracts/dungeon-contract"
 import { getDungeonDefinition, DUNGEON_CONFIG } from "@/config/dungeonConfig"
 import { generateDungeon } from "./dungeonGenerator"
 import { createQuestInstanceId } from "@/systems/quests/questIds"
+import { rollDungeonModifiers } from "./dungeonModifierSystem"
+import { initPursuitDistance } from "./explorationSystem"
 
 function difficultyForLevel(level: number): QuestDifficulty {
   if (level < 5) return "EASY"
@@ -22,6 +24,9 @@ export function generateDungeonQuest(
   const dungeon = generateDungeon(playerLevel, definition)
   const steps = totalDungeonSteps(dungeon.encounters.length)
 
+  const mode = definition.dungeonMode ?? "STANDARD"
+  const modifierSeed = `${dungeonKey}:${Date.now()}`
+
   const run: DungeonRunContract = {
     dungeon,
     machineState: "PREPARATION",
@@ -29,6 +34,13 @@ export function generateDungeonQuest(
     activeType: null,
     encounterFailures: 0,
     bossPhase: 0,
+    dungeonMode: mode,
+    modifiers:
+      mode === "ROGUELIKE_SECTOR"
+        ? rollDungeonModifiers(modifierSeed)
+        : undefined,
+    pursuitDistance: mode === "VOID_PURSUIT" ? initPursuitDistance() : undefined,
+    endlessSectorCount: mode === "CORRUPTION_RUN" ? 0 : undefined,
   }
 
   return {

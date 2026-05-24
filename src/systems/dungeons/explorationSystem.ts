@@ -11,6 +11,10 @@ export interface AdvanceExplorationResult {
   readyToEngage: boolean
 }
 
+export const PURSUIT_START_DISTANCE = 72
+export const PURSUIT_CAUGHT_THRESHOLD = 12
+export const PURSUIT_ESCAPE_THRESHOLD = 100
+
 const BEAT_PROGRESS: Record<ExplorationBeat, number> = {
   APPROACH: 0,
   SCAN: 34,
@@ -104,6 +108,42 @@ export function initExplorationFields(): Pick<
   }
 }
 
+export function initPursuitDistance(): number {
+  return PURSUIT_START_DISTANCE
+}
+
+export function clampPursuitDistance(value: number): number {
+  return Math.max(0, Math.min(PURSUIT_ESCAPE_THRESHOLD, value))
+}
+
+export function adjustPursuitDistance(
+  current: number,
+  delta: number
+): number {
+  return clampPursuitDistance(current + delta)
+}
+
+export function pursuitDeltaForExploration(action: ExplorationAction): number {
+  return action === "LISTEN" ? 6 : -4
+}
+
+export function isPursuitCaught(distance: number | undefined): boolean {
+  return (distance ?? PURSUIT_START_DISTANCE) <= PURSUIT_CAUGHT_THRESHOLD
+}
+
+export function isPursuitEscaped(distance: number | undefined): boolean {
+  return (distance ?? 0) >= PURSUIT_ESCAPE_THRESHOLD
+}
+
+export function pursuitThreatLabel(distance: number | undefined): string {
+  const d = distance ?? PURSUIT_START_DISTANCE
+  if (d <= PURSUIT_CAUGHT_THRESHOLD) return "Contact imminent"
+  if (d < 35) return "Hostile closing"
+  if (d < 55) return "Pursuit active"
+  if (d >= PURSUIT_ESCAPE_THRESHOLD) return "Extraction window"
+  return "Distance holding"
+}
+
 export function isReadyToEngage(run: DungeonRunContract): boolean {
   return run.explorationBeat === "ENGAGE" && (run.explorationProgress ?? 0) >= BEAT_PROGRESS.ENGAGE
 }
@@ -143,7 +183,7 @@ export function advanceExploration(
       explorationProgress: BEAT_PROGRESS.SCAN,
     }
     return {
-      run: nextRun,
+      run: applyPursuitToRun(nextRun, action),
       systemLine: lines.approach[action],
       readyToEngage: false,
     }
@@ -157,9 +197,23 @@ export function advanceExploration(
     sectorIntelRevealed: intelRevealed,
   }
   return {
-    run: nextRun,
+    run: applyPursuitToRun(nextRun, action),
     systemLine: lines.scan[action],
     readyToEngage: true,
+  }
+}
+
+function applyPursuitToRun(
+  run: DungeonRunContract,
+  action: ExplorationAction
+): DungeonRunContract {
+  if (run.pursuitDistance == null) return run
+  return {
+    ...run,
+    pursuitDistance: adjustPursuitDistance(
+      run.pursuitDistance,
+      pursuitDeltaForExploration(action)
+    ),
   }
 }
 

@@ -10,6 +10,7 @@ Before generating code:
 - /docs/current-architecture.md
 - /docs/system-registry.md
 - /docs/core-philosophy.md
+- /docs/GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md
 - DECISIONS.md
 
 2. Analyze:

@@ -9,6 +9,7 @@ Before generating code:
 - read architecture rules
 - read naming rules
 - read gameplay philosophy
+- read docs/GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md
 - read rules/learner-display-rules.md
 - read contracts
 - read current architecture

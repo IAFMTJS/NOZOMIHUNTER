@@ -2,6 +2,7 @@ import type { PlayerPenaltyContract } from "@/contracts/player-contract"
 
 export const CORRUPTION_UI_THRESHOLD = 25
 export const CORRUPTION_HIGH_THRESHOLD = 50
+export const CORRUPTION_EXTREME_THRESHOLD = 75
 export const FATIGUE_UI_THRESHOLD = 40
 export const FATIGUE_HIGH_THRESHOLD = 65
 
@@ -24,6 +25,10 @@ export function getPenaltyPresentation(
   if (penalties.corruption >= CORRUPTION_HIGH_THRESHOLD) {
     classes.push("nozomi-corruption-high")
     encounter.push("nozomi-corruption-high")
+  }
+  if (penalties.corruption >= CORRUPTION_EXTREME_THRESHOLD) {
+    classes.push("nozomi-corruption-extreme")
+    encounter.push("nozomi-corruption-extreme")
   }
   if (penalties.fatigue >= FATIGUE_UI_THRESHOLD) {
     classes.push("nozomi-fatigue")

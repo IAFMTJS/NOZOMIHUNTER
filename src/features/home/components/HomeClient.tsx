@@ -17,6 +17,14 @@ import { xpProgressInCurrentLevel } from "@/systems/progression/levelSystem"
 import { computeHunterPower } from "@/systems/power/hunterPowerSystem"
 import { selectSystemMessage, systemMessageSubline } from "@/systems/messaging/systemMessagingSystem"
 import { getTrackedQuest } from "@/systems/quests/contractTrackingSystem"
+import { buildOperationalFeed } from "@/systems/home/operationalFeedSystem"
+import { OperationalAlertRail } from "@/features/home/components/OperationalAlertRail"
+import { ContractRotationRail } from "@/features/home/components/ContractRotationRail"
+import { InstabilityFeed } from "@/features/home/components/InstabilityFeed"
+import { ActiveBoostsChip } from "@/features/home/components/ActiveBoostsChip"
+import { SectorActivityTicker } from "@/features/home/components/SectorActivityTicker"
+import { AnomalyChip } from "@/features/home/components/AnomalyChip"
+
 export function HomeClient() {
   const { player, activeQuests, hunterPresentation, readiness, forecast } =
     useHunterSession()
@@ -37,6 +45,7 @@ export function HomeClient() {
   const subline = systemMessageSubline(player)
   const tracked = getTrackedQuest(activeQuests, player)
   const power = computeHunterPower(player)
+  const feed = buildOperationalFeed(player, activeQuests, seed)
 
   return (
     <HunterPage
@@ -67,6 +76,13 @@ export function HomeClient() {
           />
         </div>
       </div>
+
+      <OperationalAlertRail alerts={feed.alerts} />
+      <AnomalyChip anomalies={feed.anomalies} />
+      <InstabilityFeed items={feed.instability} />
+      <ActiveBoostsChip player={player} countOverride={feed.activeBoostCount} />
+      <SectorActivityTicker items={feed.sectorActivity} />
+      <ContractRotationRail items={feed.contractRotation} />
 
       <HunterPowerSummary power={power} />
 

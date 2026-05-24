@@ -1,5 +1,6 @@
 import type { DungeonTheme } from "@/contracts/dungeon-contract"
 import type { EncounterType } from "@/contracts/dungeon-contract"
+import type { GameModeId } from "@/contracts/game-mode-contract"
 import type { QuestPenaltyContract } from "@/contracts/quest-contract"
 
 export interface DungeonDefinitionConfig {
@@ -10,6 +11,8 @@ export interface DungeonDefinitionConfig {
   minLevel: number
   staminaCost: number
   recommendedPower: number
+  /** Gameplay mode routed through dungeon run state. */
+  dungeonMode?: GameModeId
   /** Must appear in player.progression.unlockedDungeons before entry. */
   requiredDungeon?: string
   encounterPlan: { id: string; type: EncounterType; difficulty: number }[]
@@ -94,6 +97,67 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
     bossName: "Core Warden",
     rewardXpBase: 200,
     unlocks: ["dungeon:abyss-core"],
+  },
+  {
+    key: "dungeon:corruption-run",
+    theme: "NEON_CITY",
+    dungeonMode: "CORRUPTION_RUN",
+    name: "Corruption Run",
+    description:
+      "Endless sector loop. Corruption spikes with every mistake — survive the collapse or extract.",
+    minLevel: 5,
+    staminaCost: 22,
+    recommendedPower: 1280,
+    requiredDungeon: "dungeon:neon-corridor",
+    encounterPlan: [
+      { id: "run-vocab", type: "VOCAB", difficulty: 2 },
+      { id: "run-listen", type: "LISTENING", difficulty: 2 },
+      { id: "run-speech", type: "SPEECH", difficulty: 3 },
+    ],
+    bossName: "Collapse Echo",
+    rewardXpBase: 140,
+    unlocks: ["dungeon:corruption-run"],
+  },
+  {
+    key: "dungeon:void-pursuit",
+    theme: "ABANDONED_STATION",
+    dungeonMode: "VOID_PURSUIT",
+    name: "Void Pursuit",
+    description:
+      "Something hunts you through dead relays. Decode fast — distance is survival.",
+    minLevel: 6,
+    staminaCost: 24,
+    recommendedPower: 1480,
+    requiredDungeon: "dungeon:corruption-run",
+    encounterPlan: [
+      { id: "pursuit-listen", type: "LISTENING", difficulty: 3 },
+      { id: "pursuit-vocab", type: "VOCAB", difficulty: 3 },
+      { id: "pursuit-npc", type: "NPC", difficulty: 3 },
+    ],
+    bossName: "Void Stalker",
+    rewardXpBase: 155,
+    unlocks: ["dungeon:void-pursuit"],
+  },
+  {
+    key: "dungeon:roguelike-sector",
+    theme: "CORRUPTED_SHRINE",
+    dungeonMode: "ROGUELIKE_SECTOR",
+    name: "Roguelike Sector",
+    description:
+      "Procedural modifiers mutate each run. Choose instability — or be chosen.",
+    minLevel: 7,
+    staminaCost: 28,
+    recommendedPower: 1680,
+    requiredDungeon: "dungeon:void-pursuit",
+    encounterPlan: [
+      { id: "rogue-vocab", type: "VOCAB", difficulty: 3 },
+      { id: "rogue-listen", type: "LISTENING", difficulty: 3 },
+      { id: "rogue-speech", type: "SPEECH", difficulty: 4 },
+      { id: "rogue-npc", type: "NPC", difficulty: 4 },
+    ],
+    bossName: "Shrine Warden",
+    rewardXpBase: 175,
+    unlocks: ["dungeon:roguelike-sector"],
   },
 ]
 

@@ -215,6 +215,20 @@ body {
   animation: nozomi-glitch 4s ease-in-out infinite;
 }
 
+.nozomi-corruption-extreme {
+  filter: hue-rotate(-12deg) saturate(1.15);
+}
+
+.nozomi-corruption-extreme .nozomi-encounter-panel {
+  animation: nozomi-glitch 2.2s ease-in-out infinite;
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.25);
+}
+
+.nozomi-corruption-extreme .nozomi-scanlines::after,
+.nozomi-corruption-extreme .nozomi-scanlines-light::after {
+  opacity: 1.8;
+}
+
 @keyframes nozomi-glitch {
   0%,
   92%,

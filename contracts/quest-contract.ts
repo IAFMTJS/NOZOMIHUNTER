@@ -5,6 +5,7 @@ import type {
   VocabularyEncounterContract,
 } from "./encounter-contract"
 import type { DungeonRunContract } from "./dungeon-contract"
+import type { GameModeId } from "./game-mode-contract"
 import type { QuestVocabularyPreparationContract } from "./vocabulary-contract"
 
 /** MAIN = story; SIDE = narrative contracts; DAILY = maintenance slot (UTC date id). */
@@ -36,6 +37,20 @@ export interface QuestContract {
   /** Populated for VOCABULARY quests — encounter state persists in quest_snapshot. */
   vocabularyEncounter?: VocabularyEncounterContract
 
+  /** Terminal breach environmental reading mode */
+  terminalBreachEncounter?: import("./encounter-contract").TerminalBreachEncounterContract
+
+  /** Kanji surgery / memory cascade training payloads */
+  kanjiSurgeryEncounter?: import("./encounter-contract").KanjiSurgeryTargetContract[]
+  memoryCascadeEncounter?: import("./encounter-contract").MemoryCascadeRoundContract
+
+  /** Semantic network vocabulary mode */
+  semanticNetworkEncounter?: {
+    nodes: import("./encounter-contract").SemanticNetworkNodeContract[]
+    links: import("./encounter-contract").SemanticNetworkLinkContract[]
+    matchedLinkIds: string[]
+  }
+
   /** Populated for CONVERSATION quests — thread persists in quest_snapshot + conversations table. */
   conversationEncounter?: ConversationEncounterContract
 
@@ -53,6 +68,9 @@ export interface QuestContract {
 
   /** Pre-quest vocabulary briefing (unknown / critical words). */
   vocabularyPreparation?: QuestVocabularyPreparationContract
+
+  /** Distinct gameplay mode — defaults to STANDARD when absent. */
+  gameMode?: GameModeId
 
   hidden?: boolean
 }

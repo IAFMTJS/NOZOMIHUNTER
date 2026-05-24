@@ -7,6 +7,9 @@ import { createVocabularyEncounter } from "./vocabularyEncounterSystem"
 import { createConversationEncounter } from "./conversationEncounterSystem"
 import { createSpeechEncounter } from "./speechEncounterSystem"
 import { createListeningEncounter } from "@/systems/dungeons/listeningEncounterSystem"
+import { resolveQuestGameMode } from "@/systems/gameModes/gameModeSystem"
+import { rebuildQuestForGameMode } from "@/systems/gameModes/gameModeEncounterSystem"
+import { applyGameModeToQuest } from "@/systems/gameModes/gameModeQuestBuilder"
 import {
   formatLearnerContent,
   resolveMessageReading,
@@ -213,6 +216,15 @@ export function rebuildQuestEncounter(quest: QuestContract): QuestContract {
   if (quest.type === "DUNGEON" && quest.dungeonRun) {
     return quest
   }
+
+  const mode = resolveQuestGameMode(quest)
+  if (mode !== "STANDARD") {
+    const withMode = hasPlayableModePayload(quest, mode)
+      ? quest
+      : applyGameModeToQuest(quest, mode)
+    return rebuildQuestForGameMode(withMode)
+  }
+
   if (quest.type === "SPEECH") {
     return hasPlayableSpeech(quest)
       ? patchSpeechPhrases(quest)
@@ -234,4 +246,31 @@ export function rebuildQuestEncounter(quest: QuestContract): QuestContract {
   return quest.type === "VOCABULARY" && hasPlayableVocabulary(quest)
     ? patchVocabularyWords(quest)
     : buildVocabularyPayload(quest, wordCount)
+}
+
+function hasPlayableModePayload(
+  quest: QuestContract,
+  mode: ReturnType<typeof resolveQuestGameMode>
+): boolean {
+  switch (mode) {
+    case "TERMINAL_BREACH":
+      return Boolean(quest.terminalBreachEncounter)
+    case "KANJI_SURGERY":
+      return (quest.kanjiSurgeryEncounter?.length ?? 0) > 0
+    case "MEMORY_CASCADE":
+      return Boolean(quest.memoryCascadeEncounter)
+    case "SEMANTIC_NETWORK":
+      return Boolean(quest.semanticNetworkEncounter)
+    case "SIGNAL_CALIBRATION":
+    case "LOST_TRANSMISSION":
+      return hasPlayableListening(quest)
+    case "SHADOW_ECHO":
+      return hasPlayableSpeech(quest)
+    case "GHOST_INTERROGATION":
+    case "DEEP_COVER":
+    case "PANIC_CHANNEL":
+      return hasPlayableConversation(quest)
+    default:
+      return false
+  }
 }

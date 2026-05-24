@@ -1008,3 +1008,34 @@ Strong systems with simple visuals work.
 Beautiful visuals without systems die.
 
 That is the core of the project.
+
+---
+
+## 30. Gameplay evolution phase (v1.3+)
+
+North star: [`GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md`](GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md)
+
+### Problem
+Quests, dungeons, contracts, and training share one answer→XP loop. Visual identity exists; mechanical identity does not.
+
+### Solution architecture
+- `GameModeId` on quests and dungeon runs (backward compatible default: `STANDARD`)
+- `gameModeRegistry` — emotion, unlock, pressure profile per mode
+- `EncounterRouter` — UI dispatch by mode; logic stays in `/src/systems`
+
+### Rollout order
+1. Platform (contracts, registry, router, snapshot rebuild)
+2. Cross-cutting (phrase variety, corruption tiers, audio, blackout assists)
+3. Mode variants (signal calibration, shadow echo, lost transmission, ghost interrogation v1)
+4. Training greenfield (kanji surgery, memory cascade)
+5. Quest environmental (terminal breach, ghost interrogation v2)
+6. Dungeon modes (corruption run, void pursuit, roguelike, Archivist boss)
+7. Contract social (deep cover, panic channel)
+8. Vocabulary (entity hunt, semantic network — code name; UI keeps Threat Index)
+9. Home operational feed
+10. Retention (corrupted language, live events, language invasions, dual operator)
+
+### Naming
+- `/vocabulary` **Threat Index** = catalog UI
+- Semantic linking mode = `SEMANTIC_NETWORK` in code
+

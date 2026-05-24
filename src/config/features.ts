@@ -9,4 +9,8 @@ export const FEATURE_FLAGS = {
   SPEECH_RECORDING: true,
   AI_CONVERSATION: true,
   JMDICT_ENGINE: true,
+  /** Co-op: audio-only vs visual-only operators (future) */
+  DUAL_OPERATOR: false,
+  /** Weekly sector instability events on home + rewards */
+  LIVE_SECTOR_EVENTS: false,
 } as const

@@ -1270,3 +1270,78 @@ UI
 Events
 
 * listens: `XP_GAINED`, `PENALTY_TRIGGERED`, `ENCOUNTER_ANSWER_WRONG`, `LEVEL_UP`
+
+⸻
+
+gameModeRegistry (v1.3.0)
+
+Location: `/src/config/gameModeRegistry.ts`, `/src/systems/gameModes/*`
+
+Responsibilities
+
+* `GameModeId` metadata: emotion, parent system, unlock, pressure profile
+* `applyGameModeToQuest`, `gameModeEncounterSystem`, `gameModeQuestBuilder`
+* `EncounterRouter` UI dispatch by mode
+
+Modes
+
+* Training: SIGNAL_CALIBRATION, KANJI_SURGERY, MEMORY_CASCADE, SHADOW_ECHO
+* Quest: TERMINAL_BREACH, GHOST_INTERROGATION, LOST_TRANSMISSION
+* Dungeon: CORRUPTION_RUN, VOID_PURSUIT, ROGUELIKE_SECTOR, ARCHIVIST_BOSS
+* Contract: DEEP_COVER, PANIC_CHANNEL
+* Vocabulary: ENTITY_HUNT, SEMANTIC_NETWORK (UI Threat Index unchanged)
+
+Philosophy: `/docs/GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md`
+
+⸻
+
+operationalFeedSystem (v1.3.0)
+
+Location: `/src/systems/home/operationalFeedSystem.ts`
+
+Responsibilities
+
+* compose home operational rails: alerts, contract rotation, instability, sector activity, anomalies
+
+UI
+
+* `OperationalAlertRail`, `ContractRotationRail`, `InstabilityFeed`, `ActiveBoostsChip`, `SectorActivityTicker`, `AnomalyChip` on `/home`
+
+⸻
+
+relationshipSystem (v1.3.0)
+
+Location: `/src/systems/contracts/relationshipSystem.ts`, migration `016_npc_relationships.sql`
+
+Responsibilities
+
+* NPC trust vectors for DEEP_COVER conversations
+
+⸻
+
+dungeonModifierSystem (v1.3.0)
+
+Location: `/src/systems/dungeons/dungeonModifierSystem.ts`
+
+Responsibilities
+
+* procedural roguelike modifiers on dungeon runs
+
+⸻
+
+entityHuntSystem / wordPassiveSystem (v1.3.0)
+
+Location: `/src/systems/vocabulary/entityHuntSystem.ts`, `wordPassiveSystem.ts`
+
+Responsibilities
+
+* UNKNOWN → STABILIZED → MASTERED capture states; passive bonuses from mastered words
+
+⸻
+
+retentionSystems (v1.3.0, flagged)
+
+Location: `/src/systems/retention/*`, `/src/config/eventScheduleConfig.ts`
+
+* `corruptedLanguageSystem`, `languageInvasionSystem`
+* `FEATURE_FLAGS.LIVE_SECTOR_EVENTS`, `FEATURE_FLAGS.DUAL_OPERATOR`

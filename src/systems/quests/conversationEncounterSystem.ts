@@ -19,6 +19,12 @@ import {
   formatLearnerContent,
   resolveMessageReading,
 } from "@/services/jmdict/readingAnnotation"
+import {
+  applyExchangeToEncounterTrust,
+  mergePersistedTrust,
+  toNpcRelationshipRow,
+} from "@/systems/contracts/relationshipSystem"
+import { upsertNpcRelationship, loadNpcRelationship } from "@/services/supabase/relationshipRepository"
 
 function createMessage(
   role: ConversationMessageContract["role"],
@@ -74,9 +80,22 @@ export async function submitConversationMessage(
   playerId: string,
   memory: AIMemoryContract
 ): Promise<ConversationSubmitResult> {
-  const encounter = quest.conversationEncounter
+  let encounter = quest.conversationEncounter
   if (!encounter) {
     throw new Error("Quest has no conversation encounter")
+  }
+
+  if (
+    quest.gameMode === "DEEP_COVER" ||
+    encounter.relationshipTrust != null
+  ) {
+    const npcKey = encounter.scenarioId
+    try {
+      const persisted = await loadNpcRelationship(playerId, npcKey)
+      encounter = mergePersistedTrust(encounter, persisted)
+    } catch {
+      /* offline / unconfigured — use encounter trust only */
+    }
   }
 
   const aiResponse = await processDialogue({
@@ -115,11 +134,23 @@ export async function submitConversationMessage(
     directorMsg,
   ]
 
-  const updatedEncounter: ConversationEncounterContract = {
+  let updatedEncounter: ConversationEncounterContract = {
     ...encounter,
     messages: updatedMessages,
     successfulExchanges,
     wrongTurns,
+  }
+
+  if (quest.gameMode === "DEEP_COVER" || encounter.relationshipTrust != null) {
+    updatedEncounter = applyExchangeToEncounterTrust(updatedEncounter, score.passed)
+    try {
+      await upsertNpcRelationship({
+        ...toNpcRelationshipRow(playerId, encounter.scenarioId, updatedEncounter),
+        updatedAt: new Date().toISOString(),
+      })
+    } catch {
+      /* persistence optional when Supabase unavailable */
+    }
   }
 
   const updatedMemory = updateMemory(

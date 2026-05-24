@@ -442,6 +442,10 @@ See [`docs/mobile-pwa.md`](mobile-pwa.md). Offline = cached shell + static asset
 | [`docs/mobile-pwa.md`](mobile-pwa.md) | PWA & mobile QA |
 | [`CHANGELOG.md`](../CHANGELOG.md) | Version history |
 | [`prompts/master-session-prompt.md`](../prompts/master-session-prompt.md) | Agent session rules |
+| [`docs/GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md`](GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md) | Gameplay evolution & mode differentiation north star |
+| [`docs/core-loop.md`](core-loop.md) | Mode-aware core loop |
+| [`contracts/game-mode-contract.ts`](../contracts/game-mode-contract.ts) | `GameModeId` + emotion types |
+| [`src/config/gameModeRegistry.ts`](../src/config/gameModeRegistry.ts) | Mode registry config |
 
 ---
 

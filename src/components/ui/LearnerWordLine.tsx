@@ -3,6 +3,7 @@
 import type { LearnerWordParts } from "@/services/jmdict/learnerFormat"
 import { formatLearnerTriple } from "@/services/jmdict/learnerFormat"
 import { WordAudioButton } from "@/components/ui/WordAudioButton"
+import { useLearnerAssist } from "@/features/encounters/context/LearnerAssistContext"
 
 interface LearnerWordLineProps {
   parts: LearnerWordParts
@@ -19,6 +20,8 @@ export function LearnerWordLine({
   audio = false,
   className = "",
 }: LearnerWordLineProps) {
+  const assist = useLearnerAssist()
+  const blackout = assist === "BLACKOUT"
   const jpSize =
     size === "lg" ? "text-2xl" : size === "sm" ? "text-base" : "text-lg"
 
@@ -26,7 +29,7 @@ export function LearnerWordLine({
     return (
       <div className={`flex items-start gap-2 ${className}`}>
         <p className={`font-japanese ${jpSize} text-[var(--foreground)]`}>
-          {formatLearnerTriple(parts)}
+          {blackout ? parts.japanese : formatLearnerTriple(parts)}
         </p>
         {audio && (
           <WordAudioButton japanese={parts.japanese} reading={parts.reading} />
@@ -45,9 +48,13 @@ export function LearnerWordLine({
           <WordAudioButton japanese={parts.japanese} reading={parts.reading} />
         )}
       </div>
-      <p className="text-xs text-[var(--muted)]">{parts.reading}</p>
-      <p className="text-xs text-[var(--muted)]">{parts.romaji}</p>
-      <p className="text-sm text-[var(--foreground)]">{parts.meaning}</p>
+      {!blackout && (
+        <>
+          <p className="text-xs text-[var(--muted)]">{parts.reading}</p>
+          <p className="text-xs text-[var(--muted)]">{parts.romaji}</p>
+          <p className="text-sm text-[var(--foreground)]">{parts.meaning}</p>
+        </>
+      )}
     </div>
   )
 }

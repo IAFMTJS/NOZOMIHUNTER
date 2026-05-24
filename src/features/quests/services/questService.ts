@@ -4,6 +4,7 @@ export {
   submitConversationMessageForQuest,
   submitSpeechForQuest,
   submitListeningAnswerForQuest,
+  submitGameModeActionForQuest,
 } from "./questEncounterActions"
 export {
   ensureTutorialQuest,

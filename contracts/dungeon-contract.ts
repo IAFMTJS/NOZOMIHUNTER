@@ -80,6 +80,8 @@ export interface DungeonPenaltyContract {
   fatigue: number
 }
 
+import type { GameModeId, DungeonModifierContract } from "./game-mode-contract"
+
 export type ExplorationBeat = "APPROACH" | "SCAN" | "ENGAGE"
 
 export type ExplorationAction = "LISTEN" | "PUSH"
@@ -108,6 +110,14 @@ export interface DungeonRunContract {
   explorationBeat?: ExplorationBeat | null
   /** Whether tactical intel was revealed during SCAN. */
   sectorIntelRevealed?: boolean
+  /** Gameplay mode for this run. */
+  dungeonMode?: GameModeId
+  /** Roguelike modifiers active on this run. */
+  modifiers?: DungeonModifierContract[]
+  /** Void pursuit: 0 = caught, 100 = escaped. */
+  pursuitDistance?: number
+  /** Corruption run: sectors cleared in endless loop. */
+  endlessSectorCount?: number
 }
 
 export type DungeonMachineState =

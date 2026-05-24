@@ -40,6 +40,7 @@ export function HubHuntView({
           <>
             <QuestCard
               quest={activeHunt}
+              player={props.player}
               disabled={busy}
               encounterClassName={encounterClassName}
               maxWrongAttempts={penaltyMods.maxWrongAttempts}
@@ -65,6 +66,14 @@ export function HubHuntView({
               onSubmitListening={
                 props.onSubmitListening
                   ? (a) => props.onSubmitListening!(activeHunt.id, a)
+                  : undefined
+              }
+              onGameModeAction={
+                props.onGameModeAction
+                  ? (action, payload) =>
+                      props.onGameModeAction!(activeHunt.id, action, payload).then(
+                        () => undefined
+                      )
                   : undefined
               }
               onAbandon={() => Promise.resolve(props.onAbandon(activeHunt.id))}

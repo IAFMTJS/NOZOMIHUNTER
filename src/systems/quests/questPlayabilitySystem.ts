@@ -1,6 +1,31 @@
 import type { QuestContract } from "@/contracts/quest-contract"
+import { resolveQuestGameMode } from "@/systems/gameModes/gameModeSystem"
 
 export function isQuestEncounterPlayable(quest: QuestContract): boolean {
+  const mode = resolveQuestGameMode(quest)
+
+  switch (mode) {
+    case "TERMINAL_BREACH":
+      return Boolean(quest.terminalBreachEncounter)
+    case "KANJI_SURGERY":
+      return (quest.kanjiSurgeryEncounter?.length ?? 0) > 0
+    case "MEMORY_CASCADE":
+      return Boolean(quest.memoryCascadeEncounter)
+    case "SEMANTIC_NETWORK":
+      return Boolean(quest.semanticNetworkEncounter)
+    case "SIGNAL_CALIBRATION":
+    case "LOST_TRANSMISSION":
+      return (quest.listeningEncounter?.fragments.length ?? 0) > 0
+    case "SHADOW_ECHO":
+      return (quest.speechEncounter?.phrases.length ?? 0) > 0
+    case "GHOST_INTERROGATION":
+    case "DEEP_COVER":
+    case "PANIC_CHANNEL":
+      return (quest.conversationEncounter?.messages.length ?? 0) > 0
+    default:
+      break
+  }
+
   switch (quest.type) {
     case "VOCABULARY":
       return (quest.vocabularyEncounter?.words.length ?? 0) > 0

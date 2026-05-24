@@ -1,5 +1,31 @@
 # Changelog
 
+## v1.3.0 (unreleased) — Gameplay evolution integration
+
+### Design
+- Adopted [`docs/GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md`](docs/GAMEPLAY-EVOLUTION-AND-SYSTEM-DIFFERENTIATION-MASTER-DOCUMENT.md) as north star for mechanical differentiation
+- Mode-aware core loop in `docs/core-loop.md`; system differentiation rules in `rules/gameplay-rules.md`
+- Semantic linking game mode code name: `SEMANTIC_NETWORK` (UI Threat Index unchanged)
+
+### Platform
+- `GameModeId` contract + `gameModeRegistry` + `EncounterRouter`
+- Quest/dungeon `gameMode` snapshot persistence; analytics `game_mode` payload
+
+### Modes (see system-registry)
+- Training: Signal Calibration, Kanji Surgery, Memory Cascade, Shadow Echo
+- Quest: Terminal Breach, Ghost Interrogation, Lost Transmission
+- Dungeon: Corruption Run, Void Pursuit, Roguelike Sector, Archivist boss
+- Contract: Deep Cover, Panic Channel
+- Vocabulary: Entity Hunt, Semantic Network
+
+### Cross-cutting
+- Expanded system message pools; tiered corruption presentation; audio ambience layer
+- Blackout assist level on player progression
+- Operational home feed rails
+
+### Retention (flagged)
+- Corrupted language validators; live sector events; language invasions; dual operator scaffold
+
 ## v1.2.3 (unreleased) — Updates 2405 integration
 
 ### Critical gameplay

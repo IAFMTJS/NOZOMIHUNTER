@@ -18,6 +18,7 @@ import {
   initExplorationFields,
   isReadyToEngage,
 } from "./explorationSystem"
+import { resolveDungeonGameMode } from "@/systems/gameModes/gameModeSystem"
 
 const OBJECTIVE_ID = "obj-dungeon"
 
@@ -237,6 +238,29 @@ export function advanceBossPhase(quest: QuestContract): QuestContract {
 export function continueAfterReward(quest: QuestContract): QuestContract {
   const run = quest.dungeonRun!
   const allSectorsDone = run.dungeon.encounters.every((e) => e.completed)
+  const mode = resolveDungeonGameMode(run)
+
+  if (
+    mode === "CORRUPTION_RUN" &&
+    allSectorsDone &&
+    run.machineState === "REWARD"
+  ) {
+    const endlessSectorCount = (run.endlessSectorCount ?? 0) + 1
+    const resetEncounters = run.dungeon.encounters.map((e) => ({
+      ...e,
+      completed: false,
+    }))
+    const nextRun: DungeonRunContract = {
+      ...run,
+      endlessSectorCount,
+      dungeon: { ...run.dungeon, encounters: resetEncounters },
+      machineState: transition("REWARD", "EXPLORATION"),
+      currentEncounterIndex: 0,
+      activeType: null,
+      ...initExplorationFields(),
+    }
+    return patchRun({ ...quest, ...clearEncounterPayloads() }, nextRun)
+  }
 
   if (allSectorsDone && run.machineState === "REWARD") {
     return beginBossPhase(quest)

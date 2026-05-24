@@ -60,6 +60,11 @@ export interface ContractHubProps {
     questId: string,
     answer: string
   ) => Promise<{ correct: boolean; encounterFailed: boolean } | null>
+  onGameModeAction?: (
+    questId: string,
+    action: string,
+    payload?: string
+  ) => Promise<{ correct: boolean; encounterFailed: boolean; message?: string } | null>
   onAbandon: (questId: string) => void | Promise<void>
   onDismissPreparation: (questId: string) => void | Promise<void>
   onViewChange?: (view: HubView) => void

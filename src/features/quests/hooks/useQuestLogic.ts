@@ -11,6 +11,7 @@ import {
   submitConversationMessageForQuest,
   submitSpeechForQuest,
   submitListeningAnswerForQuest,
+  submitGameModeActionForQuest,
   failQuestForPlayer,
   dismissQuestPreparationBriefing,
 } from "../services/questService"
@@ -198,6 +199,30 @@ export function useQuestLogic(userId: string | undefined) {
     [userId]
   )
 
+  const submitGameModeAction = useCallback(
+    async (questId: string, action: string, payload?: string) => {
+      if (!userId) return null
+      setBusy(true)
+      setError(null)
+      try {
+        const result = await submitGameModeActionForQuest(
+          userId,
+          questId,
+          action,
+          payload
+        )
+        if (result?.message) setQuestMessage(result.message)
+        return result
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Mode action failed")
+        return null
+      } finally {
+        setBusy(false)
+      }
+    },
+    [userId]
+  )
+
   const complete = useCallback(
     async (questId: string) => {
       if (!userId) return
@@ -225,6 +250,7 @@ export function useQuestLogic(userId: string | undefined) {
     sendMessage,
     submitSpeech,
     submitListening,
+    submitGameModeAction,
     abandon,
     dismissPreparation,
     complete,

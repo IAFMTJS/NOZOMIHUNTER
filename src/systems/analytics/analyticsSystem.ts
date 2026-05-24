@@ -15,9 +15,14 @@ export function recordAnalyticsEvent(
   event: GameEventType,
   payload: unknown
 ): void {
+  const enriched =
+    payload && typeof payload === "object"
+      ? { ...(payload as Record<string, unknown>), recorded_at: new Date().toISOString() }
+      : { value: payload, recorded_at: new Date().toISOString() }
+
   const entry: AnalyticsEntry = {
     event,
-    payload,
+    payload: enriched,
     at: new Date().toISOString(),
   }
 
