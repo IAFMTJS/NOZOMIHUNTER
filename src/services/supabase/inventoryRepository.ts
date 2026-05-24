@@ -31,7 +31,9 @@ export async function loadItemCatalog(): Promise<ItemCatalogEntryContract[]> {
   const supabase = requireClient()
   const { data, error } = await supabase
     .from("item_catalog")
-    .select("key, name, category, icon, stackable, credit_price")
+    .select(
+      "key, name, category, icon, stackable, credit_price, shop_category, rarity, description, effect_type, rotation_eligible"
+    )
 
   if (error || !data) return []
   return data.map((row) => ({
@@ -41,6 +43,11 @@ export async function loadItemCatalog(): Promise<ItemCatalogEntryContract[]> {
     icon: row.icon,
     stackable: row.stackable,
     creditPrice: row.credit_price ?? null,
+    shopCategory: (row.shop_category as ItemCatalogEntryContract["shopCategory"]) ?? null,
+    rarity: (row.rarity as ItemCatalogEntryContract["rarity"]) ?? null,
+    description: row.description ?? null,
+    effectType: (row.effect_type as ItemCatalogEntryContract["effectType"]) ?? null,
+    rotationEligible: row.rotation_eligible ?? true,
   }))
 }
 

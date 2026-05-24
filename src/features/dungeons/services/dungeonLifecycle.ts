@@ -9,8 +9,13 @@ import {
   spendStaminaGuarded,
 } from "@/services/supabase/economyRepository"
 import { acceptQuest } from "@/systems/quests/questOrchestrator"
-import { calculateQuestReward } from "@/systems/progression/rewardSystem"
-import { fatigueXpMultiplier } from "@/systems/penalties/penaltySystem"
+import { hasActiveBoost, hasEscapeBeacon, hasReviveToken } from "@/systems/economy/boostSystem"
+import {
+  applyTimeFreeze,
+  initDungeonTimer,
+  isDungeonTimedOut,
+} from "@/systems/economy/shopEffectSystem"
+import { consumeActiveBoost } from "@/features/inventory/services/shopEffectActions"
 import { canCompleteQuest } from "@/systems/quests/questValidator"
 import { generateDungeonQuest } from "@/systems/dungeons/dungeonQuestGenerator"
 import { canStartDungeon } from "@/systems/dungeons/dungeonAccess"
@@ -23,13 +28,16 @@ import {
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import {
-  beginDungeonSector,
+  advanceExplorationBeat,
   continueAfterReward,
   deployDungeon,
+  engageSectorEncounter,
   failDungeonRun,
   finalizeDungeonExtraction,
 } from "@/systems/dungeons/dungeonOrchestrator"
 import { resolveRewardProgression } from "@/systems/progression/resolveQuestCompletion"
+import type { ExplorationAction } from "@/contracts/dungeon-contract"
+import type { QuestContract } from "@/contracts/quest-contract"
 import { triggerSave } from "@/systems/save/saveSystem"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import {
@@ -91,31 +99,36 @@ export async function enterDungeon(userId: string, dungeonKey: string) {
 export async function deployDungeonRun(userId: string) {
   const { quest } = getDungeonQuest()
   if (!quest) return null
-  const updated = deployDungeon(quest, userId)
+  let updated = deployDungeon(quest, userId)
+  updated = initDungeonTimer(updated)
   await persistDungeonQuest(userId, updated)
   return updated
 }
 
-export async function startDungeonSector(userId: string) {
+export async function advanceDungeonExploration(
+  userId: string,
+  action: ExplorationAction
+) {
+  const { quest } = getDungeonQuest()
+  if (!quest) return null
+
+  const updated = advanceExplorationBeat(quest, action, userId)
+  await persistDungeonQuest(userId, updated)
+  return updated
+}
+
+export async function engageDungeonSector(userId: string) {
   const { quest } = getDungeonQuest()
   if (!quest) return null
 
   const run = quest.dungeonRun!
-  if (run.machineState === "EXPLORATION" || run.machineState === "REWARD") {
-    if (run.machineState === "REWARD") {
-      const continued = continueAfterReward(quest)
-      const updated = beginDungeonSector(continued)
-      eventBus.emit(GAME_EVENTS.ENCOUNTER_STARTED, {
-        playerId: userId,
-        dungeonId: run.dungeon.id,
-        encounterType: updated.dungeonRun?.activeType,
-      })
-      await persistDungeonQuest(userId, updated)
-      return updated
-    }
+  let working = quest
+
+  if (run.machineState === "REWARD") {
+    working = continueAfterReward(quest)
   }
 
-  const updated = beginDungeonSector(quest)
+  const updated = engageSectorEncounter(working)
   eventBus.emit(GAME_EVENTS.ENCOUNTER_STARTED, {
     playerId: userId,
     dungeonId: run.dungeon.id,
@@ -123,6 +136,20 @@ export async function startDungeonSector(userId: string) {
   })
   await persistDungeonQuest(userId, updated)
   return updated
+}
+
+export async function continueDungeonAfterReward(userId: string) {
+  const { quest } = getDungeonQuest()
+  if (!quest) return null
+
+  const updated = continueAfterReward(quest)
+  await persistDungeonQuest(userId, updated)
+  return updated
+}
+
+/** @deprecated Use advanceDungeonExploration + engageDungeonSector */
+export async function startDungeonSector(userId: string) {
+  return engageDungeonSector(userId)
 }
 
 export async function abandonDungeon(userId: string) {
@@ -145,6 +172,15 @@ export async function abandonDungeon(userId: string) {
     }
   }
 
+  if (hasEscapeBeacon(player)) {
+    await consumeActiveBoost(userId, "ESCAPE_BEACON")
+    const remaining = store.activeQuests.filter((q) => q.id !== quest.id)
+    store.setQuests(remaining)
+    await failUserQuest(userId, quest.id)
+    await persistDungeonState()
+    return { escaped: true as const, quest }
+  }
+
   const failResult = failDungeonRun(quest, player.penalties, userId)
   store.applyPenalties(failResult.penalties)
   const remaining = store.activeQuests.filter((q) => q.id !== quest.id)
@@ -153,6 +189,21 @@ export async function abandonDungeon(userId: string) {
   await persistDungeonState()
   return failResult
 }
+
+export async function freezeDungeonTimer(userId: string) {
+  const { quest, player } = getDungeonQuest()
+  if (!quest?.dungeonRun || !player) return null
+  if (!hasActiveBoost(player, "TIME_FREEZE")) {
+    throw new Error("Time freeze not active")
+  }
+
+  const run = applyTimeFreeze(quest.dungeonRun)
+  const updated = { ...quest, dungeonRun: run }
+  await consumeActiveBoost(userId, "TIME_FREEZE")
+  await persistDungeonQuest(userId, updated)
+  return updated
+}
+
 
 export async function extractDungeonRewards(userId: string) {
   const { quest, store } = getDungeonQuest()
@@ -166,12 +217,7 @@ export async function extractDungeonRewards(userId: string) {
 
   await updateUserQuest(userId, ready)
 
-  const rewardPayload = calculateQuestReward(
-    ready.rewards,
-    fatigueXpMultiplier(progressionState.penalties.fatigue)
-  )
-
-  const server = await completeQuestGuarded(ready.id, rewardPayload.xp)
+  const server = await completeQuestGuarded(ready.id, 0)
 
   const { progression, newUnlocks } = resolveRewardProgression(
     progressionState.progression,

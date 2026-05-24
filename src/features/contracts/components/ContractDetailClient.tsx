@@ -19,7 +19,7 @@ interface ContractDetailClientProps {
 
 export function ContractDetailClient({ questId }: ContractDetailClientProps) {
   const router = useRouter()
-  const { player, regularQuests, trackMission, setHubView } = useHunterSession()
+  const { player, regularQuests, trackMission } = useHunterSession()
 
   const quest = regularQuests.find((q) => q.id === questId)
 
@@ -110,10 +110,7 @@ export function ContractDetailClient({ questId }: ContractDetailClientProps) {
           variant="ghost"
           size="md"
           className="w-full !py-3"
-          onClick={() => {
-            setHubView("hunt")
-            router.push(`/prepare?questId=${quest.id}`)
-          }}
+          onClick={() => router.push(`/prepare?questId=${quest.id}`)}
         >
           Deploy
         </Button>

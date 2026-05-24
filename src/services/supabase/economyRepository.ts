@@ -83,6 +83,73 @@ export async function purchaseItemGuarded(
   }
 }
 
+export interface ConvertXpResult {
+  xp: number
+  credits: number
+  xpSpent: number
+  creditsGained: number
+  conversionsRemaining: number
+}
+
+export async function convertXpToCreditsGuarded(
+  xpAmount: number
+): Promise<ConvertXpResult> {
+  const supabase = requireClient()
+  const { data, error } = await supabase.rpc("convert_xp_to_credits_guarded", {
+    p_xp_amount: xpAmount,
+  })
+  if (error) throw new Error(error.message)
+  const row = data as Record<string, unknown>
+  return {
+    xp: Number(row.xp ?? 0),
+    credits: Number(row.credits ?? 0),
+    xpSpent: Number(row.xp_spent ?? xpAmount),
+    creditsGained: Number(row.credits_gained ?? 0),
+    conversionsRemaining: Number(row.conversions_remaining ?? 0),
+  }
+}
+
+export interface UseConsumableResult {
+  itemKey: string
+  activeBoosts: unknown
+}
+
+export async function consumeItemGuarded(
+  itemKey: string
+): Promise<UseConsumableResult> {
+  const supabase = requireClient()
+  const { data, error } = await supabase.rpc("use_consumable_guarded", {
+    p_item_key: itemKey,
+  })
+  if (error) throw new Error(error.message)
+  const row = data as Record<string, unknown>
+  return {
+    itemKey: String(row.item_key ?? itemKey),
+    activeBoosts: row.active_boosts,
+  }
+}
+
+export async function consumeActiveBoostGuarded(
+  effectType: string
+): Promise<unknown> {
+  const supabase = requireClient()
+  const { data, error } = await supabase.rpc("consume_active_boost_guarded", {
+    p_effect_type: effectType,
+  })
+  if (error) throw new Error(error.message)
+  return data
+}
+
+export async function reactivateFailedQuestGuarded(
+  questId: string
+): Promise<void> {
+  const supabase = requireClient()
+  const { error } = await supabase.rpc("reactivate_failed_quest_guarded", {
+    p_quest_id: questId,
+  })
+  if (error) throw new Error(error.message)
+}
+
 export async function updateTrackedQuestRow(
   userId: string,
   userQuestRowId: string | null

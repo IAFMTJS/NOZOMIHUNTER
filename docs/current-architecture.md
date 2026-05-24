@@ -2,7 +2,7 @@
 
 
 
-Last updated: v1.1.0 — compliance hardening (shop, gates, server economy)
+Last updated: v1.2.1 — shop & economy expansion
 
 
 
@@ -24,7 +24,7 @@ Last updated: v1.1.0 — compliance hardening (shop, gates, server economy)
 
 | Auth (Google + guest + email) | Yes |
 
-| DB migrations 001–009 | Yes (008 = shop/server regen; 009 = unlock key rename) |
+| DB migrations 001–013 | Yes (013 = server completion boosts, catalog effect metadata) |
 
 | Progression systems | Yes (XP via `complete_quest_guarded`; autosave uses strict `apply_guarded_progression`) |
 
@@ -38,8 +38,8 @@ Last updated: v1.1.0 — compliance hardening (shop, gates, server economy)
 
 | Command node hub (`features/hub/ContractHub` — split menu/hunt/dispatch/sector views) | Yes |
 
-| Economy (stamina, credits, brew, inventory, shop, pending rewards) | Yes — migrations 006–008 |
-| Credits shop + equip loadout | Yes (`shopSystem`, `/inventory` Loadout/Shop) |
+| Economy (stamina, credits, brew, inventory, shop, pending rewards, boosts) | Yes — migrations 006–013; completion rewards server-authoritative |
+| Credits shop + black market rotation + XP conversion + consumable boosts | Yes (`shopSystem`, `boostSystem`, `/inventory` Loadout+Shop) |
 | Deploy preparation gate | Yes (`/prepare` blocks on checklist + CRITICAL readiness) |
 
 | Mission catalog + tracked mission | Yes (`missionCatalogSystem`, `missionTrackingSystem`) |
@@ -186,7 +186,9 @@ Route group `(hunter)/layout.tsx` wraps authenticated pages in `HunterSessionPro
 
 
 
-Login → `/home` → Mission or Dungeon → `/prepare` (optional briefing) → Encounter (`EncounterHost` / `ContractHub`) → guarded completion → `pendingRewards` claim → XP / unlocks → Save (Supabase)
+Login → `/home` → Mission or Dungeon → `/prepare` (optional briefing) → Deploy sets `hubView` → Encounter overlay on `/contracts` or `/dungeons` only (`EncounterHost` / `ContractHub`) → guarded completion → `pendingRewards` claim → XP / unlocks → Save (Supabase)
+
+`EncounterHost` does not replace tab routes: leaving `/contracts` | `/missions` | `/dungeons` resets `hubView` to `menu` so `/home`, `/inventory`, `/stats`, etc. render their page components.
 
 
 

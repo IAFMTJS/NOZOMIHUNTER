@@ -46,16 +46,16 @@ This psychological distinction is critical.
 
 | Category | Current State | Priority |
 |---|---|---|
-| Hunter identity layer | Partial | High |
-| Preparation systems | Partial | High |
-| Atmospheric system messaging | Weak | High |
-| Tactical information density | Weak | High |
-| Dungeon anticipation systems | Missing | Medium |
-| Vocabulary threat analysis | Missing | High |
-| Reactive UI states | Partial | High |
-| Encounter presentation | Partial | High |
-| Navigation immersion | Missing | Medium |
-| System terminology consistency | Weak | High |
+| Hunter identity layer | Shipped (dossier, portrait layers) | — |
+| Preparation systems | Shipped (readiness, checklist, deploy CTA) | — |
+| Atmospheric system messaging | Shipped (`SystemMessageRail`, pools, warning tone) | — |
+| Tactical information density | Partial (missions dispatch pass) | Medium |
+| Dungeon anticipation systems | Shipped (`dungeonForecastSystem`, exploration beats) | — |
+| Vocabulary threat analysis | Shipped (`vocabularyThreatSystem`, THREAT labels) | — |
+| Reactive UI states | Shipped (deploy caution, corruption header, locked sectors) | — |
+| Encounter presentation | Shipped (Transmit, listening waveform, focus shell) | — |
+| Navigation immersion | Shipped (Missions nav label, transition lines) | — |
+| System terminology consistency | Shipped (terminology.md + nav pass) | — |
 
 ---
 
@@ -615,4 +615,4 @@ The reference analysis is satisfied when a returning player feels:
 
 ---
 
-*This analysis reflects the codebase at v0.8.0. Update gap tables when shipping Phase A–C items.*
+*This analysis reflects gap-closure through v1.2.2 (phases A–C + reference gap closure).*

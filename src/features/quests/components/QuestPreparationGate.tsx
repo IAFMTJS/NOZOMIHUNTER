@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useState, type ReactNode } from "react"
 import type { QuestContract } from "@/contracts/quest-contract"
 import { QuestPreparationBriefing } from "@/components/preparation/QuestPreparationBriefing"
 import {
@@ -10,10 +10,11 @@ import {
 import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
 import { StatusChip } from "@/components/ui/StatusChip"
+import { ScreenCTA } from "@/components/ui/ScreenCTA"
 
 interface QuestPreparationGateProps {
   quest: QuestContract
-  children: React.ReactNode
+  children: ReactNode
   onBriefingDismissed?: (questId: string) => void | Promise<void>
   disabled?: boolean
 }
@@ -45,7 +46,7 @@ export function QuestPreparationGate({
   const allTargetsKnown = prep.newVocabulary.length === 0
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 pb-28">
       <Panel
         as="section"
         tone="accent"
@@ -63,31 +64,28 @@ export function QuestPreparationGate({
           vocabulary={displayVocabulary}
           allTargetsKnown={allTargetsKnown}
         />
-
-        <div className="mt-10 flex flex-col gap-3">
-          <Button
-            size="md"
-            disabled={disabled}
-            onClick={() => void dismiss()}
-            className="w-full sm:w-auto"
-          >
-            Deploy to contract
-          </Button>
-          <Button
-            variant="ghost"
-            size="md"
-            disabled={disabled}
-            onClick={() => void dismiss()}
-            className="w-full sm:w-auto"
-          >
-            Skip briefing
-          </Button>
-        </div>
       </Panel>
 
       <p className="text-center text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
         Encounter locked · complete briefing to continue
       </p>
+
+      <ScreenCTA
+        label="Start mission"
+        staminaCost={10}
+        disabled={disabled}
+        onClick={() => void dismiss()}
+      >
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={disabled}
+          onClick={() => void dismiss()}
+          className="w-full"
+        >
+          Skip briefing
+        </Button>
+      </ScreenCTA>
     </div>
   )
 }

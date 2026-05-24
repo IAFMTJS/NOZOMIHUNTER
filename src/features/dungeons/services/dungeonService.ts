@@ -9,6 +9,9 @@ export {
   enterDungeon,
   deployDungeonRun,
   startDungeonSector,
+  advanceDungeonExploration,
+  engageDungeonSector,
+  continueDungeonAfterReward,
   abandonDungeon,
   extractDungeonRewards,
 } from "./dungeonLifecycle"

@@ -9,7 +9,7 @@ import { AtmosphericBackground } from "@/components/layout/AtmosphericBackground
 
 function resolvePageTitle(pathname: string): string {
   if (pathname === "/home" || pathname === "/dashboard") return "NOZOMI HUNTER SYSTEM"
-  if (pathname === "/contracts" || pathname === "/missions") return "CONTRACTS"
+  if (pathname === "/contracts" || pathname === "/missions") return "QUESTS"
   if (pathname.startsWith("/contracts/") || pathname.startsWith("/missions/"))
     return "CONTRACT"
   if (pathname === "/dungeons") return "DUNGEONS"
@@ -30,6 +30,7 @@ function resolvePageTitle(pathname: string): string {
 interface HunterShellLayoutProps {
   children: ReactNode
   shellClassName?: string
+  headerClassName?: string
   headerRight?: ReactNode
 }
 
@@ -37,6 +38,7 @@ interface HunterShellLayoutProps {
 export function HunterShellLayout({
   children,
   shellClassName = "",
+  headerClassName = "",
   headerRight,
 }: HunterShellLayoutProps) {
   const pathname = usePathname()
@@ -45,7 +47,9 @@ export function HunterShellLayout({
   return (
     <AtmosphericBackground variant="lobby">
       <div className={`relative flex min-h-screen flex-col ${shellClassName}`}>
-        <header className="pt-safe relative z-10 shrink-0 bg-gradient-to-b from-[var(--surface-header)] to-transparent backdrop-blur-md">
+        <header
+          className={`pt-safe relative z-10 shrink-0 bg-gradient-to-b from-[var(--surface-header)] to-transparent backdrop-blur-md ${headerClassName}`}
+        >
           <div className="mx-auto flex max-w-lg items-center justify-between gap-3 px-4 py-3">
             <span className="font-display text-sm font-semibold tracking-[0.2em] text-[var(--foreground)]">
               {title}

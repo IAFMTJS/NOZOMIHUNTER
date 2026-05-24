@@ -1,13 +1,19 @@
 import type { QuestContract } from "@/contracts/quest-contract"
-import type { PlayerPenaltyContract } from "@/contracts/player-contract"
+import type { PlayerContract, PlayerPenaltyContract } from "@/contracts/player-contract"
 import type { WordMasteryContract } from "@/contracts/vocabulary-contract"
 import { submitVocabularyAnswer } from "@/systems/quests/vocabularyEncounterSystem"
 import { submitListeningAnswer } from "@/systems/dungeons/listeningEncounterSystem"
 import { maxWrongAttemptsForPenalties } from "@/systems/penalties/penaltyGameplaySystem"
+import { maxWrongAttemptsWithBoosts } from "@/systems/economy/boostSystem"
 import { upsertWordMastery } from "@/services/supabase/vocabularyRepository"
 
-export function maxWrongForPenalties(penalties: PlayerPenaltyContract): number {
-  return maxWrongAttemptsForPenalties(penalties)
+export function maxWrongForPenalties(
+  penalties: PlayerPenaltyContract,
+  player?: PlayerContract
+): number {
+  const base = maxWrongAttemptsForPenalties(penalties)
+  if (!player) return base
+  return maxWrongAttemptsWithBoosts(player, base)
 }
 
 export async function persistMasteryUpdate(
@@ -26,20 +32,26 @@ export function runVocabularySubmit(
   quest: QuestContract,
   answer: string,
   userId: string,
-  penalties: PlayerPenaltyContract
+  penalties: PlayerPenaltyContract,
+  player?: PlayerContract
 ) {
   return submitVocabularyAnswer(
     quest,
     answer,
     userId,
-    maxWrongForPenalties(penalties)
+    maxWrongForPenalties(penalties, player)
   )
 }
 
 export function runListeningSubmit(
   quest: QuestContract,
   answer: string,
-  penalties: PlayerPenaltyContract
+  penalties: PlayerPenaltyContract,
+  player?: PlayerContract
 ) {
-  return submitListeningAnswer(quest, answer, maxWrongForPenalties(penalties))
+  return submitListeningAnswer(
+    quest,
+    answer,
+    maxWrongForPenalties(penalties, player)
+  )
 }

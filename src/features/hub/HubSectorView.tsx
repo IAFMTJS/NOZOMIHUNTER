@@ -9,6 +9,8 @@ import { DungeonRunner } from "@/features/dungeons/components/DungeonRunner"
 import { resolveDungeonDeployAdvisory } from "@/systems/dungeons/dungeonSectorMapSystem"
 import type { SectorMapNode } from "@/systems/dungeons/dungeonSectorMapSystem"
 import { HubBack } from "./HubBack"
+import { QuestBoostActions } from "@/features/inventory/components/QuestBoostActions"
+import { hasEscapeBeacon } from "@/systems/economy/boostSystem"
 import type { ContractHubProps, PenaltyMods } from "./hubTypes"
 
 interface HubSectorViewProps {
@@ -18,6 +20,7 @@ interface HubSectorViewProps {
   dungeonBusy: boolean
   dungeonError: string | null
   dungeonMessage: string | null
+  dungeonExplorationLine?: string | null
   encounterClassName: string
   penaltyMods: PenaltyMods
   sectorMap: SectorMapNode[]
@@ -33,6 +36,7 @@ export function HubSectorView({
   dungeonBusy,
   dungeonError,
   dungeonMessage,
+  dungeonExplorationLine,
   encounterClassName,
   penaltyMods,
   sectorMap,
@@ -101,13 +105,22 @@ export function HubSectorView({
             maxListeningReplays={penaltyMods.maxListeningReplays}
             signalDegraded={penaltyMods.signalDegraded}
             onDeploy={props.onDungeonDeploy}
-            onEnterSector={props.onDungeonEnterSector}
+            onAdvanceExploration={props.onDungeonAdvanceExploration}
+            onEngageSector={props.onDungeonEngageSector}
+            onContinueReward={props.onDungeonContinueReward}
+            explorationLine={dungeonExplorationLine}
             onExtract={props.onDungeonExtract}
             onSubmitAnswer={props.onDungeonSubmitAnswer}
             onSubmitListening={props.onDungeonSubmitListening}
             onSendMessage={props.onDungeonSendMessage}
             onSubmitSpeech={props.onDungeonSubmitSpeech}
             onAbandon={props.onDungeonAbandon}
+            escapeBeaconActive={hasEscapeBeacon(player)}
+          />
+          <QuestBoostActions
+            player={player}
+            userId={player.id}
+            quest={activeDungeon}
           />
         </HubScreenFrame>
       ) : null}

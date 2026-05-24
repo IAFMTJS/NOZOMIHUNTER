@@ -1,5 +1,34 @@
 # Changelog
 
+## v1.2.2 (unreleased) — shop remediation + reference gap closure
+
+### Shop economy remediation
+- **Server completion boosts** — `013_completion_boosts.sql` applies fatigue, XP boost, reward amplifier, and system breach in `complete_quest_guarded`; consumes boosts atomically
+- **Catalog dedupe** — `item_catalog.effect_duration_ms` / `effect_uses`; `use_consumable_guarded` reads catalog instead of hardcoded cases
+- **Feature layer** — `shopEffectActions.ts`; components use actions not lifecycle imports
+- **Events** — `SHOP_PURCHASED`, `BOOST_ACTIVATED`, `XP_CONVERTED` registered in `eventHandlers`
+- **Cosmetics** — title unlock + shop aura CSS on hunter portrait
+- **Dungeon timer** — countdown in `DungeonRunner`; timeout on encounter submit
+- **Architecture guard** — systems→features and components→lifecycle checks in `check-architecture.mjs`
+
+### Reference gap closure (phases 2–4)
+
+- **Visual v2 pass** — home discipline teaser, missions dispatch (`HeroBanner`, contract type icons), dungeon locked overlay, embedded panels on vocab/inventory/stats/reward overlay, corruption warning tone on system status
+- **Presentation CSS** — rank header tints, deploy caution/risky, listening pulse rings, dungeon locked, menu denial copy
+- **Hub & prep** — menu denial lines, deploy CTA classes from `hunterPresentation`, `HunterPageBack` transition line
+- **Listening** — `waveformLevels` pseudo-analyser in `useJapaneseTts`, pulse rings in `ListeningFocusShell`
+- **Profile dossier** — `HeroBanner` codename header, collapsible registry titles, settings as registry controls
+- **Settings** — `/system` link, corruption ambient audio toggle (`nozomi-corruption-audio`)
+- **Encounter copy** — THREAT labels, Transmit verbs, conversation channel header
+- **Navigation** — bottom nav label **Missions** (route `/contracts` unchanged)
+- **Exploration** — `explorationSystem` beats + system lines (phase 1, documented)
+
+## v1.2.1 (unreleased)
+
+- **Shop & economy** — black market rotation, rarity tiers, XP→credit conversion, consumable boosts (`011_shop_economy.sql`); `boostSystem`, `xpConversionSystem`, `shopRotationSystem`; enhanced `/inventory` shop UI
+- **Shop effect hooks** — quest retry, skip token, system breach rewards, revive/escape/time-freeze (`012_shop_effect_hooks.sql`, `shopEffectSystem`)
+- **Navigation** — `EncounterHost` no longer pins ContractHub on every `/contracts` visit or on all routes during an active dungeon; overlay only on deploy + encounter base routes
+
 ## v1.2.0 (unreleased) — reference parity
 
 - **RPG stats** — `RpgStatsContract`, `rpgStatsSystem`, migration `010_rpg_stats.sql`, `/stats` page, power integration

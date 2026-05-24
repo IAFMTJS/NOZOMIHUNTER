@@ -40,7 +40,9 @@
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| Post-completion sync | `activityCompletionOrchestrator` + `loadPlayer` | Avoid double-merging credits; dungeon and missions share one path |
+| Post-completion sync | `completionService` + `loadPlayer` | Avoid double-merging credits; dungeon and missions share one path |
+| Completion boosts | Server `complete_quest_guarded` (013) | Client preview only; prevents boost waste from RPC cap |
+| Shop rotation hash | `shopRotationHash.ts` + SQL `nozomi_shop_hash` | Golden vectors in `tests/shopRotationHash.test.ts`; keep in sync |
 | Hidden objectives | Excluded from `canCompleteQuest` + RPC | Flavor objectives must not block extraction |
 | Dungeon enter | `assignQuest` then `spend_stamina_guarded` | Roll back quest row if stamina spend fails |
 | Stamina unlock check | `unlocked_dungeons @> jsonb_build_array(key)` | `progression.unlocked_dungeons` is a JSON array |

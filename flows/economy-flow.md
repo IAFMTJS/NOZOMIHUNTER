@@ -23,9 +23,45 @@
 
 ## Shop (`/inventory` → Shop tab)
 
-1. Listings from `item_catalog` where `credit_price` is set
-2. `purchase_item_guarded(itemKey, quantity)` deducts credits and grants inventory
-3. Rehydrate player after purchase
+1. Black market rotation — `shopRotationSystem` picks daily featured items per player + UTC date; server validates via `is_shop_item_available` / `effective_shop_price` (migration `011`)
+2. Listings grouped by `shop_category` (combat boosts, quest manipulation, dungeon utility, cosmetics, standard)
+3. `purchase_item_guarded(itemKey, quantity)` deducts credits at rotation-adjusted price and grants inventory
+4. Rehydrate player after purchase; emits `SHOP_PURCHASED` + `ITEM_GRANTED`
+
+## XP → Credits conversion
+
+1. Hunter Core Exchange panel in shop tab
+2. Tiered inefficient rates with 30% tax (`xpConversionSystem`)
+3. `convert_xp_to_credits_guarded(p_xp_amount)` — max 3 conversions per UTC day
+4. Lore warning: “Converting XP destabilizes your Hunter Core.”
+
+## Consumable effect hooks (migration 012–013)
+
+| Effect | Trigger | System |
+|--------|---------|--------|
+| System Breach | Quest/dungeon completion | Server `nozomi_apply_completion_rewards` + consume |
+| Reward Amplifier | Completion | Server completion path + consume |
+| XP Booster | Completion | Server completion path (timed, not consumed) |
+| Rank Shield | Quest/dungeon failure | suppress xpDebt + consume |
+| Quest Retry | Shop → Active Enhancements | `shopEffectActions.retryMostRecentFailedContract` |
+| Skip Token | Hunt view | `shopEffectActions.skipQuestObjective` |
+| Revive Token | Dungeon encounter failure | extra life in `handleDungeonFailure` |
+| Escape Beacon | Dungeon abort | penalty-free extract in `abandonDungeon` |
+| Time Freeze | Sector run | `shopEffectActions.freezeDungeonTimer` + countdown UI |
+| Title Unlock | Consumable use | SQL grants `title:the-unbroken` |
+| Cosmetic Aura | Consumable use | `hunterPresentationSystem.shopAuraClass` |
+
+## Completion (server-owned)
+
+1. Client calls `completeQuestGuarded(questId, 0)` — no client XP math
+2. RPC loads `active_boosts` + fatigue, computes grants, consumes use-based boosts
+3. `completionService.syncRewardStateFromServer` rehydrates credits, inventory, `active_boosts`
+
+
+1. Activatable items: `shopItemEffects.ts` (client preview) + `item_catalog` effect columns (server source of truth)
+2. `use_consumable_guarded(itemKey)` deducts stack, writes `progression.active_boosts` (title unlock grants `titles` entry)
+3. `boostSystem` applies encounter-time effects (mistake shield, stat buffer, revive, etc.)
+4. Completion rewards computed server-side; `previewCompletionRewards` is UI-only
 
 ## Equip (Loadout tab)
 

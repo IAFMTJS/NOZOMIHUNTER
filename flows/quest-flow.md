@@ -18,7 +18,7 @@ Completion Check (client `canCompleteQuest`)
 ↓
 Persist quest snapshot (`updateUserQuest`)
 ↓
-`complete_quest_guarded` RPC (validates non-hidden objectives on DB snapshot, caps XP, updates progression, grants inventory + credits, sets `pending_rewards`) → `applyActivityCompletion` syncs economy/inventory from DB (no double credit merge)
+`complete_quest_guarded` RPC (validates non-hidden objectives, applies server-side fatigue + completion boosts, grants XP/credits/inventory, consumes use-based boosts, sets `pending_rewards`) → `applyActivityCompletion` syncs economy/inventory/active_boosts from DB
 ↓
 `resolveRewardProgression` — merge reward `unlocks`, diff `newUnlocks`, emit `UNLOCK_GRANTED`
 ↓
@@ -41,5 +41,10 @@ Events:
 - QUEST_FAILED
 - UNLOCK_GRANTED
 - ENCOUNTER_ANSWER_CORRECT / ENCOUNTER_ANSWER_WRONG (vocabulary, conversation, speech, listening)
+
+Optional shop hooks (v1.2.2):
+- **Skip token** — `shopEffectActions.skipQuestObjective` (not on boss encounters)
+- **Quest retry** — Active Enhancements rail retries most recent failed contract
+- **Rank shield** — suppresses XP debt on failure (interim until rank-loss mechanics)
 
 Presentation (v0.6.7): prep gate → auto-focus encounter shell; feedback flashes + audio on answer events.

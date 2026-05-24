@@ -31,7 +31,11 @@ export function SystemStatusClient() {
       <HunterPageBack href="/home" label="Hunter status" />
       <div className="space-y-6">
         <SystemCrest />
-        <SystemMessageRail message={message} subline={systemMessageSubline(player)} />
+        <SystemMessageRail
+          message={message}
+          subline={systemMessageSubline(player)}
+          tone={player.penalties.corruption >= 50 ? "warning" : "observation"}
+        />
 
         <StatBar
           label="System integrity"

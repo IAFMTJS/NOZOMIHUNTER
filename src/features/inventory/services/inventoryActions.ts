@@ -1,4 +1,9 @@
-import { purchaseItemGuarded } from "@/services/supabase/economyRepository"
+import {
+  convertXpToCreditsGuarded,
+  consumeActiveBoostGuarded,
+  purchaseItemGuarded,
+  consumeItemGuarded,
+} from "@/services/supabase/economyRepository"
 import {
   loadItemCatalog,
   loadPlayerInventory,
@@ -9,6 +14,10 @@ import { hydratePlayerFromDb } from "@/features/quests/services/questService"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
+import { parseActiveBoosts } from "@/systems/economy/xpConversionSystem"
+import { getItemEffect } from "@/config/shopItemEffects"
+import type { BoostEffectType } from "@/contracts/economy-contract"
+import { consumeBoostUse } from "@/systems/economy/boostSystem"
 
 export async function purchaseShopItem(
   userId: string,
@@ -16,6 +25,12 @@ export async function purchaseShopItem(
   quantity: number
 ): Promise<void> {
   const result = await purchaseItemGuarded(itemKey, quantity)
+  eventBus.emit(GAME_EVENTS.SHOP_PURCHASED, {
+    playerId: userId,
+    itemKey,
+    quantity,
+    spent: result.spent,
+  })
   eventBus.emit(GAME_EVENTS.ITEM_GRANTED, {
     playerId: userId,
     itemKey,
@@ -31,6 +46,67 @@ export async function purchaseShopItem(
       inventory,
     })
   }
+  await hydratePlayerFromDb(userId)
+}
+
+export async function convertXpToCredits(
+  userId: string,
+  xpAmount: number
+): Promise<void> {
+  const result = await convertXpToCreditsGuarded(xpAmount)
+  const store = usePlayerStore.getState()
+  const player = store.player
+  if (player) {
+    store.setPlayer({
+      ...player,
+      xp: result.xp,
+      economy: {
+        ...player.economy,
+        credits: result.credits,
+        xpConversionCount:
+          player.economy.xpConversionDate === new Date().toISOString().slice(0, 10)
+            ? player.economy.xpConversionCount + 1
+            : 1,
+        xpConversionDate: new Date().toISOString().slice(0, 10),
+      },
+    })
+  }
+  eventBus.emit(GAME_EVENTS.XP_CONVERTED, {
+    playerId: userId,
+    xpSpent: result.xpSpent,
+    creditsGained: result.creditsGained,
+  })
+  await hydratePlayerFromDb(userId)
+}
+
+export async function activateConsumable(
+  userId: string,
+  itemKey: string
+): Promise<void> {
+  const effect = getItemEffect(itemKey)
+  if (!effect) {
+    throw new Error("Item cannot be activated")
+  }
+
+  const result = await consumeItemGuarded(itemKey)
+  const inventory = await loadPlayerInventory(userId)
+  const store = usePlayerStore.getState()
+  const player = store.player
+  if (player) {
+    store.setPlayer({
+      ...player,
+      inventory,
+      economy: {
+        ...player.economy,
+        activeBoosts: parseActiveBoosts(result.activeBoosts),
+      },
+    })
+  }
+  eventBus.emit(GAME_EVENTS.BOOST_ACTIVATED, {
+    playerId: userId,
+    itemKey,
+    effectType: effect.effectType,
+  })
   await hydratePlayerFromDb(userId)
 }
 
@@ -70,4 +146,21 @@ export async function toggleItemEquipped(
 
 export async function fetchItemCatalog(): Promise<ItemCatalogEntryContract[]> {
   return loadItemCatalog()
+}
+
+export async function consumeActiveBoost(
+  userId: string,
+  effectType: BoostEffectType
+): Promise<void> {
+  await consumeActiveBoostGuarded(effectType)
+  const store = usePlayerStore.getState()
+  const player = store.player
+  if (player) {
+    const next = consumeBoostUse(player.economy.activeBoosts, effectType)
+    store.setPlayer({
+      ...player,
+      economy: { ...player.economy, activeBoosts: next },
+    })
+  }
+  await hydratePlayerFromDb(userId)
 }

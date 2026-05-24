@@ -13,8 +13,17 @@ import {
   generateQuestForPlayer,
   generateTutorialQuest,
 } from "@/systems/quests/questGenerator"
-import { calculateQuestReward } from "@/systems/progression/rewardSystem"
-import { fatigueXpMultiplier } from "@/systems/penalties/penaltySystem"
+import { hasActiveBoost } from "@/systems/economy/boostSystem"
+import {
+  resetQuestForRetry,
+  skipCurrentObjective,
+} from "@/systems/economy/shopQuestEffectSystem"
+import { consumeActiveBoost } from "@/features/inventory/services/inventoryActions"
+import { reactivateFailedQuestGuarded } from "@/services/supabase/economyRepository"
+import {
+  loadMostRecentFailedQuest,
+} from "@/services/supabase/playerRepository"
+import type { QuestContract } from "@/contracts/quest-contract"
 import { canCompleteQuest } from "@/systems/quests/questValidator"
 import { QuestSnapshotSchema } from "@/systems/validation/playerSchema"
 import { logSystemEvent } from "@/systems/logger/logger"
@@ -118,17 +127,24 @@ export async function failQuestForPlayer(userId: string, questId: string) {
   const player = store.player
   if (!quest || !player) return null
 
-  const failResult = failQuest(quest, player.penalties, userId)
+  const useRankShield = hasActiveBoost(player, "RANK_SHIELD")
+  const failResult = failQuest(quest, player.penalties, userId, {
+    suppressXpDebt: useRankShield,
+  })
   store.applyPenalties(failResult.penalties)
 
   const remaining = store.activeQuests.filter((q) => q.id !== questId)
   store.setQuests(remaining)
 
   await failUserQuest(userId, questId)
+  if (useRankShield) {
+    await consumeActiveBoost(userId, "RANK_SHIELD")
+  }
   await persistQuestState()
 
   return failResult
 }
+
 
 export async function finishQuest(userId: string, questId: string) {
   const store = usePlayerStore.getState()
@@ -147,12 +163,7 @@ export async function finishQuest(userId: string, questId: string) {
     logSystemEvent("validation", "quest_snapshot_drift", snapshotCheck.error.flatten())
   }
 
-  const rewardPayload = calculateQuestReward(
-    quest.rewards,
-    fatigueXpMultiplier(progressionState.penalties.fatigue)
-  )
-
-  const server = await completeQuestGuarded(quest.id, rewardPayload.xp)
+  const server = await completeQuestGuarded(quest.id, 0)
 
   const { progression: mergedProgression, newUnlocks } =
     resolveRewardProgression(progressionState.progression, quest.rewards)
@@ -195,4 +206,46 @@ export async function finishQuest(userId: string, questId: string) {
       rankUp,
     },
   }
+}
+
+export async function retryMostRecentFailedQuest(userId: string) {
+  const store = usePlayerStore.getState()
+  const player = store.player
+  if (!player || !hasActiveBoost(player, "QUEST_RETRY")) {
+    throw new Error("Quest retry ticket not active")
+  }
+
+  const failed = await loadMostRecentFailedQuest(userId)
+  if (!failed || failed.type === "DUNGEON") {
+    throw new Error("No retryable failed contract")
+  }
+
+  const reset = resetQuestForRetry(failed)
+  await reactivateFailedQuestGuarded(failed.id)
+  await updateUserQuest(userId, reset)
+  await consumeActiveBoost(userId, "QUEST_RETRY")
+
+  store.setQuests(dedupeActiveQuests([...store.activeQuests, reset]))
+  await persistQuestState()
+  return reset
+}
+
+export async function skipQuestObjectiveForPlayer(
+  userId: string,
+  questId: string
+) {
+  const store = usePlayerStore.getState()
+  const player = store.player
+  const quest = store.activeQuests.find((q) => q.id === questId)
+  if (!player || !quest) return null
+  if (!hasActiveBoost(player, "SKIP_TOKEN")) {
+    throw new Error("Skip token not active")
+  }
+
+  const updated = skipCurrentObjective(quest)
+  await consumeActiveBoost(userId, "SKIP_TOKEN")
+  store.updateQuest(updated)
+  await updateUserQuest(userId, updated)
+  await persistQuestState()
+  return updated
 }

@@ -40,6 +40,8 @@ import type { PlayerContract } from "@/contracts/player-contract"
 import type { QuestContract } from "@/contracts/quest-contract"
 import type { ReadinessResultContract } from "@/contracts/readiness-contract"
 import type { DungeonForecastContract } from "@/systems/dungeons/dungeonForecastSystem"
+import { SyncDisciplineCeremony } from "@/features/rewards/components/SyncDisciplineCeremony"
+import { SYNCHRONIZATION_CONFIG } from "@/config/synchronizationConfig"
 import { useHunterReadiness } from "@/features/hunter/hooks/useHunterReadiness"
 
 let eventsRegistered = false
@@ -81,6 +83,7 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
   const [tutorialDismissed, setTutorialDismissed] = useState(false)
   const [hubView, setHubView] = useState<HubView>("menu")
   const [claimError, setClaimError] = useState<string | null>(null)
+  const [syncCeremonyKey, setSyncCeremonyKey] = useState<string | null>(null)
 
   const quest = useQuestLogic(user?.id)
   const dungeon = useDungeonLogic(user?.id)
@@ -95,6 +98,39 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
     !isTutorialComplete(player!) &&
     !tutorialDismissed &&
     activeQuests.some((q) => q.isTutorial)
+
+  useEffect(() => {
+    if (!user?.id || !player) return
+    const storageKey = `nozomi-sync-ceremony-seen:${user.id}`
+    let seen: string[] = []
+    try {
+      seen = JSON.parse(localStorage.getItem(storageKey) ?? "[]") as string[]
+    } catch {
+      seen = []
+    }
+    const disciplineKeys = SYNCHRONIZATION_CONFIG.MILESTONES.map((m) => m.unlock)
+    const earned = player.progression.titles.filter((t) =>
+      (disciplineKeys as string[]).includes(t)
+    )
+    const pending = earned.find((k) => !seen.includes(k))
+    setSyncCeremonyKey(pending ?? null)
+  }, [user?.id, player?.progression.titles.join(",")])
+
+  const dismissSyncCeremony = useCallback(() => {
+    if (!user?.id || !syncCeremonyKey) return
+    const storageKey = `nozomi-sync-ceremony-seen:${user.id}`
+    let seen: string[] = []
+    try {
+      seen = JSON.parse(localStorage.getItem(storageKey) ?? "[]") as string[]
+    } catch {
+      seen = []
+    }
+    if (!seen.includes(syncCeremonyKey)) {
+      seen.push(syncCeremonyKey)
+      localStorage.setItem(storageKey, JSON.stringify(seen))
+    }
+    setSyncCeremonyKey(null)
+  }, [user?.id, syncCeremonyKey])
 
   useEffect(() => {
     if (!eventsRegistered) {
@@ -125,7 +161,10 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
             transitionSlow: false,
             portraitClass: "",
             identityAuraClass: "",
+            shopAuraClass: "",
             readinessClass: "",
+            headerClass: "",
+            huntCtaClass: "",
           },
     [player]
   )
@@ -218,7 +257,17 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
 
   return (
     <HunterSessionContext.Provider value={value}>
-      <HunterShellLayout shellClassName={hunterPresentation.shellClass}>
+      <HunterShellLayout
+        shellClassName={hunterPresentation.shellClass}
+        headerClassName={hunterPresentation.headerClass}
+      >
+      {syncCeremonyKey && player && (
+        <SyncDisciplineCeremony
+          unlockKey={syncCeremonyKey}
+          chainDays={player.synchronization.chainDays}
+          onDismiss={dismissSyncCeremony}
+        />
+      )}
       {player?.pendingRewards && !player.pendingRewards.claimed && (
         <RewardClaimOverlay
           player={player}

@@ -16,16 +16,26 @@ import {
   handleDungeonFailure,
   onSectorCleared,
   persistDungeonQuest,
+  assertDungeonTimedOut,
 } from "./dungeonPersistence"
 
 export async function submitDungeonVocabulary(
   userId: string,
   answer: string
 ): Promise<{ correct: boolean; encounterFailed: boolean } | null> {
+  if (await assertDungeonTimedOut(userId)) {
+    return { correct: false, encounterFailed: true }
+  }
   const { quest, player } = getDungeonQuest()
   if (!quest?.vocabularyEncounter || !player) return null
 
-  const result = runVocabularySubmit(quest, answer, userId, player.penalties)
+  const result = runVocabularySubmit(
+    quest,
+    answer,
+    userId,
+    player.penalties,
+    player
+  )
   await persistMasteryUpdate(userId, result.masteryUpdate)
 
   if (result.encounterFailed) {
@@ -46,10 +56,13 @@ export async function submitDungeonListening(
   userId: string,
   answer: string
 ): Promise<{ correct: boolean; encounterFailed: boolean } | null> {
+  if (await assertDungeonTimedOut(userId)) {
+    return { correct: false, encounterFailed: true }
+  }
   const { quest, player } = getDungeonQuest()
   if (!quest?.listeningEncounter || !player) return null
 
-  const result = runListeningSubmit(quest, answer, player.penalties)
+  const result = runListeningSubmit(quest, answer, player.penalties, player)
 
   if (result.encounterFailed) {
     await handleDungeonFailure(userId, result.quest)
@@ -74,6 +87,14 @@ export async function submitDungeonConversation(
   feedback: string
   directorReply: string
 } | null> {
+  if (await assertDungeonTimedOut(userId)) {
+    return {
+      passed: false,
+      encounterFailed: true,
+      feedback: "Sector timer expired.",
+      directorReply: "",
+    }
+  }
   const { quest, player } = getDungeonQuest()
   if (!quest?.conversationEncounter || !player) return null
 
@@ -131,6 +152,14 @@ export async function submitDungeonSpeech(
   feedback: string
   compositeScore: number
 } | null> {
+  if (await assertDungeonTimedOut(userId)) {
+    return {
+      passed: false,
+      encounterFailed: true,
+      feedback: "Sector timer expired.",
+      compositeScore: 0,
+    }
+  }
   const { quest, player } = getDungeonQuest()
   if (!quest?.speechEncounter || !player) return null
 
@@ -148,7 +177,7 @@ export async function submitDungeonSpeech(
   const result = applySpeechAnalysis(
     quest,
     analysis,
-    maxWrongForPenalties(player.penalties)
+    maxWrongForPenalties(player.penalties, player)
   )
 
   if (result.encounterFailed) {

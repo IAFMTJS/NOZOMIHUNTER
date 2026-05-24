@@ -9,6 +9,7 @@ interface HunterPortraitProps {
   codename?: string
   corruption?: number
   syncStatus?: SynchronizationStatus
+  imageUrl?: string
 }
 
 function rankRingClass(rank?: HunterRank): string {
@@ -32,6 +33,7 @@ export function HunterPortrait({
   codename,
   corruption = 0,
   syncStatus,
+  imageUrl,
 }: HunterPortraitProps) {
   const corruptHigh = corruption >= 50
   const corruptLow = corruption >= 25 && !corruptHigh
@@ -73,6 +75,14 @@ export function HunterPortrait({
         />
         <circle cx="40" cy="26" r="9" fill="rgba(243, 245, 255, 0.08)" />
       </svg>
+
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt=""
+          className="pointer-events-none absolute inset-0 h-full w-full rounded-[var(--radius-panel)] object-cover object-top opacity-90"
+        />
+      )}
 
       {/* Rank ring */}
       <svg

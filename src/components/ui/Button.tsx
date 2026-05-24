@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react"
 
-type ButtonVariant = "primary" | "ghost" | "danger" | "subtle"
+type ButtonVariant = "primary" | "cta" | "ghost" | "danger" | "subtle"
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
@@ -11,6 +11,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const VARIANT_CLASS: Record<ButtonVariant, string> = {
   primary:
     "border-[var(--accent)] text-[var(--accent-bright)] hover:bg-[var(--accent)] hover:text-[var(--accent-on)]",
+  cta:
+    "nozomi-btn-cta border-transparent text-white hover:brightness-110",
   ghost:
     "border-[var(--border-subtle)] text-[var(--muted)] hover:bg-white/10 hover:text-[var(--foreground)]",
   danger:

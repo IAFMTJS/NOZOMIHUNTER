@@ -6,15 +6,15 @@
 ↓
 Enter Dungeon (DUNGEON quest assigned)
 ↓
-PREPARATION — briefing, Deploy (`EncounterHost` sector view; `/prepare` may block if checklist/readiness fail)
+PREPARATION — briefing, Deploy (`initDungeonTimer` sets `runStartedAt` + `timeLimitMs`)
 ↓
-EXPLORATION — Enter sector
+EXPLORATION — corridor transit (APPROACH → SCAN → ENGAGE beats via `ExplorationLayer`)
 ↓
-ENCOUNTER — vocab / listening / NPC / speech
+ENCOUNTER — vocab / listening / NPC / speech (after `engageSectorEncounter`)
 ↓
-REWARD — sector cleared
+REWARD — sector cleared interstitial (`SectorRewardInterstitial`)
 ↓
-(repeat sectors)
+EXPLORATION — next sector transit (repeat)
 ↓
 BOSS — vocabulary phase → speech phase
 ↓
@@ -29,8 +29,12 @@ DUNGEON_COMPLETED
 Corridors: all definitions shown in sector hub; `resolveDungeonAccess` (level, prerequisite unlock, active run).
 
 Failure paths:
+- Sector timer — `DungeonRunner` countdown; `assertDungeonTimedOut` on encounter submit and failure handler
 - Sector failure increments `encounterFailures`; max budget from `maxDungeonEncounterFailures` (corruption ≥ 40 → 1 failure allowed)
-- Abort dungeon → fail contract
+- **Revive token** — one extra life in `handleDungeonFailure`
+- **Escape beacon** — penalty-free abort in `abandonDungeon`
+- **Time freeze** — extends deadline via `frozenTimeMs` / `frozenUntil`
+- Abort dungeon (no beacon) → fail contract
 
 Events:
 - `DUNGEON_ENTERED`

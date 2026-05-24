@@ -114,7 +114,11 @@ export async function syncRewardStateFromServer(
 
   store.setPlayer({
     ...player,
-    economy: fresh.player.economy,
+    economy: {
+      ...player.economy,
+      ...fresh.player.economy,
+      activeBoosts: fresh.player.economy.activeBoosts,
+    },
     inventory: fresh.player.inventory,
     pendingRewards: pending,
     rpgStats: player.rpgStats,

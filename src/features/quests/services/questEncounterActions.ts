@@ -32,7 +32,13 @@ export async function submitVocabularyAnswerForQuest(
   const quest = store.activeQuests.find((q) => q.id === questId)
   if (!quest?.vocabularyEncounter || !store.player) return null
 
-  const result = runVocabularySubmit(quest, answer, userId, store.player.penalties)
+  const result = runVocabularySubmit(
+    quest,
+    answer,
+    userId,
+    store.player.penalties,
+    store.player
+  )
   store.updateQuest(result.quest)
   await updateUserQuest(userId, result.quest)
   await persistMasteryUpdate(userId, result.masteryUpdate)
@@ -143,7 +149,7 @@ export async function submitSpeechForQuest(
   const result = applySpeechAnalysis(
     quest,
     analysis,
-    maxWrongForPenalties(store.player.penalties)
+    maxWrongForPenalties(store.player.penalties, store.player)
   )
   store.updateQuest(result.quest)
   await updateUserQuest(userId, result.quest)
@@ -182,7 +188,12 @@ export async function submitListeningAnswerForQuest(
   const quest = store.activeQuests.find((q) => q.id === questId)
   if (!quest?.listeningEncounter || !store.player) return null
 
-  const result = runListeningSubmit(quest, answer, store.player.penalties)
+  const result = runListeningSubmit(
+    quest,
+    answer,
+    store.player.penalties,
+    store.player
+  )
   store.updateQuest(result.quest)
   await updateUserQuest(userId, result.quest)
 

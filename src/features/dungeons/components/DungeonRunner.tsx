@@ -1,7 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { QuestContract } from "@/contracts/quest-contract"
+import {
+  dungeonTimeRemaining,
+  formatDungeonTimeRemaining,
+} from "@/systems/economy/shopEffectSystem"
 import { VocabularyEncounter } from "@/features/quests/components/VocabularyEncounter"
 import { ConversationEncounter } from "@/features/conversation/components/ConversationEncounter"
 import { SpeechEncounter } from "@/features/speech/components/SpeechEncounter"
@@ -13,7 +17,10 @@ import { StatusChip } from "@/components/ui/StatusChip"
 import { DungeonPhaseStepper } from "@/components/ui/DungeonPhaseStepper"
 import { DungeonCorridorRail } from "@/components/ui/DungeonCorridorRail"
 import { EncounterFocusShell } from "@/components/ui/EncounterFocusShell"
-import { ExtractionCeremony } from "./ExtractionCeremony"
+import { ExplorationLayer } from "@/features/dungeons/components/ExplorationLayer"
+import { SectorRewardInterstitial } from "@/features/dungeons/components/SectorRewardInterstitial"
+import { ExtractionCeremony } from "@/features/dungeons/components/ExtractionCeremony"
+import type { ExplorationAction } from "@/contracts/dungeon-contract"
 
 interface DungeonRunnerProps {
   quest: QuestContract
@@ -23,13 +30,17 @@ interface DungeonRunnerProps {
   maxListeningReplays?: number
   signalDegraded?: boolean
   onDeploy: () => Promise<void>
-  onEnterSector: () => Promise<void>
+  onAdvanceExploration: (action: ExplorationAction) => Promise<void>
+  onEngageSector: () => Promise<void>
+  onContinueReward: () => Promise<void>
+  explorationLine?: string | null
   onExtract: () => Promise<void>
   onSubmitAnswer: (answer: string) => Promise<void>
   onSendMessage: (message: string) => Promise<void>
   onSubmitSpeech: (transcript: string, ms: number) => Promise<void>
   onSubmitListening: (answer: string) => Promise<void>
   onAbandon: () => Promise<void>
+  escapeBeaconActive?: boolean
 }
 
 export function DungeonRunner({
@@ -40,16 +51,33 @@ export function DungeonRunner({
   maxListeningReplays,
   signalDegraded,
   onDeploy,
-  onEnterSector,
+  onAdvanceExploration,
+  onEngageSector,
+  onContinueReward,
+  explorationLine,
   onExtract,
   onSubmitAnswer,
   onSendMessage,
   onSubmitSpeech,
   onSubmitListening,
   onAbandon,
+  escapeBeaconActive,
 }: DungeonRunnerProps) {
   const [status, setStatus] = useState<string | null>(null)
+  const [timeRemainingMs, setTimeRemainingMs] = useState<number | null>(null)
   const run = quest.dungeonRun
+
+  useEffect(() => {
+    if (!run?.runStartedAt || !run.timeLimitMs) {
+      setTimeRemainingMs(null)
+      return
+    }
+    const tick = () => setTimeRemainingMs(dungeonTimeRemaining(run))
+    tick()
+    const id = window.setInterval(tick, 1000)
+    return () => window.clearInterval(id)
+  }, [run?.runStartedAt, run?.timeLimitMs, run?.frozenTimeMs, run?.frozenUntil, run])
+
   if (!run) return null
 
   const boss = run.dungeon.boss
@@ -81,6 +109,10 @@ export function DungeonRunner({
       !e.completed &&
       i === activeSectorIndex &&
       (state === "ENCOUNTER" || state === "EXPLORATION" || state === "REWARD"),
+    explorationProgress:
+      !e.completed && i === activeSectorIndex && state === "EXPLORATION"
+        ? run.explorationProgress
+        : undefined,
   }))
 
   const encounterBody = (
@@ -101,30 +133,21 @@ export function DungeonRunner({
       )}
 
       {state === "EXPLORATION" && (
-        <div className="nozomi-embedded flex flex-col gap-3 rounded-[var(--radius-panel)] p-4">
-          <p className="text-sm text-[var(--muted)]">
-            Next breach point active. Engage when your channel is clear.
-          </p>
-          <Button
-            disabled={disabled}
-            onClick={() => wrap(onEnterSector, "Sector engaged.")}
-          >
-            Breach sector
-          </Button>
-        </div>
+        <ExplorationLayer
+          run={run}
+          disabled={disabled}
+          statusLine={explorationLine}
+          onAdvance={(action) => wrap(() => onAdvanceExploration(action))}
+          onEngage={() => wrap(onEngageSector, "Sector engaged.")}
+        />
       )}
 
       {state === "REWARD" && (
-        <div className="flex flex-col gap-3">
-          <p className="text-sm text-[var(--accent-bright)]">Sector cleared.</p>
-          <Button
-            variant="ghost"
-            disabled={disabled}
-            onClick={() => wrap(onEnterSector, "Pushing deeper...")}
-          >
-            Continue
-          </Button>
-        </div>
+        <SectorRewardInterstitial
+          quest={quest}
+          disabled={disabled}
+          onContinue={() => wrap(onContinueReward, "Pushing deeper...")}
+        />
       )}
 
       {state === "ENCOUNTER" && run.activeType === "VOCAB" && (
@@ -240,6 +263,9 @@ export function DungeonRunner({
           ? ` · Progress ${objective.currentProgress}/${objective.requiredProgress}`
           : ""}
         {boss ? ` · Boss: ${boss.name}` : ""}
+        {timeRemainingMs != null && run.runStartedAt
+          ? ` · Time ${formatDungeonTimeRemaining(timeRemainingMs)}`
+          : ""}
       </p>
 
       {inEncounter ? (
@@ -268,7 +294,7 @@ export function DungeonRunner({
           onClick={() => wrap(onAbandon)}
           className="mt-4"
         >
-          Abort dungeon
+          {escapeBeaconActive ? "Emergency extract" : "Abort dungeon"}
         </Button>
       )}
     </Panel>

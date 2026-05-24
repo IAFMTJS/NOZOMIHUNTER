@@ -14,6 +14,7 @@ import { applyDailyStaminaGuarded } from "@/services/supabase/economyRepository"
 import { resolveHunterIdentity } from "@/systems/identity/hunterIdentitySystem"
 import { computeSynchronizationStatus } from "@/systems/synchronization/synchronizationSystem"
 import { defaultEconomy } from "@/systems/economy/staminaSystem"
+import { parseActiveBoosts } from "@/systems/economy/xpConversionSystem"
 import { parsePendingRewards } from "@/systems/rewards/rewardClaimSystem"
 import { PlayerSchema } from "@/systems/validation/playerSchema"
 import { resolveRpgStats } from "@/systems/progression/rpgStatsSystem"
@@ -36,6 +37,9 @@ function mapEconomy(prog: Record<string, unknown>) {
     stamina: row.stamina ?? base.stamina,
     staminaMax: row.stamina_max ?? base.staminaMax,
     brewTokens: row.brew_tokens ?? base.brewTokens,
+    activeBoosts: parseActiveBoosts(row.active_boosts),
+    xpConversionCount: row.xp_conversion_count ?? 0,
+    xpConversionDate: row.xp_conversion_date ?? null,
   }
 }
 
@@ -293,6 +297,42 @@ export async function loadCompletedQuestSnapshots(
 
   if (error) throw new Error(error.message)
   return (data ?? []).map((row) => row.quest_snapshot as QuestContract)
+}
+
+export async function loadFailedQuestSnapshot(
+  userId: string,
+  questId: string
+): Promise<QuestContract | null> {
+  const supabase = requireClient()
+  const { data, error } = await supabase
+    .from("user_quests")
+    .select("quest_snapshot, updated_at")
+    .eq("user_id", userId)
+    .eq("status", "failed")
+    .order("updated_at", { ascending: false })
+
+  if (error) throw new Error(error.message)
+  const row = (data ?? []).find(
+    (r) => (r.quest_snapshot as { id?: string })?.id === questId
+  )
+  return row ? (row.quest_snapshot as QuestContract) : null
+}
+
+export async function loadMostRecentFailedQuest(
+  userId: string
+): Promise<QuestContract | null> {
+  const supabase = requireClient()
+  const { data, error } = await supabase
+    .from("user_quests")
+    .select("quest_snapshot")
+    .eq("user_id", userId)
+    .eq("status", "failed")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (error) throw new Error(error.message)
+  return data ? (data.quest_snapshot as QuestContract) : null
 }
 
 async function findActiveQuestRow(

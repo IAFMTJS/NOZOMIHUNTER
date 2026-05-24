@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation"
 
 const TABS = [
   { href: "/home", label: "Home", icon: HomeIcon },
-  { href: "/contracts", label: "Contracts", icon: QuestIcon },
+  { href: "/contracts", label: "Missions", icon: QuestIcon },
   { href: "/dungeons", label: "Dungeons", icon: DungeonIcon },
-  { href: "/inventory", label: "Inventory", icon: BagIcon },
+  { href: "/vocabulary", label: "Vocab", icon: VocabIcon },
   { href: "/profile", label: "Profile", icon: ProfileIcon },
 ] as const
 
@@ -20,6 +20,8 @@ function isActive(pathname: string, href: string): boolean {
       pathname === "/missions" ||
       pathname.startsWith("/missions/")
     )
+  if (href === "/vocabulary")
+    return pathname === "/vocabulary" || pathname.startsWith("/vocabulary/")
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
@@ -104,7 +106,7 @@ function DungeonIcon({ active }: { active: boolean }) {
   )
 }
 
-function BagIcon({ active }: { active: boolean }) {
+function VocabIcon({ active }: { active: boolean }) {
   return (
     <svg
       width="22"
@@ -115,7 +117,7 @@ function BagIcon({ active }: { active: boolean }) {
       strokeWidth="1.75"
       className={active ? "drop-shadow-[0_0_6px_var(--accent)]" : ""}
     >
-      <path d="M8 8V6a4 4 0 118 0v2M6 8h12l-1 14H7L6 8z" />
+      <path d="M4 5h16v14H4zM8 9h8M8 13h5" />
     </svg>
   )
 }

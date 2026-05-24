@@ -27,10 +27,14 @@ export const GAME_EVENTS = {
   STAMINA_SPENT: "STAMINA_SPENT",
   STAMINA_REFUNDED: "STAMINA_REFUNDED",
   ITEM_GRANTED: "ITEM_GRANTED",
+  SHOP_PURCHASED: "SHOP_PURCHASED",
+  BOOST_ACTIVATED: "BOOST_ACTIVATED",
+  XP_CONVERTED: "XP_CONVERTED",
   REWARDS_PENDING: "REWARDS_PENDING",
   REWARDS_CLAIMED: "REWARDS_CLAIMED",
   WORD_BREWED: "WORD_BREWED",
   QUEST_TRACKED: "QUEST_TRACKED",
+  EXPLORATION_BEAT_ADVANCED: "EXPLORATION_BEAT_ADVANCED",
 } as const
 
 export type GameEventType = (typeof GAME_EVENTS)[keyof typeof GAME_EVENTS]
@@ -73,4 +77,20 @@ export type StaminaSpentPayload = {
   playerId: string
   amount: number
   dungeonKey: string | null
+}
+export type ShopPurchasedPayload = {
+  playerId: string
+  itemKey: string
+  quantity: number
+  spent: number
+}
+export type BoostActivatedPayload = {
+  playerId: string
+  itemKey: string
+  effectType: string
+}
+export type XpConvertedPayload = {
+  playerId: string
+  xpSpent: number
+  creditsGained: number
 }

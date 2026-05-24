@@ -34,6 +34,9 @@ export interface ProgressionRow {
   stamina_max?: number
   brew_tokens?: number
   pending_rewards?: Record<string, unknown> | null
+  active_boosts?: unknown
+  xp_conversion_date?: string | null
+  xp_conversion_count?: number
   rpg_strength?: number
   rpg_agility?: number
   rpg_intelligence?: number

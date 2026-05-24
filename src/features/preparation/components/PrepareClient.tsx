@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
 import { HunterPageBack } from "@/components/layout/HunterPageBack"
-import { Button } from "@/components/ui/Button"
+import { ScreenCTA } from "@/components/ui/ScreenCTA"
 import { PreparationRingGauge } from "@/components/preparation/PreparationRingGauge"
 import { PreparationChecklist } from "@/components/preparation/PreparationChecklist"
 import { PowerComparison } from "@/components/preparation/PowerComparison"
@@ -32,6 +32,7 @@ export function PrepareClient() {
     quest: questLogic,
     dungeon,
     setHubView,
+    hunterPresentation,
   } = useHunterSession()
 
   const [catalog, setCatalog] = useState<ItemCatalogEntryContract[]>([])
@@ -75,6 +76,7 @@ export function PrepareClient() {
   const deployBlocked =
     readiness.survivalBand === "CRITICAL" || !checklistComplete(checklist)
   const underPower = power.total < recommended
+  const staminaCost = def?.staminaCost
 
   async function handleDeploy() {
     if (deployBlocked) return
@@ -104,7 +106,7 @@ export function PrepareClient() {
   }
 
   return (
-    <HunterPage>
+    <HunterPage className="pb-28">
       <HunterPageBack
         href={dungeonKey ? "/dungeons" : "/contracts"}
         label={dungeonKey ? "Sectors" : "Contracts"}
@@ -128,17 +130,15 @@ export function PrepareClient() {
             Power below sector advisory — confirm to deploy.
           </p>
         )}
-
-        <Button
-          variant="primary"
-          size="md"
-          className="w-full !py-3 shadow-[0_0_20px_var(--glow-accent)]"
-          disabled={deployBlocked || dungeon.busy}
-          onClick={() => void handleDeploy()}
-        >
-          I&apos;m ready
-        </Button>
       </div>
+
+      <ScreenCTA
+        label={dungeonKey ? "Enter dungeon" : "Start mission"}
+        staminaCost={staminaCost ?? undefined}
+        disabled={deployBlocked || dungeon.busy}
+        className={hunterPresentation.huntCtaClass}
+        onClick={() => void handleDeploy()}
+      />
     </HunterPage>
   )
 }

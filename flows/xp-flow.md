@@ -6,11 +6,11 @@ Objective Progress
 ↓
 Completion Validation
 ↓
-Reward Calculation
+Server reward calculation (`complete_quest_guarded` — fatigue multiplier, XP boost, reward amplifier, system breach)
 ↓
-Penalty Check
+Penalty Check (fatigue applied server-side; rank shield may suppress failure debt)
 ↓
-XP Gain
+XP Gain (capped at 500 anti-exploit)
 ↓
 Level Validation
 ↓
@@ -22,15 +22,19 @@ Save Progress
 ↓
 Trigger Events
 
+Optional: **XP → Credits** (`convert_xp_to_credits_guarded`, max 3/day, inefficient tiers + 30% tax)
+
 Events:
 - QUEST_COMPLETED
 - XP_GAINED
+- XP_CONVERTED
 - LEVEL_UP
 - RANK_UP
 
 Systems:
 - questSystem
 - progressionSystem
-- rewardSystem
+- rewardSystem (client preview via `previewCompletionRewards` only)
 - penaltySystem
+- xpConversionSystem
 - saveSystem

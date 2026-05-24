@@ -80,6 +80,10 @@ export interface DungeonPenaltyContract {
   fatigue: number
 }
 
+export type ExplorationBeat = "APPROACH" | "SCAN" | "ENGAGE"
+
+export type ExplorationAction = "LISTEN" | "PUSH"
+
 /** Live dungeon run state — persisted on DUNGEON quest snapshots. */
 export interface DungeonRunContract {
   dungeon: DungeonContract
@@ -90,6 +94,20 @@ export interface DungeonRunContract {
   bossPhase: number
   /** Stamina deducted on enter — refunded on abort when set. */
   staminaSpent?: number
+  /** ISO timestamp when the run timer started (deploy). */
+  runStartedAt?: string
+  /** Total allowed run time in ms before timeout failure. */
+  timeLimitMs?: number
+  /** Accumulated freeze extension ms (Time Freeze consumable). */
+  frozenTimeMs?: number
+  /** While set and in the future, the run timer is paused. */
+  frozenUntil?: string | null
+  /** Corridor traversal progress (0–100) while in EXPLORATION. */
+  explorationProgress?: number
+  /** Current exploration beat before sector engagement. */
+  explorationBeat?: ExplorationBeat | null
+  /** Whether tactical intel was revealed during SCAN. */
+  sectorIntelRevealed?: boolean
 }
 
 export type DungeonMachineState =

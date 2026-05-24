@@ -20,6 +20,9 @@ import {
   advanceBossPhase,
   completeDungeonSector,
 } from "@/systems/dungeons/dungeonOrchestrator"
+import { hasReviveToken } from "@/systems/economy/boostSystem"
+import { isDungeonTimedOut } from "@/systems/economy/shopEffectSystem"
+import { consumeShopBoost } from "@/features/inventory/services/shopEffectActions"
 import type { QuestContract } from "@/contracts/quest-contract"
 
 let saveRegistered = false
@@ -54,6 +57,18 @@ export async function persistDungeonQuest(
   await persistDungeonState()
 }
 
+export async function assertDungeonTimedOut(
+  userId: string
+): Promise<boolean> {
+  const { quest } = getDungeonQuest()
+  if (!quest?.dungeonRun) return false
+  if (isDungeonTimedOut(quest.dungeonRun)) {
+    await handleDungeonFailure(userId, quest)
+    return true
+  }
+  return false
+}
+
 export async function handleDungeonFailure(
   userId: string,
   quest: QuestContract
@@ -61,8 +76,36 @@ export async function handleDungeonFailure(
   const { store, player } = getDungeonQuest()
   if (!player) return
 
+  const run = quest.dungeonRun
+  if (run && isDungeonTimedOut(run)) {
+    const failResult = failDungeonRun(quest, player.penalties, userId)
+    store.applyPenalties(failResult.penalties)
+    const remaining = store.activeQuests.filter((q) => q.id !== quest.id)
+    store.setQuests(remaining)
+    await failUserQuest(userId, quest.id)
+    await persistDungeonState()
+    return
+  }
+
   const withFailure = registerEncounterFailure(quest, player.penalties)
   if (shouldFailDungeon(withFailure, player.penalties)) {
+    if (hasReviveToken(player)) {
+      await consumeShopBoost(userId, "REVIVE_TOKEN")
+      const revivedRun = withFailure.dungeonRun!
+      const retry = {
+        ...withFailure,
+        ...clearEncounterPayloads(),
+        dungeonRun: {
+          ...revivedRun,
+          encounterFailures: Math.max(0, revivedRun.encounterFailures - 1),
+          machineState: transition(revivedRun.machineState, "EXPLORATION"),
+          activeType: null,
+        },
+      }
+      await persistDungeonQuest(userId, retry)
+      return
+    }
+
     const failResult = failDungeonRun(withFailure, player.penalties, userId)
     store.applyPenalties(failResult.penalties)
     const remaining = store.activeQuests.filter((q) => q.id !== quest.id)
@@ -72,13 +115,13 @@ export async function handleDungeonFailure(
     return
   }
 
-  const run = withFailure.dungeonRun!
+  const failedRun = withFailure.dungeonRun!
   const retry = {
     ...withFailure,
     ...clearEncounterPayloads(),
     dungeonRun: {
-      ...run,
-      machineState: transition(run.machineState, "EXPLORATION"),
+      ...failedRun,
+      machineState: transition(failedRun.machineState, "EXPLORATION"),
       activeType: null,
     },
   }

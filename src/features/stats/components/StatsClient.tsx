@@ -33,7 +33,7 @@ export function StatsClient() {
 
   return (
     <HunterPage>
-      <section>
+      <section className="nozomi-embedded rounded-xl p-4">
         <p className="mb-3 font-display text-xs uppercase tracking-widest text-[var(--muted)]">
           Core stats
         </p>
@@ -50,7 +50,7 @@ export function StatsClient() {
         </ul>
       </section>
 
-      <section className="mt-8">
+      <section className="nozomi-embedded mt-8 rounded-xl p-4">
         <p className="mb-3 font-display text-xs uppercase tracking-widest text-[var(--muted)]">
           Battle stats
         </p>

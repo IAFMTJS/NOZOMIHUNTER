@@ -34,7 +34,8 @@ export function progressQuestObjective(
 export function failQuest(
   quest: QuestContract,
   penalties: PlayerPenaltyContract,
-  playerId: string
+  playerId: string,
+  options?: { suppressXpDebt?: boolean }
 ): QuestFailResult {
   eventBus.emit(GAME_EVENTS.QUEST_FAILED, {
     playerId,
@@ -42,9 +43,14 @@ export function failQuest(
     questType: quest.type,
   })
 
+  let questPenalties = quest.penalties
+  if (options?.suppressXpDebt && questPenalties?.xpDebt) {
+    questPenalties = { ...questPenalties, xpDebt: 0 }
+  }
+
   const nextPenalties = applyQuestFailurePenalties(
     penalties,
-    quest.penalties,
+    questPenalties,
     quest.isTutorial
   )
 

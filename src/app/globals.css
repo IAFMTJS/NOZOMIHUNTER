@@ -349,6 +349,22 @@ body {
   animation: nozomi-sync-pulse 2.5s ease-in-out infinite;
 }
 
+.nozomi-shop-aura-shadow .nozomi-hunter-portrait-slot,
+.nozomi-shop-aura-shadow.nozomi-hunter-portrait-slot {
+  box-shadow:
+    inset 0 0 0 1px rgba(120, 90, 180, 0.35),
+    0 0 22px rgba(60, 40, 100, 0.45);
+}
+
+.nozomi-shop-aura-divine .nozomi-hunter-portrait-slot,
+.nozomi-shop-aura-divine.nozomi-hunter-portrait-slot,
+.nozomi-shop-aura-motion .nozomi-hunter-portrait-slot,
+.nozomi-shop-aura-motion.nozomi-hunter-portrait-slot {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 220, 140, 0.4),
+    0 0 24px rgba(255, 200, 80, 0.35);
+}
+
 @keyframes nozomi-sync-pulse {
   0%,
   100% {
@@ -375,12 +391,225 @@ body {
   transition-duration: 0.01ms !important;
 }
 
-.nozomi-listening-focus {
-  --accent: var(--listening-accent);
-  --accent-bright: #ffb070;
-  --glow-accent: var(--listening-glow);
+.nozomi-glass-card {
+  background: linear-gradient(
+    165deg,
+    rgba(11, 16, 32, 0.72) 0%,
+    rgba(5, 7, 11, 0.55) 100%
+  );
+  border: 1px solid rgba(122, 92, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 8px 32px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+.nozomi-glass-card-accent {
+  border-color: rgba(122, 92, 255, 0.38);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 24px var(--glow-accent),
+    0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.nozomi-glass-card-reward {
+  border-color: rgba(255, 184, 77, 0.45);
+  background: linear-gradient(
+    165deg,
+    rgba(255, 184, 77, 0.1) 0%,
+    rgba(11, 16, 32, 0.72) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 184, 77, 0.08),
+    0 0 20px var(--glow-reward);
+}
+
+.nozomi-glass-card-locked {
+  border-color: rgba(255, 255, 255, 0.06);
+  filter: saturate(0.6);
+}
+
+.nozomi-btn-cta {
+  background: linear-gradient(
+    135deg,
+    var(--accent) 0%,
+    var(--accent-bright) 55%,
+    #b49aff 100%
+  );
+  box-shadow:
+    0 0 24px var(--glow-accent),
+    0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.nozomi-theme-cyber-tokyo {
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 30%, rgba(122, 92, 255, 0.45), transparent),
+    linear-gradient(160deg, #1a0f3a 0%, #05070b 70%);
+}
+
+.nozomi-theme-neon-city {
+  background:
+    radial-gradient(ellipse 70% 50% at 30% 20%, rgba(155, 125, 255, 0.4), transparent),
+    linear-gradient(145deg, #12082a 0%, #05070b 65%);
+}
+
+.nozomi-theme-shadow-archive {
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 80%, rgba(60, 80, 140, 0.35), transparent),
+    linear-gradient(180deg, #0a1228 0%, #05070b 80%);
+}
+
+.nozomi-theme-abyss-core {
+  background:
+    radial-gradient(ellipse 55% 45% at 50% 40%, rgba(255, 77, 109, 0.2), transparent),
+    radial-gradient(ellipse 80% 60% at 80% 0%, rgba(168, 85, 247, 0.25), transparent),
+    linear-gradient(180deg, #0d0518 0%, #05070b 75%);
+}
+
+.nozomi-theme-abandoned-station {
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 60%, rgba(120, 128, 154, 0.3), transparent),
+    linear-gradient(160deg, #101820 0%, #05070b 70%);
+}
+
+.nozomi-theme-corrupted-shrine {
+  background:
+    radial-gradient(ellipse 65% 55% at 60% 40%, rgba(168, 85, 247, 0.35), transparent),
+    linear-gradient(150deg, #180828 0%, #05070b 70%);
+}
+
+.nozomi-theme-vignette-purple::after,
+.nozomi-theme-vignette-cold::after,
+.nozomi-theme-vignette-danger::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+
+.nozomi-theme-vignette-purple::after {
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(5, 7, 11, 0.65) 100%);
+}
+
+.nozomi-theme-vignette-cold::after {
+  background: radial-gradient(ellipse at center, transparent 35%, rgba(5, 7, 11, 0.7) 100%);
+}
+
+.nozomi-theme-vignette-danger::after {
+  background: radial-gradient(ellipse at center, transparent 25%, rgba(5, 7, 11, 0.75) 100%);
 }
 
 .nozomi-listening-mic {
-  filter: drop-shadow(0 0 24px var(--listening-glow));
+  filter: drop-shadow(0 0 24px var(--glow-accent));
 }
+
+/* Screen moods — home command node */
+.nozomi-screen-home {
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(122, 92, 255, 0.07), transparent),
+    transparent;
+}
+
+/* Header rank tint (HunterShellLayout) */
+.nozomi-header-rank-d {
+  box-shadow: inset 0 -1px 0 rgba(122, 92, 255, 0.2);
+}
+
+.nozomi-header-rank-c,
+.nozomi-header-rank-b {
+  box-shadow: inset 0 -1px 0 rgba(122, 92, 255, 0.28);
+}
+
+.nozomi-header-rank-a {
+  box-shadow: inset 0 -1px 0 rgba(155, 125, 255, 0.35);
+}
+
+.nozomi-header-rank-s {
+  box-shadow: inset 0 -1px 0 rgba(255, 184, 77, 0.35);
+}
+
+.nozomi-header-corrupt-low {
+  filter: hue-rotate(8deg) saturate(1.08);
+}
+
+.nozomi-header-corrupt {
+  filter: hue-rotate(16deg) saturate(1.2);
+}
+
+.nozomi-deploy-caution .nozomi-btn-cta,
+.nozomi-deploy-caution button[class*="nozomi-btn-cta"] {
+  box-shadow:
+    0 0 20px rgba(255, 184, 77, 0.25),
+    0 4px 16px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 184, 77, 0.45);
+}
+
+.nozomi-deploy-risky .nozomi-btn-cta,
+.nozomi-deploy-risky button[class*="nozomi-btn-cta"] {
+  box-shadow:
+    0 0 20px rgba(255, 77, 109, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 77, 109, 0.45);
+}
+
+.nozomi-listening-pulse-rings {
+  pointer-events: none;
+  position: absolute;
+  inset: -12%;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 140, 66, 0.35);
+  animation: nozomi-listening-ring 2.4s ease-out infinite;
+}
+
+.nozomi-listening-pulse-rings:nth-child(2) {
+  inset: -24%;
+  animation-delay: 0.8s;
+  opacity: 0.65;
+}
+
+.nozomi-listening-pulse-rings:nth-child(3) {
+  inset: -36%;
+  animation-delay: 1.6s;
+  opacity: 0.35;
+}
+
+@keyframes nozomi-listening-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+}
+
+.nozomi-dungeon-locked {
+  filter: saturate(0.45) brightness(0.72);
+}
+
+.nozomi-dungeon-locked::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 7, 11, 0.15) 0%,
+    rgba(5, 7, 11, 0.65) 100%
+  );
+}
+
+.nozomi-menu-denied {
+  font-style: italic;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+}
+
+.nozomi-rank-up-overlay {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 20%, var(--glow-accent), transparent 65%),
+    rgba(5, 7, 11, 0.92);
+  backdrop-filter: blur(12px);
+}
+

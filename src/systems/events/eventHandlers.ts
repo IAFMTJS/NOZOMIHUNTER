@@ -100,6 +100,18 @@ export function registerCoreEventHandlers(): void {
     track(GAME_EVENTS.ITEM_GRANTED, payload)
   })
 
+  eventBus.on(GAME_EVENTS.SHOP_PURCHASED, (payload) => {
+    track(GAME_EVENTS.SHOP_PURCHASED, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.BOOST_ACTIVATED, (payload) => {
+    track(GAME_EVENTS.BOOST_ACTIVATED, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.XP_CONVERTED, (payload) => {
+    track(GAME_EVENTS.XP_CONVERTED, payload)
+  })
+
   eventBus.on(GAME_EVENTS.REWARDS_PENDING, (payload) => {
     track(GAME_EVENTS.REWARDS_PENDING, payload)
   })

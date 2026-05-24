@@ -82,7 +82,7 @@ export function ConversationEncounter({
       )}
 
       <p className="mb-2 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-        Sector uplink · {encounter.directorName} · Exchanges{" "}
+        Channel open · Operator ↔ Sector · Exchanges{" "}
         {encounter.successfulExchanges}/{encounter.requiredExchanges}
       </p>
 

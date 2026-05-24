@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import { usePathname } from "next/navigation"
 import { ContractHub } from "@/features/hub/ContractHub"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
+import { isEncounterOverlayRoute } from "@/features/hunter/encounterRoutes"
 
 export function EncounterHost() {
   const pathname = usePathname()
@@ -20,16 +21,18 @@ export function EncounterHost() {
   } = useHunterSession()
 
   useEffect(() => {
-    if (activeDungeon) setHubView("sector")
-    else if (
-      pathname.startsWith("/contracts") ||
-      pathname.startsWith("/missions")
-    )
-      setHubView("hunt")
-    else setHubView("menu")
+    if (!isEncounterOverlayRoute(pathname)) {
+      setHubView("menu")
+      return
+    }
+
+    if (activeDungeon && pathname === "/dungeons") {
+      setHubView("sector")
+    }
   }, [activeDungeon, pathname, setHubView])
 
   if (!player) return null
+  if (!isEncounterOverlayRoute(pathname)) return null
   if (hubView !== "hunt" && hubView !== "sector") return null
 
   return (
@@ -49,10 +52,14 @@ export function EncounterHost() {
         dungeonBusy={dungeon.busy}
         dungeonError={dungeon.error}
         dungeonMessage={dungeon.message}
+        dungeonExplorationLine={dungeon.explorationLine}
         onNewQuest={quest.newQuest}
         onEnterDungeon={dungeon.enter}
         onDungeonDeploy={dungeon.deploy}
-        onDungeonEnterSector={dungeon.enterSector}
+        onDungeonAdvanceExploration={dungeon.advanceExploration}
+        onDungeonEngageSector={dungeon.engageSector}
+        onDungeonContinueReward={dungeon.continueAfterReward}
+        onDungeonEnterSector={dungeon.engageSector}
         onDungeonExtract={dungeon.extract}
         onDungeonSubmitAnswer={dungeon.submitAnswer}
         onDungeonSubmitListening={dungeon.submitListening}

@@ -8,14 +8,13 @@ import { SystemMessageRail } from "@/components/hunter/SystemMessageRail"
 import { XPBar } from "@/components/XPBar"
 import { CorruptionWidget } from "@/components/hunter/CorruptionWidget"
 import { SynchronizationStatus } from "@/components/hunter/SynchronizationStatus"
+import { SyncDisciplineChestTeaser } from "@/components/hunter/SyncDisciplineChestTeaser"
 import { NextGateForecast } from "@/components/hunter/NextGateForecast"
 import { ReadinessSummary } from "@/components/hunter/ReadinessSummary"
 import { StatusChip } from "@/components/ui/StatusChip"
 import { xpProgressInCurrentLevel } from "@/systems/progression/levelSystem"
 import { selectSystemMessage, systemMessageSubline } from "@/systems/messaging/systemMessagingSystem"
 import { getTrackedQuest } from "@/systems/quests/contractTrackingSystem"
-import { SYNCHRONIZATION_CONFIG } from "@/config/synchronizationConfig"
-
 export function HomeClient() {
   const { player, activeQuests, hunterPresentation, readiness, forecast } =
     useHunterSession()
@@ -35,12 +34,11 @@ export function HomeClient() {
     "The system is observing."
   const subline = systemMessageSubline(player)
   const tracked = getTrackedQuest(activeQuests, player)
-  const nextMilestone = SYNCHRONIZATION_CONFIG.MILESTONES.find(
-    (m) => player.synchronization.chainDays < m.days
-  )
 
   return (
-    <HunterPage className={hunterPresentation.shellClass}>
+    <HunterPage
+      className={`nozomi-screen-home ${hunterPresentation.shellClass}`.trim()}
+    >
       <div className="nozomi-embedded rounded-2xl p-4">
         <HunterIdentityBlock
           player={player}
@@ -71,14 +69,7 @@ export function HomeClient() {
 
       <div className="nozomi-embedded rounded-xl p-4">
         <SynchronizationStatus synchronization={player.synchronization} />
-        {nextMilestone && (
-          <p className="mt-2 text-xs text-[var(--muted)]">
-            Next discipline cache in{" "}
-            {Math.max(0, nextMilestone.days - player.synchronization.chainDays)} day
-            {nextMilestone.days - player.synchronization.chainDays === 1 ? "" : "s"} (
-            {nextMilestone.days}d sync target) — maintain chain.
-          </p>
-        )}
+        <SyncDisciplineChestTeaser chainDays={player.synchronization.chainDays} />
       </div>
 
       {readiness && <ReadinessSummary readiness={readiness} />}

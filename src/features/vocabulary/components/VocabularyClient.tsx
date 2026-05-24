@@ -87,7 +87,7 @@ export function VocabularyClient() {
 
   return (
     <HunterPage>
-      <div className="mb-4 flex gap-2">
+      <div className="nozomi-embedded mb-4 flex gap-2 rounded-xl p-3">
         {(["ALL", "DETECTED", "LEARNED"] as Tab[]).map((t) => (
           <button
             key={t}
@@ -104,7 +104,7 @@ export function VocabularyClient() {
         ))}
       </div>
 
-      <ul className="space-y-2 pb-20">
+      <ul className="nozomi-embedded space-y-2 rounded-xl p-2 pb-20">
         {filtered.map((e) => (
           <li key={e.wordId}>
             <Link
@@ -118,7 +118,7 @@ export function VocabularyClient() {
                 </p>
               </div>
               <span className="text-[10px] uppercase text-[var(--warning)]">
-                {threatDisplayLabel(resolveVocabularyThreat(e.wordId))}
+                THREAT · {threatDisplayLabel(resolveVocabularyThreat(e.wordId))}
               </span>
             </Link>
           </li>

@@ -1,14 +1,14 @@
 # Reference Mockup Integration Map
 
-Last updated: 2026-05-23
+Last updated: 2026-05-24
 
 | Mockup screen | Route | Systems |
 |---------------|-------|---------|
-| Home | `/home` | `systemMessagingSystem`, `synchronizationSystem`, `readinessSystem`, `dungeonForecastSystem` |
+| Home | `/home` | `systemMessagingSystem`, `synchronizationSystem`, `readinessSystem`, `dungeonForecastSystem`, `SyncDisciplineChestTeaser` |
 | Contracts | `/contracts` | `contractCatalogSystem`, `questGenerator` |
 | Contract detail | `/contracts/[id]` | `contractTrackingSystem`, objectives |
 | Dungeons | `/dungeons` | `dungeonAccess`, `hunterPowerSystem`, `dungeonForecastSystem` |
-| Dungeon detail | `/dungeons/[key]` | `staminaSystem`, dungeon config (Neon / Shadow / Abyss) |
+| Dungeon detail / run | `/dungeons/[key]` | `staminaSystem`, `explorationSystem`, `dungeonOrchestrator` |
 | Preparation | `/prepare` | `readinessSystem`, `preparationChecklistSystem` |
 | Listening / encounters | `ListeningEncounter` + `ListeningFocusShell` | `listeningEncounterSystem` |
 | Vocabulary | `/vocabulary` | `brewSystem`, `vocabularyThreatSystem` |

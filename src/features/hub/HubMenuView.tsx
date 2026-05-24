@@ -14,6 +14,7 @@ import { SynchronizationStatus } from "@/components/hunter/SynchronizationStatus
 import { NextGateForecast } from "@/components/hunter/NextGateForecast"
 import { minDungeonLevel } from "@/systems/dungeons/dungeonAccess"
 import { systemMessageSubline } from "@/systems/messaging/systemMessagingSystem"
+import { getMenuDenialCopy } from "@/systems/presentation/hunterPresentationSystem"
 import { questReadyForHunt } from "./questReadyForHunt"
 import type { HubView } from "./hubTypes"
 
@@ -103,7 +104,13 @@ export function HubMenuView({
       <p className="font-display text-xs uppercase tracking-[0.28em] text-[var(--muted)]">
         Select operation
       </p>
-      {menuCards.map((card) => (
+      {menuCards.map((card) => {
+        const denial =
+          card.disabled && card.id !== "contracts"
+            ? getMenuDenialCopy(card.id === "hunt" ? "hunt" : "sector", player)
+            : null
+
+        return (
         <button
           key={card.id}
           type="button"
@@ -123,6 +130,11 @@ export function HubMenuView({
                 <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">
                   {card.desc}
                 </p>
+                {denial && (
+                  <p className="nozomi-menu-denied mt-2 text-xs text-[var(--warning)]">
+                    {denial}
+                  </p>
+                )}
               </div>
               <StatusChip
                 label={card.badge}
@@ -131,7 +143,8 @@ export function HubMenuView({
             </div>
           </Panel>
         </button>
-      ))}
+        )
+      })}
     </div>
   )
 }

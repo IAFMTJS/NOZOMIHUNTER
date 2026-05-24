@@ -61,5 +61,8 @@ export function defaultEconomy(): PlayerContract["economy"] {
     stamina: STAMINA_CONFIG.DEFAULT_START,
     staminaMax: STAMINA_CONFIG.DEFAULT_MAX,
     brewTokens: 10,
+    activeBoosts: [],
+    xpConversionCount: 0,
+    xpConversionDate: null,
   }
 }

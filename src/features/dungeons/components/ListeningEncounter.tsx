@@ -1,11 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
 import type { QuestContract } from "@/contracts/quest-contract"
 import { getCurrentFragment } from "@/systems/dungeons/listeningEncounterSystem"
 import { VOCABULARY_ENCOUNTER_CONFIG } from "@/config/vocabularyEncounterConfig"
-import { MOTION } from "@/config/motionPresets"
 import { useJapaneseTts } from "@/hooks/useJapaneseTts"
 import { stopJapaneseSpeech } from "@/systems/listening/japaneseTtsSystem"
 import { Button } from "@/components/ui/Button"
@@ -48,9 +46,7 @@ export function ListeningEncounter({
     ? Math.max(0, maxWrongAttempts - encounter.wrongAttempts)
     : 0
   const replaysLeft = Math.max(0, maxReplays - replayCount)
-  const waveColor = focusMode
-    ? "bg-[var(--listening-accent)]/80"
-    : "bg-[var(--accent)]/80"
+  const waveColor = "bg-[var(--accent)]/80"
 
   useEffect(() => {
     setHeardOnce(false)
@@ -137,27 +133,11 @@ export function ListeningEncounter({
           className="mb-6 flex h-14 items-end justify-center gap-1"
           aria-hidden
         >
-          {Array.from({ length: 12 }).map((_, i) => (
-            <motion.span
+          {tts.waveformLevels.map((level, i) => (
+            <span
               key={i}
-              className={`w-1 rounded-full ${waveColor}`}
-              animate={
-                tts.playing
-                  ? {
-                      height: [8, 28, 12, 32, 10][i % 5],
-                    }
-                  : { height: 8 }
-              }
-              transition={
-                tts.playing
-                  ? {
-                      duration: 0.35,
-                      repeat: Infinity,
-                      repeatType: "reverse",
-                      delay: i * 0.04,
-                    }
-                  : MOTION.feedback
-              }
+              className={`w-1 rounded-full transition-[height] duration-75 ${waveColor}`}
+              style={{ height: `${8 + level * 28}px` }}
             />
           ))}
         </div>
@@ -177,7 +157,7 @@ export function ListeningEncounter({
               type="button"
               size="md"
               variant="primary"
-              className="!border-[var(--listening-accent)] !bg-[var(--listening-glow)]"
+              className="!border-[var(--accent)] !bg-[var(--glow-accent)]"
               onClick={stopSignal}
             >
               Tap to stop

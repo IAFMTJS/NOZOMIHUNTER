@@ -8,6 +8,7 @@ import {
   listeningReplayLimitForPenalties,
   maxWrongAttemptsForPenalties,
 } from "@/systems/penalties/penaltyGameplaySystem"
+import { maxWrongAttemptsWithBoosts } from "@/systems/economy/boostSystem"
 import { computeReadiness } from "@/systems/readiness/readinessSystem"
 import { getNextDungeonForecast } from "@/systems/dungeons/dungeonForecastSystem"
 import { selectSystemMessage } from "@/systems/messaging/systemMessagingSystem"
@@ -43,7 +44,10 @@ export function ContractHub(props: ContractHubProps) {
       : undefined
 
   const penaltyMods = {
-    maxWrongAttempts: maxWrongAttemptsForPenalties(props.player.penalties),
+    maxWrongAttempts: maxWrongAttemptsWithBoosts(
+      props.player,
+      maxWrongAttemptsForPenalties(props.player.penalties)
+    ),
     maxListeningReplays: listeningReplayLimitForPenalties(props.player.penalties),
     signalDegraded: hasSignalDegradation(props.player.penalties),
   }
@@ -154,6 +158,7 @@ export function ContractHub(props: ContractHubProps) {
               dungeonBusy={props.dungeonBusy}
               dungeonError={props.dungeonError}
               dungeonMessage={props.dungeonMessage}
+              dungeonExplorationLine={props.dungeonExplorationLine}
               encounterClassName={props.encounterClassName}
               penaltyMods={penaltyMods}
               sectorMap={sectorMap}

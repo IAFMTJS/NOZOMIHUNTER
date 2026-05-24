@@ -69,7 +69,34 @@ export function registerAudioHandlers(): void {
   })
 }
 
+export const CORRUPTION_AUDIO_KEY = "nozomi-corruption-audio"
+
+export function isCorruptionAudioEnabled(): boolean {
+  if (typeof window === "undefined") return true
+  try {
+    const stored = localStorage.getItem(CORRUPTION_AUDIO_KEY)
+    if (stored === null) return true
+    return stored === "1"
+  } catch {
+    return true
+  }
+}
+
+export function setCorruptionAudioEnabled(value: boolean): void {
+  if (typeof window === "undefined") return
+  try {
+    localStorage.setItem(CORRUPTION_AUDIO_KEY, value ? "1" : "0")
+  } catch {
+    /* ignore */
+  }
+  if (!value) stopCorruptionHum()
+}
+
 export function syncCorruptionAudio(corruption: number): void {
+  if (!isCorruptionAudioEnabled()) {
+    stopCorruptionHum()
+    return
+  }
   if (corruption >= 50) {
     playAudioCue("corruption")
   } else {

@@ -10,6 +10,7 @@ Canonical copy for UI and system messages. Internal code names (e.g. `XPBar`) ma
 | User / account | Hunter / registry |
 | Dashboard | Hunter status / command node |
 | Grid (dispatch) | Dispatch queue |
+| Contracts (nav label) | **Missions** — bottom nav displays "Missions"; route stays `/contracts` |
 | Locked (dungeons) | Corridor sealed / access denied |
 | New word list | Threat index / mission targets |
 | Submit (encounters) | Transmit |

@@ -1,10 +1,13 @@
 "use client"
 
 import { useCallback, useState } from "react"
+import type { ExplorationAction } from "@/contracts/dungeon-contract"
 import {
   enterDungeon,
   deployDungeonRun,
-  startDungeonSector,
+  advanceDungeonExploration,
+  engageDungeonSector,
+  continueDungeonAfterReward,
   submitDungeonVocabulary,
   submitDungeonListening,
   submitDungeonConversation,
@@ -17,6 +20,7 @@ export function useDungeonLogic(userId: string | undefined) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+  const [explorationLine, setExplorationLine] = useState<string | null>(null)
 
   const enter = useCallback(
     async (dungeonKey: string) => {
@@ -41,6 +45,7 @@ export function useDungeonLogic(userId: string | undefined) {
     setBusy(true)
     try {
       await deployDungeonRun(userId)
+      setExplorationLine("Corridor synchronized. Begin transit.")
     } catch (e) {
       setError(e instanceof Error ? e.message : "Deploy failed")
     } finally {
@@ -48,17 +53,58 @@ export function useDungeonLogic(userId: string | undefined) {
     }
   }, [userId])
 
-  const enterSector = useCallback(async () => {
+  const advanceExploration = useCallback(
+    async (action: ExplorationAction) => {
+      if (!userId) return
+      setBusy(true)
+      try {
+        const updated = await advanceDungeonExploration(userId, action)
+        if (updated?.dungeonRun?.explorationBeat === "ENGAGE") {
+          setExplorationLine("Breach point locked. Engage when ready.")
+        } else {
+          setExplorationLine(
+            action === "LISTEN"
+              ? "Channel held. Sector depth increasing."
+              : "Forward momentum logged."
+          )
+        }
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Exploration advance failed")
+      } finally {
+        setBusy(false)
+      }
+    },
+    [userId]
+  )
+
+  const engageSector = useCallback(async () => {
     if (!userId) return
     setBusy(true)
     try {
-      await startDungeonSector(userId)
+      await engageDungeonSector(userId)
+      setExplorationLine(null)
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Sector start failed")
+      setError(e instanceof Error ? e.message : "Sector engagement failed")
     } finally {
       setBusy(false)
     }
   }, [userId])
+
+  const continueAfterReward = useCallback(async () => {
+    if (!userId) return
+    setBusy(true)
+    try {
+      await continueDungeonAfterReward(userId)
+      setExplorationLine("Next breach point active. Transit corridor.")
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Continue failed")
+    } finally {
+      setBusy(false)
+    }
+  }, [userId])
+
+  /** @deprecated Use advanceExploration + engageSector */
+  const enterSector = engageSector
 
   const extract = useCallback(async () => {
     if (!userId) return
@@ -144,6 +190,7 @@ export function useDungeonLogic(userId: string | undefined) {
     try {
       await abandonDungeon(userId)
       setMessage("Dungeon aborted.")
+      setExplorationLine(null)
     } catch (e) {
       setError(e instanceof Error ? e.message : "Abort failed")
     } finally {
@@ -155,8 +202,12 @@ export function useDungeonLogic(userId: string | undefined) {
     busy,
     error,
     message,
+    explorationLine,
     enter,
     deploy,
+    advanceExploration,
+    engageSector,
+    continueAfterReward,
     enterSector,
     extract,
     submitAnswer,

@@ -5,7 +5,7 @@ import { MOTION } from "@/config/motionPresets"
 
 const PHASES = [
   { key: "PREPARATION", label: "Prep" },
-  { key: "EXPLORATION", label: "Deploy" },
+  { key: "EXPLORATION", label: "Transit" },
   { key: "SECTOR", label: "Sector" },
   { key: "BOSS", label: "Boss" },
   { key: "EXTRACTION", label: "Extract" },

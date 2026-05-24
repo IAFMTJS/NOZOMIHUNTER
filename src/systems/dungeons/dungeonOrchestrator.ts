@@ -1,7 +1,7 @@
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import type { QuestContract } from "@/contracts/quest-contract"
-import type { DungeonRunContract } from "@/contracts/dungeon-contract"
+import type { DungeonRunContract, ExplorationAction } from "@/contracts/dungeon-contract"
 import { DUNGEON_CONFIG } from "@/config/dungeonConfig"
 import type { PlayerPenaltyContract } from "@/contracts/player-contract"
 import { maxDungeonEncounterFailures } from "@/systems/penalties/penaltyGameplaySystem"
@@ -13,6 +13,11 @@ import {
   mountSectorEncounter,
 } from "./dungeonEncounterFactory"
 import { transition } from "./dungeonStateMachine"
+import {
+  advanceExploration,
+  initExplorationFields,
+  isReadyToEngage,
+} from "./explorationSystem"
 
 const OBJECTIVE_ID = "obj-dungeon"
 
@@ -53,6 +58,7 @@ export function deployDungeon(
   const nextRun: DungeonRunContract = {
     ...run,
     machineState: transition(run.machineState, "EXPLORATION"),
+    ...initExplorationFields(),
   }
   eventBus.emit(GAME_EVENTS.DUNGEON_ENTERED, {
     playerId,
@@ -62,10 +68,60 @@ export function deployDungeon(
   return patchRun(quest, nextRun)
 }
 
+export function enterExplorationZone(quest: QuestContract): QuestContract {
+  const run = quest.dungeonRun!
+  if (run.machineState !== "EXPLORATION") {
+    throw new Error("Not in exploration state")
+  }
+  if (run.explorationBeat != null) {
+    return quest
+  }
+  return patchRun(quest, {
+    ...run,
+    ...initExplorationFields(),
+  })
+}
+
+export function advanceExplorationBeat(
+  quest: QuestContract,
+  action: ExplorationAction,
+  playerId: string
+): QuestContract {
+  const run = quest.dungeonRun!
+  if (run.machineState !== "EXPLORATION") {
+    throw new Error("Exploration advance only valid in EXPLORATION")
+  }
+
+  const withZone =
+    run.explorationBeat == null
+      ? patchRun(quest, { ...run, ...initExplorationFields() }).dungeonRun!
+      : run
+
+  const result = advanceExploration(withZone, action)
+  eventBus.emit(GAME_EVENTS.EXPLORATION_BEAT_ADVANCED, {
+    playerId,
+    dungeonId: run.dungeon.id,
+    beat: result.run.explorationBeat,
+    action,
+    progress: result.run.explorationProgress,
+  })
+
+  return patchRun(quest, result.run)
+}
+
+/** @deprecated Use engageSectorEncounter — kept for internal continuity */
 export function beginDungeonSector(quest: QuestContract): QuestContract {
+  return engageSectorEncounter(quest)
+}
+
+export function engageSectorEncounter(quest: QuestContract): QuestContract {
   const run = quest.dungeonRun!
   if (run.machineState === "PREPARATION") {
     throw new Error("Deploy the dungeon before entering a sector")
+  }
+
+  if (run.machineState === "EXPLORATION" && !isReadyToEngage(run)) {
+    throw new Error("Complete corridor traversal before breaching the sector")
   }
 
   const allSectorsDone = run.dungeon.encounters.every((e) => e.completed)
@@ -89,6 +145,8 @@ export function beginDungeonSector(quest: QuestContract): QuestContract {
           machineState: transition(run.machineState, "ENCOUNTER"),
           currentEncounterIndex: nextIndex,
           activeType: mounted.activeType,
+          explorationBeat: null,
+          explorationProgress: 100,
         }
       ),
     }
@@ -102,6 +160,8 @@ export function beginDungeonSector(quest: QuestContract): QuestContract {
         ...run,
         machineState: transition(run.machineState, "ENCOUNTER"),
         activeType: mounted.activeType,
+        explorationBeat: null,
+        explorationProgress: 100,
       }
     ),
   }
@@ -117,6 +177,7 @@ function beginBossPhase(quest: QuestContract): QuestContract {
       ...run,
       machineState: transition(from, "BOSS"),
       activeType: "BOSS",
+      explorationBeat: null,
     }
   )
 }
@@ -187,6 +248,7 @@ export function continueAfterReward(quest: QuestContract): QuestContract {
     machineState: transition("REWARD", "EXPLORATION"),
     currentEncounterIndex: nextIndex >= 0 ? nextIndex : run.currentEncounterIndex,
     activeType: null,
+    ...initExplorationFields(),
   }
 
   return patchRun({ ...quest, ...clearEncounterPayloads() }, nextRun)

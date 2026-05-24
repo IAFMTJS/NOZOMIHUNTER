@@ -3,6 +3,7 @@
 import { useState } from "react"
 import type { QuestContract } from "@/contracts/quest-contract"
 import { getCurrentWord } from "@/systems/quests/vocabularyEncounterSystem"
+import { resolveVocabularyThreat, threatDisplayLabel } from "@/systems/vocabulary/vocabularyThreatSystem"
 import { getQuestBriefing } from "@/systems/quests/questGenerator"
 import { VOCABULARY_ENCOUNTER_CONFIG } from "@/config/vocabularyEncounterConfig"
 import { JapaneseText } from "@/components/JapaneseText"
@@ -91,6 +92,9 @@ export function VocabularyEncounter({
         <>
           <p className="mb-1 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
             Target lock {encounter.currentIndex + 1} / {encounter.words.length}
+          </p>
+          <p className="mb-3 text-[10px] uppercase tracking-wider text-[var(--warning)]">
+            THREAT · {threatDisplayLabel(resolveVocabularyThreat(word.id))}
           </p>
           <div className="mb-6 rounded-lg border border-[var(--border-accent)] bg-[var(--accent-dim)] px-4 py-6 text-center">
             <JapaneseText

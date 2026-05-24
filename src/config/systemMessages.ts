@@ -10,6 +10,7 @@ export const SYSTEM_MESSAGE_POOLS: Record<SystemMessageCategory, readonly string
     "Threat recognition increased.",
     "Operator metrics within acceptable variance.",
     "Registry acknowledges your presence.",
+    "Exploration beat registered. Sector response logged.",
   ],
   WARNING: [
     "Synchronization unstable.",
@@ -17,6 +18,7 @@ export const SYSTEM_MESSAGE_POOLS: Record<SystemMessageCategory, readonly string
     "Corruption threshold approaching.",
     "Fatigue degrading combat efficiency.",
     "Discipline chain at risk — deploy today.",
+    "Deployment flagged as risky. Operator assumes liability.",
   ],
   ANTICIPATION: [
     "Next gate detected. Readiness advised.",
@@ -28,5 +30,6 @@ export const SYSTEM_MESSAGE_POOLS: Record<SystemMessageCategory, readonly string
     "Rank elevation noted. Do not stagnate.",
     "Level threshold crossed. System recalibrating.",
     "Discipline chain maintained. Continue.",
+    "Discipline milestone unlocked. Registry updated.",
   ],
 }

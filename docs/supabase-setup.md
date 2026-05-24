@@ -36,6 +36,14 @@ Alternatively, apply SQL manually in the dashboard SQL Editor, in order:
 7. [`supabase/migrations/007_economy_fixes.sql`](../supabase/migrations/007_economy_fixes.sql) — stamina unlock JSONB fix, refund RPC, hidden-objective completion
 8. [`supabase/migrations/008_shop_and_guards.sql`](../supabase/migrations/008_shop_and_guards.sql) — shop (`credit_price`, `purchase_item_guarded`), server daily stamina, starter blade equipped
 9. [`supabase/migrations/009_unlock_home_key.sql`](../supabase/migrations/009_unlock_home_key.sql) — rename legacy `dashboard` unlock key to `home`
+10. [`supabase/migrations/010_rpg_stats.sql`](../supabase/migrations/010_rpg_stats.sql) — RPG stat columns on progression
+11. [`supabase/migrations/011_shop_economy.sql`](../supabase/migrations/011_shop_economy.sql) — black market rotation, shop item catalog expansion, `active_boosts`, XP conversion, `use_consumable_guarded`
+12. [`supabase/migrations/012_shop_effect_hooks.sql`](../supabase/migrations/012_shop_effect_hooks.sql) — `consume_active_boost_guarded`, `reactivate_failed_quest_guarded`
+13. [`supabase/migrations/013_completion_boosts.sql`](../supabase/migrations/013_completion_boosts.sql) — server-side completion boost math, catalog effect columns, title unlock in `use_consumable_guarded`
+
+### Manual verification (boosted completion)
+
+After activating XP Booster + Reward Amplifier, complete a quest and confirm RPC `xp_gained` / `credits_gained` reflect boosts and `active_boosts` drops consumed entries in the same transaction.
 
 ## 3. Auth providers
 

@@ -8,6 +8,7 @@ interface SectorNode {
   label: string
   completed: boolean
   current: boolean
+  explorationProgress?: number
 }
 
 interface DungeonCorridorRailProps {
@@ -34,8 +35,10 @@ export function DungeonCorridorRail({ sectors }: DungeonCorridorRailProps) {
           {sector.completed && (
             <span className="text-[10px] text-[var(--success)]">cleared</span>
           )}
-          {sector.current && (
-            <span className="text-[10px] text-[var(--accent)]">active</span>
+          {sector.current && sector.explorationProgress != null && (
+            <span className="text-[10px] text-[var(--muted)]">
+              {sector.explorationProgress}%
+            </span>
           )}
         </motion.li>
       ))}

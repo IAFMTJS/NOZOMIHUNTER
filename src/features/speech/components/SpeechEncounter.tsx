@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import type { QuestContract } from "@/contracts/quest-contract"
 import { RECORDING_STATES } from "@/systems/speech/recordingStateTypes"
 import { getCurrentPhrase } from "@/systems/quests/speechEncounterSystem"
+import { resolveVocabularyThreat, threatDisplayLabel } from "@/systems/vocabulary/vocabularyThreatSystem"
 import { getQuestBriefing } from "@/systems/quests/questGenerator"
 import { SPEECH_ENCOUNTER_CONFIG } from "@/config/speechEncounterConfig"
 import { JapaneseText } from "@/components/JapaneseText"
@@ -114,6 +115,9 @@ export function SpeechEncounter({
           <p className="mb-1 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
             Voice channel · Transmit {encounter.currentIndex + 1} /{" "}
             {encounter.phrases.length}
+          </p>
+          <p className="mb-3 text-[10px] uppercase tracking-wider text-[var(--warning)]">
+            THREAT · {threatDisplayLabel(resolveVocabularyThreat(phrase.id))}
           </p>
           <div className="mb-6 rounded-lg border border-[var(--border-accent)] bg-[var(--accent-dim)] px-4 py-6 text-center">
             <JapaneseText

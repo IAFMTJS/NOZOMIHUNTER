@@ -68,6 +68,7 @@ Responsibilities
 * listening encounters (`listeningEncounterSystem`)
 * access gates (`dungeonAccess`)
 * persistence via DUNGEON quest snapshots
+* corridor exploration beats before engagement (`explorationSystem`)
 
 Dependencies
 
@@ -657,6 +658,26 @@ Responsibilities
 
 ⸻
 
+explorationSystem (v1.2.2)
+
+Location: `/src/systems/dungeons/explorationSystem.ts`
+
+Responsibilities
+
+* APPROACH / SCAN / ENGAGE beat progression inside active dungeon runs
+* theme-specific system lines on exploration actions
+* gate encounter authorization after ENGAGE beat
+
+UI
+
+* `ExplorationLayer` (dungeon runner)
+
+Dependencies
+
+* `dungeonOrchestrator`, dungeon theme config
+
+⸻
+
 dungeonSectorMapSystem (v0.9.1)
 
 Location: `/src/systems/dungeons/dungeonSectorMapSystem.ts`
@@ -924,34 +945,128 @@ UI
 
 ⸻
 
-shopSystem (v1.1.0)
+shopSystem (v1.2.1)
 
-Location: `/src/systems/economy/shopSystem.ts`
+Location: `/src/systems/economy/shopSystem.ts`, `/src/systems/economy/shopRotationSystem.ts`
 
 Responsibilities
 
-* shop listings from catalog `credit_price`
-* `canPurchase`, `purchaseQuote`
+* shop listings from catalog with daily black market rotation + featured discounts
+* `canPurchase`, `purchaseQuote`, category grouping
+* server price validation via `effective_shop_price` (migration `011`)
 
 Dependencies
 
 * `inventorySystem` capacity checks
+* `shopRotationSystem` deterministic daily seed
 
 RPC
 
-* `purchase_item_guarded`
+* `purchase_item_guarded` (rotation-aware pricing)
 
 UI
 
-* `/inventory` Shop tab
+* `/inventory` Shop tab — `ShopPanel`, `ShopListingCard`, `XpConversionPanel`, `ActiveBoostsRail`
 
 Contracts
 
-* `economy-contract.ts` (`ShopListingContract`)
+* `economy-contract.ts` (`ShopListingContract`, `ShopCategory`, `ItemRarity`)
 
 ⸻
 
-achievementSystem (v1.1.0)
+boostSystem (v1.2.1)
+
+Location: `/src/systems/economy/boostSystem.ts`, `/src/config/shopItemEffects.ts`
+
+Responsibilities
+
+* active timed / single-use boosts on `player.economy.activeBoosts`
+* XP multiplier, mistake shield, stat buffer, reward amplifier
+* stack prevention for conflicting boost types
+
+Consumers
+
+* `encounterSubmitAdapter`, `ContractHub`, `hunterPowerSystem`, `shopEffectSystem` (preview)
+
+RPC
+
+* `use_consumable_guarded` (catalog-driven effect metadata)
+
+Events
+
+* `BOOST_ACTIVATED`
+
+⸻
+
+shopEffectSystem (v1.2.2)
+
+Location: `/src/systems/economy/shopEffectSystem.ts`, `/src/systems/economy/shopQuestEffectSystem.ts`
+
+Responsibilities
+
+* difficulty override / system breach preview (`boostedQuestRewards`, `previewCompletionRewards`)
+* dungeon timer helpers (`dungeonTimeRemaining`, `isDungeonTimedOut`, `applyTimeFreeze`)
+* rank shield XP debt suppression flag
+
+Consumers
+
+* `DungeonRunner`, `dungeonPersistence`, `QuestBoostActions`, reward UI previews
+
+⸻
+
+shopEffectActions (v1.2.2)
+
+Location: `/src/features/inventory/services/shopEffectActions.ts`
+
+Responsibilities
+
+* feature-layer wrappers: consume boost, retry failed contract, skip objective, freeze timer
+* components import this — not `questLifecycle` / `dungeonLifecycle`
+
+⸻
+
+shopRotationHash (v1.2.2)
+
+Location: `/src/systems/economy/shopRotationHash.ts`
+
+Responsibilities
+
+* shared deterministic hash — must match SQL `nozomi_shop_hash`
+
+Tests
+
+* `tests/shopRotationHash.test.ts`
+
+⸻
+
+complete_quest_guarded (v1.2.2, migration 013)
+
+SQL helpers: `nozomi_fatigue_xp_multiplier`, `nozomi_apply_completion_rewards`, `nozomi_consume_boosts`
+
+* server-owned fatigue + completion boosts + atomic boost consumption
+* returns `boosts_consumed` in RPC payload
+
+⸻
+
+xpConversionSystem (v1.2.1)
+
+Location: `/src/systems/economy/xpConversionSystem.ts`
+
+Responsibilities
+
+* tiered XP→credit quotes with tax and daily limit
+* parse `active_boosts` from progression row
+
+RPC
+
+* `convert_xp_to_credits_guarded`
+
+Events
+
+* `XP_CONVERTED`
+
+⸻
+ (v1.1.0)
 
 Location: `/src/systems/progression/achievementSystem.ts`
 
@@ -973,7 +1088,7 @@ Responsibilities
 
 * single hydrate: player, quests, event handlers, audio unlock
 * shell: `HunterShellLayout` + page children + `EncounterHost` + progression notices
-* `trackMission`, `claimRewards`, `hubView` for ContractHub overlays
+* `trackMission`, `claimRewards`, `hubView` for ContractHub overlays (only on `/contracts` | `/missions` | `/dungeons` after deploy; other routes reset `hubView` to `menu`)
 
 Dependencies
 
