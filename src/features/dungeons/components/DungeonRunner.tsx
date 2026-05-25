@@ -172,7 +172,15 @@ export function DungeonRunner({
           run={run}
           disabled={disabled}
           statusLine={systemLine}
-          onAdvance={(action) => wrap(() => onAdvanceExploration(action))}
+          onAdvance={async (action) => {
+            try {
+              await onAdvanceExploration(action)
+            } catch (e) {
+              const msg = e instanceof Error ? e.message : "Exploration advance failed"
+              setStatus(msg)
+              throw e
+            }
+          }}
           onEngage={() => wrap(onEngageSector, "Sector engaged.")}
         />
       )}

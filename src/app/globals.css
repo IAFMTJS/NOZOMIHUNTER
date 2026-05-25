@@ -800,6 +800,20 @@ body {
   gap: 0.25rem;
 }
 
+.nozomi-corridor-listen-lock {
+  animation: nozomi-corridor-listen-lock 0.85s ease-out;
+  box-shadow: inset 0 0 40px rgba(124, 58, 237, 0.25);
+}
+
+@keyframes nozomi-corridor-listen-lock {
+  0% {
+    filter: brightness(1.35);
+  }
+  100% {
+    filter: none;
+  }
+}
+
 @keyframes nozomi-mask-flicker {
   0%,
   100% {

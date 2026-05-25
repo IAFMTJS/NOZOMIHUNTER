@@ -18,6 +18,7 @@ import {
   createEchoListeningRound,
   selectEchoChunk,
 } from "@/systems/training/echoListeningSystem"
+import { advanceExploration } from "@/systems/dungeons/explorationSystem"
 
 describe("encounterFeedbackOrchestrator", () => {
   it("maps dungeon wrong answers to corruption fx", () => {
@@ -75,6 +76,26 @@ describe("memoryGridSystem", () => {
       round = r2.round
     }
     expect(isMemoryGridComplete(round)).toBe(true)
+  })
+})
+
+describe("explorationSystem listen intel", () => {
+  it("reveals sector intel on first LISTEN from APPROACH", () => {
+    const run = {
+      dungeon: {
+        id: "d1",
+        theme: "CYBER_TOKYO" as const,
+        encounters: [{ id: "e1", type: "VOCAB" as const, completed: false }],
+      },
+      machineState: "EXPLORATION" as const,
+      currentEncounterIndex: 0,
+      explorationBeat: "APPROACH" as const,
+      explorationProgress: 0,
+      sectorIntelRevealed: false,
+    }
+    const result = advanceExploration(run as import("@/contracts/dungeon-contract").DungeonRunContract, "LISTEN")
+    expect(result.run.sectorIntelRevealed).toBe(true)
+    expect(result.run.explorationBeat).toBe("SCAN")
   })
 })
 

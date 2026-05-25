@@ -27,7 +27,9 @@ import {
 } from "@/features/rewards/services/completionService"
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
-import { playAmbience, type AmbienceCue } from "@/systems/audio/audioSystem"
+import { playAmbience, playAudioCue, unlockAudio, type AmbienceCue } from "@/systems/audio/audioSystem"
+import { playThemedCue } from "@/systems/audio/themedAudioSystem"
+import { pulseHaptic } from "@/systems/presentation/hapticsSystem"
 import { explorationCorruptionDelta } from "@/systems/dungeons/explorationSystem"
 import { mergePenalties } from "@/systems/penalties/penaltySystem"
 import { applyEncounterStreakToQuestRewards } from "@/systems/quests/questCompletionRewardSystem"
@@ -132,6 +134,13 @@ export async function advanceDungeonExploration(
   if (!quest) return null
 
   const updated = advanceExplorationBeat(quest, action, userId)
+
+  if (action === "LISTEN" && typeof window !== "undefined") {
+    unlockAudio()
+    playThemedCue(updated.dungeonRun!.dungeon.theme, "enter")
+    playAudioCue("confirm")
+    pulseHaptic(20)
+  }
 
   const corruptionTick = explorationCorruptionDelta(action)
   if (corruptionTick > 0 && player) {

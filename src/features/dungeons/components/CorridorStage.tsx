@@ -47,6 +47,8 @@ export function CorridorStage({
 
   const [holdProgress, setHoldProgress] = useState(0)
   const [holdFailed, setHoldFailed] = useState(false)
+  const [listenLocked, setListenLocked] = useState(false)
+  const [listenBusy, setListenBusy] = useState(false)
   const holdStartRef = useRef<number | null>(null)
   const holdFrameRef = useRef<number | null>(null)
 
@@ -59,25 +61,39 @@ export function CorridorStage({
     setHoldProgress(0)
   }, [])
 
+  const completeListen = useCallback(async () => {
+    cancelHold()
+    setListenBusy(true)
+    setHoldFailed(false)
+    try {
+      await onAdvance("LISTEN")
+      setListenLocked(true)
+      window.setTimeout(() => setListenLocked(false), 900)
+    } catch {
+      setHoldFailed(true)
+    } finally {
+      setListenBusy(false)
+    }
+  }, [cancelHold, onAdvance])
+
   const tickHold = useCallback(() => {
     if (holdStartRef.current == null) return
     const elapsed = Date.now() - holdStartRef.current
     const pct = Math.min(100, (elapsed / HOLD_MS) * 100)
     setHoldProgress(pct)
     if (pct >= 100) {
-      cancelHold()
-      void onAdvance("LISTEN")
+      void completeListen()
       return
     }
     holdFrameRef.current = requestAnimationFrame(tickHold)
-  }, [cancelHold, onAdvance])
+  }, [completeListen])
 
   const startHold = useCallback(() => {
-    if (disabled) return
+    if (disabled || listenBusy) return
     setHoldFailed(false)
     holdStartRef.current = Date.now()
     holdFrameRef.current = requestAnimationFrame(tickHold)
-  }, [disabled, tickHold])
+  }, [disabled, listenBusy, tickHold])
 
   const endHold = useCallback(() => {
     if (holdStartRef.current != null && holdProgress < 100) {
@@ -100,7 +116,11 @@ export function CorridorStage({
 
   return (
     <div className={`${atmosphere} flex flex-col gap-4`}>
-      <div className="nozomi-corridor-viewport relative overflow-hidden rounded-xl border border-[var(--border-subtle)] p-4">
+      <div
+        className={`nozomi-corridor-viewport relative overflow-hidden rounded-xl border border-[var(--border-subtle)] p-4 ${
+          listenLocked ? "nozomi-corridor-listen-lock" : ""
+        }`}
+      >
         <div className="nozomi-corridor-grid pointer-events-none absolute inset-0" aria-hidden />
         <div className="nozomi-corridor-horizon pointer-events-none absolute inset-x-0 top-0 h-24" aria-hidden />
 
@@ -203,17 +223,22 @@ export function CorridorStage({
         <div className="grid gap-2 sm:grid-cols-2">
           <Button
             variant="ghost"
-            disabled={disabled}
-            className="nozomi-corridor-action flex flex-col items-center gap-1 !border-[var(--accent)]/30 !py-3"
+            disabled={disabled || listenBusy}
+            className={`nozomi-corridor-action flex flex-col items-center gap-1 !border-[var(--accent)]/30 !py-3 ${
+              listenLocked ? "!border-[var(--reward)]/60 !shadow-[0_0_16px_var(--glow-accent)]" : ""
+            }`}
             onPointerDown={startHold}
             onPointerUp={endHold}
             onPointerLeave={endHold}
             onPointerCancel={endHold}
+            aria-label="Hold to intercept corridor signal for sector intel"
           >
             <span className="block text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]">
-              Hold channel
+              Hold channel · 1.8s
             </span>
-            <span className="block text-sm font-medium">Listen</span>
+            <span className="block text-sm font-medium">
+              {listenBusy ? "Intercepting…" : "Listen"}
+            </span>
             {holdProgress > 0 && (
               <span className="mt-1 block h-1 w-full max-w-[8rem] overflow-hidden rounded-full bg-black/40">
                 <span

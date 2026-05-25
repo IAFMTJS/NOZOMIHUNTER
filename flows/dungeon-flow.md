@@ -8,7 +8,7 @@ Enter Dungeon (DUNGEON quest assigned)
 ↓
 PREPARATION — briefing, Deploy (`initDungeonTimer` sets `runStartedAt` + `timeLimitMs`)
 ↓
-EXPLORATION — corridor transit (APPROACH → SCAN → ENGAGE beats via `ExplorationLayer`); **Hold channel** LISTEN action requires ~1.8s press-and-hold before intel unlocks
+EXPLORATION — corridor transit (APPROACH → SCAN → ENGAGE beats via `CorridorStage`); **Hold channel · Listen** (~1.8s hold) advances beats, plays intercept audio/haptic, reveals **Tactical intel** (next sector type) on first successful listen
 ↓
 ENCOUNTER — vocab / listening / NPC / speech (after `engageSectorEncounter`)
 ↓

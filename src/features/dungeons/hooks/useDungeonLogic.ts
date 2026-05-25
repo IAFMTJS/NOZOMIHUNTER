@@ -59,7 +59,11 @@ export function useDungeonLogic(userId: string | undefined) {
       setBusy(true)
       try {
         const updated = await advanceDungeonExploration(userId, action)
-        const line = updated?.dungeonRun?.explorationSystemLine
+        if (!updated) {
+          setError("Corridor action failed — no active dungeon run.")
+          return
+        }
+        const line = updated.dungeonRun?.explorationSystemLine
         if (line) setExplorationLine(line)
       } catch (e) {
         setError(e instanceof Error ? e.message : "Exploration advance failed")

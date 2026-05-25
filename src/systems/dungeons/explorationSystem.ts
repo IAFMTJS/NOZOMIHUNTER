@@ -186,6 +186,7 @@ export function advanceExploration(
       ...run,
       explorationBeat: "SCAN",
       explorationProgress: BEAT_PROGRESS.SCAN,
+      sectorIntelRevealed: action === "LISTEN" || run.sectorIntelRevealed === true,
     }
     return {
       run: applyPursuitToRun(nextRun, action),
