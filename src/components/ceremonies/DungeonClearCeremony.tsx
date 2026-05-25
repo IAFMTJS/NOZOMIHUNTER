@@ -36,12 +36,17 @@ export function DungeonClearCeremony({
         <p className="text-[10px] uppercase tracking-[0.36em] text-[var(--danger)]">
           Dungeon cleared
         </p>
-        <p className="mt-2 font-display text-2xl font-bold text-[var(--foreground)]">
+        <p className="mt-2 font-display text-3xl font-bold text-[var(--foreground)]">
           {data.dungeonName}
         </p>
-        <p className="mt-2 text-sm font-semibold uppercase tracking-widest text-[var(--reward)]">
+        <p className="mt-2 font-display text-lg font-semibold uppercase tracking-widest text-[var(--reward)]">
           {data.performanceLabel}
         </p>
+        {data.grade && (
+          <p className="mt-1 text-xs uppercase tracking-[0.3em] text-[var(--muted)]">
+            {data.grade}
+          </p>
+        )}
       </div>
 
       <SequentialRewardReveal

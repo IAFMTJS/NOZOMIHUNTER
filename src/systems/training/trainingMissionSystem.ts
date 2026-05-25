@@ -12,6 +12,10 @@ const TRAINING_MODES: GameModeId[] = [
   "KANJI_SURGERY",
   "MEMORY_CASCADE",
   "SHADOW_ECHO",
+  "ECHO_LISTENING",
+  "SHADOW_TYPING",
+  "MEMORY_GRID",
+  "SURVIVAL_VOCAB",
 ]
 
 export function isTrainingGameMode(mode: GameModeId): boolean {
@@ -44,6 +48,7 @@ export function buildTrainingQuest(
       },
     ],
     hidden: true,
+    narrativeTier: "DAILY",
     gameMode: kind,
   }
 
@@ -62,6 +67,14 @@ function trainingTitle(kind: GameModeId): string {
       return "Shadow Echo"
     case "KANA_DASH":
       return "Kana Dash"
+    case "ECHO_LISTENING":
+      return "Echo Listening"
+    case "SHADOW_TYPING":
+      return "Shadow Typing"
+    case "MEMORY_GRID":
+      return "Memory Grid"
+    case "SURVIVAL_VOCAB":
+      return "Survival Mode"
     default:
       return "Stabilization Training"
   }
@@ -79,6 +92,14 @@ function trainingDescription(kind: GameModeId): string {
       return "Voice mimic drill — mirror operator pacing before signal decay."
     case "KANA_DASH":
       return "Rapid kana recognition — build combo chains under pressure."
+    case "ECHO_LISTENING":
+      return "Single-playback listening — reconstruct from memory."
+    case "SHADOW_TYPING":
+      return "Decay typing — transmit before glyphs collapse."
+    case "MEMORY_GRID":
+      return "Pair-match drill under time pressure."
+    case "SURVIVAL_VOCAB":
+      return "Endless vocab waves until failure."
     default:
       return "Repeatable training drill."
   }

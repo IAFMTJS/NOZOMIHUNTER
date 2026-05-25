@@ -43,6 +43,8 @@ export interface QuestContract {
   /** Kanji surgery / memory cascade training payloads */
   kanjiSurgeryEncounter?: import("./encounter-contract").KanjiSurgeryTargetContract[]
   memoryCascadeEncounter?: import("./encounter-contract").MemoryCascadeRoundContract
+  memoryGridEncounter?: import("./encounter-contract").MemoryGridRoundContract
+  echoListeningEncounter?: import("./encounter-contract").EchoListeningRoundContract
 
   /** Semantic network vocabulary mode */
   semanticNetworkEncounter?: {

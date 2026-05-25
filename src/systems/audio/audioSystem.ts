@@ -1,6 +1,6 @@
 const STORAGE_KEY = "nozomi_audio_muted"
 
-type AudioCue =
+export type AudioCueId =
   | "confirm"
   | "error"
   | "levelUp"
@@ -12,6 +12,8 @@ type AudioCue =
   | "combo5"
   | "comboBreak"
   | "rewardTick"
+  | "achievement"
+  | "rewardCascade"
 
 export type AmbienceCue = "sector" | "pursuit" | "corruption" | "corridor"
 
@@ -96,7 +98,13 @@ function tone(
   osc.stop(t + durationMs / 1000)
 }
 
-export function playAudioCue(cue: AudioCue): void {
+export function playAudioCues(cues: AudioCueId[]): void {
+  for (const cue of cues) {
+    playAudioCue(cue)
+  }
+}
+
+export function playAudioCue(cue: AudioCueId): void {
   if (muted) return
   switch (cue) {
     case "confirm":
@@ -138,6 +146,15 @@ export function playAudioCue(cue: AudioCue): void {
       break
     case "rewardTick":
       tone(494, 60, "triangle", 0.05)
+      break
+    case "achievement":
+      tone(392, 90)
+      setTimeout(() => tone(523, 100), 90)
+      setTimeout(() => tone(659, 120), 180)
+      break
+    case "rewardCascade":
+      tone(440, 50, "triangle", 0.04)
+      setTimeout(() => tone(554, 55, "triangle", 0.04), 55)
       break
     default:
       break

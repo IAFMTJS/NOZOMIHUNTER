@@ -24,6 +24,7 @@ import { InstabilityFeed } from "@/features/home/components/InstabilityFeed"
 import { ActiveBoostsChip } from "@/features/home/components/ActiveBoostsChip"
 import { SectorActivityTicker } from "@/features/home/components/SectorActivityTicker"
 import { AnomalyChip } from "@/features/home/components/AnomalyChip"
+import { UI_TOKENS } from "@/config/uiTokens"
 
 export function HomeClient() {
   const { player, activeQuests, hunterPresentation, readiness, forecast } =
@@ -49,7 +50,7 @@ export function HomeClient() {
 
   return (
     <HunterPage
-      className={`nozomi-screen-home ${hunterPresentation.shellClass}`.trim()}
+      className={`nozomi-screen-home ${UI_TOKENS.sectionGap} ${hunterPresentation.shellClass}`.trim()}
     >
       <div className="nozomi-embedded rounded-2xl p-4">
         <HunterIdentityBlock

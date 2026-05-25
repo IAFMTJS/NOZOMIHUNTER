@@ -22,6 +22,10 @@ Wrong answers → +1 corruption (`corruptionDeltaForWrongAnswer`); pressure copy
 ↓
 Mastery delta (+12 correct / -4 wrong)
 ↓
+Canonical UI tiers via `masteryPresentationSystem` (UNKNOWN → SEEN → FAMILIAR → STABLE → MASTERED)
+↓
+`MASTERY_TIER_UP` when tier boundary crossed
+↓
 Persist mastery row (Supabase)
 ↓
 `VOCABULARY_MASTERED` when mastery ≥ 80
@@ -37,4 +41,5 @@ TTS: `WordAudioButton` / `useJapaneseTts` (Web Speech API — device-dependent q
 Events:
 
 - `VOCABULARY_MASTERED`
+- `MASTERY_TIER_UP`
 - `WORD_BREWED`

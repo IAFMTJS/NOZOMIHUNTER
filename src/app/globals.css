@@ -973,3 +973,202 @@ body {
   min-height: 3rem;
 }
 
+/* Game-feel pass */
+html.nozomi-moment-freeze {
+  pointer-events: none;
+}
+
+html.nozomi-moment-freeze::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 199;
+  background: rgba(0, 0, 0, 0.35);
+  animation: nozomi-moment-freeze-fade 0.42s ease-out;
+  pointer-events: none;
+}
+
+@keyframes nozomi-moment-freeze-fade {
+  from {
+    opacity: 0.85;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.nozomi-ceremony-overlay--slam {
+  background: radial-gradient(
+    ellipse 90% 70% at 50% 35%,
+    rgba(124, 58, 237, 0.35),
+    rgba(0, 0, 0, 0.94) 72%
+  );
+}
+
+.nozomi-ceremony-card--slam {
+  max-height: min(92vh, 720px);
+  overflow-y: auto;
+}
+
+.nozomi-rune-ring::before {
+  content: "";
+  position: absolute;
+  inset: 10%;
+  border-radius: 50%;
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  animation: nozomi-rune-spin 4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes nozomi-rune-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.nozomi-boss-collapse {
+  animation: nozomi-boss-collapse 1.2s ease-out forwards;
+}
+
+.nozomi-boss-collapse--cyber-tokyo {
+  filter: drop-shadow(0 0 12px rgba(124, 58, 237, 0.5));
+}
+
+.nozomi-boss-collapse--shadow-archive {
+  animation: nozomi-boss-ink 1.4s ease-out forwards;
+}
+
+.nozomi-boss-collapse--abyss-core,
+.nozomi-boss-collapse--corrupted-shrine {
+  animation: nozomi-boss-glitch 1.3s steps(4) forwards;
+}
+
+@keyframes nozomi-boss-ink {
+  0% {
+    opacity: 0;
+    letter-spacing: 0.2em;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.15;
+    filter: blur(6px);
+  }
+}
+
+@keyframes nozomi-boss-glitch {
+  0%,
+  100% {
+    transform: translate(0);
+  }
+  25% {
+    transform: translate(-2px, 1px);
+  }
+  50% {
+    transform: translate(2px, -1px);
+  }
+  75% {
+    transform: translate(-1px, -2px);
+  }
+}
+
+@keyframes nozomi-boss-collapse {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+  }
+  40% {
+    opacity: 1;
+    filter: none;
+  }
+  100% {
+    opacity: 0.2;
+    transform: scale(1.05);
+    filter: hue-rotate(25deg) contrast(1.2);
+  }
+}
+
+.nozomi-reward-shell--light {
+  padding: 0.75rem 1rem;
+}
+
+.nozomi-reward-tier--light {
+  animation: nozomi-reward-pop 0.35s ease-out;
+}
+
+.nozomi-reward-tier--medium {
+  animation: nozomi-reward-rise 0.5s ease-out;
+}
+
+.nozomi-reward-tier--full {
+  animation: nozomi-reward-rise 0.65s ease-out;
+}
+
+@keyframes nozomi-reward-pop {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes nozomi-reward-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.nozomi-reward-shell--full,
+.nozomi-reward-shell--medium {
+  min-height: 50vh;
+}
+
+.nozomi-reward-backdrop--heavy {
+  background: rgba(0, 0, 0, 0.92);
+}
+
+.nozomi-dungeon-depth-1 .nozomi-corridor-viewport {
+  filter: contrast(1.02);
+}
+
+.nozomi-dungeon-depth-2 .nozomi-corridor-viewport {
+  filter: contrast(1.05) saturate(1.05);
+}
+
+.nozomi-dungeon-depth-3 .nozomi-corridor-viewport,
+.nozomi-dungeon-depth-4 .nozomi-corridor-viewport {
+  animation: nozomi-corridor-unstable 2.5s ease-in-out infinite;
+}
+
+.nozomi-word-rarity--mastered {
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.25);
+}
+
+.nozomi-word-rarity--stable {
+  box-shadow: 0 0 10px rgba(167, 139, 250, 0.2);
+}
+
+.nozomi-loot-beam {
+  animation: nozomi-loot-beam 0.6s ease-out;
+}
+
+@keyframes nozomi-loot-beam {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

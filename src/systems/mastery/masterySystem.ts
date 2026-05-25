@@ -2,6 +2,7 @@ import type { WordMasteryContract } from "@/contracts/vocabulary-contract"
 import { JMDICT_MASTERY } from "@/config/jmdictConfig"
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
+import { masteryTierFromPercent } from "@/systems/presentation/masteryPresentationSystem"
 
 const masteryByWord = new Map<string, WordMasteryContract>()
 
@@ -44,6 +45,9 @@ export function recordWordAnswer(
     ? JMDICT_MASTERY.CORRECT_GAIN
     : -JMDICT_MASTERY.WRONG_PENALTY
 
+  const prevPercent = current?.mastery ?? 0
+  const prevTier = masteryTierFromPercent(prevPercent)
+
   const next: WordMasteryContract = {
     wordId,
     mastery: Math.min(
@@ -57,11 +61,21 @@ export function recordWordAnswer(
 
   masteryByWord.set(wordId, next)
 
+  const nextTier = masteryTierFromPercent(next.mastery)
+  if (playerId && nextTier !== prevTier) {
+    eventBus.emit(GAME_EVENTS.MASTERY_TIER_UP, {
+      playerId,
+      wordId,
+      tier: nextTier,
+      mastery: next.mastery,
+    })
+  }
+
   if (
     playerId &&
     correct &&
     next.mastery >= 80 &&
-    (current?.mastery ?? 0) < 80
+    prevPercent < 80
   ) {
     eventBus.emit(GAME_EVENTS.VOCABULARY_MASTERED, {
       playerId,

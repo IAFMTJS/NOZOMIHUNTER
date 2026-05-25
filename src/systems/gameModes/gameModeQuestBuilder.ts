@@ -7,6 +7,13 @@ import { createTerminalBreachEncounter } from "@/systems/quests/terminalBreachSy
 import { createKanjiSurgeryTargets } from "@/systems/training/kanjiSurgerySystem"
 import { createMemoryCascadeRound } from "@/systems/training/memoryCascadeSystem"
 import { createKanaDashEncounter } from "@/systems/training/kanaDashSystem"
+import {
+  createEchoListeningEncounter,
+  createEchoListeningRound,
+} from "@/systems/training/echoListeningSystem"
+import { createShadowTypingEncounter } from "@/systems/training/shadowTypingSystem"
+import { createMemoryGridRound } from "@/systems/training/memoryGridSystem"
+import { createSurvivalVocabEncounter } from "@/systems/training/survivalVocabSystem"
 import { createSemanticNetworkEncounter } from "@/systems/vocabulary/semanticNetworkSystem"
 import { LISTENING_QUEST_CONFIG } from "@/config/listeningQuestConfig"
 
@@ -101,6 +108,39 @@ export function applyGameModeToQuest(
         type: "VOCABULARY",
         title: quest.title || "Kana Dash",
         vocabularyEncounter: createKanaDashEncounter(),
+      }
+    case "ECHO_LISTENING":
+      return {
+        ...quest,
+        gameMode: modeId,
+        type: "LISTENING",
+        title: quest.title || "Echo Listening",
+        listeningEncounter: createEchoListeningEncounter(),
+        echoListeningEncounter: createEchoListeningRound(),
+      }
+    case "SHADOW_TYPING":
+      return {
+        ...quest,
+        gameMode: modeId,
+        type: "VOCABULARY",
+        title: quest.title || "Shadow Typing",
+        vocabularyEncounter: createShadowTypingEncounter(),
+      }
+    case "MEMORY_GRID":
+      return {
+        ...quest,
+        gameMode: modeId,
+        type: "VOCABULARY",
+        title: quest.title || "Memory Grid",
+        memoryGridEncounter: createMemoryGridRound(),
+      }
+    case "SURVIVAL_VOCAB":
+      return {
+        ...quest,
+        gameMode: modeId,
+        type: "VOCABULARY",
+        title: quest.title || "Survival Mode",
+        vocabularyEncounter: createSurvivalVocabEncounter(),
       }
     case "SEMANTIC_NETWORK":
       return {

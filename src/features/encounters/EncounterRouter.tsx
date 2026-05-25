@@ -15,6 +15,11 @@ import { GhostInterrogationEncounter } from "@/features/encounters/modes/GhostIn
 import { KanjiSurgeryEncounter } from "@/features/encounters/modes/KanjiSurgeryEncounter"
 import { MemoryCascadeEncounter } from "@/features/encounters/modes/MemoryCascadeEncounter"
 import { KanaDashEncounter } from "@/features/encounters/modes/KanaDashEncounter"
+import { EchoListeningEncounter } from "@/features/encounters/modes/EchoListeningEncounter"
+import { ShadowTypingEncounter } from "@/features/encounters/modes/ShadowTypingEncounter"
+import { MemoryGridEncounter } from "@/features/encounters/modes/MemoryGridEncounter"
+import { SurvivalVocabEncounter } from "@/features/encounters/modes/SurvivalVocabEncounter"
+import { storyScreenClass } from "@/systems/presentation/storyMissionPresentation"
 import { TerminalBreachEncounter } from "@/features/encounters/modes/TerminalBreachEncounter"
 import { SemanticNetworkEncounter } from "@/features/encounters/modes/SemanticNetworkEncounter"
 import { Panel } from "@/components/ui/Panel"
@@ -22,6 +27,8 @@ import {
   EncounterFeedback,
   feedbackToneFromMessage,
 } from "@/components/ui/EncounterFeedback"
+import { EncounterFeedbackProvider } from "@/features/encounters/context/EncounterFeedbackContext"
+import { EncounterFeedbackBridge } from "@/features/encounters/EncounterFeedbackBridge"
 
 export interface EncounterRouterProps {
   quest: QuestContract
@@ -93,14 +100,20 @@ export function EncounterRouter({
     />
   ) : null
 
+  const channelClass = storyScreenClass(quest.narrativeTier)
+
   return (
-    <LearnerAssistProvider level={assist}>
-      {renderModeBody({
+    <EncounterFeedbackProvider quest={quest} isTraining={quest.hidden}>
+      <EncounterFeedbackBridge />
+      <LearnerAssistProvider level={assist}>
+        <div className={channelClass}>
+        {renderModeBody({
         mode,
         quest,
         player,
         disabled,
-        maxWrongAttempts,
+        maxWrongAttempts:
+          mode === "SURVIVAL_VOCAB" ? 1 : maxWrongAttempts,
         maxListeningReplays,
         signalDegraded,
         hideLegacyBriefing,
@@ -112,8 +125,10 @@ export function EncounterRouter({
         onSubmitListening,
         onModeAction,
         onAbandon: abandon,
-      })}
-    </LearnerAssistProvider>
+        })}
+        </div>
+      </LearnerAssistProvider>
+    </EncounterFeedbackProvider>
   )
 }
 
@@ -248,6 +263,74 @@ function renderModeBody(ctx: {
           }}
           onAbandon={onAbandon}
         />
+      )
+    case "ECHO_LISTENING":
+      return (
+        <>
+          <EchoListeningEncounter
+            quest={quest}
+            disabled={disabled}
+            onHeard={async () => {
+              await onModeAction?.("echo-heard")
+            }}
+            onSelectChunk={async (id) => {
+              await onModeAction?.("echo-chunk", id)
+            }}
+            onSubmit={async () => {
+              await onModeAction?.("echo-submit")
+            }}
+            onAbandon={onAbandon}
+          />
+          {feedback}
+        </>
+      )
+    case "SHADOW_TYPING":
+      if (!onSubmitAnswer) break
+      return (
+        <>
+          <ShadowTypingEncounter
+            quest={quest}
+            player={player}
+            disabled={disabled}
+            flashClassName={flashClassName}
+            onSubmit={async (a) => {
+              await onSubmitAnswer(a)
+            }}
+            onAbandon={onAbandon}
+          />
+          {feedback}
+        </>
+      )
+    case "MEMORY_GRID":
+      return (
+        <>
+          <MemoryGridEncounter
+            quest={quest}
+            disabled={disabled}
+            onFlip={async (id) => {
+              await onModeAction?.("memory-grid-flip", id)
+            }}
+            onAbandon={onAbandon}
+          />
+          {feedback}
+        </>
+      )
+    case "SURVIVAL_VOCAB":
+      if (!onSubmitAnswer) break
+      return (
+        <>
+          <SurvivalVocabEncounter
+            quest={quest}
+            player={player}
+            disabled={disabled}
+            flashClassName={flashClassName}
+            onSubmit={async (a) => {
+              await onSubmitAnswer(a)
+            }}
+            onAbandon={onAbandon}
+          />
+          {feedback}
+        </>
       )
     case "KANA_DASH":
       if (!onSubmitAnswer) break

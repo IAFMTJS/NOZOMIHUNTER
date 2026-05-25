@@ -1,6 +1,26 @@
 # Presentation flow
 
-Penalty and reactive feedback layers map player state and game mode emotions to CSS and toasts.
+Penalty, ceremony, and encounter feedback layers map player state and game mode emotions to CSS, audio, and fullscreen interrupts.
+
+Ceremony map: [gamefeel-ceremonies.md](gamefeel-ceremonies.md).
+
+## Encounter feedback (v1.3.0+)
+
+1. `EncounterRouter` wraps encounters in `EncounterFeedbackProvider`
+2. Answer events → `encounterFeedbackOrchestrator` → channel profile from `presentation-contract.ts`
+3. `EncounterImpactLayer` applies CSS bursts / glitch / dungeon-unstable classes
+4. `registerAudioHandlers` plays confirm / error / combo / corruption cues (no duplicate audio from impact layer)
+
+Channels: `DAILY`, `MAIN`, `SIDE`, `TRAINING`, `DUNGEON`.
+
+## Ceremonies
+
+| Moment | Component |
+|--------|-----------|
+| Level up | `LevelUpCeremony` + `momentFreezeSystem` |
+| Dungeon extract | `DungeonClearCeremonyFlow` |
+| Pending rewards | `RewardClaimOverlay` + `GateClearedScreen` |
+| Achievement | `AchievementUnlockCeremony` |
 
 ## Corruption tiers
 
@@ -13,7 +33,12 @@ Penalty and reactive feedback layers map player state and game mode emotions to 
 ## Audio
 
 - `playAmbience` / `stopAmbience` on encounter and dungeon enter
-- Event bus hooks in `registerAudioHandlers`
+- Event bus hooks in `registerAudioHandlers` (incl. `achievement`, `rewardCascade`, `MASTERY_TIER_UP`)
+- Procedural fallback when theme MP3s missing — see `public/audio/README.md`
+
+## Haptics
+
+- `hapticsSystem`: level-up, dungeon clear, combo milestones (where supported)
 
 ## Learner assists
 

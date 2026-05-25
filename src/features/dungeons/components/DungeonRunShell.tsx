@@ -17,6 +17,7 @@ export function DungeonRunShell({ run, children, minimal }: DungeonRunShellProps
 
   return (
     <div
+      data-dungeon-theme={run.dungeon.theme.toLowerCase().replace(/_/g, "-")}
       className={`relative overflow-hidden rounded-[var(--radius-panel)] ${dungeonRunShellClass(run)}`}
     >
       {!minimal && (

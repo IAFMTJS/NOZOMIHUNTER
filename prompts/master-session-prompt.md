@@ -19,12 +19,11 @@ Before generating code:
 Before UI work:
 - read rules/ui-rules.md
 - read prompts/ui-prompts.md
+- read docs/nozomi-hunter-ui-gamefeel-progression-feedback.md
+- read flows/gamefeel-ceremonies.md (when changing ceremonies or reward UX)
+- read contracts/presentation-contract.ts
 - reuse components in /src/components/ui and /src/components/layout
 - never place gameplay logic inside UI components
-
-Before UI work:
-- read rules/ui-rules.md
-- read prompts/ui-prompts.md
 
 You must:
 - preserve architecture consistency

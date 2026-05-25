@@ -157,7 +157,8 @@ Defined in [`src/app/globals.css`](../src/app/globals.css):
 
 | Component | Role |
 |-----------|------|
-| `LevelUpNotice` | Level advancement panel |
+| `LevelUpCeremony` | Fullscreen level advancement (slam overlay, stat gains, unlocks) |
+| `AchievementUnlockCeremony` | Fullscreen achievement unlock |
 | `RankUpNotice` | Rank promotion panel |
 | `UnlockNotice` | Registry unlock (from `unlockRegistry`) |
 | `InstallPrompt` | PWA install (Android / iOS copy) |
@@ -168,7 +169,9 @@ Defined in [`src/app/globals.css`](../src/app/globals.css):
 |------|----------------|
 | Contract board | `ContractHub` → menu / hunt / dispatch / sector |
 | Quests | `QuestCard`, `VocabularyEncounter`, `ConversationEncounter`, `SpeechEncounter`, `ListeningEncounter` |
-| Dungeons | `DungeonRunner`, `ExtractionCeremony` |
+| Dungeons | `DungeonRunner`, `DungeonClearCeremonyFlow`, `BossCollapsePhase` |
+| Training | `TrainingClient`, `ArcadeCard`, mode encounter shells |
+| Feedback | `EncounterImpactLayer`, `ComboMeter` (vocab, listening, survival) |
 | Profile | `HunterProfilePanel` |
 | Auth | `LoginForm` |
 
@@ -231,13 +234,13 @@ Dispatch weights (approx.): speech L3+, listening L2+ with `system:listening`, e
 | `dungeon:neon-corridor` | Neon Corridor | 2 | Starter-unlocked in `defaultProgression` |
 | `dungeon:shadow-archive` | Shadow Archive | 4 | Extract from Neon Corridor |
 
-**Phases:** PREPARATION → EXPLORATION → ENCOUNTER (vocab / listen / NPC / speech) → REWARD → BOSS → EXTRACTION (`ExtractionCeremony`) → complete.
+**Phases:** PREPARATION → EXPLORATION → ENCOUNTER (vocab / listen / NPC / speech) → REWARD → BOSS → EXTRACTION (`DungeonClearCeremonyFlow`) → complete.
 
 ### Progression & unlocks
 
 - XP / level / rank (E→S thresholds in `progressionConfig`)
 - Quest rewards merge unlocks via `resolveQuestCompletion` → persisted + `UNLOCK_GRANTED`
-- UI queue: `UnlockNotice`, `RankUpNotice`, `LevelUpNotice`
+- UI queue: `UnlockNotice`, `RankUpNotice`, `LevelUpCeremony`, `AchievementUnlockCeremony`, tiered `RewardClaimOverlay`
 - Registry labels: `unlockRegistry` (`system:*`, `dungeon:*`, `title:*`)
 
 ### Penalties (failure design)

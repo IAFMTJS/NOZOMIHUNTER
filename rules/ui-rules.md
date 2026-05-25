@@ -38,8 +38,10 @@ The UI should:
 Avoid:
 - visual clutter
 - oversized elements
-- dopamine spam
+- dopamine spam (toasts, HUD ticks, stacked minor popups)
 - excessive popups
+
+Ceremony exception: tiered full-screen ceremonies (level-up, dungeon clear, achievement unlock) are intentional interrupts — not "spam." They must use `CeremonyOverlay` / ceremony components, not duplicate inset `Panel` wins.
 
 ---
 

@@ -17,6 +17,10 @@ export type GameModeId =
   | "PANIC_CHANNEL"
   | "ENTITY_HUNT"
   | "SEMANTIC_NETWORK"
+  | "ECHO_LISTENING"
+  | "SHADOW_TYPING"
+  | "MEMORY_GRID"
+  | "SURVIVAL_VOCAB"
 
 export type GameModeEmotion =
   | "DISCIPLINE"

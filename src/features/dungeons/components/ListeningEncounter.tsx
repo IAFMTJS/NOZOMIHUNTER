@@ -22,6 +22,7 @@ import { EncounterTargetRail } from "@/components/ui/EncounterTargetRail"
 import { ListeningFocusShell } from "@/components/ui/ListeningFocusShell"
 import { AudioWaveform } from "@/components/ui/screen/AudioWaveform"
 import { ListeningStationDisplay } from "@/components/ui/screen/ListeningStationDisplay"
+import { ComboMeter } from "@/components/ceremonies/ComboMeter"
 
 interface ListeningEncounterProps {
   quest: QuestContract
@@ -134,6 +135,7 @@ export function ListeningEncounter({
           {pressureLine && (
             <p className="mt-2 text-xs italic text-[var(--accent-bright)]">{pressureLine}</p>
           )}
+          <ComboMeter streak={encounter?.correctStreak ?? 0} className="mt-2" />
         </div>
       )}
 

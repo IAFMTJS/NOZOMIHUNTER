@@ -18,6 +18,7 @@ import { getMasteryMap, recordWordAnswer } from "@/systems/mastery/masterySystem
 import { advanceObjective } from "./questValidator"
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
+import { advanceSurvivalWave } from "@/systems/training/survivalVocabSystem"
 
 export function pickVocabularyWords(count: number): VocabularyWordContract[] {
   const index = getVocabularyCatalog()
@@ -96,7 +97,8 @@ export function submitVocabularyAnswer(
   if (!correct) {
     const nextPressure = afterWrongAnswer(pressureState)
     const wrongAttempts = encounter.wrongAttempts + 1
-    const encounterFailed = wrongAttempts >= maxWrongAttempts
+    const failLimit = encounter.survivalMode ? 1 : maxWrongAttempts
+    const encounterFailed = wrongAttempts >= failLimit
 
     eventBus.emit(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, {
       questId: quest.id,
@@ -125,11 +127,14 @@ export function submitVocabularyAnswer(
 
   const nextPressure = afterCorrectAnswer(pressureState)
   const nextIndex = encounter.currentIndex + 1
-  const updatedEncounter: VocabularyEncounterContract = {
+  let updatedEncounter: VocabularyEncounterContract = {
     ...encounter,
     currentIndex: nextIndex,
     correctStreak: nextPressure.correctStreak,
     wrongAttempts: encounter.wrongAttempts,
+  }
+  if (encounter.survivalMode) {
+    updatedEncounter = advanceSurvivalWave(updatedEncounter)
   }
 
   const updatedObjectives = advanceObjective(quest.objectives, "obj-1", 1)

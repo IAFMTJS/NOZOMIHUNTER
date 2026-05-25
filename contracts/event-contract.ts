@@ -38,6 +38,8 @@ export const GAME_EVENTS = {
   EXPLORATION_BEAT_ADVANCED: "EXPLORATION_BEAT_ADVANCED",
   CHALLENGE_REVEALED: "CHALLENGE_REVEALED",
   REPLAY_PENALTY: "REPLAY_PENALTY",
+  ACHIEVEMENT_UNLOCKED: "ACHIEVEMENT_UNLOCKED",
+  MASTERY_TIER_UP: "MASTERY_TIER_UP",
 } as const
 
 export type GameEventType = (typeof GAME_EVENTS)[keyof typeof GAME_EVENTS]
@@ -118,4 +120,18 @@ export type XpConvertedPayload = {
   playerId: string
   xpSpent: number
   creditsGained: number
+}
+
+export type AchievementUnlockedPayload = {
+  playerId: string
+  achievementId: string
+  title: string
+  description: string
+}
+
+export type MasteryTierUpPayload = {
+  playerId: string
+  wordId: string
+  tier: string
+  mastery: number
 }

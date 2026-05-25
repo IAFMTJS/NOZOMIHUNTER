@@ -1,7 +1,9 @@
 "use client"
 
-import { numericMasteryToTier } from "@/systems/vocabulary/vocabularyMasteryBridge"
-import { masteryTierLearnerLabel } from "@/systems/presentation/masteryPresentationSystem"
+import {
+  masteryTierFromPercent,
+  masteryTierLearnerLabel,
+} from "@/systems/presentation/masteryPresentationSystem"
 
 interface MasteryTierBadgeProps {
   masteryPercent: number
@@ -9,14 +11,14 @@ interface MasteryTierBadgeProps {
 }
 
 export function MasteryTierBadge({ masteryPercent, className = "" }: MasteryTierBadgeProps) {
-  const tier = numericMasteryToTier(masteryPercent)
+  const tier = masteryTierFromPercent(masteryPercent)
   const label = masteryTierLearnerLabel(tier)
   const toneClass =
     tier === "MASTERED"
       ? "nozomi-mastery--mastered"
-      : tier === "CONFIDENT" || tier === "UNDERSTOOD"
+      : tier === "STABLE"
         ? "nozomi-mastery--stable"
-        : tier === "RECOGNIZED" || tier === "SEEN"
+        : tier === "FAMILIAR" || tier === "SEEN"
           ? "nozomi-mastery--familiar"
           : "nozomi-mastery--unknown"
 

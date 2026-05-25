@@ -4,9 +4,8 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
-import { GlassCard } from "@/components/ui/GlassCard"
 import { Button } from "@/components/ui/Button"
-import { StatusChip } from "@/components/ui/StatusChip"
+import { ArcadeCard } from "@/components/ui/cards/ArcadeCard"
 import { startTrainingMission } from "@/features/training/services/trainingLifecycle"
 import { TRAINING_GAME_MODES } from "@/config/gameModeRegistry"
 import { isGameModeUnlocked } from "@/config/gameModeRegistry"
@@ -38,41 +37,46 @@ export function TrainingClient() {
   }
 
   return (
-    <HunterPage className="space-y-4">
+    <HunterPage className="space-y-6">
       <div>
         <p className="text-[10px] uppercase tracking-widest text-[var(--muted)]">
-          Training channel
+          Arcade channel
         </p>
-        <h1 className="font-display text-xl text-[var(--foreground)]">
+        <h1 className="font-display text-2xl text-[var(--foreground)]">
           Stabilization drills
         </h1>
-        <p className="mt-1 text-sm text-[var(--muted)]">
-          Discipline simulations — safe practice without contract stakes.
+        <p className="mt-2 text-sm text-[var(--muted)]">
+          Mini-games — no contract stakes. Chain combos for practice XP.
         </p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         {TRAINING_GAME_MODES.map((modeId) => {
           const def = GAME_MODE_REGISTRY[modeId]
           const unlocked = isGameModeUnlocked(modeId, player)
           return (
-            <GlassCard key={modeId} className="space-y-3 p-4">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-medium text-[var(--foreground)]">
-                  {def.label}
-                </p>
-                <StatusChip label={def.emotion} tone="neutral" />
-              </div>
-              <p className="text-xs text-[var(--muted)]">
+            <ArcadeCard
+              key={modeId}
+              accent={def.emotion === "DOPAMINE" ? "gold" : "purple"}
+            >
+              <p className="font-display text-lg text-[var(--foreground)]">
+                {def.label}
+              </p>
+              <p className="mt-1 text-[10px] uppercase tracking-wider text-[var(--accent-bright)]">
+                {def.emotion.replace(/_/g, " ")}
+              </p>
+              <p className="mt-2 text-xs text-[var(--muted)]">
                 {trainingBlurb(modeId)}
               </p>
               <Button
+                className="mt-4 w-full"
+                variant="cta"
                 disabled={busy || !unlocked}
                 onClick={() => void deploy(modeId)}
               >
-                {unlocked ? "Start drill" : `Requires L${def.minLevel}`}
+                {unlocked ? "Play" : `Requires L${def.minLevel}`}
               </Button>
-            </GlassCard>
+            </ArcadeCard>
           )
         })}
       </div>
@@ -91,7 +95,15 @@ function trainingBlurb(mode: GameModeId): string {
     case "SHADOW_ECHO":
       return "Mirror operator pacing before the signal decays."
     case "KANA_DASH":
-      return "Rapid kana recognition with combo multiplier chains."
+      return "Rapid kana recognition with combo chains."
+    case "ECHO_LISTENING":
+      return "One playback — rebuild the phrase."
+    case "SHADOW_TYPING":
+      return "Type before the glyph collapses."
+    case "MEMORY_GRID":
+      return "Lock matching pairs under pressure."
+    case "SURVIVAL_VOCAB":
+      return "Endless waves until you break."
     default:
       return "Training simulation."
   }

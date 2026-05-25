@@ -21,7 +21,7 @@ import { CorridorStage } from "@/features/dungeons/components/CorridorStage"
 import { DungeonRunShell } from "@/features/dungeons/components/DungeonRunShell"
 import { DungeonRunHud } from "@/features/dungeons/components/DungeonRunHud"
 import { SectorRewardInterstitial } from "@/features/dungeons/components/SectorRewardInterstitial"
-import { DungeonClearCeremony } from "@/components/ceremonies/DungeonClearCeremony"
+import { DungeonClearCeremonyFlow } from "@/components/ceremonies/DungeonClearCeremonyFlow"
 import { buildDungeonClearFromRun } from "@/systems/presentation/ceremonies/dungeonClearCeremonyData"
 import {
   encounterTypeGlyph,
@@ -31,6 +31,8 @@ import type { ExplorationAction } from "@/contracts/dungeon-contract"
 import { getMasteryMap } from "@/systems/mastery/masterySystem"
 import { getVocabularyCatalog } from "@/systems/mastery/vocabularyCatalog"
 import { buildExtractionMasteryRecap } from "@/systems/dungeons/dungeonLexiconRecapSystem"
+import { EncounterFeedbackProvider } from "@/features/encounters/context/EncounterFeedbackContext"
+import { EncounterFeedbackBridge } from "@/features/encounters/EncounterFeedbackBridge"
 
 interface DungeonRunnerProps {
   quest: QuestContract
@@ -263,7 +265,7 @@ export function DungeonRunner({
       )}
 
       {state === "EXTRACTION" && player && (
-        <DungeonClearCeremony
+        <DungeonClearCeremonyFlow
           data={buildDungeonClearFromRun(
             quest,
             {
@@ -276,6 +278,7 @@ export function DungeonRunner({
             { masteryRecap: extractionRecap }
           )}
           theme={run.dungeon.theme}
+          player={player}
           disabled={disabled}
           onExtract={async () => {
             await onExtract()
@@ -315,14 +318,17 @@ export function DungeonRunner({
         )}
 
         {inEncounter && state !== "REWARD" ? (
-          <EncounterFocusShell
-            title={quest.title}
-            enabled
-            autoFocus
-            encounterClassName={encounterClassName}
-          >
-            {encounterBody}
-          </EncounterFocusShell>
+          <EncounterFeedbackProvider quest={quest}>
+            <EncounterFeedbackBridge />
+            <EncounterFocusShell
+              title={quest.title}
+              enabled
+              autoFocus
+              encounterClassName={encounterClassName}
+            >
+              {encounterBody}
+            </EncounterFocusShell>
+          </EncounterFeedbackProvider>
         ) : (
           encounterBody
         )}

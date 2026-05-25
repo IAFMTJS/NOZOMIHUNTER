@@ -22,6 +22,9 @@ These play via [`src/systems/audio/audioSystem.ts`](../../src/systems/audio/audi
 | `comboBreak` | Streak broken after 3+ correct |
 | `rewardTick` | Each line in sequential reward reveal |
 | `sectorClear` / `questComplete` | Dungeon clear and gate overlays |
+| `achievement` | Achievement unlock ceremony |
+| `rewardCascade` | Quest completion overlay |
+| `corruption` | Wrong answer in dungeon channel / high corruption |
 
 Optional MP3 overrides (add when available):
 
@@ -29,3 +32,15 @@ Optional MP3 overrides (add when available):
 |------|-----|
 | `level-up-sting.mp3` | levelUp (future themedAudio hook) |
 | `reward-tick.mp3` | rewardTick |
+| `achievement-sting.mp3` | achievement |
+| `dungeon-clear.mp3` | questComplete |
+
+## Theme ambience (optional)
+
+| Path | Theme |
+|------|-------|
+| `cyber-ambient.mp3` | CYBER_TOKYO loop |
+| `archive-ambient.mp3` | SHADOW_ARCHIVE loop |
+| `abyss-ambient.mp3` | ABYSS_CORE loop |
+
+Missing files fall back to procedural ambience in `themedAudioSystem.ts`.

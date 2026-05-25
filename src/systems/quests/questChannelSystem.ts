@@ -17,7 +17,11 @@ const STORY_MODES: GameModeId[] = [
   "GHOST_INTERROGATION",
   "TERMINAL_BREACH",
 ]
-const SIDE_MODES: GameModeId[] = ["GHOST_INTERROGATION", "PANIC_CHANNEL"]
+const SIDE_MODES: GameModeId[] = [
+  "GHOST_INTERROGATION",
+  "PANIC_CHANNEL",
+  "TERMINAL_BREACH",
+]
 
 export function meetsQuestRequirements(
   quest: QuestContract,

@@ -24,7 +24,12 @@ import { threatDisplayLabel } from "@/systems/vocabulary/vocabularyThreatSystem"
 import { instabilityLabel } from "@/systems/vocabulary/memoryDecaySystem"
 import { learnerPartsFromCurated } from "@/services/jmdict/learnerFormat"
 import { MasteryTierBadge } from "@/components/ui/screen/MasteryTierBadge"
-import { masteryCardClass } from "@/systems/presentation/masteryPresentationSystem"
+import { ThreatCard } from "@/components/ui/cards/ThreatCard"
+import { UI_TOKENS } from "@/config/uiTokens"
+import {
+  masteryCardClass,
+  masteryRarityFrameClass,
+} from "@/systems/presentation/masteryPresentationSystem"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { hydratePlayerFromDb } from "@/features/quests/services/questService"
 import { BREW_CONFIG } from "@/config/brewConfig"
@@ -137,7 +142,7 @@ export function VocabularyClient() {
         ))}
       </div>
 
-      <ul className="nozomi-embedded space-y-2 rounded-xl p-2 pb-20">
+      <ul className={`nozomi-embedded rounded-xl p-2 pb-20 ${UI_TOKENS.channelThreat}`}>
         {entries.length === 0 ? (
           <li className="px-4 py-6 text-center text-sm text-[var(--muted)]">
             {tab === "THREATS"
@@ -158,24 +163,26 @@ export function VocabularyClient() {
             const decay = instabilityLabel(e.instability)
             return (
               <li key={e.wordId}>
-                <Link
-                  href={`/vocabulary/${e.entSeq}`}
-                  className={`${masteryCardClass(e.mastery)} flex items-center justify-between gap-3 rounded-xl border border-[var(--border-subtle)] bg-black/20 px-4 py-3 ${THREAT_ROW_CLASS[e.threat] ?? ""}`}
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-1 flex items-center gap-2">
-                      <MasteryTierBadge masteryPercent={e.mastery} />
+                <Link href={`/vocabulary/${e.entSeq}`} className="block">
+                  <ThreatCard
+                    masteryClass={`${masteryCardClass(e.mastery)} ${masteryRarityFrameClass(e.mastery)} ${THREAT_ROW_CLASS[e.threat] ?? ""}`}
+                    className="flex items-center justify-between gap-3 !py-3"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 flex items-center gap-2">
+                        <MasteryTierBadge masteryPercent={e.mastery} />
+                      </div>
+                      <LearnerWordLine parts={parts} layout="stacked" size="sm" audio />
+                      {decay && (
+                        <p className="mt-1 text-[10px] uppercase text-[var(--danger)]">
+                          {decay}
+                        </p>
+                      )}
                     </div>
-                    <LearnerWordLine parts={parts} layout="stacked" size="sm" audio />
-                    {decay && (
-                      <p className="mt-1 text-[10px] uppercase text-[var(--danger)]">
-                        {decay}
-                      </p>
-                    )}
-                  </div>
-                  <span className="shrink-0 text-[10px] uppercase text-[var(--warning)]">
-                    {threatDisplayLabel(e.threat)}
-                  </span>
+                    <span className="shrink-0 text-[10px] uppercase text-[var(--warning)]">
+                      {threatDisplayLabel(e.threat)}
+                    </span>
+                  </ThreatCard>
                 </Link>
               </li>
             )

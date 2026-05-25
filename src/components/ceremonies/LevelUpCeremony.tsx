@@ -6,6 +6,9 @@ import { MOTION } from "@/config/motionPresets"
 import { Button } from "@/components/ui/Button"
 import { CeremonyOverlay } from "@/components/ceremonies/CeremonyOverlay"
 import { playAudioCue } from "@/systems/audio/audioSystem"
+import { triggerMomentFreeze } from "@/systems/presentation/momentFreezeSystem"
+import { hapticForCeremony } from "@/systems/presentation/hapticsSystem"
+import { UI_TOKENS } from "@/config/uiTokens"
 import type { LevelUpCeremonyViewModel } from "@/systems/presentation/ceremonies/ceremonyTypes"
 
 interface LevelUpCeremonyProps {
@@ -19,10 +22,9 @@ export function LevelUpCeremony({ data, onDismiss }: LevelUpCeremonyProps) {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
+    triggerMomentFreeze(420)
     playAudioCue("levelUp")
-    if (typeof navigator !== "undefined" && navigator.vibrate) {
-      navigator.vibrate(40)
-    }
+    hapticForCeremony("levelUp")
     const t1 = window.setTimeout(() => setShowStats(true), 500)
     const t2 = window.setTimeout(() => setShowUnlocks(true), 1200)
     const t3 = window.setTimeout(() => setReady(true), 1700)
@@ -34,19 +36,27 @@ export function LevelUpCeremony({ data, onDismiss }: LevelUpCeremonyProps) {
   }, [])
 
   return (
-    <CeremonyOverlay open ariaLabelledBy="level-up-ceremony-title">
-      <div className="nozomi-level-up-burst pointer-events-none absolute inset-0 rounded-2xl" />
+    <CeremonyOverlay open intensity="slam" ariaLabelledBy="level-up-ceremony-title">
+      <div className="nozomi-level-up-burst nozomi-rune-ring pointer-events-none absolute inset-0 rounded-2xl" />
       <p className="text-xs uppercase tracking-[0.32em] text-[var(--reward)]">Level up</p>
       <div id="level-up-ceremony-title">
         <motion.p
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={MOTION.panel}
-          className="font-display text-3xl font-bold text-[var(--foreground)]"
+          className={UI_TOKENS.displaySlam}
+        >
+          LEVEL UP
+        </motion.p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ ...MOTION.panel, delay: 0.12 }}
+          className="mt-2 font-display text-2xl font-bold text-[var(--foreground)]"
         >
           LVL {data.previousLevel} → {data.level}
         </motion.p>
-        <p className="mt-2 text-sm text-[var(--accent-bright)]">
+        <p className="mt-3 text-base font-medium text-[var(--accent-bright)]">
           Lv {data.level} · &ldquo;{data.title}&rdquo;
         </p>
       </div>
@@ -68,7 +78,7 @@ export function LevelUpCeremony({ data, onDismiss }: LevelUpCeremonyProps) {
       )}
       {showUnlocks && data.unlockLabels.length > 0 && (
         <div className="rounded-lg border border-[var(--accent)]/30 bg-black/30 px-3 py-2 text-left">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--accent-bright)]">
+          <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--accent-bright)]">
             New unlocked
           </p>
           <ul className="mt-2 space-y-1 text-sm text-[var(--foreground)]">

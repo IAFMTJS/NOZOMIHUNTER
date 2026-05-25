@@ -8,6 +8,17 @@ import {
 } from "@/systems/training/kanjiSurgerySystem"
 import { checkMemoryCascadeAnswer } from "@/systems/training/memoryCascadeSystem"
 import {
+  flipMemoryGridCard,
+  isMemoryGridComplete,
+  resetMemoryGridFlips,
+} from "@/systems/training/memoryGridSystem"
+import {
+  checkEchoReconstruction,
+  clearEchoSelection,
+  markEchoHeard,
+  selectEchoChunk,
+} from "@/systems/training/echoListeningSystem"
+import {
   toggleSemanticLink,
   semanticNetworkComplete,
 } from "@/systems/vocabulary/semanticNetworkSystem"
@@ -72,6 +83,61 @@ export function applyGameModeAction(
       quest: updated,
       correct,
       message: correct ? "Interpretation accepted." : "Alarm triggered.",
+    }
+  }
+
+  if (action === "memory-grid-flip" && mode === "MEMORY_GRID") {
+    const round = quest.memoryGridEncounter
+    if (!round || !payload) return { quest }
+    const { round: next, matched, mismatch, complete } = flipMemoryGridCard(
+      round,
+      payload
+    )
+    let updated = { ...quest, memoryGridEncounter: next }
+    if (mismatch) {
+      updated = {
+        ...quest,
+        memoryGridEncounter: resetMemoryGridFlips(next),
+      }
+      return {
+        quest: updated,
+        correct: false,
+        message: "Pair mismatch — grid reset.",
+      }
+    }
+    if (complete) {
+      return completeModeObjective(updated, "All pairs locked.")
+    }
+    if (matched) {
+      return { quest: updated, correct: true, message: "Pair stabilized." }
+    }
+    return { quest: updated }
+  }
+
+  if (action === "echo-heard" && mode === "ECHO_LISTENING") {
+    const round = quest.echoListeningEncounter
+    if (!round) return { quest }
+    return { quest: { ...quest, echoListeningEncounter: markEchoHeard(round) } }
+  }
+
+  if (action === "echo-chunk" && mode === "ECHO_LISTENING") {
+    const round = quest.echoListeningEncounter
+    if (!round || !payload) return { quest }
+    const next = selectEchoChunk(round, payload)
+    return { quest: { ...quest, echoListeningEncounter: next } }
+  }
+
+  if (action === "echo-submit" && mode === "ECHO_LISTENING") {
+    const round = quest.echoListeningEncounter
+    if (!round) return { quest }
+    const correct = checkEchoReconstruction(round)
+    if (correct) {
+      return completeModeObjective(quest, "Phrase reconstructed.")
+    }
+    return {
+      quest: { ...quest, echoListeningEncounter: clearEchoSelection(round) },
+      correct: false,
+      message: "Sequence corrupted — reassemble.",
     }
   }
 

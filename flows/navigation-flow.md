@@ -24,5 +24,10 @@ Leaving `/contracts`, `/missions`, or `/dungeons` (e.g. bottom nav) resets `hubV
 
 ## Overlays
 
-- `RewardClaimOverlay` when `player.pendingRewards` is set after guarded completion
-- `LevelUpNotice` / `RankUpNotice` / `UnlockNotice` sequential after claim
+- `RewardClaimOverlay` when `player.pendingRewards` is set after guarded completion (tier: daily light / side medium / story+dungeon full — see `completionCeremonyTierSystem`)
+- `LevelUpCeremony` (fullscreen slam) when `usePlayerStore.levelUpCeremony` is set — suppresses duplicate level toast in `ReactiveFeedbackHost`
+- `AchievementUnlockCeremony` when a new achievement unlock is detected (queued in `HunterSessionContext`)
+- `RankUpNotice` / `UnlockNotice` for rank and registry unlocks
+- `SyncDisciplineCeremony` for discipline-chain milestones (localStorage-gated)
+
+See [gamefeel-ceremonies.md](gamefeel-ceremonies.md).

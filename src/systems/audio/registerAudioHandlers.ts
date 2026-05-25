@@ -1,6 +1,5 @@
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
-import { isComboMilestone } from "@/systems/learning/encounterPressureSystem"
 import { playAudioCue, stopCorruptionHum } from "./audioSystem"
 import { playThemedCue } from "./themedAudioSystem"
 import type { DungeonTheme } from "@/contracts/dungeon-contract"
@@ -12,22 +11,14 @@ export function registerAudioHandlers(): () => void {
   if (registered && unregister) return unregister
   registered = true
 
-  const onCorrect = (payload: unknown) => {
-    playAudioCue("confirm")
-    const streak = (payload as { correctStreak?: number } | undefined)?.correctStreak
-    if (streak != null && isComboMilestone(streak)) {
-      playAudioCue(streak >= 5 ? "combo5" : "combo2")
-    }
-  }
-  const onWrong = (payload: unknown) => {
-    const prev = (payload as { previousStreak?: number } | undefined)?.previousStreak ?? 0
-    if (prev >= 3) playAudioCue("comboBreak")
-    else playAudioCue("error")
-  }
   const onLevelUp = () => {
     /* LevelUpCeremony plays full sting */
   }
-  const onQuestComplete = () => playAudioCue("questComplete")
+  const onQuestComplete = () => playAudioCue("rewardCascade")
+  const onAchievement = () => playAudioCue("achievement")
+  const onMasteryTier = () => {
+    /* MasteryTierUpCeremony plays confirm */
+  }
   const onQuestFailed = () => playAudioCue("error")
   const onEncounterStart = () => playAudioCue("encounterStart")
   const onEncounterComplete = () => playAudioCue("sectorClear")
@@ -51,8 +42,6 @@ export function registerAudioHandlers(): () => void {
   }
   const onPrepReady = () => playAudioCue("confirm")
 
-  eventBus.on(GAME_EVENTS.ENCOUNTER_ANSWER_CORRECT, onCorrect)
-  eventBus.on(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, onWrong)
   eventBus.on(GAME_EVENTS.LEVEL_UP, onLevelUp)
   eventBus.on(GAME_EVENTS.QUEST_COMPLETED, onQuestComplete)
   eventBus.on(GAME_EVENTS.QUEST_FAILED, onQuestFailed)
@@ -63,10 +52,10 @@ export function registerAudioHandlers(): () => void {
   eventBus.on(GAME_EVENTS.DUNGEON_FAILED, onDungeonFailed)
   eventBus.on(GAME_EVENTS.PENALTY_TRIGGERED, onPenalty)
   eventBus.on(GAME_EVENTS.VOCABULARY_PREPARATION_READY, onPrepReady)
+  eventBus.on(GAME_EVENTS.ACHIEVEMENT_UNLOCKED, onAchievement)
+  eventBus.on(GAME_EVENTS.MASTERY_TIER_UP, onMasteryTier)
 
   unregister = () => {
-    eventBus.off(GAME_EVENTS.ENCOUNTER_ANSWER_CORRECT, onCorrect)
-    eventBus.off(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, onWrong)
     eventBus.off(GAME_EVENTS.LEVEL_UP, onLevelUp)
     eventBus.off(GAME_EVENTS.QUEST_COMPLETED, onQuestComplete)
     eventBus.off(GAME_EVENTS.QUEST_FAILED, onQuestFailed)
@@ -77,6 +66,8 @@ export function registerAudioHandlers(): () => void {
     eventBus.off(GAME_EVENTS.DUNGEON_FAILED, onDungeonFailed)
     eventBus.off(GAME_EVENTS.PENALTY_TRIGGERED, onPenalty)
     eventBus.off(GAME_EVENTS.VOCABULARY_PREPARATION_READY, onPrepReady)
+    eventBus.off(GAME_EVENTS.ACHIEVEMENT_UNLOCKED, onAchievement)
+    eventBus.off(GAME_EVENTS.MASTERY_TIER_UP, onMasteryTier)
     registered = false
     unregister = null
   }

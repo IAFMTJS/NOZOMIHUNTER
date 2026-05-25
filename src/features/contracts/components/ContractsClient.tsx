@@ -6,6 +6,9 @@ import { useHunterSession } from "@/features/hunter/context/HunterSessionContext
 import { HunterPage } from "@/components/layout/HunterPage"
 import { TabBar } from "@/components/ui/TabBar"
 import { QuestListCard } from "@/components/ui/screen/QuestListCard"
+import { RoutineCard } from "@/components/ui/cards/RoutineCard"
+import { OperativeCard } from "@/components/ui/cards/OperativeCard"
+import { UI_TOKENS } from "@/config/uiTokens"
 import { StoryQuestCard } from "@/components/ui/screen/StoryQuestCard"
 import { StoryChapterSection } from "@/components/ui/screen/StoryChapterSection"
 import { StoryChapterHero } from "@/components/ui/screen/StoryChapterHero"
@@ -209,7 +212,7 @@ export function ContractsClient() {
         )}
 
         {tab === "daily" && (
-          <ul className="nozomi-contract-list-daily space-y-2">
+          <ul className={`nozomi-contract-list-daily ${UI_TOKENS.channelDaily}`}>
             {dailyQuests.length === 0 ? (
               <p className="text-center text-sm text-[var(--muted)]">
                 No daily contracts. Request deployment from the ops strip.
@@ -220,7 +223,8 @@ export function ContractsClient() {
                 const meta = getQuestCatalogMeta(q)
                 const ops = buildMissionOpsPresentation(q)
                 return (
-                  <li key={q.id} className="flex items-stretch gap-2">
+                  <li key={q.id}>
+                    <RoutineCard className="flex items-stretch gap-2 !p-3">
                     <ContractTypeIcon type={q.type} />
                     <div className="min-w-0 flex-1">
                       <StoryQuestCard
@@ -236,6 +240,7 @@ export function ContractsClient() {
                         href={`/contracts/${q.id}`}
                       />
                     </div>
+                    </RoutineCard>
                   </li>
                 )
               })
@@ -244,7 +249,7 @@ export function ContractsClient() {
         )}
 
         {tab === "side" && (
-          <ul className="nozomi-contract-list-side space-y-3">
+          <ul className={`nozomi-contract-list-side ${UI_TOKENS.channelSide}`}>
             {catalog.sideQuests.length === 0 && !catalog.mainStory ? (
               <p className="text-center text-sm text-[var(--muted)]">
                 No side contracts active.
@@ -256,7 +261,8 @@ export function ContractsClient() {
                   const meta = getQuestCatalogMeta(q)
                   const ops = buildMissionOpsPresentation(q)
                   return (
-                    <li key={q.id} className="flex items-stretch gap-2">
+                    <li key={q.id}>
+                      <OperativeCard className="flex items-stretch gap-2 !p-3">
                       <ContractTypeIcon type={q.type} />
                       <div className="min-w-0 flex-1">
                         <StoryQuestCard
@@ -272,6 +278,7 @@ export function ContractsClient() {
                           href={`/contracts/${q.id}`}
                         />
                       </div>
+                      </OperativeCard>
                     </li>
                   )
                 })

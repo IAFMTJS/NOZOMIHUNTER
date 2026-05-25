@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react"
@@ -25,6 +26,14 @@ import { HunterPage } from "@/components/layout/HunterPage"
 import { EncounterHost } from "@/features/hunter/components/EncounterHost"
 import { RewardClaimOverlay } from "@/features/rewards/components/RewardClaimOverlay"
 import { LevelUpCeremony } from "@/components/ceremonies/LevelUpCeremony"
+import { AchievementUnlockCeremony } from "@/components/ceremonies/AchievementUnlockCeremony"
+import {
+  MasteryTierUpCeremony,
+  type MasteryTierUpCeremonyData,
+} from "@/components/ceremonies/MasteryTierUpCeremony"
+import type { CanonicalMasteryTier } from "@/systems/presentation/masteryPresentationSystem"
+import { detectNewAchievements } from "@/systems/presentation/achievements/achievementUnlockPresentation"
+import type { AchievementContract } from "@/systems/progression/achievementSystem"
 import { RankUpNotice } from "@/components/RankUpNotice"
 import { UnlockNotice } from "@/components/UnlockNotice"
 import { InstallPrompt } from "@/components/InstallPrompt"
@@ -84,6 +93,8 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
   const [hubView, setHubView] = useState<HubView>("menu")
   const [claimError, setClaimError] = useState<string | null>(null)
   const [syncCeremonyKey, setSyncCeremonyKey] = useState<string | null>(null)
+  const [achievementQueue, setAchievementQueue] = useState<AchievementContract[]>([])
+  const [masteryTierQueue, setMasteryTierQueue] = useState<MasteryTierUpCeremonyData[]>([])
 
   const quest = useQuestLogic(user?.id)
   const dungeon = useDungeonLogic(user?.id)
@@ -98,6 +109,37 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
     !isTutorialComplete(player!) &&
     !tutorialDismissed &&
     activeQuests.some((q) => q.isTutorial)
+
+  const prevPlayerRef = useRef<PlayerContract | null>(null)
+
+  useEffect(() => {
+    if (!player) {
+      prevPlayerRef.current = null
+      return
+    }
+    const prev = prevPlayerRef.current
+    if (prev && prev.id === player.id) {
+      const newly = detectNewAchievements(prev, player)
+      if (newly.length > 0) {
+        setAchievementQueue((q) => [...q, ...newly])
+        for (const a of newly) {
+          eventBus.emit(GAME_EVENTS.ACHIEVEMENT_UNLOCKED, {
+            playerId: player.id,
+            achievementId: a.id,
+            title: a.title,
+            description: a.description,
+          })
+        }
+      }
+    }
+    prevPlayerRef.current = player
+  }, [
+    player?.id,
+    player?.level,
+    player?.progression.titles.join(","),
+    player?.progression.unlockedDungeons.join(","),
+    player?.progression.unlockedSystems.join(","),
+  ])
 
   useEffect(() => {
     if (!user?.id || !player) return
@@ -131,6 +173,31 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
     }
     setSyncCeremonyKey(null)
   }, [user?.id, syncCeremonyKey])
+
+  useEffect(() => {
+    const onMasteryTier = (payload: unknown) => {
+      const p = payload as {
+        wordId?: string
+        tier?: CanonicalMasteryTier
+        mastery?: number
+      }
+      const wordId = p.wordId
+      const tier = p.tier
+      if (!wordId || !tier) return
+      setMasteryTierQueue((q) => [
+        ...q,
+        {
+          wordId,
+          tier,
+          mastery: p.mastery ?? 0,
+        },
+      ])
+    }
+    eventBus.on(GAME_EVENTS.MASTERY_TIER_UP, onMasteryTier)
+    return () => {
+      eventBus.off(GAME_EVENTS.MASTERY_TIER_UP, onMasteryTier)
+    }
+  }, [])
 
   useEffect(() => {
     if (!eventsRegistered) {
@@ -278,6 +345,18 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
         />
       )}
 
+      {masteryTierQueue[0] != null && achievementQueue[0] == null && (
+        <MasteryTierUpCeremony
+          data={masteryTierQueue[0]}
+          onDismiss={() => setMasteryTierQueue((q) => q.slice(1))}
+        />
+      )}
+      {achievementQueue[0] != null && (
+        <AchievementUnlockCeremony
+          achievement={achievementQueue[0]}
+          onDismiss={() => setAchievementQueue((q) => q.slice(1))}
+        />
+      )}
       {levelUpCeremony != null && (
         <LevelUpCeremony
           data={levelUpCeremony}

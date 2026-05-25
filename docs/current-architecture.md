@@ -2,7 +2,7 @@
 
 
 
-Last updated: v1.3.1 — Challenge display + audit wiring
+Last updated: v1.3.3 — Game feel plan implementation (orchestrator, training mini-games, cards, ceremonies)
 
 
 
@@ -18,7 +18,7 @@ Last updated: v1.3.1 — Challenge display + audit wiring
 
 | Folder structure | Yes |
 
-| Contracts | `/contracts` (incl. `economy-contract`, `readiness-contract`) |
+| Contracts | `/contracts` (incl. `economy-contract`, `readiness-contract`, `presentation-contract`, `event-contract`) |
 
 | Event bus + analytics buffer | `src/systems/events`, `src/systems/analytics` |
 
@@ -31,7 +31,7 @@ Last updated: v1.3.1 — Challenge display + audit wiring
 | Player store | Yes (`economy`, `inventory`, `trackedQuestId`, `pendingRewards`, `identity`, `synchronization`) |
 
 | Quest system (vocabulary + conversation + speech + listening/TTS) | Yes — Daily / Side / Story channels (`questChannelSystem`, `dailyQuestSystem`) |
-| Training drills (`/training`) | Yes — repeatable vocab/listening (`trainingMissionSystem`) |
+| Training drills (`/training`) | Yes — 9 arcade modes (`trainingMissionSystem`, `ArcadeCard` UI) |
 | Player stat growth on completion | Yes (`playerStatProgressionSystem`) |
 | New-player bootstrap (dungeons + starter inventory) | Yes (`playerBootstrapSystem`, migration 014) |
 | Vocabulary threat index tabs | Yes — Threats / Conquered / All (`vocabularyCatalogSystem`, `memoryDecaySystem`) |
@@ -40,7 +40,7 @@ Last updated: v1.3.1 — Challenge display + audit wiring
 
 | Mobile shell (`HunterShellLayout`, `BottomNav`, `(hunter)` routes) | Yes |
 
-| Session layer (`HunterSessionProvider`, `EncounterHost`, `RewardClaimOverlay`) | Yes |
+| Session layer (`HunterSessionProvider`, `EncounterHost`, ceremonies, `RewardClaimOverlay`) | Yes — level-up, achievement, rank/unlock notices |
 
 | Command node hub (`features/hub/ContractHub` — split menu/hunt/dispatch/sector views) | Yes |
 | Home hunter power summary (`HunterPowerSummary` → `/stats`) | Yes |
@@ -61,9 +61,11 @@ Last updated: v1.3.1 — Challenge display + audit wiring
 
 | AI conversation (rule-based director) | Yes |
 
-| UI kit (`Button`, `Panel`, `Input`, `EncounterFocusShell`, `HubScreenFrame`, preparation gauges) | Yes |
+| UI kit (`Button`, `Panel`, `Input`, `EncounterFocusShell`, `HubScreenFrame`, card variants, `uiTokens`) | Yes |
 
 | Presentation (`penaltyPresentationSystem`, `hunterPresentationSystem`, motion tokens) | Yes |
+| Game feel (`encounterFeedbackOrchestrator`, ceremonies, `presentation-contract`, dungeon in-run provider) | Yes — see `flows/gamefeel-ceremonies.md` |
+| Training arcade (9 drills; Memory Grid / Echo / Shadow / Survival distinct mechanics) | Yes |
 
 | Audio (`audioSystem`, Web Audio cues via event bus, mute toggle) | Yes |
 
@@ -137,7 +139,7 @@ Route group `(hunter)/layout.tsx` wraps authenticated pages in `HunterSessionPro
 
 ```txt
 
-/contracts          — player, quest, dungeon, encounter, vocabulary, speech, ai, economy, readiness, …
+/contracts          — player, quest, dungeon, encounter, vocabulary, speech, ai, economy, readiness, presentation, event, game-mode, …
 
 /rules
 
@@ -184,7 +186,7 @@ Route group `(hunter)/layout.tsx` wraps authenticated pages in `HunterSessionPro
 
 /src/components
 
-  ui, layout (HunterShellLayout, HunterPage, BottomNav, HubScreenFrame), preparation, hunter, dungeons
+  ui, ui/cards, feedback, ceremonies, layout, preparation, hunter, dungeons
 
 /src/hooks, /src/stores
 
@@ -223,4 +225,5 @@ See `.env.example` and `DECISIONS.md`. Mobile dev: `npm run dev:mobile` (HTTPS o
 - Visual v2: `docs/visual-direction-v2.md`
 
 - Navigation + economy flows: `flows/navigation-flow.md`, `flows/economy-flow.md`
+- Game feel ceremonies: `flows/gamefeel-ceremonies.md`, `flows/presentation-flow.md`
 

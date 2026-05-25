@@ -4,6 +4,8 @@ import type { DungeonRunContract } from "@/contracts/dungeon-contract"
 import { StatusChip } from "@/components/ui/StatusChip"
 import { formatDungeonTimeRemaining } from "@/systems/economy/shopEffectSystem"
 import {
+  dungeonFailureConsequenceLine,
+  dungeonThemeAtmosphere,
   formatRunPressure,
   pursuitBarTone,
 } from "@/systems/dungeons/dungeonPresentationSystem"
@@ -15,6 +17,7 @@ interface DungeonRunHudProps {
   sectorsDone: number
   sectorTotal: number
   timeRemainingMs: number | null
+  maxStrikes?: number
   compact?: boolean
 }
 
@@ -24,14 +27,18 @@ export function DungeonRunHud({
   sectorsDone,
   sectorTotal,
   timeRemainingMs,
+  maxStrikes = 2,
   compact,
 }: DungeonRunHudProps) {
+  const strikesLeft = Math.max(0, maxStrikes - run.encounterFailures)
   const pressure = formatRunPressure(run)
   const pursuitDistance = run.pursuitDistance
   const showPursuit =
     run.dungeonMode === "VOID_PURSUIT" && pursuitDistance != null
   const pursuitTone = pursuitBarTone(pursuitDistance)
   const caught = showPursuit && isPursuitCaught(pursuitDistance)
+  const consequence = dungeonFailureConsequenceLine(run, maxStrikes)
+  const atmosphere = dungeonThemeAtmosphere(run.dungeon.theme)
 
   return (
     <header className={`nozomi-dungeon-hud flex flex-col gap-2 ${compact ? "gap-1.5" : "gap-2"}`}>
@@ -63,12 +70,34 @@ export function DungeonRunHud({
         )}
       </div>
 
+      {!compact && (
+        <p className="text-[10px] italic text-[var(--muted)]">{atmosphere}</p>
+      )}
+
+      {consequence && (
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--danger)]">
+          {consequence}
+        </p>
+      )}
+
       <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
         Sectors {sectorsDone}/{sectorTotal}
         {pressure.loopLabel ? ` · ${pressure.loopLabel}` : ""}
+        <span
+          className={
+            strikesLeft <= 1 ? "ml-1 text-[var(--danger)]" : "ml-1 text-[var(--warning)]"
+          }
+        >
+          · strikes {strikesLeft}/{maxStrikes}
+        </span>
         {sectorsDone >= 2 && (
           <span className="nozomi-dungeon-escalation ml-1 text-[var(--danger)]">
             · pressure rising
+          </span>
+        )}
+        {(run.peakEncounterStreak ?? 0) >= 3 && (
+          <span className="ml-1 text-[var(--reward)]">
+            · peak chain {run.peakEncounterStreak}
           </span>
         )}
       </p>

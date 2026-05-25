@@ -5,7 +5,7 @@ Quest Generation (`requestNewQuest(channel)` — `daily` | `side` | `story`)
 Daily channel → `dailyQuestSystem` (deterministic id per UTC date, `DAILY` tier)
 Side channel → vocabulary or conversation (`SIDE` tier, SIDE rewards)
 Story / default → `generateQuestForPlayer` (MAIN-tier mix)
-Training → `/training` → `trainingMissionSystem` (hidden, not in catalog)
+Training → `/training` → `trainingMissionSystem` (hidden, not in catalog; `narrativeTier: "DAILY"`, arcade UI)
 ↓
 Vocabulary preparation briefing (unknown / critical words)
 ↓
@@ -32,7 +32,9 @@ Client sync store + tutorial unlocks (non-XP fields via `apply_guarded_progressi
 ↓
 `LevelUpCeremony` (fullscreen, stat deltas, unlocks) when `applyProgressionUpdate` levels up — suppresses duplicate level toast
 ↓
-`RewardClaimOverlay` (tiered: daily instant, side/story/dungeon sequential reveal) → `clear_pending_rewards_guarded` (credits/items applied server-side; local `pendingRewards` cleared)
+`RewardClaimOverlay` (tiered shells: daily instant / side medium / story+dungeon full sequential) → `clear_pending_rewards_guarded` (credits/items applied server-side; local `pendingRewards` cleared)
+↓
+`AchievementUnlockCeremony` if new unlocks detected vs previous player snapshot
 ↓
 Fatigue recovery (−1 on complete, cap 0) via `penaltyGameplaySystem`
 ↓

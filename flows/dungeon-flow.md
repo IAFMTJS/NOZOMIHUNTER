@@ -18,7 +18,7 @@ EXPLORATION — next sector transit (repeat)
 ↓
 BOSS — vocabulary phase → speech phase
 ↓
-EXTRACTION — `DungeonClearCeremony` (slam title, sequential rewards, extract CTA) + themed audio
+EXTRACTION — `DungeonClearCeremonyFlow`: `BossCollapsePhase` → `momentFreeze` → `DungeonClearCeremony` (slam overlay, sequential rewards, XP preview) → extract CTA + themed audio
 ↓
 Assign quest → `spend_stamina_guarded` (JSONB unlock check) → extract uses same `applyActivityCompletion` + `pending_rewards` as missions
 ↓
@@ -30,7 +30,9 @@ Corridors: all definitions shown in sector hub; `resolveDungeonAccess` (level, p
 
 Failure paths:
 - Sector timer — `DungeonRunner` countdown; `assertDungeonTimedOut` on encounter submit and failure handler
-- Sector failure increments `encounterFailures`; max budget from `maxDungeonEncounterFailures` (corruption ≥ 40 → 1 failure allowed)
+- Sector failure increments `encounterFailures`; max budget from `maxDungeonEncounterFailures` (corruption ≥ 40 → 1 failure allowed); **strikes remaining** shown in `DungeonRunHud`
+- Depth escalation: `nozomi-dungeon-depth-N` on run shell from `currentEncounterIndex`; peak combo in HUD
+- Theme identity: `data-dungeon-theme` on `DungeonRunShell`; corridor tint classes per theme
 - **Revive token** — one extra life in `handleDungeonFailure`
 - **Escape beacon** — penalty-free abort in `abandonDungeon`
 - **Time freeze** — extends deadline via `frozenTimeMs` / `frozenUntil`

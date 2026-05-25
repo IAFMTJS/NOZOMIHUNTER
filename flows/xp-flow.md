@@ -28,8 +28,10 @@ Events:
 - QUEST_COMPLETED
 - XP_GAINED
 - XP_CONVERTED
-- LEVEL_UP
+- LEVEL_UP → `LevelUpCeremony` (store) + optional toast if ceremony skipped
 - RANK_UP
+- ACHIEVEMENT_UNLOCKED (presentation only; derived from player state)
+- MASTERY_TIER_UP (vocabulary tier boundary)
 
 Systems:
 - questSystem

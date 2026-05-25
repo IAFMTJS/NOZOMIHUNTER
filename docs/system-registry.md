@@ -1,5 +1,68 @@
 NOZOMI System Registry
 
+presentationCeremonySystem
+
+Location: `/src/systems/presentation/ceremonies/*`, `/src/components/ceremonies/*`
+
+Responsibilities
+
+* completion tier resolution (`completionCeremonyTierSystem`, `ceremonyTypes`)
+* level-up / dungeon-clear / achievement view models
+* reward sequential reveal timing (`rewardRevealSequence`)
+* moment freeze for high-intensity beats (`momentFreezeSystem`)
+
+Dependencies
+
+* presentation-contract.ts
+* quest-contract (narrativeTier)
+* economy-contract (pending rewards)
+* event bus
+
+Events
+
+* LEVEL_UP
+* DUNGEON_COMPLETED
+* REWARDS_PENDING
+* ACHIEVEMENT_UNLOCKED
+
+Contracts
+
+* presentation-contract.ts
+* quest-contract.ts
+* economy-contract.ts
+
+⸻
+
+encounterFeedbackSystem
+
+Location: `/src/systems/presentation/encounterFeedbackOrchestrator.ts`, `/src/components/feedback/*`
+
+Responsibilities
+
+* channel-scoped impact profiles (correct / wrong / combo break)
+* `EncounterFeedbackProvider` plays `audioCues` + `momentFreeze` from orchestrator
+* CSS + haptic via `EncounterImpactLayer`
+* wired on `EncounterRouter` and `DungeonRunner` in-run encounters
+
+Dependencies
+
+* presentation-contract.ts
+* encounterPressureSystem
+* audioSystem (`playAudioCues`) — encounter answer cues not duplicated in `registerAudioHandlers`
+
+Events
+
+* ENCOUNTER_ANSWER_CORRECT
+* ENCOUNTER_ANSWER_WRONG
+* MASTERY_TIER_UP
+
+Contracts
+
+* presentation-contract.ts
+* event-contract.ts
+
+⸻
+
 progressionSystem
 
 Responsibilities
@@ -1069,28 +1132,45 @@ Events
 * `XP_CONVERTED`
 
 ⸻
- (v1.1.0)
 
-Location: `/src/systems/progression/achievementSystem.ts`
+achievementSystem (v1.3.2)
+
+Location: `/src/systems/progression/achievementSystem.ts`, `/src/systems/presentation/achievements/achievementUnlockPresentation.ts`
 
 Responsibilities
 
 * derive unlocked achievements from progression, sync, dungeons, titles
+* detect newly unlocked achievements vs previous player snapshot
+
+Dependencies
+
+* player store, event bus
+
+Events
+
+* `ACHIEVEMENT_UNLOCKED` (emitted on new unlock)
 
 UI
 
-* `/achievements`
+* `/achievements` (list)
+* `AchievementUnlockCeremony` in session shell
+
+Contracts
+
+* player-contract.ts
+* event-contract.ts
 
 ⸻
 
-hunterSessionLayer (v1.0.0, app — not gameplay logic)
+hunterSessionLayer (v1.3.2, app — not gameplay logic)
 
 Location: `/src/features/hunter/context/HunterSessionContext.tsx`
 
 Responsibilities
 
 * single hydrate: player, quests, event handlers, audio unlock
-* shell: `HunterShellLayout` + page children + `EncounterHost` + progression notices
+* shell: `HunterShellLayout` + page children + `EncounterHost` + progression ceremonies
+* overlays: `RewardClaimOverlay`, `LevelUpCeremony`, `AchievementUnlockCeremony`, `RankUpNotice`, `UnlockNotice`, `SyncDisciplineCeremony`
 * `trackMission`, `claimRewards`, `hubView` for ContractHub overlays (only on `/contracts` | `/missions` | `/dungeons` after deploy; other routes reset `hubView` to `menu`)
 
 Dependencies
@@ -1205,18 +1285,29 @@ Dependencies
 
 ⸻
 
-trainingMissionSystem (v1.2.3)
+trainingMissionSystem (v1.3.2)
 
-Location: `/src/systems/training/trainingMissionSystem.ts`
+Location: `/src/systems/training/trainingMissionSystem.ts`, `/src/systems/training/*System.ts` (per mode)
 
 Responsibilities
 
-* repeatable hidden vocab/listening drills
+* repeatable hidden quests for nine training `GameModeId`s
 * excluded from contract catalog via `isTrainingQuest`
+* `narrativeTier: "DAILY"` on generated training quests (light reward overlay)
+
+Dependencies
+
+* `gameModeQuestBuilder`, `gameModeRegistry`
 
 UI
 
-* `/training`
+* `/training` — `TrainingClient` + `ArcadeCard` (not contract quest cards)
+
+Contracts
+
+* quest-contract.ts
+* game-mode-contract.ts
+* presentation-contract.ts (TRAINING feedback channel)
 
 ⸻
 

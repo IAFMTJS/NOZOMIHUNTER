@@ -2,6 +2,32 @@
 
 ## v1.3.0 (unreleased) — Gameplay evolution integration
 
+### Documentation sync (v1.3.2)
+- Canonical game-feel flow: `flows/gamefeel-ceremonies.md` (mirror under `docs/flows/`)
+- Updated `flows/navigation-flow.md`, `dungeon-flow.md`, `presentation-flow.md`, `training-modes-flow.md`, `quest-flow.md`, `xp-flow.md`
+- `docs/current-architecture.md`, `docs/system-registry.md`, `docs/nozomi-product-spec.md`, `docs/visual-direction-v2.md`
+- Fixed broken `achievementSystem` registry header; expanded `hunterSessionLayer` and `trainingMissionSystem` entries
+
+### Game feel (implementation pass — plan complete)
+
+- `EncounterFeedbackContext` consumes orchestrator `audioCues` + `freezeMs`; dungeon in-run provider on `DungeonRunner`
+- Encounter answer audio removed from `registerAudioHandlers` (provider-owned)
+- Training mini-games: Memory Grid (pair match), Echo Listening (chunk reconstruction), Shadow Typing (prompt decay), Survival (1-strike waves)
+- `AchievementUnlockCeremony` slam + freeze; `MasteryTierUpCeremony` queue in `HunterSessionContext`
+- Tiered `RewardClaimOverlay` motion classes; card hierarchy (`RoutineCard`, `OperativeCard`, `SectorCard`, `ThreatCard`)
+- Dungeon HUD atmosphere + failure consequence copy; boss collapse theme CSS
+
+### Game feel (full plan)
+- Spec: [`docs/nozomi-hunter-ui-gamefeel-progression-feedback.md`](docs/nozomi-hunter-ui-gamefeel-progression-feedback.md), [`contracts/presentation-contract.ts`](contracts/presentation-contract.ts), [`docs/flows/gamefeel-ceremonies.md`](docs/flows/gamefeel-ceremonies.md)
+- `encounterFeedbackOrchestrator` + `EncounterFeedbackProvider` / `EncounterImpactLayer` on all `EncounterRouter` paths
+- `momentFreezeSystem`, `hapticsSystem`, ceremony slam overlay, `BossCollapsePhase`, `DungeonClearCeremonyFlow` with XP aftermath
+- `AchievementUnlockCeremony` + `ACHIEVEMENT_UNLOCKED` / `MASTERY_TIER_UP` events
+- Tier-sized `RewardClaimOverlay` shells; enhanced level-up typography
+- Training arcade UI (`ArcadeCard`); modes: Echo Listening, Shadow Typing, Memory Grid, Survival Vocab
+- Card variants (`RoutineCard`, `OperativeCard`, `ThreatCard`, `SectorCard`, `ArcadeCard`); `uiTokens.ts`
+- Dungeon depth escalation classes, strike HUD, `data-dungeon-theme`
+- Removed orphan `LevelUpNotice`, unused `ExtractionCeremony`
+
 ### Game feel (update2)
 - Ceremony layer: fullscreen `LevelUpCeremony`, `DungeonClearCeremony`, `SequentialRewardReveal`, tiered `RewardClaimOverlay` (daily light / story+dungeon sequential)
 - Encounter impact: `ComboMeter`, combo milestone audio (`combo2`/`combo5`/`comboBreak`), wrong-answer glitch CSS
@@ -20,7 +46,7 @@
 - Quest/dungeon `gameMode` snapshot persistence; analytics `game_mode` payload
 
 ### Modes (see system-registry)
-- Training: Signal Calibration, Kanji Surgery, Memory Cascade, Shadow Echo
+- Training: Signal Calibration, Kana Dash, Kanji Surgery, Memory Cascade, Shadow Echo, Echo Listening, Shadow Typing, Memory Grid, Survival Vocab
 - Quest: Terminal Breach, Ghost Interrogation, Lost Transmission
 - Dungeon: Corruption Run, Void Pursuit, Roguelike Sector, Archivist boss
 - Contract: Deep Cover, Panic Channel

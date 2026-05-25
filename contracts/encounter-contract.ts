@@ -30,6 +30,10 @@ export interface VocabularyEncounterContract {
   wrongAttempts: number
   /** Consecutive correct answers in this encounter. */
   correctStreak?: number
+  /** Survival mode: one wrong ends the run. */
+  survivalMode?: boolean
+  /** Current wave index (survival). */
+  survivalWave?: number
 }
 
 export type ConversationRole = "director" | "player"
@@ -151,6 +155,34 @@ export interface MemoryCascadeRoundContract {
   words: VocabularyWordContract[]
   intruderId: string | null
   revealed: boolean
+}
+
+export interface MemoryGridCardContract {
+  id: string
+  pairId: string
+  face: string
+  reading?: string
+}
+
+export interface MemoryGridRoundContract {
+  cards: MemoryGridCardContract[]
+  flippedIds: string[]
+  matchedPairIds: string[]
+  moves: number
+  timeLimitSec: number
+}
+
+export interface EchoListeningChunkContract {
+  id: string
+  label: string
+  orderIndex: number
+}
+
+export interface EchoListeningRoundContract {
+  fragment: ListeningFragmentContract
+  chunks: EchoListeningChunkContract[]
+  selectedIds: string[]
+  heardOnce: boolean
 }
 
 export interface SemanticNetworkNodeContract {

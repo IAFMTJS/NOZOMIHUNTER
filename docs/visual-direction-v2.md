@@ -239,7 +239,7 @@ Each screen owns **one psychological state**. Secondary chrome (install prompt, 
 | Mission prep | Readiness & briefing | `QuestPreparationGate` + `QuestPreparationBriefing`: vertical vocab stack, `.nozomi-screen-prep`, embedded targets |
 | Dungeon | Tension & navigation | `DungeonRunner`: default embedded panel, vertical stepper + corridor rail |
 | Listening | Focus & pressure | `ListeningEncounter`: borderless, `.nozomi-signal-well`, error budget in danger color |
-| Extraction | Relief & reward | `ExtractionCeremony`: `tone="reward"`, `.nozomi-screen-extraction`, gold XP staging |
+| Extraction | Relief & reward | `DungeonClearCeremonyFlow`: `BossCollapsePhase`, slam `CeremonyOverlay`, sequential rewards, `XPBar` aftermath |
 
 ## CSS utilities
 

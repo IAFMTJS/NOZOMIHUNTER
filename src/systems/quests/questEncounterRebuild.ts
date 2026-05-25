@@ -308,6 +308,12 @@ function hasPlayableModePayload(
       return (quest.kanjiSurgeryEncounter?.length ?? 0) > 0
     case "MEMORY_CASCADE":
       return Boolean(quest.memoryCascadeEncounter)
+    case "MEMORY_GRID":
+      return Boolean(quest.memoryGridEncounter?.cards.length)
+    case "ECHO_LISTENING":
+      return Boolean(quest.echoListeningEncounter?.chunks.length)
+    case "SHADOW_TYPING":
+    case "SURVIVAL_VOCAB":
     case "KANA_DASH":
       return hasPlayableVocabulary(quest)
     case "SEMANTIC_NETWORK":

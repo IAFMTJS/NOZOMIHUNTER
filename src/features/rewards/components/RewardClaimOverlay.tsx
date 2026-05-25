@@ -50,15 +50,37 @@ export function RewardClaimOverlay({
         ? "Contract synced"
         : "Gate Cleared"
 
+  const shellClass =
+    ceremony.tier === "light"
+      ? "nozomi-reward-shell--light max-w-sm nozomi-reward-tier--light"
+      : ceremony.tier === "medium"
+        ? "nozomi-reward-shell--medium max-w-md nozomi-reward-tier--medium"
+        : "nozomi-reward-shell--full max-w-lg w-full min-h-[70vh] sm:min-h-0 nozomi-reward-tier--full"
+
+  const tierSubhead =
+    ceremony.tier === "light"
+      ? "Routine sync complete"
+      : ceremony.tier === "medium"
+        ? "Side contract resolved"
+        : "Mission extraction authorized"
+
   return (
-    <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/85 p-4 pb-[calc(var(--hunter-nav-height)+1rem)] sm:items-center">
-      <div className="nozomi-embedded-accent w-full max-w-md rounded-2xl p-4">
+    <div
+      className={`fixed inset-0 z-[110] flex items-end justify-center p-4 pb-[calc(var(--hunter-nav-height)+1rem)] sm:items-center ${
+        ceremony.tier === "light"
+          ? "bg-black/55"
+          : ceremony.tier === "medium"
+            ? "bg-black/75"
+            : "bg-black/85 nozomi-reward-backdrop--heavy"
+      }`}
+    >
+      <div className={`nozomi-embedded-accent w-full rounded-2xl p-4 ${shellClass}`}>
         <GateClearedScreen
           stats={stats}
           rewards={rewards}
           revealMode={ceremony.revealMode}
           headline={headline}
-          subheadline={ceremony.sourceTitle}
+          subheadline={ceremony.sourceTitle ?? tierSubhead}
           performanceLabel={performanceLabel}
           intensityClass={overlayIntensityClass(ceremony.tier)}
           onContinue={onClaimAll}

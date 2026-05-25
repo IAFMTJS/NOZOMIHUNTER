@@ -1,4 +1,4 @@
-import type { DungeonRunContract, EncounterType } from "@/contracts/dungeon-contract"
+import type { DungeonRunContract, DungeonTheme, EncounterType } from "@/contracts/dungeon-contract"
 import type { GameModeId } from "@/contracts/game-mode-contract"
 import { modifierSummary } from "@/systems/dungeons/dungeonModifierSystem"
 import {
@@ -73,6 +73,8 @@ export function dungeonRunShellClass(run: DungeonRunContract): string {
   if (mode === "CORRUPTION_RUN") parts.push("nozomi-dungeon-run--corruption")
   if (mode === "ROGUELIKE_SECTOR") parts.push("nozomi-dungeon-run--roguelike")
   if ((run.endlessSectorCount ?? 0) >= 3) parts.push("nozomi-dungeon-run--unstable")
+  const depth = Math.min(4, run.currentEncounterIndex + 1)
+  if (depth >= 1) parts.push(`nozomi-dungeon-depth-${depth}`)
   return parts.join(" ")
 }
 
@@ -112,4 +114,29 @@ export function sectorNodeLabel(
 ): string {
   const status = completed ? "cleared" : "locked"
   return `S${index + 1} · ${encounterTypeLabel(type)} · ${status}`
+}
+
+const THEME_ATMOSPHERE: Record<string, string> = {
+  CYBER_TOKYO: "Neon grid — signal towers humming",
+  SHADOW_ARCHIVE: "Corrupted archives — ink static",
+  ABYSS_CORE: "Memory prison — void pressure",
+  ABANDONED_STATION: "Abandoned relay — cold corridors",
+  CORRUPTED_SHRINE: "Shrine breach — seal fractures",
+  NEON_CITY: "City overload — pursuit channels hot",
+}
+
+export function dungeonThemeAtmosphere(theme: DungeonTheme | string | undefined): string {
+  if (!theme) return "Sector breach — atmospheric lock engaged"
+  return THEME_ATMOSPHERE[theme] ?? "Unknown sector — corruption detected"
+}
+
+export function dungeonFailureConsequenceLine(
+  run: DungeonRunContract,
+  maxStrikes: number
+): string | null {
+  const strikesLeft = Math.max(0, maxStrikes - run.encounterFailures)
+  if (strikesLeft <= 0) return "Extraction compromised — penalties incoming"
+  if (strikesLeft === 1) return "Final strike — next failure drains XP"
+  if (run.encounterFailures > 0) return `Corruption +${run.encounterFailures * 3}% from breaches`
+  return null
 }
