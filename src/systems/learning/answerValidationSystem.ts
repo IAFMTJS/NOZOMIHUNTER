@@ -28,10 +28,25 @@ export function resolveAnswerInputMode(
   )
 }
 
+function buildListenDecodeAcceptedAnswers(
+  item: AnswerableChallengeItem
+): Set<string> {
+  const accepted = new Set<string>()
+  accepted.add(normalizeAnswer(item.romaji))
+  accepted.add(readingToRomaji(item.reading))
+  accepted.add(normalizeJapanese(item.reading))
+  accepted.add(normalizeJapanese(item.japanese))
+  return accepted
+}
+
 export function buildAcceptedAnswers(
   item: AnswerableChallengeItem,
   defaultDirection: ChallengePromptDirection = "RETRIEVE_ENGLISH"
 ): Set<string> {
+  if (defaultDirection === "LISTEN_DECODE") {
+    return buildListenDecodeAcceptedAnswers(item)
+  }
+
   const mode = resolveAnswerInputMode(item, defaultDirection)
   const accepted = new Set<string>()
 
@@ -61,6 +76,14 @@ export function matchesChallengeAnswer(
 ): boolean {
   const normalized = normalizeAnswer(answer)
   if (!normalized) return false
+
+  const direction = item.promptDirection ?? defaultDirection
+  if (direction === "LISTEN_DECODE") {
+    const accepted = buildAcceptedAnswers(item, "LISTEN_DECODE")
+    return (
+      accepted.has(normalized) || accepted.has(normalizeJapanese(answer))
+    )
+  }
 
   const mode = resolveAnswerInputMode(item, defaultDirection)
   const accepted = buildAcceptedAnswers(item, defaultDirection)

@@ -1,17 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { GAME_MODE_REGISTRY, isGameModeUnlocked } from "@/config/gameModeRegistry"
-import type { PlayerContract } from "@/contracts/player-contract"
-
-const mockPlayer = (level: number): PlayerContract =>
-  ({
-    id: "test",
-    level,
-    progression: {
-      unlockedDungeons: ["dungeon:corruption-run"],
-      unlockedSystems: ["system:semantic-network"],
-      titles: [],
-    },
-  }) as PlayerContract
+import { mockPlayerContract } from "./helpers/mockPlayerContract"
 
 describe("gameModeRegistry", () => {
   it("registers all evolution modes", () => {
@@ -20,7 +9,31 @@ describe("gameModeRegistry", () => {
   })
 
   it("gates by min level", () => {
-    expect(isGameModeUnlocked("KANJI_SURGERY", mockPlayer(2))).toBe(false)
-    expect(isGameModeUnlocked("KANJI_SURGERY", mockPlayer(3))).toBe(true)
+    expect(
+      isGameModeUnlocked(
+        "KANJI_SURGERY",
+        mockPlayerContract({
+          level: 2,
+          progression: {
+            unlockedDungeons: ["dungeon:corruption-run"],
+            unlockedSystems: ["system:semantic-network"],
+            titles: [],
+          },
+        })
+      )
+    ).toBe(false)
+    expect(
+      isGameModeUnlocked(
+        "KANJI_SURGERY",
+        mockPlayerContract({
+          level: 3,
+          progression: {
+            unlockedDungeons: ["dungeon:corruption-run"],
+            unlockedSystems: ["system:semantic-network"],
+            titles: [],
+          },
+        })
+      )
+    ).toBe(true)
   })
 })

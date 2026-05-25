@@ -1,4 +1,4 @@
-import type { GateClearedStats } from "@/features/dungeons/components/GateClearedScreen"
+import type { GateClearedStats } from "@/systems/presentation/ceremonies/ceremonyTypes"
 import type { PendingRewardBundleContract } from "@/contracts/economy-contract"
 import type { QuestContract } from "@/contracts/quest-contract"
 import type { PlayerContract } from "@/contracts/player-contract"

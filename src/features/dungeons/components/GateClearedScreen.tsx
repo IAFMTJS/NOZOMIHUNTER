@@ -3,15 +3,12 @@
 import { SequentialRewardReveal } from "@/components/ceremonies/SequentialRewardReveal"
 import { RewardIconGrid, type RewardIconItem } from "@/components/ui/screen/RewardIconGrid"
 import { Button } from "@/components/ui/Button"
-import type { RewardRevealMode } from "@/systems/presentation/ceremonies/ceremonyTypes"
+import type {
+  GateClearedStats,
+  RewardRevealMode,
+} from "@/systems/presentation/ceremonies/ceremonyTypes"
 
-export interface GateClearedStats {
-  timeLabel: string
-  accuracyPercent: number
-  grade: string
-  newWordsUnlocked?: number
-  masteryIncreasePercent?: number
-}
+export type { GateClearedStats }
 
 interface GateClearedScreenProps {
   stats: GateClearedStats

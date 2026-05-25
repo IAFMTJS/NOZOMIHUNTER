@@ -6,7 +6,7 @@ import { useHunterSession } from "@/features/hunter/context/HunterSessionContext
 import { HunterPage } from "@/components/layout/HunterPage"
 import { Button } from "@/components/ui/Button"
 import { ArcadeCard } from "@/components/ui/cards/ArcadeCard"
-import { startTrainingMission } from "@/features/training/services/trainingLifecycle"
+import { startTrainingMission } from "@/features/training/services/trainingActions"
 import { TRAINING_GAME_MODES } from "@/config/gameModeRegistry"
 import { isGameModeUnlocked } from "@/config/gameModeRegistry"
 import { GAME_MODE_REGISTRY } from "@/config/gameModeRegistry"

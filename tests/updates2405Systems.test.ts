@@ -24,7 +24,7 @@ import { eventBus } from "@/systems/events/eventBus"
 import { buildTrainingQuest, isTrainingQuest } from "@/systems/training/trainingMissionSystem"
 import { buildQuestRewards } from "@/systems/quests/questRewardFactory"
 import { generateQuestForChannel } from "@/systems/quests/questChannelSystem"
-import type { PlayerContract } from "@/contracts/player-contract"
+import { mockPlayerContract } from "./helpers/mockPlayerContract"
 
 describe("dailyQuestSystem", () => {
   it("uses deterministic daily id per player and date", () => {
@@ -188,7 +188,7 @@ describe("eventBus", () => {
 
 describe("trainingMissionSystem", () => {
   it("excludes training quests from contract catalog", () => {
-    const training = buildTrainingQuest("vocabulary", 3)
+    const training = buildTrainingQuest("KANA_DASH", 3)
     expect(isTrainingQuest(training)).toBe(true)
     const catalog = buildContractCatalog([
       training,
@@ -208,11 +208,11 @@ describe("trainingMissionSystem", () => {
 })
 
 describe("questChannelSystem", () => {
-  const stubPlayer = {
+  const stubPlayer = mockPlayerContract({
     id: "p1",
     level: 10,
     progression: { unlockedSystems: ["system:listening"], unlockedDungeons: [], titles: [] },
-  } as PlayerContract
+  })
 
   it("applies SIDE rewards on side channel", () => {
     const quest = generateQuestForChannel("side", stubPlayer, [])

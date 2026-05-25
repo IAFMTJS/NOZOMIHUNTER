@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import type { QuestContract } from "@/contracts/quest-contract"
 import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
@@ -24,12 +24,17 @@ export function MemoryCascadeEncounter({
   const round = quest.memoryCascadeEncounter
   const [revealed, setRevealed] = useState(false)
 
+  const wordSequenceKey = useMemo(
+    () => round?.words.map((w) => w.id).join(",") ?? "",
+    [round?.words]
+  )
+
   useEffect(() => {
     if (!round) return
     setRevealed(true)
     const t = window.setTimeout(() => setRevealed(false), 2400)
     return () => window.clearTimeout(t)
-  }, [round?.words.map((w) => w.id).join(",")])
+  }, [round, wordSequenceKey])
 
   if (!round) {
     return <p className="text-sm text-[var(--danger)]">Memory cascade offline.</p>

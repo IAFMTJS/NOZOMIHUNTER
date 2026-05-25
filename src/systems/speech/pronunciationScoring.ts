@@ -13,15 +13,39 @@ function transcriptTokens(transcript: string): string[] {
     .filter(Boolean)
 }
 
-function phraseAcceptanceSet(phrase: SpeechPhraseContract): Set<string> {
+/** Romaji, kana, and kanji forms — not English meanings. */
+export function phrasePronunciationAcceptanceSet(
+  phrase: SpeechPhraseContract
+): Set<string> {
   const tokens = new Set<string>()
   tokens.add(normalizeRomaji(phrase.romaji))
   tokens.add(normalizeJapanese(phrase.japanese))
   tokens.add(normalizeJapanese(phrase.reading))
+  return tokens
+}
+
+/** English (or gloss) tokens — tracked separately from pronunciation fidelity. */
+export function phraseMeaningAcceptanceSet(
+  phrase: SpeechPhraseContract
+): Set<string> {
+  const tokens = new Set<string>()
   for (const meaning of phrase.meanings) {
     tokens.add(normalizeAnswer(meaning))
   }
   return tokens
+}
+
+export function scoreMeaningComprehension(
+  transcript: string,
+  phrase: SpeechPhraseContract
+): number {
+  const meanings = phraseMeaningAcceptanceSet(phrase)
+  if (meanings.size === 0) return 0
+  const tokens = transcriptTokens(transcript)
+  const hits = tokens.filter((t) => meanings.has(t)).length
+  if (hits > 0) return 100
+  const normalized = normalizeAnswer(transcript)
+  return [...meanings].some((m) => normalized.includes(m)) ? 80 : 0
 }
 
 export function scorePronunciation(
@@ -31,7 +55,7 @@ export function scorePronunciation(
   const normalizedTranscript = normalizeAnswer(transcript)
   const normalizedJapaneseTranscript = normalizeJapanese(transcript)
   const japanese = normalizeJapanese(phrase.japanese)
-  const accepted = phraseAcceptanceSet(phrase)
+  const accepted = phrasePronunciationAcceptanceSet(phrase)
   const tokens = transcriptTokens(transcript)
 
   const directHit =

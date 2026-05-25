@@ -2,6 +2,15 @@
 
 ## v1.3.0 (unreleased) — Gameplay evolution integration
 
+### Quality gates (Codex audit fixes)
+- `LISTEN_DECODE` accepts romaji, kana, and kanji answers in `answerValidationSystem`
+- `GateClearedStats` moved to `ceremonyTypes` (systems no longer import dungeon feature types)
+- `trainingActions` facade; `TrainingClient` avoids direct lifecycle import
+- `tests/helpers/mockPlayerContract.ts` for strict TypeScript-safe player stubs
+- Achievement/sync ceremony effects use stable fingerprints (`achievementUnlockSnapshot`)
+- Memory Cascade reveal timer keyed via `useMemo` word sequence
+- Speech: pronunciation vs meaning acceptance split; `scoreMeaningComprehension` exported
+
 ### Documentation sync (v1.3.2)
 - Canonical game-feel flow: `flows/gamefeel-ceremonies.md` (mirror under `docs/flows/`)
 - Updated `flows/navigation-flow.md`, `dungeon-flow.md`, `presentation-flow.md`, `training-modes-flow.md`, `quest-flow.md`, `xp-flow.md`

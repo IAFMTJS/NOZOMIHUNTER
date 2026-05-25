@@ -33,6 +33,7 @@ import {
 } from "@/components/ceremonies/MasteryTierUpCeremony"
 import type { CanonicalMasteryTier } from "@/systems/presentation/masteryPresentationSystem"
 import { detectNewAchievements } from "@/systems/presentation/achievements/achievementUnlockPresentation"
+import { achievementUnlockFingerprint } from "@/systems/presentation/achievements/achievementUnlockSnapshot"
 import type { AchievementContract } from "@/systems/progression/achievementSystem"
 import { RankUpNotice } from "@/components/RankUpNotice"
 import { UnlockNotice } from "@/components/UnlockNotice"
@@ -112,6 +113,11 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
 
   const prevPlayerRef = useRef<PlayerContract | null>(null)
 
+  const achievementFingerprint = useMemo(
+    () => (player ? achievementUnlockFingerprint(player) : null),
+    [player]
+  )
+
   useEffect(() => {
     if (!player) {
       prevPlayerRef.current = null
@@ -133,16 +139,18 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
       }
     }
     prevPlayerRef.current = player
-  }, [
-    player?.id,
-    player?.level,
-    player?.progression.titles.join(","),
-    player?.progression.unlockedDungeons.join(","),
-    player?.progression.unlockedSystems.join(","),
-  ])
+  }, [player, achievementFingerprint])
+
+  const syncTitleFingerprint = useMemo(
+    () => player?.progression.titles.slice().sort().join("|") ?? "",
+    [player?.progression.titles]
+  )
 
   useEffect(() => {
-    if (!user?.id || !player) return
+    if (!user?.id || !player) {
+      setSyncCeremonyKey(null)
+      return
+    }
     const storageKey = `nozomi-sync-ceremony-seen:${user.id}`
     let seen: string[] = []
     try {
@@ -156,7 +164,7 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
     )
     const pending = earned.find((k) => !seen.includes(k))
     setSyncCeremonyKey(pending ?? null)
-  }, [user?.id, player?.progression.titles.join(",")])
+  }, [user?.id, player, syncTitleFingerprint])
 
   const dismissSyncCeremony = useCallback(() => {
     if (!user?.id || !syncCeremonyKey) return

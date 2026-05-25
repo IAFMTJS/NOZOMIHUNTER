@@ -1,0 +1,1 @@
+export { startTrainingMission } from "./trainingLifecycle"

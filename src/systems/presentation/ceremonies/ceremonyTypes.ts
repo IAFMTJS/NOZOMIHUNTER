@@ -1,6 +1,14 @@
 import type { QuestNarrativeTier } from "@/contracts/quest-contract"
 import type { RewardIconItem } from "@/components/ui/screen/RewardIconGrid"
 
+export interface GateClearedStats {
+  timeLabel: string
+  accuracyPercent: number
+  grade: string
+  newWordsUnlocked?: number
+  masteryIncreasePercent?: number
+}
+
 export type CompletionCeremonyTier = "light" | "medium" | "full" | "dungeon"
 
 export type RewardRevealMode = "instant" | "sequential"
