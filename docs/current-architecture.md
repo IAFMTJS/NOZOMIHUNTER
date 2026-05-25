@@ -2,7 +2,7 @@
 
 
 
-Last updated: v1.3.3 — Game feel plan implementation (orchestrator, training mini-games, cards, ceremonies)
+Last updated: v1.4.0 — Dungeon V2 Neon Corridor MVP (route graph, threat meters, combat actions)
 
 
 
@@ -71,7 +71,7 @@ Last updated: v1.3.3 — Game feel plan implementation (orchestrator, training m
 
 | Speech (recording state machine, MediaRecorder, browser STT, mobile gesture preflight) | Yes |
 
-| Dungeons (Neon Corridor + Shadow Archive) | Yes |
+| Dungeons (Neon Corridor V2 + Shadow Archive + mode variants) | Yes — Neon `runSchemaVersion: 2` (route graph, threat HUD, combat actions, 3-phase boss, extraction choice) |
 
 | Unlock persistence + `UNLOCK_GRANTED` | Yes (`resolveQuestCompletion`) |
 

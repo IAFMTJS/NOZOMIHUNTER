@@ -1,7 +1,11 @@
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import type { QuestContract } from "@/contracts/quest-contract"
-import type { DungeonRunContract, ExplorationAction } from "@/contracts/dungeon-contract"
+import type {
+  DungeonExtractionChoice,
+  DungeonRunContract,
+  ExplorationAction,
+} from "@/contracts/dungeon-contract"
 import { DUNGEON_CONFIG } from "@/config/dungeonConfig"
 import type { PlayerPenaltyContract } from "@/contracts/player-contract"
 import { maxDungeonEncounterFailures } from "@/systems/penalties/penaltyGameplaySystem"
@@ -9,8 +13,8 @@ import { advanceObjective } from "@/systems/quests/questValidator"
 import { failQuest } from "@/systems/quests/questOrchestrator"
 import {
   clearEncounterPayloads,
-  mountBossEncounter,
   mountSectorEncounter,
+  type MountContext,
 } from "./dungeonEncounterFactory"
 import { transition } from "./dungeonStateMachine"
 import {
@@ -20,6 +24,32 @@ import {
   isReadyToEngage,
 } from "./explorationSystem"
 import { resolveDungeonGameMode } from "@/systems/gameModes/gameModeSystem"
+import { isDungeonV2Run, resolveBossPhaseCount } from "./dungeonV2Helpers"
+import {
+  allEncounterNodesComplete,
+  chooseRouteExit,
+  getCurrentNode,
+  initRouteRun,
+  isAtBossGate,
+  isNodeCompleted,
+  listRouteChoices,
+  markNodeCompleted,
+} from "./dungeonRouteSystem"
+import {
+  applyCorrectConsequence,
+  applyGreedyRoute,
+  applyWrongConsequence,
+  initThreatState,
+  shouldForceBossFromAwareness,
+} from "./dungeonThreatSystem"
+import { mountBossPhaseEncounter } from "./dungeonBossSystem"
+import {
+  scoreBossPhaseClear,
+  scoreExtractionChoice,
+  scoreSectorClear,
+} from "./dungeonRewardSystem"
+import { buildEntryBriefing } from "@/systems/presentation/dungeonRunPresentation"
+import { DUNGEON_CONSEQUENCE_COPY } from "@/contracts/presentation-contract"
 
 const OBJECTIVE_ID = "obj-dungeon"
 
@@ -52,16 +82,39 @@ function markEncounterComplete(
   })
 }
 
+function mountContextFromRun(
+  run: DungeonRunContract,
+  playerLevel: number
+): MountContext {
+  const node = getCurrentNode(run)
+  return {
+    sectorLabel: node?.label ?? "Sector",
+    playerLevel,
+    selectedAction: run.selectedDungeonAction,
+  }
+}
+
 export function deployDungeon(
   quest: QuestContract,
   playerId: string
 ): QuestContract {
   const run = quest.dungeonRun!
-  const nextRun: DungeonRunContract = {
+  let nextRun: DungeonRunContract = {
     ...run,
     machineState: transition(run.machineState, "EXPLORATION"),
     ...initExplorationFields(),
   }
+
+  if (isDungeonV2Run(run)) {
+    nextRun = {
+      ...nextRun,
+      threat: run.threat ?? initThreatState(run.activeModifier),
+      routeSelectPending: true,
+      explorationProgress: 0,
+      explorationBeat: null,
+    }
+  }
+
   eventBus.emit(GAME_EVENTS.DUNGEON_ENTERED, {
     playerId,
     dungeonId: run.dungeon.id,
@@ -94,6 +147,10 @@ export function advanceExplorationBeat(
     throw new Error("Exploration advance only valid in EXPLORATION")
   }
 
+  if (isDungeonV2Run(run) && run.routeSelectPending) {
+    throw new Error("Select a route before advancing the corridor.")
+  }
+
   const withZone =
     run.explorationBeat == null
       ? patchRun(quest, { ...run, ...initExplorationFields() }).dungeonRun!
@@ -114,15 +171,59 @@ export function advanceExplorationBeat(
   })
 }
 
-/** @deprecated Use engageSectorEncounter — kept for internal continuity */
-export function beginDungeonSector(quest: QuestContract): QuestContract {
-  return engageSectorEncounter(quest)
+export function chooseDungeonRoute(
+  quest: QuestContract,
+  exitId: string,
+  masteryScore = 0,
+  playerLevel = 1
+): QuestContract {
+  const run = quest.dungeonRun!
+  if (!isDungeonV2Run(run)) {
+    throw new Error("Route choice only available in dungeon V2.")
+  }
+
+  const node = getCurrentNode(run)
+  if (node?.danger === "high") {
+    const greedy = applyGreedyRoute(run)
+    quest = patchRun(quest, greedy)
+  }
+
+  const { run: routed, error } = chooseRouteExit(
+    quest.dungeonRun!,
+    exitId,
+    masteryScore
+  )
+  if (error) throw new Error(error)
+
+  let updated = patchRun(quest, routed)
+  const target = getCurrentNode(routed)
+  if (!target) return updated
+
+  if (target.type === "BOSS_GATE") {
+    return beginBossPhase(updated)
+  }
+
+  if (target.type === "ENCOUNTER" && target.encounterType) {
+    if (!isNodeCompleted(routed, target.id)) {
+      return engageSectorEncounter(updated, playerLevel)
+    }
+    updated = patchRun(updated, { ...routed, routeSelectPending: true })
+  }
+
+  return updated
 }
 
-export function engageSectorEncounter(quest: QuestContract): QuestContract {
+export function engageSectorEncounter(
+  quest: QuestContract,
+  playerLevel = 1
+): QuestContract {
   const run = quest.dungeonRun!
   if (run.machineState === "PREPARATION") {
     throw new Error("Deploy the dungeon before entering a sector")
+  }
+
+  if (isDungeonV2Run(run)) {
+    return engageSectorEncounterV2(quest, playerLevel)
   }
 
   if (run.machineState === "EXPLORATION" && !isReadyToEngage(run)) {
@@ -164,7 +265,11 @@ export function engageSectorEncounter(quest: QuestContract): QuestContract {
     }
   }
 
-  const mounted = mountSectorEncounter(slot.type, String(run.currentEncounterIndex + 1))
+  const mounted = mountSectorEncounter(
+    slot.type,
+    String(run.currentEncounterIndex + 1),
+    mountContextFromRun(run, playerLevel)
+  )
   return {
     ...patchRun(
       { ...quest, ...clearEncounterPayloads(), ...mounted },
@@ -179,10 +284,66 @@ export function engageSectorEncounter(quest: QuestContract): QuestContract {
   }
 }
 
+function engageSectorEncounterV2(
+  quest: QuestContract,
+  playerLevel: number
+): QuestContract {
+  const run = quest.dungeonRun!
+
+  if (run.routeSelectPending) {
+    throw new Error("Choose your next route before engaging.")
+  }
+
+  if (isAtBossGate(run) || allEncounterNodesComplete(run)) {
+    return beginBossPhase(quest)
+  }
+
+  const node = getCurrentNode(run)
+  if (!node || node.type !== "ENCOUNTER" || !node.encounterType) {
+    throw new Error("Current node has no breach encounter.")
+  }
+
+  if (isNodeCompleted(run, node.id)) {
+    throw new Error("Sector already cleared — select next route.")
+  }
+
+  if (shouldForceBossFromAwareness(run)) {
+    return beginBossPhase(quest)
+  }
+
+  const mounted = mountSectorEncounter(
+    node.encounterType,
+    node.label,
+    mountContextFromRun(run, playerLevel)
+  )
+
+  const encounterIndex = run.dungeon.encounters.findIndex(
+    (e) => e.type === node.encounterType && !e.completed
+  )
+
+  return {
+    ...patchRun(
+      { ...quest, ...clearEncounterPayloads(), ...mounted },
+      {
+        ...run,
+        machineState: transition(run.machineState, "ENCOUNTER"),
+        currentEncounterIndex: encounterIndex >= 0 ? encounterIndex : 0,
+        activeType: mounted.activeType,
+        explorationBeat: null,
+        explorationProgress: 100,
+        routeSelectPending: false,
+      }
+    ),
+  }
+}
+
 function beginBossPhase(quest: QuestContract): QuestContract {
   const run = quest.dungeonRun!
-  const mounted = mountBossEncounter(run.bossPhase)
-  const from = run.machineState === "REWARD" ? "REWARD" : "EXPLORATION"
+  const mounted = mountBossPhaseEncounter(quest, run.bossPhase)
+  const from =
+    run.machineState === "REWARD" || run.machineState === "EXPLORATION"
+      ? run.machineState
+      : "EXPLORATION"
   return patchRun(
     { ...quest, ...clearEncounterPayloads(), ...mounted },
     {
@@ -190,23 +351,51 @@ function beginBossPhase(quest: QuestContract): QuestContract {
       machineState: transition(from, "BOSS"),
       activeType: "BOSS",
       explorationBeat: null,
+      routeSelectPending: false,
     }
   )
 }
 
 export function completeDungeonSector(quest: QuestContract): QuestContract {
   const run = quest.dungeonRun!
-  const slot = run.dungeon.encounters[run.currentEncounterIndex]
 
   let updated = advanceDungeonObjective(quest)
+  const slot = run.dungeon.encounters[run.currentEncounterIndex]
   if (slot) {
     updated = markEncounterComplete(updated, slot.id)
   }
 
-  const nextRun: DungeonRunContract = {
+  let nextRun: DungeonRunContract = {
     ...updated.dungeonRun!,
     machineState: transition(run.machineState, "REWARD"),
     activeType: null,
+  }
+
+  if (isDungeonV2Run(run)) {
+    if (
+      run.pendingExtractionChoice === "PUSH_DEEPER" &&
+      run.pushDeepBonusClaimed
+    ) {
+      return {
+        ...updated,
+        ...clearEncounterPayloads(),
+        dungeonRun: scoreBossPhaseClear({
+          ...nextRun,
+          machineState: "EXTRACTION",
+          extractionChoicePending: false,
+          routeSelectPending: false,
+        }),
+      }
+    }
+    const nodeId = run.currentNodeId
+    if (nodeId) {
+      nextRun = markNodeCompleted(nextRun, nodeId)
+    }
+    nextRun = scoreSectorClear(nextRun)
+    nextRun = {
+      ...nextRun,
+      routeSelectPending: true,
+    }
   }
 
   return {
@@ -219,22 +408,30 @@ export function completeDungeonSector(quest: QuestContract): QuestContract {
 export function advanceBossPhase(quest: QuestContract): QuestContract {
   const run = quest.dungeonRun!
   const nextPhase = run.bossPhase + 1
-  const bossPhases = run.dungeon.boss?.phases ?? 2
+  const bossPhases = resolveBossPhaseCount(run)
 
   if (nextPhase >= bossPhases) {
     const cleared = advanceDungeonObjective(quest)
-    return patchRun(
-      { ...cleared, ...clearEncounterPayloads() },
-      {
-        ...run,
-        bossPhase: nextPhase,
-        machineState: transition(run.machineState, "EXTRACTION"),
-        activeType: null,
+    let finalRun: DungeonRunContract = {
+      ...run,
+      bossPhase: nextPhase,
+      machineState: transition(run.machineState, "EXTRACTION"),
+      activeType: null,
+    }
+    if (isDungeonV2Run(run)) {
+      finalRun = scoreBossPhaseClear(finalRun)
+      finalRun = {
+        ...finalRun,
+        extractionChoicePending: true,
       }
-    )
+    }
+    return patchRun({ ...cleared, ...clearEncounterPayloads() }, finalRun)
   }
 
-  const mounted = mountBossEncounter(nextPhase)
+  const mounted = mountBossPhaseEncounter(
+    patchRun(quest, { ...run, bossPhase: nextPhase }),
+    nextPhase
+  )
   return patchRun(
     { ...quest, ...clearEncounterPayloads(), ...mounted },
     {
@@ -248,12 +445,31 @@ export function advanceBossPhase(quest: QuestContract): QuestContract {
 
 export function continueAfterReward(quest: QuestContract): QuestContract {
   const run = quest.dungeonRun!
-  const allSectorsDone = run.dungeon.encounters.every((e) => e.completed)
   const mode = resolveDungeonGameMode(run)
+
+  if (isDungeonV2Run(run)) {
+    if (allEncounterNodesComplete(run) && !isAtBossGate(run)) {
+      const atGate = patchRun(quest, {
+        ...run,
+        currentNodeId: "boss-gate",
+        routeSelectPending: false,
+      })
+      return beginBossPhase(atGate)
+    }
+    return patchRun(
+      { ...quest, ...clearEncounterPayloads() },
+      {
+        ...run,
+        machineState: "REWARD",
+        routeSelectPending: true,
+        activeType: null,
+      }
+    )
+  }
 
   if (
     mode === "CORRUPTION_RUN" &&
-    allSectorsDone &&
+    run.dungeon.encounters.every((e) => e.completed) &&
     run.machineState === "REWARD"
   ) {
     const endlessSectorCount = (run.endlessSectorCount ?? 0) + 1
@@ -273,7 +489,10 @@ export function continueAfterReward(quest: QuestContract): QuestContract {
     return patchRun({ ...quest, ...clearEncounterPayloads() }, nextRun)
   }
 
-  if (allSectorsDone && run.machineState === "REWARD") {
+  if (
+    run.dungeon.encounters.every((e) => e.completed) &&
+    run.machineState === "REWARD"
+  ) {
     return beginBossPhase(quest)
   }
 
@@ -289,6 +508,49 @@ export function continueAfterReward(quest: QuestContract): QuestContract {
   return patchRun({ ...quest, ...clearEncounterPayloads() }, nextRun)
 }
 
+export function applyExtractionChoice(
+  quest: QuestContract,
+  choice: DungeonExtractionChoice,
+  playerLevel = 1
+): QuestContract {
+  const run = quest.dungeonRun!
+  if (!isDungeonV2Run(run)) {
+    throw new Error("Extraction choice only in dungeon V2.")
+  }
+
+  const nextRun = scoreExtractionChoice(
+    {
+      ...run,
+      extractionChoicePending: false,
+      pendingExtractionChoice: choice,
+      lastConsequenceLine:
+        choice === "EXTRACT_SAFE"
+          ? DUNGEON_CONSEQUENCE_COPY.extractionSafe
+          : DUNGEON_CONSEQUENCE_COPY.extractionPush,
+    },
+    choice === "PUSH_DEEPER"
+  )
+
+  if (choice === "PUSH_DEEPER" && !run.pushDeepBonusClaimed) {
+    const mounted = mountSectorEncounter("VOCAB", "Deep push bonus", {
+      sectorLabel: "Bonus cache",
+      playerLevel,
+      wordCount: 2,
+    })
+    return patchRun(
+      { ...quest, ...clearEncounterPayloads(), ...mounted },
+      {
+        ...nextRun,
+        pushDeepBonusClaimed: true,
+        machineState: "ENCOUNTER",
+        activeType: "VOCAB",
+      }
+    )
+  }
+
+  return patchRun(quest, nextRun)
+}
+
 export function finalizeDungeonExtraction(quest: QuestContract): QuestContract {
   const run = quest.dungeonRun!
   const objectives = quest.objectives.map((o) => ({
@@ -299,8 +561,34 @@ export function finalizeDungeonExtraction(quest: QuestContract): QuestContract {
 
   return patchRun(
     { ...quest, objectives, ...clearEncounterPayloads() },
-    { ...run, machineState: "COMPLETE", activeType: null }
+    {
+      ...run,
+      machineState: "COMPLETE",
+      activeType: null,
+      extractionChoicePending: false,
+    }
   )
+}
+
+export function applyEncounterAnswerConsequence(
+  quest: QuestContract,
+  correct: boolean
+): QuestContract {
+  const run = quest.dungeonRun!
+  if (!isDungeonV2Run(run)) return quest
+
+  const streak = quest.vocabularyEncounter?.correctStreak ?? 0
+  if (correct) {
+    const { run: next } = applyCorrectConsequence(run, streak)
+    return patchRun(quest, next)
+  }
+
+  const { run: next, forceBoss } = applyWrongConsequence(run)
+  let updated = patchRun(quest, next)
+  if (forceBoss && updated.dungeonRun?.machineState !== "BOSS") {
+    updated = beginBossPhase(updated)
+  }
+  return updated
 }
 
 export interface DungeonFailResult {
@@ -344,7 +632,9 @@ export function registerEncounterFailure(
 ): QuestContract {
   const run = quest.dungeonRun!
   const failures = run.encounterFailures + 1
-  const updated = patchRun(quest, { ...run, encounterFailures: failures })
+  let updated = patchRun(quest, { ...run, encounterFailures: failures })
+  updated = applyEncounterAnswerConsequence(updated, false)
+
   const maxFailures = penalties
     ? maxDungeonEncounterFailures(penalties)
     : DUNGEON_CONFIG.MAX_ENCOUNTER_FAILURES
@@ -369,7 +659,12 @@ export function shouldFailDungeon(
 export function getDungeonBriefing(quest: QuestContract): string {
   const run = quest.dungeonRun
   if (!run) return quest.description
+  if (isDungeonV2Run(run)) {
+    return buildEntryBriefing(run, quest.description)
+  }
   const boss = run.dungeon.boss?.name ?? "Unknown"
   const sectors = run.dungeon.encounters.length
   return `${quest.description} · ${sectors} sectors · Boss: ${boss}`
 }
+
+export { listRouteChoices, initRouteRun, isDungeonV2Run }

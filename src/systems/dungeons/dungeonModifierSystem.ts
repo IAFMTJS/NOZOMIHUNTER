@@ -79,6 +79,20 @@ export function modifierSummary(
   return modifiers.map((m) => m.label).join(" · ")
 }
 
+/** Roll a single modifier from a custom pool (Neon V2). */
+export function rollSingleModifier(
+  pool: Omit<DungeonModifierContract, "id">[],
+  seed: string
+): DungeonModifierContract {
+  const h = hashSeed(seed)
+  const idx = h % pool.length
+  const base = pool[idx]!
+  return {
+    id: `mod-v2-${idx}-${h % 1000}`,
+    ...base,
+  }
+}
+
 export function hasReplayBan(
   modifiers: DungeonModifierContract[] | undefined
 ): boolean {

@@ -109,6 +109,9 @@ export function HubSectorView({
             onAdvanceExploration={props.onDungeonAdvanceExploration}
             onEngageSector={props.onDungeonEngageSector}
             onContinueReward={props.onDungeonContinueReward}
+            onChooseRoute={props.onDungeonChooseRoute}
+            onSelectCombatAction={props.onDungeonSelectCombatAction}
+            onExtractionChoice={props.onDungeonExtractionChoice}
             explorationLine={dungeonExplorationLine}
             onExtract={props.onDungeonExtract}
             onSubmitAnswer={props.onDungeonSubmitAnswer}

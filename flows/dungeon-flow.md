@@ -49,3 +49,37 @@ Events:
 UI (v0.6.7): `DungeonPhaseStepper`, `DungeonCorridorRail`, hunt-mode focus during ENCOUNTER/BOSS; audio cues via event bus.
 
 Persistence: `user_quests.quest_snapshot` + `progress.dungeonRun`
+
+---
+
+## Dungeon V2 (`runSchemaVersion: 2` — Neon Corridor)
+
+Applies to `dungeon:neon-corridor` only; other dungeons use the linear flow above.
+
+```
+PREPARATION — forecast briefing (`buildEntryBriefing`), Deploy
+↓
+EXPLORATION — route select (`DungeonRouteMap`) when `routeSelectPending`
+↓
+ENCOUNTER — sector node encounter + `DungeonActionBar` (STRIKE / SEAL / FOCUS)
+↓
+REWARD — `SectorRewardInterstitial` + next route choice
+↓
+(repeat until both branches reach boss gate)
+↓
+BOSS — 3 phases from `boss.phaseSpecs` (vocab → listening → vocab)
+↓
+EXTRACTION — `ExtractionDecisionPanel` (safe vs push deeper)
+↓
+  push deeper → optional bonus VOCAB encounter → ceremony
+↓
+`DungeonClearCeremonyFlow` + `DungeonRunRecap` (bound / weak signals)
+↓
+DUNGEON_COMPLETED
+```
+
+V2 run fields: `threat`, `routeGraph`, `currentNodeId`, `completedNodeIds`, `activeModifier`, `routeSelectPending`, `extractionChoicePending`, `runScore`.
+
+Systems: `dungeonRouteSystem`, `dungeonThreatSystem`, `dungeonActionSystem`, `dungeonBossSystem`, `dungeonOrchestrator.applyExtractionChoice`.
+
+Config: `src/config/neonCorridorV2Config.ts`, `dungeonConfig` definition flags.

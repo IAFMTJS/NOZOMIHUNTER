@@ -1,5 +1,30 @@
 # Changelog
 
+## v1.4.0 (unreleased) — Dungeon V2 (Neon Corridor MVP)
+
+### Dungeon V2 systems
+- Extended `dungeon-contract.ts`: route graph, threat meters, combat actions, boss phase specs, extraction choice, run summary
+- `dungeonRouteSystem`, `dungeonThreatSystem`, `dungeonActionSystem`, `dungeonBossSystem`, `dungeonRewardSystem`, `dungeonRunSummarySystem`
+- `dungeonOrchestrator` v2 paths: route choice, threat consequences, 3-phase boss, extract vs push deeper
+- Presentation: `dungeonRunPresentation`, `dungeonThreatPresentation`, `dungeonBossPresentation`; `DUNGEON_CONSEQUENCE_COPY`
+
+### Neon Corridor (`dungeon:neon-corridor`, `runSchemaVersion: 2`)
+- 6-node route graph (entry → Neon Hall / Archive Door → Boss Gate)
+- Run meters: corruption pressure, boss awareness, signal stability, hunter focus
+- Combat actions: STRIKE / SEAL / FOCUS (level-gated) mapped to `ChallengePromptDirection`
+- One rolled modifier per run (BLACKOUT, ECHOING WALLS, ARCHIVE FOG, HUNTER'S MARK)
+- Boss **Neon Warden**: Index Scan → Reading Repair → Archive Seal (3 phases)
+- Extraction choice: safe extract vs push deeper (bonus vocab encounter)
+- UI: `DungeonThreatHud`, `DungeonRouteMap`, `DungeonActionBar`, `DungeonModifierRail`, `ExtractionDecisionPanel`, `DungeonRunRecap`, `BossPhaseBanner`
+
+### Tests
+- `tests/dungeonV2Systems.test.ts` — route, threat, actions, persistence shape
+
+### Documentation
+- `flows/dungeon-flow.md` — V2 loop documented
+- `docs/system-registry.md` — dungeon V2 system entries
+- `docs/current-architecture.md` — Neon Corridor V2 status
+
 ## v1.3.0 (unreleased) — Gameplay evolution integration
 
 ### Quality gates (Codex audit fixes)

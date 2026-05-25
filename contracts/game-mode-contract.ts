@@ -49,11 +49,32 @@ export interface GameModePressureProfile {
   survivalPresentation?: boolean
 }
 
+export type DungeonModifierKind =
+  | "BLACKOUT"
+  | "ECHOING_WALLS"
+  | "BLOOD_MOON"
+  | "ARCHIVE_FOG"
+  | "HUNTERS_MARK"
+  | "SILENT_SECTOR"
+  | "UNSTABLE_GLYPHS"
+  | "GENERIC"
+
 export interface DungeonModifierContract {
   id: string
   label: string
+  kind?: DungeonModifierKind
   /** e.g. timer shrink multiplier */
   timerMultiplier?: number
   replayBan?: boolean
   corruptionMutation?: number
+  /** Hide romaji unless player used SCAN intel (BLACKOUT). */
+  blackoutRomaji?: boolean
+  /** Auto-replay listening once; disables manual replay (ECHOING_WALLS). */
+  autoEchoReplay?: boolean
+  /** Double corruption gains (BLOOD_MOON). */
+  corruptionGainMultiplier?: number
+  /** Hide meanings on route scan copy (ARCHIVE_FOG). */
+  archiveFogOnScan?: boolean
+  /** Elevated boss awareness from weak-word spotlight (HUNTER'S MARK). */
+  huntersMark?: boolean
 }

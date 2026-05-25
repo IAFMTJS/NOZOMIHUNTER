@@ -11,7 +11,25 @@ import { VocabularyEncounter } from "@/features/quests/components/VocabularyEnco
 import { ConversationEncounter } from "@/features/conversation/components/ConversationEncounter"
 import { SpeechEncounter } from "@/features/speech/components/SpeechEncounter"
 import { ListeningEncounter } from "./ListeningEncounter"
-import { getDungeonBriefing } from "@/systems/dungeons/dungeonOrchestrator"
+import {
+  getDungeonBriefing,
+  listRouteChoices,
+} from "@/systems/dungeons/dungeonOrchestrator"
+import {
+  isDungeonV2Run,
+  resolveBossPhaseCount,
+} from "@/systems/dungeons/dungeonV2Helpers"
+import { getBossPhaseSpec } from "@/systems/dungeons/dungeonBossSystem"
+import { bossPhaseBannerCopy } from "@/systems/presentation/dungeonBossPresentation"
+import { buildDungeonRunSummary } from "@/systems/dungeons/dungeonRunSummarySystem"
+import { DungeonThreatHud } from "@/features/dungeons/components/DungeonThreatHud"
+import { DungeonRouteMap } from "@/features/dungeons/components/DungeonRouteMap"
+import { DungeonActionBar } from "@/features/dungeons/components/DungeonActionBar"
+import { DungeonModifierRail } from "@/features/dungeons/components/DungeonModifierRail"
+import { ExtractionDecisionPanel } from "@/features/dungeons/components/ExtractionDecisionPanel"
+import { DungeonRunRecap } from "@/features/dungeons/components/DungeonRunRecap"
+import { BossPhaseBanner } from "@/features/dungeons/components/BossPhaseBanner"
+import type { DungeonAction, DungeonExtractionChoice } from "@/contracts/dungeon-contract"
 import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
 import { DungeonPhaseStepper } from "@/components/ui/DungeonPhaseStepper"
@@ -46,6 +64,9 @@ interface DungeonRunnerProps {
   onAdvanceExploration: (action: ExplorationAction) => Promise<void>
   onEngageSector: () => Promise<void>
   onContinueReward: () => Promise<void>
+  onChooseRoute: (exitId: string) => Promise<void>
+  onSelectCombatAction: (action: DungeonAction) => Promise<void>
+  onExtractionChoice: (choice: DungeonExtractionChoice) => Promise<void>
   explorationLine?: string | null
   onExtract: () => Promise<void>
   onSubmitAnswer: (answer: string) => Promise<void>
@@ -68,6 +89,9 @@ export function DungeonRunner({
   onAdvanceExploration,
   onEngageSector,
   onContinueReward,
+  onChooseRoute,
+  onSelectCombatAction,
+  onExtractionChoice,
   explorationLine,
   onExtract,
   onSubmitAnswer,
@@ -106,6 +130,26 @@ export function DungeonRunner({
         : null
     })
   }, [run?.stabilizedWordIds])
+
+  const isV2 = run != null && isDungeonV2Run(run)
+  const routeChoices = useMemo(
+    () => (run && isV2 ? listRouteChoices(run) : []),
+    [isV2, run]
+  )
+
+  const runSummary = useMemo(() => {
+    if (!run || !isV2) return null
+    const catalog = getVocabularyCatalog()
+    return buildDungeonRunSummary(run, getMasteryMap(), (id) => {
+      const entry = catalog.byId.get(id)
+      return entry
+        ? {
+            japanese: entry.japanese[0] ?? entry.japanese.join(""),
+            meanings: entry.meanings,
+          }
+        : null
+    }, run.dungeon.boss?.name)
+  }, [isV2, run])
 
   if (!run) return null
 
@@ -167,7 +211,16 @@ export function DungeonRunner({
         </div>
       )}
 
-      {state === "EXPLORATION" && (
+      {state === "EXPLORATION" && isV2 && run.routeSelectPending && (
+        <DungeonRouteMap
+          choices={routeChoices}
+          disabled={disabled}
+          archiveFog={run.activeModifier?.archiveFogOnScan}
+          onChoose={(id) => wrap(() => onChooseRoute(id), "Route locked.")}
+        />
+      )}
+
+      {state === "EXPLORATION" && (!isV2 || !run.routeSelectPending) && (
         <CorridorStage
           run={run}
           disabled={disabled}
@@ -185,13 +238,40 @@ export function DungeonRunner({
         />
       )}
 
-      {state === "REWARD" && (
+      {state === "REWARD" && isV2 && run.routeSelectPending && (
+        <>
+          <SectorRewardInterstitial
+            quest={quest}
+            disabled={disabled}
+            onContinue={() => wrap(onContinueReward)}
+          />
+          <DungeonRouteMap
+            choices={routeChoices}
+            disabled={disabled}
+            archiveFog={run.activeModifier?.archiveFogOnScan}
+            onChoose={(id) => wrap(() => onChooseRoute(id), "Route locked.")}
+          />
+        </>
+      )}
+
+      {state === "REWARD" && (!isV2 || !run.routeSelectPending) && (
         <SectorRewardInterstitial
           quest={quest}
           disabled={disabled}
           onContinue={() => wrap(onContinueReward, "Pushing deeper...")}
         />
       )}
+
+      {isV2 &&
+        (state === "ENCOUNTER" || state === "BOSS") &&
+        run.activeType === "VOCAB" && (
+          <DungeonActionBar
+            playerLevel={player?.level ?? 1}
+            selected={run.selectedDungeonAction}
+            disabled={disabled}
+            onSelect={onSelectCombatAction}
+          />
+        )}
 
       {state === "ENCOUNTER" && run.activeType === "VOCAB" && (
         <VocabularyEncounter
@@ -245,13 +325,33 @@ export function DungeonRunner({
 
       {state === "BOSS" && (
         <Panel tone="boss" className="nozomi-boss-frame border-[var(--danger)]/40">
+          {isV2 && (
+            <BossPhaseBanner
+              copy={bossPhaseBannerCopy(
+                boss?.name ?? "Warden",
+                getBossPhaseSpec(quest, run.bossPhase),
+                run.bossPhase,
+                resolveBossPhaseCount(run)
+              )}
+            />
+          )}
           <p className="mb-1 text-[10px] uppercase tracking-[0.28em] text-[var(--danger)]">
             Warden encounter
           </p>
           <p className="mb-4 font-display text-lg text-[var(--foreground)]">
-            {boss?.name ?? "Boss"} — phase {run.bossPhase + 1} / {boss?.phases ?? 2}
+            {boss?.name ?? "Boss"} — phase {run.bossPhase + 1} /{" "}
+            {resolveBossPhaseCount(run)}
           </p>
-          {run.bossPhase === 0 && quest.vocabularyEncounter && (
+          {isV2 && quest.vocabularyEncounter && (
+            <DungeonActionBar
+              playerLevel={player?.level ?? 1}
+              selected={run.selectedDungeonAction}
+              disabled={disabled}
+              onSelect={onSelectCombatAction}
+            />
+          )}
+          {(run.bossPhase === 0 || (isV2 && quest.vocabularyEncounter)) &&
+            quest.vocabularyEncounter && (
             <VocabularyEncounter
               quest={quest}
               player={player}
@@ -260,7 +360,23 @@ export function DungeonRunner({
               onAbandon={onAbandon}
             />
           )}
-          {run.bossPhase >= 1 && quest.speechEncounter && (
+          {run.bossPhase >= 1 && !quest.vocabularyEncounter && quest.listeningEncounter && (
+            <ListeningEncounter
+              quest={quest}
+              player={player}
+              disabled={disabled}
+              maxWrongAttempts={maxWrongAttempts}
+              maxReplays={replayCap}
+              signalDegraded={signalDegraded}
+              focusMode
+              onSubmit={onSubmitListening}
+              onAbandon={onAbandon}
+            />
+          )}
+          {run.bossPhase >= 1 &&
+            !quest.vocabularyEncounter &&
+            !quest.listeningEncounter &&
+            quest.speechEncounter && (
             <SpeechEncounter
               quest={quest}
               player={player}
@@ -272,7 +388,14 @@ export function DungeonRunner({
         </Panel>
       )}
 
-      {state === "EXTRACTION" && player && (
+      {state === "EXTRACTION" && run.extractionChoicePending && (
+        <ExtractionDecisionPanel
+          disabled={disabled}
+          onChoose={(choice) => wrap(() => onExtractionChoice(choice))}
+        />
+      )}
+
+      {state === "EXTRACTION" && player && !run.extractionChoicePending && (
         <DungeonClearCeremonyFlow
           data={buildDungeonClearFromRun(
             quest,
@@ -293,6 +416,10 @@ export function DungeonRunner({
             setStatus("Extraction complete.")
           }}
         />
+      )}
+
+      {state === "EXTRACTION" && !run.extractionChoicePending && runSummary && (
+        <DungeonRunRecap summary={runSummary} />
       )}
     </>
   )
@@ -316,9 +443,16 @@ export function DungeonRunner({
             timeRemainingMs={timeRemainingMs}
             compact={inEncounter}
           />
+          {isV2 && <DungeonThreatHud run={run} compact={inEncounter} />}
+          {isV2 && (
+            <DungeonModifierRail
+              modifier={run.activeModifier}
+              modifiers={run.modifiers}
+            />
+          )}
         </div>
 
-        {!inEncounter && (
+        {!inEncounter && !isV2 && (
           <div className="mb-6 flex flex-col gap-5">
             <DungeonPhaseStepper machineState={state} />
             <DungeonCorridorRail sectors={corridorSectors} />

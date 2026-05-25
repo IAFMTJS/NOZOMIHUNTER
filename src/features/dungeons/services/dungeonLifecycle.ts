@@ -36,12 +36,17 @@ import { applyEncounterStreakToQuestRewards } from "@/systems/quests/questComple
 import type { GameModeId } from "@/contracts/game-mode-contract"
 import {
   advanceExplorationBeat,
+  applyExtractionChoice,
+  chooseDungeonRoute,
   continueAfterReward,
   deployDungeon,
   engageSectorEncounter,
   failDungeonRun,
   finalizeDungeonExtraction,
 } from "@/systems/dungeons/dungeonOrchestrator"
+import { selectDungeonAction } from "@/systems/dungeons/dungeonActionSystem"
+import type { DungeonAction, DungeonExtractionChoice } from "@/contracts/dungeon-contract"
+import { getMasteryMap } from "@/systems/mastery/masterySystem"
 import { resolveRewardProgression } from "@/systems/progression/resolveQuestCompletion"
 import type { ExplorationAction } from "@/contracts/dungeon-contract"
 import type { QuestContract } from "@/contracts/quest-contract"
@@ -159,7 +164,7 @@ export async function advanceDungeonExploration(
 }
 
 export async function engageDungeonSector(userId: string) {
-  const { quest } = getDungeonQuest()
+  const { quest, player } = getDungeonQuest()
   if (!quest) return null
 
   const run = quest.dungeonRun!
@@ -169,12 +174,73 @@ export async function engageDungeonSector(userId: string) {
     working = continueAfterReward(quest)
   }
 
-  const updated = engageSectorEncounter(working)
+  const level = player?.level ?? 1
+  const updated = engageSectorEncounter(working, level)
   eventBus.emit(GAME_EVENTS.ENCOUNTER_STARTED, {
     playerId: userId,
     dungeonId: run.dungeon.id,
     encounterType: updated.dungeonRun?.activeType,
   })
+  await persistDungeonQuest(userId, updated)
+  return updated
+}
+
+export async function chooseDungeonRouteExit(
+  userId: string,
+  exitId: string
+) {
+  const { quest, player } = getDungeonQuest()
+  if (!quest) return null
+
+  const masteryValues = [...getMasteryMap().values()]
+  const avgMastery =
+    masteryValues.length > 0
+      ? masteryValues.reduce((a, b) => a + b, 0) / masteryValues.length
+      : 0
+
+  const updated = chooseDungeonRoute(
+    quest,
+    exitId,
+    avgMastery,
+    player?.level ?? 1
+  )
+  await persistDungeonQuest(userId, updated)
+  return updated
+}
+
+export async function selectDungeonCombatAction(
+  userId: string,
+  action: DungeonAction
+) {
+  const { quest, player } = getDungeonQuest()
+  if (!quest?.dungeonRun) return null
+
+  const { run, error } = selectDungeonAction(
+    quest.dungeonRun,
+    action,
+    player?.level ?? 1
+  )
+  if (error) throw new Error(error)
+
+  let updated: QuestContract = { ...quest, dungeonRun: run }
+  if (
+    run.machineState === "ENCOUNTER" ||
+    run.machineState === "BOSS"
+  ) {
+    updated = engageSectorEncounter(updated, player?.level ?? 1)
+  }
+  await persistDungeonQuest(userId, updated)
+  return updated
+}
+
+export async function submitDungeonExtractionChoice(
+  userId: string,
+  choice: DungeonExtractionChoice
+) {
+  const { quest, player } = getDungeonQuest()
+  if (!quest) return null
+
+  const updated = applyExtractionChoice(quest, choice, player?.level ?? 1)
   await persistDungeonQuest(userId, updated)
   return updated
 }

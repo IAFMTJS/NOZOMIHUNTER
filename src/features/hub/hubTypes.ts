@@ -1,6 +1,10 @@
 import type { QuestContract } from "@/contracts/quest-contract"
 import type { PlayerContract } from "@/contracts/player-contract"
-import type { ExplorationAction } from "@/contracts/dungeon-contract"
+import type {
+  DungeonAction,
+  DungeonExtractionChoice,
+  ExplorationAction,
+} from "@/contracts/dungeon-contract"
 
 export type HubView = "menu" | "hunt" | "contracts" | "sector"
 
@@ -25,6 +29,9 @@ export interface ContractHubProps {
   onDungeonAdvanceExploration: (action: ExplorationAction) => Promise<void>
   onDungeonEngageSector: () => Promise<void>
   onDungeonContinueReward: () => Promise<void>
+  onDungeonChooseRoute: (exitId: string) => Promise<void>
+  onDungeonSelectCombatAction: (action: DungeonAction) => Promise<void>
+  onDungeonExtractionChoice: (choice: DungeonExtractionChoice) => Promise<void>
   onDungeonEnterSector: () => Promise<void>
   onDungeonExtract: () => Promise<void>
   onDungeonSubmitAnswer: (answer: string) => Promise<void>

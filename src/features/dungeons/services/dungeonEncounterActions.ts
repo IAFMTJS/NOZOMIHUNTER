@@ -22,6 +22,7 @@ import {
   persistDungeonQuest,
   assertDungeonTimedOut,
 } from "./dungeonPersistence"
+import { applyEncounterAnswerConsequence } from "@/systems/dungeons/dungeonOrchestrator"
 
 export async function submitDungeonVocabulary(
   userId: string,
@@ -63,7 +64,10 @@ export async function submitDungeonVocabulary(
     return { correct: true, encounterFailed: false }
   }
 
-  const withStreak = patchDungeonPeakStreak(result.quest)
+  let withStreak = patchDungeonPeakStreak(result.quest)
+  if (result.correct) {
+    withStreak = applyEncounterAnswerConsequence(withStreak, true)
+  }
   await persistDungeonQuest(userId, withStreak)
   return { correct: result.correct, encounterFailed: false }
 }
@@ -101,7 +105,10 @@ export async function submitDungeonListening(
     return { correct: true, encounterFailed: false }
   }
 
-  const withStreak = patchDungeonPeakStreak(result.quest)
+  let withStreak = patchDungeonPeakStreak(result.quest)
+  if (result.correct) {
+    withStreak = applyEncounterAnswerConsequence(withStreak, true)
+  }
   await persistDungeonQuest(userId, withStreak)
   return { correct: result.correct, encounterFailed: false }
 }

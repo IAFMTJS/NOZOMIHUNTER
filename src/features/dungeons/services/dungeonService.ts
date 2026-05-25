@@ -12,6 +12,9 @@ export {
   advanceDungeonExploration,
   engageDungeonSector,
   continueDungeonAfterReward,
+  chooseDungeonRouteExit,
+  selectDungeonCombatAction,
+  submitDungeonExtractionChoice,
   abandonDungeon,
   extractDungeonRewards,
 } from "./dungeonLifecycle"

@@ -1,13 +1,20 @@
 "use client"
 
 import { useCallback, useState } from "react"
-import type { ExplorationAction } from "@/contracts/dungeon-contract"
+import type {
+  DungeonAction,
+  DungeonExtractionChoice,
+  ExplorationAction,
+} from "@/contracts/dungeon-contract"
 import {
   enterDungeon,
   deployDungeonRun,
   advanceDungeonExploration,
   engageDungeonSector,
   continueDungeonAfterReward,
+  chooseDungeonRouteExit,
+  selectDungeonCombatAction,
+  submitDungeonExtractionChoice,
   submitDungeonVocabulary,
   submitDungeonListening,
   submitDungeonConversation,
@@ -99,6 +106,52 @@ export function useDungeonLogic(userId: string | undefined) {
       setBusy(false)
     }
   }, [userId])
+
+  const chooseRoute = useCallback(
+    async (exitId: string) => {
+      if (!userId) return
+      setBusy(true)
+      try {
+        await chooseDungeonRouteExit(userId, exitId)
+        setExplorationLine(null)
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Route choice failed")
+      } finally {
+        setBusy(false)
+      }
+    },
+    [userId]
+  )
+
+  const selectCombatAction = useCallback(
+    async (action: DungeonAction) => {
+      if (!userId) return
+      setBusy(true)
+      try {
+        await selectDungeonCombatAction(userId, action)
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Action select failed")
+      } finally {
+        setBusy(false)
+      }
+    },
+    [userId]
+  )
+
+  const submitExtractionChoice = useCallback(
+    async (choice: DungeonExtractionChoice) => {
+      if (!userId) return
+      setBusy(true)
+      try {
+        await submitDungeonExtractionChoice(userId, choice)
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Extraction choice failed")
+      } finally {
+        setBusy(false)
+      }
+    },
+    [userId]
+  )
 
   /** @deprecated Use advanceExploration + engageSector */
   const enterSector = engageSector
@@ -205,6 +258,9 @@ export function useDungeonLogic(userId: string | undefined) {
     advanceExploration,
     engageSector,
     continueAfterReward,
+    chooseRoute,
+    selectCombatAction,
+    submitExtractionChoice,
     enterSector,
     extract,
     submitAnswer,

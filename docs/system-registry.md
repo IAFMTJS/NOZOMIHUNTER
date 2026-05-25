@@ -132,6 +132,7 @@ Responsibilities
 * access gates (`dungeonAccess`)
 * persistence via DUNGEON quest snapshots
 * corridor exploration beats before engagement (`explorationSystem`)
+* V2 orchestration when `runSchemaVersion === 2` (route choice, threat, extraction choice — Neon Corridor)
 
 Dependencies
 
@@ -152,6 +153,127 @@ Contracts
 
 * dungeon-contract.ts
 * encounter-contract.ts (ListeningEncounterContract)
+
+⸻
+
+dungeonRouteSystem
+
+Location: `/src/systems/dungeons/dungeonRouteSystem.ts`
+
+Responsibilities
+
+* route graph navigation (`chooseRouteExit`, `listRouteChoices`)
+* node completion tracking (`completedNodeIds`, `routeSelectPending`)
+* boss gate detection (`isAtBossGate`, `allEncounterNodesComplete`)
+
+Dependencies
+
+* dungeon-contract (`DungeonRouteGraph`, `DungeonRouteNode`)
+
+Contracts
+
+* dungeon-contract.ts
+
+⸻
+
+dungeonThreatSystem
+
+Location: `/src/systems/dungeons/dungeonThreatSystem.ts`
+
+Responsibilities
+
+* run-level meters: corruption pressure, boss awareness, signal stability, hunter focus
+* consequence ticks on correct/wrong/greedy route/replay
+* boss awareness threshold copy (`bossAwarenessWhisperLine`)
+
+Dependencies
+
+* presentation-contract (`DUNGEON_CONSEQUENCE_COPY`)
+* dungeonModifierSystem (corruption mutation)
+
+Contracts
+
+* dungeon-contract.ts (`DungeonThreatState`)
+
+⸻
+
+dungeonActionSystem
+
+Location: `/src/systems/dungeons/dungeonActionSystem.ts`
+
+Responsibilities
+
+* combat action unlock by player level (STRIKE → SEAL → COUNTER / FOCUS)
+* map `DungeonAction` → `ChallengePromptDirection`
+* FOCUS corruption cost via `dungeonThreatSystem`
+
+Dependencies
+
+* dungeonEncounterFactory (`attachChallengeFields`)
+* answerValidationSystem (shared validators)
+
+Contracts
+
+* dungeon-contract.ts
+* encounter-contract.ts
+
+⸻
+
+dungeonBossSystem
+
+Location: `/src/systems/dungeons/dungeonBossSystem.ts`
+
+Responsibilities
+
+* resolve `DungeonBossPhaseSpec` per phase index
+* mount boss encounters by kind (vocab / listening / speech / NPC)
+
+Dependencies
+
+* dungeonEncounterFactory
+* dungeonOrchestrator (`advanceBossPhase`)
+
+Contracts
+
+* dungeon-contract.ts
+
+⸻
+
+dungeonRunSummarySystem
+
+Location: `/src/systems/dungeons/dungeonRunSummarySystem.ts`
+
+Responsibilities
+
+* extraction recap with fantasy mastery labels (scanned / sealed / bound / unstable)
+* run score + boss seal / technique labels (presentation)
+
+Dependencies
+
+* masterySystem
+* dungeonLexiconRecapSystem (`stabilizedWordIds`)
+
+Contracts
+
+* dungeon-contract.ts (`DungeonRunSummary`)
+
+⸻
+
+dungeonRewardSystem
+
+Location: `/src/systems/dungeons/dungeonRewardSystem.ts`
+
+Responsibilities
+
+* run score increments on sector clear, boss phase, extraction choice (MVP presentation-only)
+
+Dependencies
+
+* dungeonOrchestrator
+
+Contracts
+
+* dungeon-contract.ts
 
 ⸻
 

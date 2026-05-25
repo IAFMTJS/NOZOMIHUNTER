@@ -1,7 +1,15 @@
-import type { DungeonTheme } from "@/contracts/dungeon-contract"
-import type { EncounterType } from "@/contracts/dungeon-contract"
+import type {
+  DungeonBossPhaseSpec,
+  DungeonRouteGraph,
+  DungeonTheme,
+  EncounterType,
+} from "@/contracts/dungeon-contract"
 import type { GameModeId } from "@/contracts/game-mode-contract"
 import type { QuestPenaltyContract } from "@/contracts/quest-contract"
+import {
+  NEON_CORRIDOR_BOSS_PHASES,
+  NEON_CORRIDOR_ROUTE_GRAPH,
+} from "@/config/neonCorridorV2Config"
 
 export interface DungeonDefinitionConfig {
   key: string
@@ -19,6 +27,10 @@ export interface DungeonDefinitionConfig {
   bossName: string
   rewardXpBase: number
   unlocks: string[]
+  /** 2 = branching route / threat / combat actions. */
+  runSchemaVersion?: 1 | 2
+  routeGraph?: DungeonRouteGraph
+  bossPhaseSpecs?: DungeonBossPhaseSpec[]
 }
 
 export const DUNGEON_CONFIG = {
@@ -44,13 +56,16 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
     minLevel: 2,
     staminaCost: 20,
     recommendedPower: 1040,
+    runSchemaVersion: 2,
+    routeGraph: NEON_CORRIDOR_ROUTE_GRAPH,
+    bossPhaseSpecs: NEON_CORRIDOR_BOSS_PHASES,
     encounterPlan: [
       { id: "sector-vocab", type: "VOCAB", difficulty: 1 },
       { id: "sector-listen", type: "LISTENING", difficulty: 2 },
       { id: "sector-npc", type: "NPC", difficulty: 2 },
       { id: "sector-speech", type: "SPEECH", difficulty: 3 },
     ],
-    bossName: "Corridor Warden",
+    bossName: "Neon Warden",
     rewardXpBase: 120,
     unlocks: [
       "dungeon:neon-corridor",

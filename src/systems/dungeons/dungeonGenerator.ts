@@ -38,7 +38,8 @@ export function generateDungeon(
     boss: {
       id: `boss-${definition.key}`,
       name: definition.bossName,
-      phases: 2,
+      phases: definition.bossPhaseSpecs?.length ?? 2,
+      phaseSpecs: definition.bossPhaseSpecs,
       speechDifficulty: Math.min(5, 2 + Math.floor(playerLevel / 5)),
       grammarDifficulty: Math.min(5, 1 + Math.floor(playerLevel / 6)),
     },

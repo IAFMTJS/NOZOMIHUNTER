@@ -85,3 +85,17 @@ export function ceremonyTierFromNarrativeContract(
   if (tier === "SIDE") return "medium"
   return "full"
 }
+
+/** Terminal copy for dungeon V2 consequences (presentation only). */
+export const DUNGEON_CONSEQUENCE_COPY = {
+  correct: "Seal confirmed. Entity staggered.",
+  wrong: "Signal fractured. Corruption breach detected.",
+  focus: "Focus channel opened. Corruption tax applied.",
+  bossWhisper25: "Boss trace detected — distant whisper on the channel.",
+  bossWhisper50: "Sector interrupt — warden proximity rising.",
+  bossWhisper75: "Mini-boss signature — breach imminent.",
+  bossWhisper100: "Forced warden encounter — no retreat lane.",
+  routeGreedy: "Greedy route logged. Boss trace intensified.",
+  extractionSafe: "Safe extraction authorized. Relics preserved.",
+  extractionPush: "Deep push authorized. Bonus data at risk.",
+} as const

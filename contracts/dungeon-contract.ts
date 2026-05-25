@@ -52,6 +52,72 @@ export type EncounterType =
   | "NPC"
   | "BOSS"
 
+export type DungeonAction =
+  | "STRIKE"
+  | "SEAL"
+  | "COUNTER"
+  | "FOCUS"
+  | "ECHO"
+  | "TRACE"
+
+export type DungeonRouteNodeType = "ROUTE" | "ENCOUNTER" | "BOSS_GATE"
+
+export type DungeonDangerLevel = "low" | "medium" | "high"
+
+export interface DungeonRouteNode {
+  id: string
+  label: string
+  type: DungeonRouteNodeType
+  danger: DungeonDangerLevel
+  rewardHint: string
+  hazard?: string
+  encounterType?: EncounterType
+  exits: string[]
+  requiredMasteryScore?: number
+}
+
+export interface DungeonRouteGraph {
+  entryId: string
+  nodes: Record<string, DungeonRouteNode>
+}
+
+export type DungeonBossEncounterKind =
+  | "VOCAB"
+  | "LISTENING"
+  | "SPEECH"
+  | "NPC"
+
+export interface DungeonBossPhaseSpec {
+  id: string
+  label: string
+  encounterKind: DungeonBossEncounterKind
+  wordCount?: number
+  fragmentCount?: number
+}
+
+export interface DungeonThreatState {
+  corruptionPressure: number
+  bossAwareness: number
+  signalStability: number
+  hunterFocus: number
+}
+
+export type DungeonExtractionChoice = "EXTRACT_SAFE" | "PUSH_DEEPER"
+
+export interface DungeonWordExtractionEntry {
+  wordId: string
+  label: string
+  fantasyState: "scanned" | "stabilized" | "sealed" | "bound" | "overlearned" | "unstable"
+}
+
+export interface DungeonRunSummary {
+  wordsBound: DungeonWordExtractionEntry[]
+  weakSignals: DungeonWordExtractionEntry[]
+  bossSealLabel?: string
+  techniqueLabel?: string
+  runScore: number
+}
+
 export interface DungeonBossContract {
   id: string
 
@@ -61,6 +127,9 @@ export interface DungeonBossContract {
 
   speechDifficulty: number
   grammarDifficulty: number
+
+  /** V2: structured boss phases (falls back to phases count when absent). */
+  phaseSpecs?: DungeonBossPhaseSpec[]
 }
 
 export interface DungeonRewardItemContract {
@@ -124,6 +193,24 @@ export interface DungeonRunContract {
   stabilizedWordIds?: string[]
   /** Highest correct-answer streak seen this run (XP multiplier at extract). */
   peakEncounterStreak?: number
+
+  /** 2 = branching route / threat meters / combat actions (Neon Corridor V2). */
+  runSchemaVersion?: 1 | 2
+  threat?: DungeonThreatState
+  routeGraph?: DungeonRouteGraph
+  currentNodeId?: string
+  completedNodeIds?: string[]
+  /** Active run modifier (MVP: one per v2 run). */
+  activeModifier?: DungeonModifierContract
+  routeSelectPending?: boolean
+  extractionChoicePending?: boolean
+  pendingExtractionChoice?: DungeonExtractionChoice
+  pushDeepBonusClaimed?: boolean
+  wordExtractionLog?: DungeonWordExtractionEntry[]
+  runScore?: number
+  /** Player-selected combat action for current encounter. */
+  selectedDungeonAction?: DungeonAction
+  lastConsequenceLine?: string
 }
 
 export type DungeonMachineState =

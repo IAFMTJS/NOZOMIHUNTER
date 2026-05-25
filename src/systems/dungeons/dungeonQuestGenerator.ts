@@ -3,8 +3,11 @@ import type { DungeonRunContract } from "@/contracts/dungeon-contract"
 import { getDungeonDefinition, DUNGEON_CONFIG } from "@/config/dungeonConfig"
 import { generateDungeon } from "./dungeonGenerator"
 import { createQuestInstanceId } from "@/systems/quests/questIds"
-import { rollDungeonModifiers } from "./dungeonModifierSystem"
+import { rollDungeonModifiers, rollSingleModifier } from "./dungeonModifierSystem"
 import { initPursuitDistance } from "./explorationSystem"
+import { initRouteRun } from "./dungeonRouteSystem"
+import { initThreatState } from "./dungeonThreatSystem"
+import { NEON_CORRIDOR_MODIFIER_POOL } from "@/config/neonCorridorV2Config"
 
 function difficultyForLevel(level: number): QuestDifficulty {
   if (level < 5) return "EASY"
@@ -27,7 +30,12 @@ export function generateDungeonQuest(
   const mode = definition.dungeonMode ?? "STANDARD"
   const modifierSeed = `${dungeonKey}:${Date.now()}`
 
-  const run: DungeonRunContract = {
+  const isV2 = definition.runSchemaVersion === 2
+  const v2Modifier = isV2
+    ? rollSingleModifier(NEON_CORRIDOR_MODIFIER_POOL, modifierSeed)
+    : undefined
+
+  let run: DungeonRunContract = {
     dungeon,
     machineState: "PREPARATION",
     currentEncounterIndex: 0,
@@ -41,6 +49,14 @@ export function generateDungeonQuest(
         : undefined,
     pursuitDistance: mode === "VOID_PURSUIT" ? initPursuitDistance() : undefined,
     endlessSectorCount: mode === "CORRUPTION_RUN" ? 0 : undefined,
+    runSchemaVersion: isV2 ? 2 : undefined,
+    activeModifier: v2Modifier,
+    threat: isV2 ? initThreatState(v2Modifier) : undefined,
+    runScore: isV2 ? 0 : undefined,
+  }
+
+  if (isV2 && definition.routeGraph) {
+    run = initRouteRun(run, definition.routeGraph)
   }
 
   return {

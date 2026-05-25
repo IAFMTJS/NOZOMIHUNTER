@@ -10,9 +10,13 @@ export type ChallengeDisplayPhase = "ACTIVE" | "REVEALED"
 
 export type AnswerInputMode = "english" | "romaji" | "kana" | "japanese"
 
+import type { DungeonAction } from "./dungeon-contract"
+
 export interface ChallengeWordFields {
   promptDirection?: ChallengePromptDirection
   inputMode?: AnswerInputMode
+  /** Dungeon V2: allowed combat actions for this word. */
+  allowedDungeonActions?: DungeonAction[]
 }
 
 export interface VocabularyWordContract extends ChallengeWordFields {

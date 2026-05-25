@@ -59,6 +59,9 @@ export function EncounterHost() {
         onDungeonAdvanceExploration={dungeon.advanceExploration}
         onDungeonEngageSector={dungeon.engageSector}
         onDungeonContinueReward={dungeon.continueAfterReward}
+        onDungeonChooseRoute={dungeon.chooseRoute}
+        onDungeonSelectCombatAction={dungeon.selectCombatAction}
+        onDungeonExtractionChoice={dungeon.submitExtractionChoice}
         onDungeonEnterSector={dungeon.engageSector}
         onDungeonExtract={dungeon.extract}
         onDungeonSubmitAnswer={dungeon.submitAnswer}
