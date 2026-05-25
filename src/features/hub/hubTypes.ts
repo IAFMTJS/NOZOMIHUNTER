@@ -36,6 +36,7 @@ export interface ContractHubProps {
   onDungeonExtract: () => Promise<void>
   onDungeonSubmitAnswer: (answer: string) => Promise<void>
   onDungeonSubmitListening: (answer: string) => Promise<void>
+  onDungeonListeningReplay?: () => Promise<void>
   onDungeonSendMessage: (message: string) => Promise<void>
   onDungeonSubmitSpeech: (transcript: string, ms: number) => Promise<void>
   onDungeonAbandon: () => Promise<void>

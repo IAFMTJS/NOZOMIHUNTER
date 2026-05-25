@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
 import { DUNGEON_DEFINITIONS } from "@/config/dungeonConfig"

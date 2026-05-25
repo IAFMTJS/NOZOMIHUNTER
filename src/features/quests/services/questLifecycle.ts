@@ -26,7 +26,6 @@ import { reactivateFailedQuestGuarded } from "@/services/supabase/economyReposit
 import {
   loadMostRecentFailedQuest,
 } from "@/services/supabase/playerRepository"
-import type { QuestContract } from "@/contracts/quest-contract"
 import { canCompleteQuest } from "@/systems/quests/questValidator"
 import { QuestSnapshotSchema } from "@/systems/validation/playerSchema"
 import { logSystemEvent } from "@/systems/logger/logger"

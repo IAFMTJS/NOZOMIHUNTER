@@ -49,7 +49,30 @@ import {
   scoreSectorClear,
 } from "./dungeonRewardSystem"
 import { buildEntryBriefing } from "@/systems/presentation/dungeonRunPresentation"
+import { masterEntryBriefing } from "@/systems/presentation/dungeonMasterPresentation"
 import { DUNGEON_CONSEQUENCE_COPY } from "@/contracts/presentation-contract"
+import {
+  dialogueOnAwarenessTier,
+  dialogueOnBossPhase,
+  dialogueOnCorruptionBand,
+  dialogueOnDeploy,
+  dialogueOnExtraction,
+  dialogueOnFailure,
+  dialogueOnFirstMistake,
+  dialogueOnPerfectClear,
+  dialogueOnRouteChoice,
+  dialogueOnStreak,
+  isPerfectClearRun,
+} from "./dungeonMasterDialogueSystem"
+import {
+  applyGateProtocolRoutePenalty,
+  applyHungerOnStreak,
+  applyHungerOnWrong,
+  applyMasterThreatInit,
+  damageBossIntegrityOnCorrect,
+  restoreBossIntegrityOnWrong,
+} from "./dungeonMasterRuleSystem"
+import { getBossPhaseSpec } from "./dungeonBossSystem"
 
 const OBJECTIVE_ID = "obj-dungeon"
 
@@ -91,6 +114,7 @@ function mountContextFromRun(
     sectorLabel: node?.label ?? "Sector",
     playerLevel,
     selectedAction: run.selectedDungeonAction,
+    dungeonRun: run,
   }
 }
 
@@ -113,7 +137,10 @@ export function deployDungeon(
       explorationProgress: 0,
       explorationBeat: null,
     }
+    nextRun = applyMasterThreatInit(nextRun)
   }
+
+  nextRun = dialogueOnDeploy(nextRun)
 
   eventBus.emit(GAME_EVENTS.DUNGEON_ENTERED, {
     playerId,
@@ -195,8 +222,12 @@ export function chooseDungeonRoute(
   )
   if (error) throw new Error(error)
 
-  let updated = patchRun(quest, routed)
-  const target = getCurrentNode(routed)
+  const targetPreview = routed.routeGraph?.nodes[exitId]
+  let routedWithRules = applyGateProtocolRoutePenalty(routed, targetPreview?.danger)
+  routedWithRules = dialogueOnRouteChoice(routedWithRules)
+
+  let updated = patchRun(quest, routedWithRules)
+  const target = getCurrentNode(routedWithRules)
   if (!target) return updated
 
   if (target.type === "BOSS_GATE") {
@@ -339,21 +370,22 @@ function engageSectorEncounterV2(
 
 function beginBossPhase(quest: QuestContract): QuestContract {
   const run = quest.dungeonRun!
+  const spec = getBossPhaseSpec(quest, run.bossPhase)
   const mounted = mountBossPhaseEncounter(quest, run.bossPhase)
   const from =
     run.machineState === "REWARD" || run.machineState === "EXPLORATION"
       ? run.machineState
       : "EXPLORATION"
-  return patchRun(
-    { ...quest, ...clearEncounterPayloads(), ...mounted },
-    {
-      ...run,
-      machineState: transition(from, "BOSS"),
-      activeType: "BOSS",
-      explorationBeat: null,
-      routeSelectPending: false,
-    }
-  )
+  let nextRun: DungeonRunContract = {
+    ...run,
+    machineState: transition(from, "BOSS"),
+    activeType: "BOSS",
+    explorationBeat: null,
+    routeSelectPending: false,
+    bossIntegrity: run.bossIntegrity ?? 100,
+  }
+  nextRun = dialogueOnBossPhase(nextRun, spec?.label)
+  return patchRun({ ...quest, ...clearEncounterPayloads(), ...mounted }, nextRun)
 }
 
 export function completeDungeonSector(quest: QuestContract): QuestContract {
@@ -518,7 +550,7 @@ export function applyExtractionChoice(
     throw new Error("Extraction choice only in dungeon V2.")
   }
 
-  const nextRun = scoreExtractionChoice(
+  let nextRun = scoreExtractionChoice(
     {
       ...run,
       extractionChoicePending: false,
@@ -530,6 +562,7 @@ export function applyExtractionChoice(
     },
     choice === "PUSH_DEEPER"
   )
+  nextRun = dialogueOnExtraction(nextRun)
 
   if (choice === "PUSH_DEEPER" && !run.pushDeepBonusClaimed) {
     const mounted = mountSectorEncounter("VOCAB", "Deep push bonus", {
@@ -559,15 +592,17 @@ export function finalizeDungeonExtraction(quest: QuestContract): QuestContract {
     completed: true,
   }))
 
-  return patchRun(
-    { ...quest, objectives, ...clearEncounterPayloads() },
-    {
-      ...run,
-      machineState: "COMPLETE",
-      activeType: null,
-      extractionChoicePending: false,
-    }
-  )
+  let finalRun: DungeonRunContract = {
+    ...run,
+    machineState: "COMPLETE",
+    activeType: null,
+    extractionChoicePending: false,
+  }
+  if (isPerfectClearRun({ ...finalRun, encounterFailures: run.encounterFailures })) {
+    finalRun = dialogueOnPerfectClear(finalRun)
+  }
+
+  return patchRun({ ...quest, objectives, ...clearEncounterPayloads() }, finalRun)
 }
 
 export function applyEncounterAnswerConsequence(
@@ -580,10 +615,20 @@ export function applyEncounterAnswerConsequence(
   const streak = quest.vocabularyEncounter?.correctStreak ?? 0
   if (correct) {
     const { run: next } = applyCorrectConsequence(run, streak)
-    return patchRun(quest, next)
+    let patched = damageBossIntegrityOnCorrect(next)
+    patched = applyHungerOnStreak(patched, streak)
+    patched = dialogueOnStreak(patched, streak)
+    patched = dialogueOnAwarenessTier(patched)
+    patched = dialogueOnCorruptionBand(patched)
+    return patchRun(quest, patched)
   }
 
-  const { run: next, forceBoss } = applyWrongConsequence(run)
+  const { run: nextAfterWrong, forceBoss } = applyWrongConsequence(run)
+  let next = applyHungerOnWrong(nextAfterWrong)
+  next = restoreBossIntegrityOnWrong(next)
+  next = dialogueOnFirstMistake(next)
+  next = dialogueOnAwarenessTier(next)
+  next = dialogueOnCorruptionBand(next)
   let updated = patchRun(quest, next)
   if (forceBoss && updated.dungeonRun?.machineState !== "BOSS") {
     updated = beginBossPhase(updated)
@@ -616,12 +661,14 @@ export function failDungeonRun(
     playerId
   )
 
+  const failedRun = dialogueOnFailure({
+    ...run,
+    machineState: "FAILURE",
+    activeType: null,
+  })
+
   return {
-    quest: patchRun(failResult.quest, {
-      ...run,
-      machineState: "FAILURE",
-      activeType: null,
-    }),
+    quest: patchRun(failResult.quest, failedRun),
     penalties: failResult.penalties,
   }
 }
@@ -660,7 +707,10 @@ export function getDungeonBriefing(quest: QuestContract): string {
   const run = quest.dungeonRun
   if (!run) return quest.description
   if (isDungeonV2Run(run)) {
-    return buildEntryBriefing(run, quest.description)
+    return masterEntryBriefing(run, buildEntryBriefing(run, quest.description))
+  }
+  if (run.masterId || run.dungeon.masterId) {
+    return masterEntryBriefing(run, quest.description)
   }
   const boss = run.dungeon.boss?.name ?? "Unknown"
   const sectors = run.dungeon.encounters.length

@@ -3,6 +3,7 @@ import type {
   DungeonRunSummary,
   DungeonWordExtractionEntry,
 } from "@/contracts/dungeon-contract"
+import { resolveMasterForRun } from "./dungeonMasterSystem"
 
 export function masteryFantasyLabel(score: number): DungeonWordExtractionEntry["fantasyState"] {
   if (score >= 90) return "bound"
@@ -37,14 +38,17 @@ export function buildDungeonRunSummary(
   )
   const weakSignals = entries.filter((e) => e.fantasyState === "unstable")
 
+  const master = resolveMasterForRun(run)
+  const displayBoss = bossName ?? master.displayName
+
   return {
     wordsBound,
     weakSignals,
-    bossSealLabel: bossName ? `${bossName} Fragment` : undefined,
+    bossSealLabel: `${displayBoss} Fragment`,
     techniqueLabel:
       run.pendingExtractionChoice === "PUSH_DEEPER"
         ? "Counter Seal (trial)"
-        : undefined,
+        : master.perfectClearReward.techniqueLabel,
     runScore: run.runScore ?? 0,
   }
 }

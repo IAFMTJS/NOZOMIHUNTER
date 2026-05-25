@@ -116,6 +116,7 @@ export function HubSectorView({
             onExtract={props.onDungeonExtract}
             onSubmitAnswer={props.onDungeonSubmitAnswer}
             onSubmitListening={props.onDungeonSubmitListening}
+            onListeningReplay={props.onDungeonListeningReplay}
             onSendMessage={props.onDungeonSendMessage}
             onSubmitSpeech={props.onDungeonSubmitSpeech}
             onAbandon={props.onDungeonAbandon}

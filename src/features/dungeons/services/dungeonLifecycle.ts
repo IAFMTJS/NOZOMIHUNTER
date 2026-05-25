@@ -9,15 +9,17 @@ import {
   spendStaminaGuarded,
 } from "@/services/supabase/economyRepository"
 import { acceptQuest } from "@/systems/quests/questOrchestrator"
-import { hasActiveBoost, hasEscapeBeacon, hasReviveToken } from "@/systems/economy/boostSystem"
-import {
-  applyTimeFreeze,
-  initDungeonTimer,
-  isDungeonTimedOut,
-} from "@/systems/economy/shopEffectSystem"
+import { hasActiveBoost, hasEscapeBeacon } from "@/systems/economy/boostSystem"
+import { applyTimeFreeze, initDungeonTimer } from "@/systems/economy/shopEffectSystem"
 import { consumeActiveBoost } from "@/features/inventory/services/shopEffectActions"
 import { canCompleteQuest } from "@/systems/quests/questValidator"
 import { generateDungeonQuest } from "@/systems/dungeons/dungeonQuestGenerator"
+import { applyRematchModifierToRun } from "@/systems/dungeons/dungeonMasterMemorySystem"
+import {
+  buildRunOutcomeMetrics,
+  computeMasterCompletionGrants,
+} from "@/systems/dungeons/dungeonMasterMemorySystem"
+import { resolveMasterForRun } from "@/systems/dungeons/dungeonMasterSystem"
 import { canStartDungeon } from "@/systems/dungeons/dungeonAccess"
 import { getDungeonDefinition } from "@/config/dungeonConfig"
 import { canSpendStamina } from "@/systems/economy/staminaSystem"
@@ -80,10 +82,11 @@ export async function enterDungeon(userId: string, dungeonKey: string) {
 
   let quest = generateDungeonQuest(player.level, dungeonKey)
   if (quest.dungeonRun) {
-    quest = {
-      ...quest,
-      dungeonRun: { ...quest.dungeonRun, staminaSpent: cost },
-    }
+    const run = applyRematchModifierToRun(
+      { ...quest.dungeonRun, staminaSpent: cost },
+      player
+    )
+    quest = { ...quest, dungeonRun: run }
   }
   acceptQuest(quest, userId)
 
@@ -322,18 +325,47 @@ export async function extractDungeonRewards(userId: string) {
     throw new Error("Dungeon objectives not complete")
   }
 
-  await updateUserQuest(userId, ready)
+  const run = ready.dungeonRun!
+  const metrics = buildRunOutcomeMetrics(run, true)
+  const masterGrants = computeMasterCompletionGrants(run, store.player, metrics)
+  const master = resolveMasterForRun(run)
 
-  const server = await completeQuestGuarded(ready.id, 0)
+  const rewardItems = [
+    ...(ready.rewards.items ?? []).map((i) =>
+      typeof i === "string" ? { itemKey: i, quantity: 1 } : i
+    ),
+    ...masterGrants.inventoryItems,
+  ]
 
-  const { progression, newUnlocks } = resolveRewardProgression(
+  const readyWithRewards: QuestContract = {
+    ...ready,
+    rewards: {
+      ...ready.rewards,
+      unlocks: [...(ready.rewards.unlocks ?? []), ...masterGrants.titles],
+      items: rewardItems.length > 0 ? rewardItems : ready.rewards.items,
+    },
+  }
+
+  await updateUserQuest(userId, readyWithRewards)
+
+  const server = await completeQuestGuarded(readyWithRewards.id, 0)
+
+  let { progression, newUnlocks } = resolveRewardProgression(
     progressionState.progression,
-    ready.rewards
+    readyWithRewards.rewards
   )
+
+  const titleSet = new Set(progression.titles)
+  for (const t of masterGrants.titles) titleSet.add(t)
+  progression = { ...progression, titles: [...titleSet] }
+  newUnlocks = [
+    ...newUnlocks,
+    ...masterGrants.titles.filter((t) => !progressionState.progression.titles.includes(t)),
+  ]
 
   const { leveledUp, rankUp } = await applyActivityCompletion({
     userId,
-    quest: ready,
+    quest: readyWithRewards,
     server,
     progression,
     newUnlocks,
@@ -341,8 +373,11 @@ export async function extractDungeonRewards(userId: string) {
     rankBefore: progressionState.rank,
   })
 
-  emitStandardCompletionEvents(userId, ready.id, server, leveledUp, rankUp, {
+  emitStandardCompletionEvents(userId, readyWithRewards.id, server, leveledUp, rankUp, {
     dungeonId: quest.dungeonRun.dungeon.id,
+    masterId: master.id,
+    perfectClear: metrics.perfectClear,
+    relationshipState: masterGrants.titles[0],
   })
 
   const remaining = store.activeQuests.filter((q) => q.id !== quest.id)

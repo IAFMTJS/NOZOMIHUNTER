@@ -4,12 +4,18 @@ import type {
   DungeonTheme,
   EncounterType,
 } from "@/contracts/dungeon-contract"
+import type { DungeonMasterId } from "@/contracts/dungeon-master-contract"
 import type { GameModeId } from "@/contracts/game-mode-contract"
 import type { QuestPenaltyContract } from "@/contracts/quest-contract"
 import {
   NEON_CORRIDOR_BOSS_PHASES,
   NEON_CORRIDOR_ROUTE_GRAPH,
 } from "@/config/neonCorridorV2Config"
+import {
+  ARCHIVIST_BOSS_PHASES,
+  SHADOW_ARCHIVE_ROUTE_GRAPH,
+} from "@/config/shadowArchiveV2Config"
+import { DUNGEON_V2_OVERLAY } from "@/config/dungeonV2OverlayConfig"
 
 export interface DungeonDefinitionConfig {
   key: string
@@ -19,6 +25,7 @@ export interface DungeonDefinitionConfig {
   minLevel: number
   staminaCost: number
   recommendedPower: number
+  masterId: DungeonMasterId
   /** Gameplay mode routed through dungeon run state. */
   dungeonMode?: GameModeId
   /** Must appear in player.progression.unlockedDungeons before entry. */
@@ -49,6 +56,7 @@ export const DUNGEON_CONFIG = {
 export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
   {
     key: "dungeon:neon-corridor",
+    masterId: "neon-warden",
     theme: "CYBER_TOKYO",
     name: "Neon Corridor",
     description:
@@ -75,26 +83,32 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
   },
   {
     key: "dungeon:shadow-archive",
+    masterId: "archivist",
     theme: "SHADOW_ARCHIVE",
     name: "Shadow Archive",
     description:
-      "Cold storage beneath the grid. Listening ghosts, sealed dialogue, and the Archive Warden.",
+      "Cold storage beneath the grid. Listening ghosts, sealed dialogue, and The Archivist.",
     minLevel: 4,
     staminaCost: 25,
     recommendedPower: 1520,
     requiredDungeon: "dungeon:neon-corridor",
+    runSchemaVersion: 2,
+    routeGraph: SHADOW_ARCHIVE_ROUTE_GRAPH,
+    bossPhaseSpecs: ARCHIVIST_BOSS_PHASES,
+    dungeonMode: "ARCHIVIST_BOSS",
     encounterPlan: [
       { id: "sector-listen", type: "LISTENING", difficulty: 2 },
       { id: "sector-vocab", type: "VOCAB", difficulty: 2 },
       { id: "sector-npc", type: "NPC", difficulty: 3 },
       { id: "sector-speech", type: "SPEECH", difficulty: 3 },
     ],
-    bossName: "Archive Warden",
+    bossName: "The Archivist",
     rewardXpBase: 150,
     unlocks: ["dungeon:shadow-archive"],
   },
   {
     key: "dungeon:abyss-core",
+    masterId: "gate-devourer",
     theme: "ABYSS_CORE",
     name: "Abyss Core",
     description:
@@ -103,18 +117,22 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
     staminaCost: 35,
     recommendedPower: 2400,
     requiredDungeon: "dungeon:shadow-archive",
+    runSchemaVersion: 2,
+    routeGraph: DUNGEON_V2_OVERLAY["dungeon:abyss-core"]!.routeGraph,
+    bossPhaseSpecs: DUNGEON_V2_OVERLAY["dungeon:abyss-core"]!.bossPhaseSpecs,
     encounterPlan: [
       { id: "sector-vocab", type: "VOCAB", difficulty: 3 },
       { id: "sector-listen", type: "LISTENING", difficulty: 4 },
       { id: "sector-npc", type: "NPC", difficulty: 4 },
       { id: "sector-speech", type: "SPEECH", difficulty: 4 },
     ],
-    bossName: "Core Warden",
+    bossName: "The Gate Devourer",
     rewardXpBase: 200,
     unlocks: ["dungeon:abyss-core"],
   },
   {
     key: "dungeon:corruption-run",
+    masterId: "collapse-echo",
     theme: "NEON_CITY",
     dungeonMode: "CORRUPTION_RUN",
     name: "Corruption Run",
@@ -124,6 +142,9 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
     staminaCost: 22,
     recommendedPower: 1280,
     requiredDungeon: "dungeon:neon-corridor",
+    runSchemaVersion: 2,
+    routeGraph: DUNGEON_V2_OVERLAY["dungeon:corruption-run"]!.routeGraph,
+    bossPhaseSpecs: DUNGEON_V2_OVERLAY["dungeon:corruption-run"]!.bossPhaseSpecs,
     encounterPlan: [
       { id: "run-vocab", type: "VOCAB", difficulty: 2 },
       { id: "run-listen", type: "LISTENING", difficulty: 2 },
@@ -135,6 +156,7 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
   },
   {
     key: "dungeon:void-pursuit",
+    masterId: "mirror-hunter",
     theme: "ABANDONED_STATION",
     dungeonMode: "VOID_PURSUIT",
     name: "Void Pursuit",
@@ -144,17 +166,21 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
     staminaCost: 24,
     recommendedPower: 1480,
     requiredDungeon: "dungeon:corruption-run",
+    runSchemaVersion: 2,
+    routeGraph: DUNGEON_V2_OVERLAY["dungeon:void-pursuit"]!.routeGraph,
+    bossPhaseSpecs: DUNGEON_V2_OVERLAY["dungeon:void-pursuit"]!.bossPhaseSpecs,
     encounterPlan: [
       { id: "pursuit-listen", type: "LISTENING", difficulty: 3 },
       { id: "pursuit-vocab", type: "VOCAB", difficulty: 3 },
       { id: "pursuit-npc", type: "NPC", difficulty: 3 },
     ],
-    bossName: "Void Stalker",
+    bossName: "The Mirror Hunter",
     rewardXpBase: 155,
     unlocks: ["dungeon:void-pursuit"],
   },
   {
     key: "dungeon:roguelike-sector",
+    masterId: "shrine-warden",
     theme: "CORRUPTED_SHRINE",
     dungeonMode: "ROGUELIKE_SECTOR",
     name: "Roguelike Sector",
@@ -164,13 +190,16 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
     staminaCost: 28,
     recommendedPower: 1680,
     requiredDungeon: "dungeon:void-pursuit",
+    runSchemaVersion: 2,
+    routeGraph: DUNGEON_V2_OVERLAY["dungeon:roguelike-sector"]!.routeGraph,
+    bossPhaseSpecs: DUNGEON_V2_OVERLAY["dungeon:roguelike-sector"]!.bossPhaseSpecs,
     encounterPlan: [
       { id: "rogue-vocab", type: "VOCAB", difficulty: 3 },
       { id: "rogue-listen", type: "LISTENING", difficulty: 3 },
       { id: "rogue-speech", type: "SPEECH", difficulty: 4 },
       { id: "rogue-npc", type: "NPC", difficulty: 4 },
     ],
-    bossName: "Shrine Warden",
+    bossName: "The Broadcast Spirit",
     rewardXpBase: 175,
     unlocks: ["dungeon:roguelike-sector"],
   },

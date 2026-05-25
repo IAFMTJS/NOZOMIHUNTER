@@ -152,13 +152,21 @@ export function emitStandardCompletionEvents(
   server: GuardedQuestCompletionResult,
   leveledUp: boolean,
   rankUp: boolean,
-  extra?: { dungeonId?: string }
+  extra?: {
+    dungeonId?: string
+    masterId?: string
+    perfectClear?: boolean
+    relationshipState?: string
+  }
 ): void {
   if (extra?.dungeonId) {
     eventBus.emit(GAME_EVENTS.DUNGEON_COMPLETED, {
       playerId: userId,
       dungeonId: extra.dungeonId,
       xp: server.xp_gained,
+      masterId: extra.masterId,
+      perfectClear: extra.perfectClear,
+      relationshipState: extra.relationshipState,
     })
   } else {
     eventBus.emit(GAME_EVENTS.QUEST_COMPLETED, { playerId: userId, questId })

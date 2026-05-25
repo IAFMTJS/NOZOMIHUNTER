@@ -29,6 +29,10 @@ import { DungeonModifierRail } from "@/features/dungeons/components/DungeonModif
 import { ExtractionDecisionPanel } from "@/features/dungeons/components/ExtractionDecisionPanel"
 import { DungeonRunRecap } from "@/features/dungeons/components/DungeonRunRecap"
 import { BossPhaseBanner } from "@/features/dungeons/components/BossPhaseBanner"
+import { DungeonMasterPresence } from "@/features/dungeons/components/DungeonMasterPresence"
+import { BossPhaseOverlay } from "@/features/dungeons/components/BossPhaseOverlay"
+import { BossIntegrityBar } from "@/features/dungeons/components/BossIntegrityBar"
+import { bossDisplayName } from "@/systems/dungeons/dungeonMasterSystem"
 import type { DungeonAction, DungeonExtractionChoice } from "@/contracts/dungeon-contract"
 import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
@@ -73,6 +77,7 @@ interface DungeonRunnerProps {
   onSendMessage: (message: string) => Promise<void>
   onSubmitSpeech: (transcript: string, ms: number) => Promise<void>
   onSubmitListening: (answer: string) => Promise<void>
+  onListeningReplay?: () => Promise<void>
   onAbandon: () => Promise<void>
   escapeBeaconActive?: boolean
 }
@@ -98,6 +103,7 @@ export function DungeonRunner({
   onSendMessage,
   onSubmitSpeech,
   onSubmitListening,
+  onListeningReplay,
   onAbandon,
   escapeBeaconActive,
 }: DungeonRunnerProps) {
@@ -293,6 +299,7 @@ export function DungeonRunner({
           signalDegraded={signalDegraded}
           focusMode
           onSubmit={onSubmitListening}
+          onReplayPenalty={onListeningReplay}
           onAbandon={onAbandon}
         />
       )}
@@ -323,12 +330,17 @@ export function DungeonRunner({
         />
       )}
 
+      {state === "BOSS" && isV2 && (
+        <BossPhaseOverlay quest={quest} run={run} />
+      )}
+
       {state === "BOSS" && (
-        <Panel tone="boss" className="nozomi-boss-frame border-[var(--danger)]/40">
+        <Panel tone="boss" className="nozomi-boss-frame relative border-[var(--danger)]/40">
+          {isV2 && <BossIntegrityBar run={run} />}
           {isV2 && (
             <BossPhaseBanner
               copy={bossPhaseBannerCopy(
-                boss?.name ?? "Warden",
+                bossDisplayName(run),
                 getBossPhaseSpec(quest, run.bossPhase),
                 run.bossPhase,
                 resolveBossPhaseCount(run)
@@ -370,6 +382,7 @@ export function DungeonRunner({
               signalDegraded={signalDegraded}
               focusMode
               onSubmit={onSubmitListening}
+              onReplayPenalty={onListeningReplay}
               onAbandon={onAbandon}
             />
           )}
@@ -444,6 +457,7 @@ export function DungeonRunner({
             compact={inEncounter}
           />
           {isV2 && <DungeonThreatHud run={run} compact={inEncounter} />}
+          <DungeonMasterPresence run={run} minimal={inEncounter && state !== "BOSS"} />
           {isV2 && (
             <DungeonModifierRail
               modifier={run.activeModifier}

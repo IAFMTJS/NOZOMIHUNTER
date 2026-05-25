@@ -1,3 +1,12 @@
+/** Master relic item keys (flavor trophies from perfect clears). */
+export const MASTER_RELIC_ITEMS = [
+  "warden-access-core",
+  "forgotten-index",
+  "static-omamori",
+  "devoured-seal",
+  "cracked-hunter-crest",
+] as const
+
 export const INVENTORY_CONFIG = {
   CAPACITY: 100,
   STARTER_ITEMS: [

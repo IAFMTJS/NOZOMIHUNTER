@@ -3,6 +3,7 @@ import type {
   DungeonDifficulty,
 } from "@/contracts/dungeon-contract"
 import type { DungeonDefinitionConfig } from "@/config/dungeonConfig"
+import { resolveMasterForDefinition } from "@/systems/dungeons/dungeonMasterSystem"
 import { FEATURE_FLAGS } from "@/config/features"
 
 function rankForLevel(level: number): DungeonDifficulty {
@@ -22,6 +23,8 @@ export function generateDungeon(
 
   const rank = rankForLevel(playerLevel)
   const xpBonus = playerLevel * 8
+  const master = resolveMasterForDefinition(definition)
+  const bossName = definition.bossName || master.displayName
 
   return {
     id: `dungeon-${definition.key}-${Date.now()}`,
@@ -29,6 +32,7 @@ export function generateDungeon(
     description: definition.description,
     theme: definition.theme,
     difficulty: rank,
+    masterId: definition.masterId,
     encounters: definition.encounterPlan.map((slot) => ({
       id: slot.id,
       type: slot.type,
@@ -37,7 +41,7 @@ export function generateDungeon(
     })),
     boss: {
       id: `boss-${definition.key}`,
-      name: definition.bossName,
+      name: bossName,
       phases: definition.bossPhaseSpecs?.length ?? 2,
       phaseSpecs: definition.bossPhaseSpecs,
       speechDifficulty: Math.min(5, 2 + Math.floor(playerLevel / 5)),

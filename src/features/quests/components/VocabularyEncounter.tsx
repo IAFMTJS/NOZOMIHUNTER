@@ -83,7 +83,7 @@ export function VocabularyEncounter({
       }
     }
     prevIndexRef.current = encounter.currentIndex
-  }, [encounter?.currentIndex, encounter?.words, encounter])
+  }, [encounter?.currentIndex, encounter?.words, encounter, quest.id])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

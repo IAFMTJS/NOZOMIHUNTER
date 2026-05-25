@@ -7,6 +7,7 @@ import { rollDungeonModifiers, rollSingleModifier } from "./dungeonModifierSyste
 import { initPursuitDistance } from "./explorationSystem"
 import { initRouteRun } from "./dungeonRouteSystem"
 import { initThreatState } from "./dungeonThreatSystem"
+import { applyMasterThreatInit } from "./dungeonMasterRuleSystem"
 import { NEON_CORRIDOR_MODIFIER_POOL } from "@/config/neonCorridorV2Config"
 
 function difficultyForLevel(level: number): QuestDifficulty {
@@ -37,11 +38,13 @@ export function generateDungeonQuest(
 
   let run: DungeonRunContract = {
     dungeon,
+    masterId: dungeon.masterId ?? definition.masterId,
     machineState: "PREPARATION",
     currentEncounterIndex: 0,
     activeType: null,
     encounterFailures: 0,
     bossPhase: 0,
+    bossIntegrity: 100,
     dungeonMode: mode,
     modifiers:
       mode === "ROGUELIKE_SECTOR"
@@ -58,6 +61,8 @@ export function generateDungeonQuest(
   if (isV2 && definition.routeGraph) {
     run = initRouteRun(run, definition.routeGraph)
   }
+
+  run = applyMasterThreatInit(run)
 
   return {
     id: createQuestInstanceId(),

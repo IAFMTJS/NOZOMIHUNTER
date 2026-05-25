@@ -52,16 +52,25 @@ function isoWeekOfYear(date: Date): number {
   return Math.ceil(((d.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7)
 }
 
+function hashSeed(seed: string): number {
+  let h = 0
+  for (let i = 0; i < seed.length; i++) {
+    h = (h * 31 + seed.charCodeAt(i)) >>> 0
+  }
+  return h
+}
+
 export function getActiveSectorEvent(
   seed?: string
 ): SectorEventDefinition | null {
   if (!FEATURE_FLAGS.LIVE_SECTOR_EVENTS) return null
   const week = isoWeekOfYear(new Date())
-  return (
-    SECTOR_EVENT_SCHEDULE.find((e) => e.weekOfYear === week) ??
-    SECTOR_EVENT_SCHEDULE[week % SECTOR_EVENT_SCHEDULE.length] ??
-    null
-  )
+  const matched = SECTOR_EVENT_SCHEDULE.find((e) => e.weekOfYear === week)
+  if (matched) return matched
+  const fallbackIndex = seed
+    ? hashSeed(seed) % SECTOR_EVENT_SCHEDULE.length
+    : week % SECTOR_EVENT_SCHEDULE.length
+  return SECTOR_EVENT_SCHEDULE[fallbackIndex] ?? null
 }
 
 export function sectorEventXpMultiplier(event: SectorEventDefinition | null): number {

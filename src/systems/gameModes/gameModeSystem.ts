@@ -17,7 +17,7 @@ export function resolveDungeonGameMode(run: DungeonRunContract): GameModeId {
   return run.dungeonMode ?? "STANDARD"
 }
 
-export function defaultGameModeForQuestType(_type: QuestContract["type"]): GameModeId {
+export function defaultGameModeForQuestType(): GameModeId {
   return "STANDARD"
 }
 

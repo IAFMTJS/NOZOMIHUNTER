@@ -1,7 +1,7 @@
 import type { PlayerContract } from "@/contracts/player-contract"
 import { Button } from "@/components/ui/Button"
 import { activeBoostsForPlayer, hasActiveBoost } from "@/systems/economy/boostSystem"
-import { retryMostRecentFailedContract, skipQuestObjective, freezeDungeonTimer } from "@/features/inventory/services/shopEffectActions"
+import { retryMostRecentFailedContract } from "@/features/inventory/services/shopEffectActions"
 
 interface ActiveBoostsRailProps {
   player: PlayerContract

@@ -9,7 +9,6 @@ import {
 import { checkMemoryCascadeAnswer } from "@/systems/training/memoryCascadeSystem"
 import {
   flipMemoryGridCard,
-  isMemoryGridComplete,
   resetMemoryGridFlips,
 } from "@/systems/training/memoryGridSystem"
 import {

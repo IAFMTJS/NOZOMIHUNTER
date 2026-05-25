@@ -66,6 +66,7 @@ export function EncounterHost() {
         onDungeonExtract={dungeon.extract}
         onDungeonSubmitAnswer={dungeon.submitAnswer}
         onDungeonSubmitListening={dungeon.submitListening}
+        onDungeonListeningReplay={dungeon.listeningReplay}
         onDungeonSendMessage={dungeon.sendMessage}
         onDungeonSubmitSpeech={dungeon.submitSpeech}
         onDungeonAbandon={dungeon.abandon}

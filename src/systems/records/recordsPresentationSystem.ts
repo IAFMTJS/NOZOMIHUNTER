@@ -41,11 +41,18 @@ export function formatGameplayRecord(
     typeof payload.questId === "string" ? payload.questId : undefined
   const dungeonId =
     typeof payload.dungeonId === "string" ? payload.dungeonId : undefined
+  const masterId =
+    typeof payload.masterId === "string" ? payload.masterId : undefined
+  const perfectClear = payload.perfectClear === true
 
   let detail: string | undefined
   if (xp != null && xp > 0) detail = `+${xp} XP`
   if (questId) detail = [detail, `Contract ${questId.slice(0, 8)}`].filter(Boolean).join(" · ")
   if (dungeonId) detail = [detail, `Sector ${dungeonId.replace(/^dungeon:/, "")}`].filter(Boolean).join(" · ")
+  if (masterId) {
+    detail = [detail, `Master ${masterId.replace(/-/g, " ")}`].filter(Boolean).join(" · ")
+    if (perfectClear) detail = [detail, "perfect clear"].join(" · ")
+  }
 
   const tone: RecordLine["tone"] =
     eventType.includes("FAILED") || eventType.includes("FAIL")

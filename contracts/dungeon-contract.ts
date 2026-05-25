@@ -1,3 +1,6 @@
+import type { DungeonMasterId } from "./dungeon-master-contract"
+import type { MasterDialogueMoment } from "./dungeon-master-contract"
+
 export interface DungeonContract {
   id: string
 
@@ -17,6 +20,9 @@ export interface DungeonContract {
   penalties: DungeonPenaltyContract
 
   multiplayerEnabled: boolean
+
+  /** Sector intelligence overlay for this dungeon run. */
+  masterId?: DungeonMasterId
 }
 
 export type DungeonTheme =
@@ -211,6 +217,16 @@ export interface DungeonRunContract {
   /** Player-selected combat action for current encounter. */
   selectedDungeonAction?: DungeonAction
   lastConsequenceLine?: string
+  /** Resolved master for this run (mirrors dungeon.masterId). */
+  masterId?: DungeonMasterId
+  masterDialogueLine?: string
+  masterDialogueMoment?: MasterDialogueMoment
+  /** Boss phase integrity 0–100 (presentation + rules). */
+  bossIntegrity?: number
+  /** Run flags for master rules */
+  firstMistakeLogged?: boolean
+  lastAwarenessTier?: number
+  lastCorruptionBand?: number
 }
 
 export type DungeonMachineState =

@@ -5,6 +5,8 @@ export {
   submitDungeonSpeech,
 } from "./dungeonEncounterActions"
 
+export { applyDungeonListeningReplayPenalty } from "./dungeonReplayActions"
+
 export {
   enterDungeon,
   deployDungeonRun,

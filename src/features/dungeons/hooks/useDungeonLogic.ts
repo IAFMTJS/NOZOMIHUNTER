@@ -21,6 +21,7 @@ import {
   submitDungeonSpeech,
   abandonDungeon,
   extractDungeonRewards,
+  applyDungeonListeningReplayPenalty,
 } from "../services/dungeonService"
 
 export function useDungeonLogic(userId: string | undefined) {
@@ -202,6 +203,15 @@ export function useDungeonLogic(userId: string | undefined) {
     [userId]
   )
 
+  const listeningReplay = useCallback(async () => {
+    if (!userId) return
+    try {
+      await applyDungeonListeningReplayPenalty(userId)
+    } catch {
+      /* replay penalty best-effort */
+    }
+  }, [userId])
+
   const sendMessage = useCallback(
     async (message: string) => {
       if (!userId) return
@@ -265,6 +275,7 @@ export function useDungeonLogic(userId: string | undefined) {
     extract,
     submitAnswer,
     submitListening,
+    listeningReplay,
     sendMessage,
     submitSpeech,
     abandon,

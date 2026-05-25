@@ -1,12 +1,28 @@
 # Changelog
 
-## v1.4.0 (unreleased) — Dungeon V2 (Neon Corridor MVP)
+## v1.4.0 (unreleased) — Dungeon V2 + Dungeon Masters
+
+### Dungeon Masters overlay
+- `dungeon-master-contract.ts` + `dungeonMastersConfig.ts` — eight master personas mapped to all six dungeon keys
+- Systems: `dungeonMasterSystem`, `dungeonMasterDialogueSystem`, `dungeonMasterRuleSystem`, `dungeonMasterMemorySystem`
+- Presentation: `dungeonMasterPresentation`, `dungeonDomainPresentation`; reactive dialogue on deploy, routes, mistakes, boss, extraction
+- UI: `DungeonDomainBackdrop`, `DungeonMasterPresence`, `BossPhaseOverlay`, `BossIntegrityBar`, `CorruptionDistortionLayer`, `MasterDialogueLine`
+- Perfect-clear grants: titles, relic items, relationship keys (`master:{id}:{state}`)
+- Achievements: Gatebreaker, Archive Breaker, master rival
+- `flows/dungeon-masters.md`
 
 ### Dungeon V2 systems
 - Extended `dungeon-contract.ts`: route graph, threat meters, combat actions, boss phase specs, extraction choice, run summary
 - `dungeonRouteSystem`, `dungeonThreatSystem`, `dungeonActionSystem`, `dungeonBossSystem`, `dungeonRewardSystem`, `dungeonRunSummarySystem`
 - `dungeonOrchestrator` v2 paths: route choice, threat consequences, 3-phase boss, extract vs push deeper
 - Presentation: `dungeonRunPresentation`, `dungeonThreatPresentation`, `dungeonBossPresentation`; `DUNGEON_CONSEQUENCE_COPY`
+
+### Shadow Archive (`dungeon:shadow-archive`, `runSchemaVersion: 2`)
+- Route graph + **The Archivist** 4-phase boss (Recall → Repair → Intruder → Seal)
+- Memory Debt rule on vocab encounters
+
+### All sector dungeons V2
+- `dungeonV2OverlayConfig.ts` — route graphs for abyss-core, corruption-run, void-pursuit, roguelike-sector
 
 ### Neon Corridor (`dungeon:neon-corridor`, `runSchemaVersion: 2`)
 - 6-node route graph (entry → Neon Hall / Archive Door → Boss Gate)
@@ -19,6 +35,7 @@
 
 ### Tests
 - `tests/dungeonV2Systems.test.ts` — route, threat, actions, persistence shape
+- `tests/dungeonMasterSystems.test.ts` — dialogue, rules, memory grants, awareness tiers
 
 ### Documentation
 - `flows/dungeon-flow.md` — V2 loop documented

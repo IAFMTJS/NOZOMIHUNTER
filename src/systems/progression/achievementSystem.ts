@@ -33,6 +33,21 @@ const DEFINITIONS: Omit<AchievementContract, "unlocked">[] = [
     title: "Threat neutralized",
     description: "Earn a vocabulary mastery title.",
   },
+  {
+    id: "gatebreaker",
+    title: "Gatebreaker",
+    description: "Perfect clear against The Neon Warden.",
+  },
+  {
+    id: "archive-breaker",
+    title: "Archive Breaker",
+    description: "Perfect clear against The Archivist.",
+  },
+  {
+    id: "master-rival",
+    title: "Rival bound",
+    description: "Reach rival state with any dungeon master.",
+  },
 ]
 
 export function resolveAchievements(player: PlayerContract): AchievementContract[] {
@@ -60,6 +75,15 @@ export function resolveAchievements(player: PlayerContract): AchievementContract
         break
       case "vocab-master":
         unlocked = [...titles].some((t) => t.includes("vocab") || t.includes("mastery"))
+        break
+      case "gatebreaker":
+        unlocked = titles.has("Gatebreaker")
+        break
+      case "archive-breaker":
+        unlocked = titles.has("Archive Breaker")
+        break
+      case "master-rival":
+        unlocked = [...titles].some((t) => t.includes("master:") && t.includes(":rival"))
         break
     }
     return { ...def, unlocked }

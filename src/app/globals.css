@@ -1186,3 +1186,227 @@ html.nozomi-moment-freeze::after {
   }
 }
 
+/* Dungeon master presence + domain layers */
+.nozomi-dungeon-domain-backdrop {
+  opacity: 0.35;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139, 92, 246, 0.12), transparent 70%);
+}
+
+.nozomi-dungeon-domain--tier-25 {
+  opacity: 0.45;
+}
+
+.nozomi-dungeon-domain--tier-50 {
+  opacity: 0.55;
+}
+
+.nozomi-dungeon-domain--tier-75 {
+  opacity: 0.65;
+}
+
+.nozomi-dungeon-domain--tier-100,
+.nozomi-dungeon-domain--boss {
+  opacity: 0.75;
+}
+
+.nozomi-master--neon-warden {
+  background-image: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.08) 0%,
+    transparent 50%,
+    rgba(34, 211, 238, 0.06) 100%
+  );
+}
+
+.nozomi-master--archivist {
+  background-image: linear-gradient(
+    180deg,
+    rgba(88, 28, 135, 0.1) 0%,
+    transparent 60%,
+    rgba(250, 204, 21, 0.04) 100%
+  );
+}
+
+.nozomi-master--broadcast-spirit,
+.nozomi-master--shrine-warden {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 4px,
+    rgba(255, 255, 255, 0.02) 4px,
+    rgba(255, 255, 255, 0.02) 5px
+  );
+}
+
+.nozomi-master--gate-devourer,
+.nozomi-master--collapse-echo {
+  background: radial-gradient(circle at 50% 80%, rgba(220, 38, 38, 0.15), transparent 55%);
+}
+
+.nozomi-master--mirror-hunter,
+.nozomi-master--void-stalker {
+  background: linear-gradient(
+    90deg,
+    rgba(148, 163, 184, 0.06) 0%,
+    transparent 50%,
+    rgba(139, 92, 246, 0.06) 100%
+  );
+}
+
+.nozomi-master-motion--scan {
+  animation: nozomi-master-scan 4s linear infinite;
+}
+
+.nozomi-master-motion--drift {
+  animation: nozomi-master-drift 8s ease-in-out infinite;
+}
+
+.nozomi-master-motion--flicker {
+  animation: nozomi-master-flicker 2.5s steps(2) infinite;
+}
+
+.nozomi-master-motion--pulse {
+  animation: nozomi-master-pulse 2s ease-in-out infinite;
+}
+
+.nozomi-master-motion--mirror {
+  animation: nozomi-master-mirror 6s ease-in-out infinite;
+}
+
+@keyframes nozomi-master-scan {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 0%;
+  }
+}
+
+@keyframes nozomi-master-drift {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes nozomi-master-flicker {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes nozomi-master-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes nozomi-master-mirror {
+  0%,
+  100% {
+    filter: none;
+  }
+  50% {
+    filter: invert(0.04);
+  }
+}
+
+.nozomi-master-presence {
+  position: relative;
+  border-radius: var(--radius-panel);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.5rem 0.75rem;
+}
+
+.nozomi-master-presence--25 .nozomi-master-crest {
+  opacity: 0.6;
+}
+
+.nozomi-master-presence--50 {
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.nozomi-master-presence--75 {
+  border-color: rgba(220, 38, 38, 0.25);
+}
+
+.nozomi-master-presence--100 {
+  border-color: rgba(220, 38, 38, 0.45);
+  box-shadow: 0 0 24px rgba(220, 38, 38, 0.12);
+}
+
+.nozomi-master-silhouette {
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.35), transparent 70%);
+  border-radius: 50%;
+}
+
+.nozomi-master-dialogue {
+  animation: nozomi-master-dialogue-in 0.4s ease-out;
+}
+
+@keyframes nozomi-master-dialogue-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.nozomi-corruption-distort--light {
+  backdrop-filter: blur(0.3px);
+  opacity: 0.15;
+}
+
+.nozomi-corruption-distort--medium {
+  backdrop-filter: blur(0.6px) contrast(1.05);
+  opacity: 0.25;
+  animation: nozomi-corruption-jitter 3s ease-in-out infinite;
+}
+
+.nozomi-corruption-distort--severe {
+  backdrop-filter: blur(1px) contrast(1.1);
+  opacity: 0.35;
+  animation: nozomi-corruption-jitter 1.5s ease-in-out infinite;
+}
+
+@keyframes nozomi-corruption-jitter {
+  0%,
+  100% {
+    transform: translate(0);
+  }
+  33% {
+    transform: translate(1px, -1px);
+  }
+  66% {
+    transform: translate(-1px, 1px);
+  }
+}
+
+.nozomi-boss-phase-overlay {
+  animation: nozomi-boss-overlay-in 0.5s ease-out;
+}
+
+@keyframes nozomi-boss-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+

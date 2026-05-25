@@ -4,6 +4,8 @@ import type { ReactNode } from "react"
 import type { DungeonRunContract } from "@/contracts/dungeon-contract"
 import { getDungeonThemeArt } from "@/config/dungeonThemeArt"
 import { dungeonRunShellClass } from "@/systems/dungeons/dungeonPresentationSystem"
+import { DungeonDomainBackdrop } from "./DungeonDomainBackdrop"
+import { CorruptionDistortionLayer } from "./CorruptionDistortionLayer"
 
 interface DungeonRunShellProps {
   run: DungeonRunContract
@@ -20,6 +22,8 @@ export function DungeonRunShell({ run, children, minimal }: DungeonRunShellProps
       data-dungeon-theme={run.dungeon.theme.toLowerCase().replace(/_/g, "-")}
       className={`relative overflow-hidden rounded-[var(--radius-panel)] ${dungeonRunShellClass(run)}`}
     >
+      <DungeonDomainBackdrop run={run} minimal={minimal} />
+      <CorruptionDistortionLayer run={run} />
       {!minimal && (
         <>
           <div

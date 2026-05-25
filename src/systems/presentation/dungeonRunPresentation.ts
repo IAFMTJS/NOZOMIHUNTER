@@ -1,14 +1,19 @@
 import type { DungeonRunContract } from "@/contracts/dungeon-contract"
 import { NEON_CORRIDOR_FORECAST } from "@/config/neonCorridorV2Config"
+import { SHADOW_ARCHIVE_FORECAST } from "@/config/shadowArchiveV2Config"
+import { resolveMasterForRun } from "@/systems/dungeons/dungeonMasterSystem"
 import { getCurrentNode } from "@/systems/dungeons/dungeonRouteSystem"
 
 export function buildEntryBriefing(
   run: DungeonRunContract,
   baseDescription: string
 ): string {
-  const boss = run.dungeon.boss?.name ?? "Unknown"
-  const warnings = NEON_CORRIDOR_FORECAST.join(" · ")
-  return `${baseDescription} · Boss: ${boss} · ${warnings}`
+  const master = resolveMasterForRun(run)
+  const warnings =
+    master.id === "archivist"
+      ? SHADOW_ARCHIVE_FORECAST.join(" · ")
+      : NEON_CORRIDOR_FORECAST.join(" · ")
+  return `${baseDescription} · ${master.displayName} · ${warnings}`
 }
 
 export function sectorDangerClass(danger: string | undefined): string {

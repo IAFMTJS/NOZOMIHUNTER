@@ -16,6 +16,12 @@ import {
   resolveActionToDirection,
   unlockedActionsForLevel,
 } from "./dungeonActionSystem"
+import {
+  applyReflectionWordBias,
+  buildMemoryDebtVocabularyEncounter,
+  isMasterRuleActive,
+} from "./dungeonMasterRuleSystem"
+import type { DungeonRunContract } from "@/contracts/dungeon-contract"
 
 export interface MountedEncounterPayload {
   activeType: EncounterType | "BOSS"
@@ -31,6 +37,7 @@ export interface MountContext {
   selectedAction?: DungeonAction
   challengeDirection?: ChallengePromptDirection
   wordCount?: number
+  dungeonRun?: DungeonRunContract
 }
 
 export interface BossMountOptions {
@@ -45,9 +52,14 @@ function applyCombatToVocabulary(
   quest: QuestContract,
   ctx?: MountContext
 ): QuestContract["vocabularyEncounter"] {
-  const enc = createVocabularyEncounter(
-    ctx?.wordCount ?? DUNGEON_CONFIG.SECTOR_VOCAB_WORDS
-  )
+  const count = ctx?.wordCount ?? DUNGEON_CONFIG.SECTOR_VOCAB_WORDS
+  const run = ctx?.dungeonRun
+  let enc = createVocabularyEncounter(count)
+  if (run && isMasterRuleActive(run, "memory-debt")) {
+    enc = buildMemoryDebtVocabularyEncounter(count)
+  } else if (run && isMasterRuleActive(run, "reflection")) {
+    enc = applyReflectionWordBias(run, count)
+  }
   const level = ctx?.playerLevel ?? 1
   const action = ctx?.selectedAction ?? defaultActionForLevel(level)
   const direction =

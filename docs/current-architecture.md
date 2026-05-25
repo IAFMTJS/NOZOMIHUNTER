@@ -71,7 +71,7 @@ Last updated: v1.4.0 — Dungeon V2 Neon Corridor MVP (route graph, threat meter
 
 | Speech (recording state machine, MediaRecorder, browser STT, mobile gesture preflight) | Yes |
 
-| Dungeons (Neon Corridor V2 + Shadow Archive + mode variants) | Yes — Neon `runSchemaVersion: 2` (route graph, threat HUD, combat actions, 3-phase boss, extraction choice) |
+| Dungeons (V2 + Dungeon Masters overlay) | Yes — all sector dungeons `runSchemaVersion: 2`; master config (`dungeonMastersConfig`), dialogue/memory/rules systems, presence UI layers; Shadow Archive 4-phase Archivist boss |
 
 | Unlock persistence + `UNLOCK_GRANTED` | Yes (`resolveQuestCompletion`) |
 

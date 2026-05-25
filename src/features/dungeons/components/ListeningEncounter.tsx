@@ -33,6 +33,7 @@ interface ListeningEncounterProps {
   signalDegraded?: boolean
   focusMode?: boolean
   onSubmit: (answer: string) => Promise<void>
+  onReplayPenalty?: () => Promise<void>
   onAbandon: () => Promise<void>
   flashClassName?: string
 }
@@ -46,6 +47,7 @@ export function ListeningEncounter({
   signalDegraded = false,
   focusMode = false,
   onSubmit,
+  onReplayPenalty,
   onAbandon,
   flashClassName = "",
 }: ListeningEncounterProps) {
@@ -89,6 +91,9 @@ export function ListeningEncounter({
       )
       setPlayCount(nextEncounter.replayCount ?? playCount + 1)
       setReplayLine(line)
+      if (onReplayPenalty) {
+        void onReplayPenalty()
+      }
     }
   }
 
