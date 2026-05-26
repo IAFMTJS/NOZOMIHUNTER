@@ -15,6 +15,9 @@ const protectedPaths = [
   "/profile",
   "/stats",
   "/achievements",
+  "/settings",
+  "/training",
+  "/records",
 ]
 
 export async function middleware(request: NextRequest) {

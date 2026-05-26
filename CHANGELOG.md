@@ -1,5 +1,35 @@
 # Changelog
 
+## v1.4.1 (unreleased) — UX audit remediation
+
+### Flow blockers
+- Guest sign-in gated by `NEXT_PUBLIC_ENABLE_GUEST_AUTH` (default off); README documents login paths
+- `resolveQuestRecord` — story/catalog contract detail resolves active, regular, and completed snapshots
+- Vocabulary mastery updates refresh active quest preparation scores (`refreshVocabularyPreparationForActiveQuests`)
+- Training quests skip vocab prep on accept; critical readiness bypass for training deploy
+- Dungeon `chooseDungeonRoute` from `REWARD` uses `REWARD → EXPLORATION` before sector engage
+- Dungeons hub abandon banner for active runs; friendlier invalid-transition copy in `DungeonRunner`
+
+### UX polish
+- `HunterSession` hydration messaging; login skeleton
+- `ScreenCTA` z-index above bottom nav; reduced duplicate scroll padding on contract/prepare screens
+- Middleware protects `/settings`, `/training`, `/records`
+- Channel-aware mission breadcrumbs and CTA labels (`Deploy contract` / `Enter sector` / `Start drill`)
+- Home operational alerts link to recovery routes; prepare screen recovery links
+- Completed story detail read-only mode
+- Settings duplicate Audio row removed; dev-only Supabase hint on login
+- Neon Corridor copy: “An unstable sector…”
+
+### Documentation
+- `docs/DECISIONS.md` — readiness, dungeon REWARD, guest auth, completed story detail
+- `flows/navigation-flow.md` — training bypass, dungeon REWARD path, abandon recovery, auth notes
+
+### Tests
+- `tests/resolveQuestRecord.test.ts`
+- `tests/readinessDeployPolicy.test.ts`
+- `tests/dungeonRewardRoute.test.ts`
+- `tests/vocabularyPreparationRefresh.test.ts`
+
 ## v1.4.0 (unreleased) — Dungeon V2 + Dungeon Masters
 
 ### Dungeon Masters overlay

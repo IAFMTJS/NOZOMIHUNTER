@@ -20,7 +20,7 @@ export function ScreenCTA({
 }: ScreenCTAProps) {
   return (
     <div
-      className={`hunter-overlay-above-nav fixed left-0 right-0 z-50 border-t border-[var(--border-subtle)] bg-gradient-to-t from-[var(--background)] via-[var(--background)]/95 to-transparent px-4 pb-safe pt-3 ${className}`.trim()}
+      className={`hunter-overlay-above-nav fixed left-0 right-0 z-[110] border-t border-[var(--border-subtle)] bg-gradient-to-t from-[var(--background)] via-[var(--background)]/95 to-transparent px-4 pb-safe pt-3 ${className}`.trim()}
     >
       <div className="mx-auto max-w-lg space-y-2">
         {children}

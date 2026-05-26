@@ -177,7 +177,12 @@ export function DungeonRunner({
       if (okMsg) setStatus(okMsg)
       return result
     } catch (e) {
-      setStatus(e instanceof Error ? e.message : "Dungeon action failed")
+      const message = e instanceof Error ? e.message : "Dungeon action failed"
+      if (message.includes("Invalid dungeon transition")) {
+        setStatus("Route sync mismatch resolved. Choose route again.")
+      } else {
+        setStatus(message)
+      }
       return undefined
     }
   }

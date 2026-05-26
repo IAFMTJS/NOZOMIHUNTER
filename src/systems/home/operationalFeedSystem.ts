@@ -14,6 +14,7 @@ export interface OperationalAlert {
   tone: "danger" | "warning" | "accent"
   headline: string
   detail: string
+  recoveryHref?: string
 }
 
 export interface ContractRotationItem {
@@ -87,7 +88,8 @@ export function buildOperationalFeed(
       id: "readiness-low",
       tone: "warning",
       headline: "Readiness unstable",
-      detail: `Preparation ${readiness.preparationScore}% — stabilize before deployment.`,
+      detail: `Preparation ${readiness.preparationScore}% — use training or vocabulary to recover.`,
+      recoveryHref: "/training",
     })
   }
 

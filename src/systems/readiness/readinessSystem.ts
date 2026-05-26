@@ -13,6 +13,14 @@ export interface ReadinessInput {
   quest?: Pick<QuestContract, "type">
 }
 
+export function isReadinessHardBlocked(
+  readiness: ReadinessResultContract,
+  options?: { allowCritical?: boolean }
+): boolean {
+  if (options?.allowCritical) return false
+  return readiness.survivalBand === "CRITICAL"
+}
+
 function survivalBand(score: number): SurvivalBand {
   const t = READINESS_CONFIG.SURVIVAL_THRESHOLDS
   if (score < t.CRITICAL) return "CRITICAL"

@@ -24,6 +24,7 @@ function resolvePageTitle(pathname: string): string {
   if (pathname === "/achievements") return "ACHIEVEMENTS"
   if (pathname === "/stats") return "STATS"
   if (pathname === "/settings") return "SETTINGS"
+  if (pathname === "/training") return "TRAINING"
   if (pathname === "/records") return "RECORDS"
   return "NOZOMI"
 }

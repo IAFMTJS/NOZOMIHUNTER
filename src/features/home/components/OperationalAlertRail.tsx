@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import type { OperationalAlert } from "@/systems/home/operationalFeedSystem"
 import { StatusChip } from "@/components/ui/StatusChip"
 
@@ -28,6 +29,14 @@ export function OperationalAlertRail({ alerts }: OperationalAlertRailProps) {
               <StatusChip label={alert.headline} tone={TONE_MAP[alert.tone]} pulse />
             </div>
             <p className="text-xs text-[var(--muted)]">{alert.detail}</p>
+            {alert.recoveryHref && (
+              <Link
+                href={alert.recoveryHref}
+                className="mt-2 inline-block text-xs font-medium text-[var(--accent-bright)] hover:underline"
+              >
+                Open recovery route
+              </Link>
+            )}
           </li>
         ))}
       </ul>

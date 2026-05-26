@@ -77,6 +77,11 @@ Gameplay logic NEVER belongs inside React components.
 
 Run locally: `npm install` → copy `.env.example` to `.env.local` → apply migration → `npm run dev`
 
+Auth test paths:
+- Email / Google are the default local sign-in paths
+- Guest sign-in is hidden unless `NEXT_PUBLIC_ENABLE_GUEST_AUTH=true`
+- If guest is enabled, Supabase anonymous auth must also be enabled in your project
+
 ---
 
 # Development Workflow

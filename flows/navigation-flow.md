@@ -14,13 +14,27 @@
 
 Browsing `/contracts` shows `ContractsClient` only. The overlay appears after deploy from `/prepare`, not when the URL is merely `/contracts`.
 
+Story tab links include `?tab=story` (or `daily` / `side`) so contract detail breadcrumbs match the catalog channel. Completed story files resolve from completed quest snapshots and open read-only (no deploy CTA).
+
+**Training recovery:** `/training` → Play → `/prepare?questId=` allows deploy when readiness is `CRITICAL` (training drills only). Standard contracts remain blocked until readiness recovers via training/vocabulary.
+
 Legacy: `/missions` and `/missions/[id]` redirect to `/contracts`.
 
 ## Dungeon flow
 
 `/dungeons` (list) → `/dungeons/[key]` → Enter (stamina RPC) → `/prepare?dungeonKey=` → Deploy → `/dungeons` + `EncounterHost` sector overlay (`hubView === "sector"`)
 
+**Stuck run recovery:** When a run is active, the dungeons hub shows **Abandon active run** (list-level). In-run **Abort dungeon** stays available in `REWARD` / route-select phases (not only mid-encounter).
+
+**V2 route from REWARD:** After a sector reward, route selection uses `REWARD → EXPLORATION` then engages the chosen node (no direct `REWARD → ENCOUNTER` transition).
+
 Leaving `/contracts`, `/missions`, or `/dungeons` (e.g. bottom nav) resets `hubView` to `menu` and hides the overlay so each route renders its own page.
+
+## Auth and session
+
+- Protected routes include `/settings`, `/training`, and `/records` (middleware).
+- Session gate: `HunterSessionProvider` waits for auth, then player hydration (`Signing in…` / `Loading hunter data…`).
+- Guest login only when `NEXT_PUBLIC_ENABLE_GUEST_AUTH=true` and Supabase anonymous auth is enabled (see README).
 
 ## Overlays
 

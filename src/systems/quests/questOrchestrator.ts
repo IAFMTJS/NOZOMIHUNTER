@@ -5,6 +5,7 @@ import { advanceObjective } from "./questValidator"
 import { applyQuestFailurePenalties } from "@/systems/penalties/penaltySystem"
 import type { PlayerPenaltyContract } from "@/contracts/player-contract"
 import { attachVocabularyPreparation } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
+import { isTrainingQuest } from "@/systems/training/trainingMissionSystem"
 
 /** Quest accept / progress / fail only. Completion: questLifecycle + completeQuestGuarded. */
 
@@ -14,7 +15,7 @@ export interface QuestFailResult {
 }
 
 export function acceptQuest(quest: QuestContract, playerId: string): QuestContract {
-  const prepared = quest.vocabularyPreparation
+  const prepared = quest.vocabularyPreparation || isTrainingQuest(quest)
     ? quest
     : attachVocabularyPreparation(quest, { playerId })
   eventBus.emit(GAME_EVENTS.QUEST_ACCEPTED, { playerId, questId: quest.id })

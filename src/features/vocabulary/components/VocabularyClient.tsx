@@ -190,7 +190,7 @@ export function VocabularyClient() {
         )}
       </ul>
 
-      <div className="hunter-fab-above-nav fixed left-0 right-0 z-30 mx-auto max-w-lg px-4">
+      <div className="hunter-fab-above-nav fixed left-0 right-0 z-[110] mx-auto max-w-lg px-4">
         <Button
           variant="primary"
           size="md"

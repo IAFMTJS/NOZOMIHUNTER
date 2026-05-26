@@ -235,6 +235,12 @@ export function chooseDungeonRoute(
   }
 
   if (target.type === "ENCOUNTER" && target.encounterType) {
+    if (updated.dungeonRun?.machineState === "REWARD") {
+      updated = patchRun(updated, {
+        ...updated.dungeonRun,
+        machineState: transition("REWARD", "EXPLORATION"),
+      })
+    }
     if (!isNodeCompleted(routed, target.id)) {
       return engageSectorEncounter(updated, playerLevel)
     }

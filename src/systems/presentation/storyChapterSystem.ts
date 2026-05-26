@@ -31,7 +31,7 @@ export interface StoryChapterView {
 }
 
 export function buildStoryChapters(
-  mainStory: QuestContract | null,
+  mainStoryQuests: QuestContract[],
   completedQuests: QuestContract[],
   completedIds: string[]
 ): StoryChapterView[] {
@@ -69,7 +69,7 @@ export function buildStoryChapters(
     })
   }
 
-  if (mainStory) {
+  for (const mainStory of mainStoryQuests) {
     const meta = getQuestCatalogMeta(mainStory)
     const chapter = ensureChapter(
       meta.chapterId ?? "ch-01",

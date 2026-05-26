@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
@@ -11,7 +12,7 @@ import { PreparationChecklist } from "@/components/preparation/PreparationCheckl
 import { PowerComparison } from "@/components/preparation/PowerComparison"
 import { LoadoutSlotGrid } from "@/components/preparation/LoadoutSlotGrid"
 import { HeroBanner } from "@/components/ui/screen/HeroBanner"
-import { computeReadiness } from "@/systems/readiness/readinessSystem"
+import { computeReadiness, isReadinessHardBlocked } from "@/systems/readiness/readinessSystem"
 import {
   checklistComplete,
   computePreparationChecklist,
@@ -26,6 +27,7 @@ import {
 } from "@/systems/presentation/questPresentationSystem"
 import { fetchItemCatalog } from "@/features/inventory/services/inventoryActions"
 import type { ItemCatalogEntryContract } from "@/contracts/economy-contract"
+import { isTrainingQuest } from "@/systems/training/trainingMissionSystem"
 
 export function PrepareClient() {
   const router = useRouter()
@@ -80,9 +82,13 @@ export function PrepareClient() {
   const power = computeHunterPower(player)
   const recommended =
     def?.recommendedPower ?? recommendedPowerForDungeon(player.level)
+  const trainingQuest = Boolean(missionQuest && isTrainingQuest(missionQuest))
+  const allowCriticalDeploy = trainingQuest
 
-  const deployBlocked =
-    readiness.survivalBand === "CRITICAL" || !checklistComplete(checklist)
+  const readinessBlocked = isReadinessHardBlocked(readiness, {
+    allowCritical: allowCriticalDeploy,
+  })
+  const deployBlocked = readinessBlocked || !checklistComplete(checklist)
   const underPower = power.total < recommended
   const staminaCost =
     def?.staminaCost ??
@@ -94,7 +100,7 @@ export function PrepareClient() {
 
   async function handleDeploy() {
     if (deployBlocked) return
-    if (readiness.survivalBand === "UNSTABLE") {
+    if (readiness.survivalBand === "UNSTABLE" || (trainingQuest && readiness.survivalBand === "CRITICAL")) {
       const ok = window.confirm(
         "Operational readiness unstable. Deployment is risky — proceed?"
       )
@@ -123,7 +129,7 @@ export function PrepareClient() {
   const rankLabel = def ? "D" : missionQuest?.difficulty?.slice(0, 1) ?? "C"
 
   return (
-    <HunterPage className="nozomi-screen-prep pb-28">
+    <HunterPage className="nozomi-screen-prep">
       <HunterPageBack
         href={
           missionQuest
@@ -182,6 +188,19 @@ export function PrepareClient() {
             Deployment locked — complete preparation checklist and raise operational readiness.
           </p>
         )}
+        {deployBlocked && (
+          <p className="text-center text-xs text-[var(--muted)]">
+            Recovery route:{" "}
+            <Link href="/training" className="text-[var(--accent-bright)] hover:underline">
+              training drills
+            </Link>{" "}
+            and{" "}
+            <Link href="/vocabulary" className="text-[var(--accent-bright)] hover:underline">
+              vocabulary
+            </Link>
+            .
+          </p>
+        )}
         {underPower && !deployBlocked && (
           <p className="text-center text-xs text-[var(--warning)]">
             Power below sector advisory — confirm to deploy.
@@ -190,7 +209,7 @@ export function PrepareClient() {
       </div>
 
       <ScreenCTA
-        label="Enter dungeon"
+        label={trainingQuest ? "Start drill" : missionQuest ? "Deploy contract" : "Enter dungeon"}
         staminaCost={staminaCost ?? undefined}
         disabled={deployBlocked || dungeon.busy}
         className={hunterPresentation.huntCtaClass}

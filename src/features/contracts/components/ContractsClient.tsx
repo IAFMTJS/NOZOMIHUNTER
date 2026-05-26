@@ -85,7 +85,7 @@ export function ContractsClient() {
   const completedIds = completedQuests.map((q) => q.id)
   const catalog = buildContractCatalog(regularQuests, completedIds)
   const storyChapters = buildStoryChapters(
-    catalog.mainStory,
+    catalog.mainStoryQuests,
     completedQuests,
     completedIds
   )
@@ -174,7 +174,7 @@ export function ContractsClient() {
                                   ? "complete"
                                   : "active"
                             }
-                            href={row.locked ? undefined : `/contracts/${q.id}`}
+                            href={row.locked ? undefined : `/contracts/${q.id}?tab=story`}
                           />
                         </li>
                       )
@@ -201,6 +201,7 @@ export function ContractsClient() {
                           progressRequired={1}
                           rewardXp={q.rewards.xp}
                           state="complete"
+                          href={`/contracts/${q.id}?tab=story`}
                         />
                       </li>
                     )
@@ -237,7 +238,7 @@ export function ContractsClient() {
                         progressRequired={prog.required}
                         rewardXp={q.rewards.xp}
                         state={prog.complete ? "complete" : "active"}
-                        href={`/contracts/${q.id}`}
+                        href={`/contracts/${q.id}?tab=daily`}
                       />
                     </div>
                     </RoutineCard>
@@ -275,7 +276,7 @@ export function ContractsClient() {
                           progressRequired={prog.required}
                           rewardXp={q.rewards.xp}
                           state={prog.complete ? "complete" : "active"}
-                          href={`/contracts/${q.id}`}
+                          href={`/contracts/${q.id}?tab=side`}
                         />
                       </div>
                       </OperativeCard>

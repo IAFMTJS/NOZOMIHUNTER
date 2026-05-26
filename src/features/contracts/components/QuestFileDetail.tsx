@@ -20,14 +20,24 @@ import { isQuestTracked } from "@/systems/quests/contractTrackingSystem"
 import { meetsQuestRequirements } from "@/systems/quests/questChannelSystem"
 import { buildMissionOpsPresentation } from "@/systems/presentation/missionOpsPresentationSystem"
 import { isQuestEncounterPlayable } from "@/systems/quests/questPlayabilitySystem"
+import { isTrainingQuest } from "@/systems/training/trainingMissionSystem"
+import type { QuestRequestChannel } from "@/contracts/quest-contract"
 
 interface QuestFileDetailProps {
   quest: QuestContract
   player: PlayerContract
   onTrack: () => void
+  channel?: QuestRequestChannel
+  readOnly?: boolean
 }
 
-export function QuestFileDetail({ quest, player, onTrack }: QuestFileDetailProps) {
+export function QuestFileDetail({
+  quest,
+  player,
+  onTrack,
+  channel,
+  readOnly = false,
+}: QuestFileDetailProps) {
   const router = useRouter()
   const meta = getQuestCatalogMeta(quest)
   const rewards = buildQuestRewardIcons(quest)
@@ -39,8 +49,13 @@ export function QuestFileDetail({ quest, player, onTrack }: QuestFileDetailProps
   const levelOk = meetsQuestRequirements(quest, player)
   const playable = isQuestEncounterPlayable(quest)
 
+  const channelLabel =
+    channel === "daily" ? "Daily Ops" : channel === "side" ? "Side Ops" : "Main Story"
+  const channelHref =
+    channel === "daily" ? "/contracts?tab=daily" : channel === "side" ? "/contracts?tab=side" : "/contracts?tab=story"
+
   const breadcrumbSegments = [
-    { label: "Main Story", href: "/contracts?tab=story" },
+    { label: channelLabel, href: channelHref },
     ...(meta.chapterTitle
       ? [{ label: meta.chapterTitle.replace(/^Chapter \d+ · /, "Ch ") }]
       : []),
@@ -50,6 +65,13 @@ export function QuestFileDetail({ quest, player, onTrack }: QuestFileDetailProps
         : quest.title,
     },
   ]
+
+  const training = isTrainingQuest(quest)
+  const ctaLabel = training
+    ? "Start drill"
+    : quest.type === "DUNGEON"
+      ? "Enter sector"
+      : "Deploy contract"
 
   return (
     <>
@@ -114,16 +136,24 @@ export function QuestFileDetail({ quest, player, onTrack }: QuestFileDetailProps
         </Button>
       </div>
 
-      <ScreenCTA
-        label={levelOk ? "Enter dungeon" : "Level too low"}
-        staminaCost={staminaCost}
-        disabled={!levelOk}
-        onClick={() => router.push(`/prepare?questId=${quest.id}`)}
-      />
-      {!levelOk && (
-        <p className="text-center text-xs text-[var(--danger)]">
-          Hunter level does not meet contract requirements.
+      {readOnly ? (
+        <p className="pb-4 text-center text-xs text-[var(--muted)]">
+          Mission complete — file archived for review.
         </p>
+      ) : (
+        <>
+          <ScreenCTA
+            label={levelOk ? ctaLabel : "Level too low"}
+            staminaCost={staminaCost}
+            disabled={!levelOk}
+            onClick={() => router.push(`/prepare?questId=${quest.id}`)}
+          />
+          {!levelOk && (
+            <p className="text-center text-xs text-[var(--danger)]">
+              Hunter level does not meet contract requirements.
+            </p>
+          )}
+        </>
       )}
     </>
   )

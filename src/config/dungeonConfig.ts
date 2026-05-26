@@ -60,7 +60,7 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
     theme: "CYBER_TOKYO",
     name: "Neon Corridor",
     description:
-      "A unstable sector of the network. Decode signals, hold dialogue under pressure, and breach the core.",
+      "An unstable sector of the network. Decode signals, hold dialogue under pressure, and breach the core.",
     minLevel: 2,
     staminaCost: 20,
     recommendedPower: 1040,

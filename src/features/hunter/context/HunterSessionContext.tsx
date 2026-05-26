@@ -83,6 +83,7 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
   const { user, signOut, loading, configured } = useAuth()
   const player = usePlayerStore((s) => s.player)
   const activeQuests = usePlayerStore((s) => s.activeQuests)
+  const playerHydrated = usePlayerStore((s) => s.isHydrated)
   const levelUpCeremony = usePlayerStore((s) => s.levelUpCeremony)
   const clearLevelUpCeremony = usePlayerStore((s) => s.clearLevelUpCeremony)
   const rankUpNotice = usePlayerStore((s) => s.rankUpNotice)
@@ -299,7 +300,17 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
     return (
       <HunterShellLayout shellClassName={hunterPresentation.shellClass}>
         <HunterPage>
-          <p className="text-[var(--muted)]">Syncing hunter registry…</p>
+          <p className="text-[var(--muted)]">Signing in…</p>
+        </HunterPage>
+      </HunterShellLayout>
+    )
+  }
+
+  if (configured && user && !playerHydrated) {
+    return (
+      <HunterShellLayout shellClassName={hunterPresentation.shellClass}>
+        <HunterPage>
+          <p className="text-[var(--muted)]">Loading hunter data…</p>
         </HunterPage>
       </HunterShellLayout>
     )

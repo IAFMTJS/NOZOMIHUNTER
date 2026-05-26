@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { SupabaseSetupNotice } from "@/components/SupabaseSetupNotice"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
+import { isGuestAuthEnabled } from "@/lib/supabase/env"
 
 type AuthMode = "signin" | "signup" | "magic"
 
@@ -32,6 +33,7 @@ export function LoginForm() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
+  const guestEnabled = isGuestAuthEnabled()
 
   useEffect(() => {
     const code = searchParams.get("error")
@@ -109,7 +111,13 @@ export function LoginForm() {
   }
 
   if (loading) {
-    return <p className="text-[var(--muted)]">Loading session...</p>
+    return (
+      <div className="w-full max-w-sm space-y-3">
+        <div className="h-10 animate-pulse rounded bg-white/10" />
+        <div className="h-11 animate-pulse rounded bg-white/10" />
+        <div className="h-11 animate-pulse rounded bg-white/10" />
+      </div>
+    )
   }
 
   if (!configured) {
@@ -188,17 +196,21 @@ export function LoginForm() {
       <Button variant="ghost" size="md" disabled={busy} onClick={handleGoogle}>
         Continue with Google
       </Button>
-      <Button variant="ghost" size="md" disabled={busy} onClick={handleGuest}>
-        Enter as Guest
-      </Button>
+      {guestEnabled && (
+        <Button variant="ghost" size="md" disabled={busy} onClick={handleGuest}>
+          Enter as Guest
+        </Button>
+      )}
 
       {notice && <p className="text-sm text-[var(--accent)]">{notice}</p>}
       {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
 
-      <p className="text-xs text-[var(--muted)]">
-        All sessions use Supabase Auth (email, magic link, OAuth, anonymous).
-        Enable providers in your Supabase project under Authentication.
-      </p>
+      {process.env.NODE_ENV !== "production" && (
+        <p className="text-xs text-[var(--muted)]">
+          Auth runs through Supabase providers. Enable email/OAuth and optional anonymous
+          sign-in in your project settings when testing locally.
+        </p>
+      )}
     </div>
   )
 }

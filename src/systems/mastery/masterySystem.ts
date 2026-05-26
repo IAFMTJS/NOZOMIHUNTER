@@ -33,6 +33,23 @@ export function getMasterySnapshot(): WordMasteryContract[] {
   return [...masteryByWord.values()]
 }
 
+export function setMasteryPercent(
+  wordId: string,
+  mastery: number,
+  options?: { correctCount?: number; wrongCount?: number }
+): WordMasteryContract {
+  const current = masteryByWord.get(wordId)
+  const next: WordMasteryContract = {
+    wordId,
+    mastery: Math.max(0, Math.min(100, mastery)),
+    correctCount: options?.correctCount ?? current?.correctCount ?? 0,
+    wrongCount: options?.wrongCount ?? current?.wrongCount ?? 0,
+    lastSeenAt: new Date().toISOString(),
+  }
+  masteryByWord.set(wordId, next)
+  return next
+}
+
 export function recordWordAnswer(
   wordId: string,
   correct: boolean,

@@ -17,6 +17,9 @@ import { LearnerWordLine } from "@/components/ui/LearnerWordLine"
 import { learnerPartsFromCurated } from "@/services/jmdict/learnerFormat"
 import { computeWordInstability, instabilityLabel } from "@/systems/vocabulary/memoryDecaySystem"
 import type { WordMasteryContract } from "@/contracts/vocabulary-contract"
+import { usePlayerStore } from "@/stores/usePlayerStore"
+import { setMasteryPercent } from "@/systems/mastery/masterySystem"
+import { refreshVocabularyPreparationForActiveQuests } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
 
 interface WordDetailClientProps {
   entSeq: number
@@ -24,6 +27,9 @@ interface WordDetailClientProps {
 
 export function WordDetailClient({ entSeq }: WordDetailClientProps) {
   const { user } = useHunterSession()
+  const player = usePlayerStore((s) => s.player)
+  const activeQuests = usePlayerStore((s) => s.activeQuests)
+  const setQuests = usePlayerStore((s) => s.setQuests)
   const entry = JMDICT_CURATED.find((e) => e.entSeq === entSeq)
   const [masteryRow, setMasteryRow] = useState<WordMasteryContract | undefined>()
   const [tab, setTab] = useState<"MEANING" | "USAGE">("MEANING")
@@ -107,13 +113,22 @@ export function WordDetailClient({ entSeq }: WordDetailClientProps) {
                   BREW_CONFIG.LEARNED_MASTERY_THRESHOLD
                 )
                   .then(() =>
-                    setMasteryRow({
-                      wordId: String(entSeq),
-                      mastery: BREW_CONFIG.LEARNED_MASTERY_THRESHOLD,
-                      correctCount: 1,
-                      wrongCount: 0,
-                      lastSeenAt: new Date().toISOString(),
-                    })
+                    {
+                      const nextMastery = setMasteryPercent(
+                        String(entSeq),
+                        BREW_CONFIG.LEARNED_MASTERY_THRESHOLD,
+                        { correctCount: 1, wrongCount: 0 }
+                      )
+                      setMasteryRow(nextMastery)
+                      if (player) {
+                        setQuests(
+                          refreshVocabularyPreparationForActiveQuests(activeQuests, {
+                            playerId: user.id,
+                            player,
+                          })
+                        )
+                      }
+                    }
                   )
                   .finally(() => setMarking(false))
               }}

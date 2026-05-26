@@ -5,7 +5,6 @@ import Link from "next/link"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
 import { HunterPageBack } from "@/components/layout/HunterPageBack"
-import { AudioMuteToggle } from "@/components/ui/AudioMuteToggle"
 import {
   CORRUPTION_AUDIO_KEY,
   setCorruptionAudioEnabled,
@@ -57,10 +56,6 @@ export function SettingsClient() {
             System status
             <span className="text-[var(--muted)]">›</span>
           </Link>
-        </li>
-        <li className="flex items-center justify-between px-4 py-3 text-sm">
-          <span>Audio</span>
-          <AudioMuteToggle />
         </li>
         <li className="flex items-center justify-between px-4 py-3 text-sm">
           <span>Corruption ambient audio</span>

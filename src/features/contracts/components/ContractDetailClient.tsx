@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
@@ -11,7 +12,9 @@ import {
   isQuestEncounterPlayable,
   MISSION_DATA_CORRUPTED_COPY,
 } from "@/systems/quests/questPlayabilitySystem"
-import type { QuestRequestChannel } from "@/contracts/quest-contract"
+import type { QuestContract, QuestRequestChannel } from "@/contracts/quest-contract"
+import { resolveQuestRecord } from "@/systems/quests/resolveQuestRecord"
+import { loadCompletedQuestSnapshots } from "@/services/supabase/playerRepository"
 
 interface ContractDetailClientProps {
   questId: string
@@ -27,11 +30,22 @@ export function ContractDetailClient({ questId }: ContractDetailClientProps) {
   const tab = searchParams.get("tab")
   const channel = parseChannel(tab)
   const backHref = `/contracts?tab=${channel}`
-  const { player, regularQuests, activeQuests, trackMission, quest } = useHunterSession()
+  const { user, player, regularQuests, activeQuests, trackMission, quest } = useHunterSession()
+  const [completedQuests, setCompletedQuests] = useState<QuestContract[]>([])
 
-  const questRecord =
-    regularQuests.find((q) => q.id === questId) ??
-    activeQuests.find((q) => q.id === questId)
+  useEffect(() => {
+    if (!user?.id) return
+    void loadCompletedQuestSnapshots(user.id, 200)
+      .then(setCompletedQuests)
+      .catch(() => setCompletedQuests([]))
+  }, [user?.id])
+
+  const questRecord = resolveQuestRecord({
+    questId,
+    regularQuests,
+    activeQuests,
+    completedQuests,
+  })
 
   if (!player || !questRecord) {
     return (
@@ -47,7 +61,7 @@ export function ContractDetailClient({ questId }: ContractDetailClientProps) {
 
   if (corrupted) {
     return (
-      <HunterPage className="nozomi-screen-contract pb-32">
+      <HunterPage className="nozomi-screen-contract">
         <HunterPageBack href={backHref} label="Mission log" />
         <div className="mt-6 space-y-4 rounded-xl border border-[var(--warning)]/40 bg-[var(--warning)]/10 p-4">
           <p className="text-sm text-[var(--warning)]">{MISSION_DATA_CORRUPTED_COPY}</p>
@@ -71,13 +85,17 @@ export function ContractDetailClient({ questId }: ContractDetailClientProps) {
     )
   }
 
+  const completed = questRecord.objectives.every((o) => o.completed)
+
   return (
-    <HunterPage className="nozomi-screen-contract pb-32">
+    <HunterPage className="nozomi-screen-contract">
       <HunterPageBack href={backHref} label="Mission log" />
       <QuestFileDetail
         quest={questRecord}
         player={player}
+        channel={channel}
         onTrack={() => void trackMission(questRecord.id)}
+        readOnly={completed}
       />
     </HunterPage>
   )

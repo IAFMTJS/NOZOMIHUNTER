@@ -8,9 +8,10 @@ import { computeHunterPower } from "@/systems/power/hunterPowerSystem"
 import { DungeonSectorCard } from "@/components/ui/screen/DungeonSectorCard"
 import { SectorCard } from "@/components/ui/cards/SectorCard"
 import { UI_TOKENS } from "@/config/uiTokens"
+import { Button } from "@/components/ui/Button"
 
 export function DungeonsListClient() {
-  const { player, activeQuests, forecast } = useHunterSession()
+  const { player, activeQuests, activeDungeon, dungeon, forecast } = useHunterSession()
 
   if (!player) {
     return (
@@ -27,6 +28,22 @@ export function DungeonsListClient() {
       <p className="text-sm text-[var(--muted)]">
         Select a sector. Atmospheric breach corridors await deployment.
       </p>
+      {activeDungeon && (
+        <div className="mt-3 rounded-xl border border-[var(--warning)]/40 bg-[var(--warning)]/10 p-3">
+          <p className="text-xs text-[var(--warning)]">
+            Active run detected: {activeDungeon.title}
+          </p>
+          <Button
+            variant="danger"
+            size="sm"
+            disabled={dungeon.busy}
+            className="mt-2 w-full"
+            onClick={() => void dungeon.abandon()}
+          >
+            Abandon active run
+          </Button>
+        </div>
+      )}
       <ul className={`mt-4 ${UI_TOKENS.channelSector}`}>
         {DUNGEON_DEFINITIONS.map((def) => {
           const gate = canStartDungeon(player, activeQuests, def.key)

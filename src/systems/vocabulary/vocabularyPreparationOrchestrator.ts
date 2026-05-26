@@ -143,3 +143,21 @@ export function getPreparationDisplayVocabulary(
 export function hasActivePreparationPhase(quest: QuestContract): boolean {
   return shouldShowPreparationBriefing(quest)
 }
+
+export function refreshVocabularyPreparationForActiveQuests(
+  quests: QuestContract[],
+  options?: { playerId?: string; player?: PlayerContract }
+): QuestContract[] {
+  return quests.map((quest) => {
+    const dismissed = quest.vocabularyPreparation?.briefingDismissed ?? false
+    const withPreparation = attachVocabularyPreparation(quest, options)
+    if (!withPreparation.vocabularyPreparation) return withPreparation
+    return {
+      ...withPreparation,
+      vocabularyPreparation: {
+        ...withPreparation.vocabularyPreparation,
+        briefingDismissed: dismissed,
+      },
+    }
+  })
+}
