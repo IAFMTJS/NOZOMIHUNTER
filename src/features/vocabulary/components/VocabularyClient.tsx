@@ -10,6 +10,7 @@ import type { QuestContract } from "@/contracts/quest-contract"
 import { HunterPage } from "@/components/layout/HunterPage"
 import { Button } from "@/components/ui/Button"
 import { LearnerWordLine } from "@/components/ui/LearnerWordLine"
+import { WordAudioButton } from "@/components/ui/WordAudioButton"
 import { JMDICT_CURATED } from "@/data/jmdictCurated"
 import { loadWordMastery } from "@/services/supabase/vocabularyRepository"
 import type { WordMasteryContract } from "@/contracts/vocabulary-contract"
@@ -163,27 +164,32 @@ export function VocabularyClient() {
             const decay = instabilityLabel(e.instability)
             return (
               <li key={e.wordId}>
-                <Link href={`/vocabulary/${e.entSeq}`} className="block">
-                  <ThreatCard
-                    masteryClass={`${masteryCardClass(e.mastery)} ${masteryRarityFrameClass(e.mastery)} ${THREAT_ROW_CLASS[e.threat] ?? ""}`}
-                    className="flex items-center justify-between gap-3 !py-3"
+                <ThreatCard
+                  masteryClass={`${masteryCardClass(e.mastery)} ${masteryRarityFrameClass(e.mastery)} ${THREAT_ROW_CLASS[e.threat] ?? ""}`}
+                  className="flex items-center justify-between gap-3 !py-3"
+                >
+                  <Link
+                    href={`/vocabulary/${e.entSeq}`}
+                    className="min-w-0 flex-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                    aria-label={`Open word: ${e.meaning}`}
                   >
-                    <div className="min-w-0 flex-1">
-                      <div className="mb-1 flex items-center gap-2">
-                        <MasteryTierBadge masteryPercent={e.mastery} />
-                      </div>
-                      <LearnerWordLine parts={parts} layout="stacked" size="sm" audio />
-                      {decay && (
-                        <p className="mt-1 text-[10px] uppercase text-[var(--danger)]">
-                          {decay}
-                        </p>
-                      )}
+                    <div className="mb-1 flex items-center gap-2">
+                      <MasteryTierBadge masteryPercent={e.mastery} />
                     </div>
-                    <span className="shrink-0 text-[10px] uppercase text-[var(--warning)]">
+                    <LearnerWordLine parts={parts} layout="stacked" size="sm" />
+                    {decay && (
+                      <p className="mt-1 text-[10px] uppercase text-[var(--danger)]">
+                        {decay}
+                      </p>
+                    )}
+                  </Link>
+                  <div className="flex shrink-0 flex-col items-end gap-2">
+                    <WordAudioButton japanese={parts.japanese} reading={parts.reading} />
+                    <span className="text-[10px] uppercase text-[var(--warning)]">
                       {threatDisplayLabel(e.threat)}
                     </span>
-                  </ThreatCard>
-                </Link>
+                  </div>
+                </ThreatCard>
               </li>
             )
           })

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
@@ -223,25 +224,31 @@ export function ContractsClient() {
                 const prog = aggregateQuestProgress(q)
                 const meta = getQuestCatalogMeta(q)
                 const ops = buildMissionOpsPresentation(q)
+                const href = `/contracts/${q.id}?tab=daily`
                 return (
                   <li key={q.id}>
-                    <RoutineCard className="flex items-stretch gap-2 !p-3">
-                    <ContractTypeIcon type={q.type} />
-                    <div className="min-w-0 flex-1">
-                      <StoryQuestCard
-                        index={meta.missionIndex ?? 1}
-                        title={q.title}
-                        titleJa={meta.titleJa}
-                        sectorBlurb={ops.sectorBlurb}
-                        dangerTier={ops.dangerTier}
-                        progressCurrent={prog.current}
-                        progressRequired={prog.required}
-                        rewardXp={q.rewards.xp}
-                        state={prog.complete ? "complete" : "active"}
-                        href={`/contracts/${q.id}?tab=daily`}
-                      />
-                    </div>
-                    </RoutineCard>
+                    <Link
+                      href={href}
+                      className="block rounded-xl transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                      aria-label={`Open contract: ${q.title}`}
+                    >
+                      <RoutineCard className="flex items-stretch gap-2 !p-3">
+                        <ContractTypeIcon type={q.type} />
+                        <div className="min-w-0 flex-1">
+                          <StoryQuestCard
+                            index={meta.missionIndex ?? 1}
+                            title={q.title}
+                            titleJa={meta.titleJa}
+                            sectorBlurb={ops.sectorBlurb}
+                            dangerTier={ops.dangerTier}
+                            progressCurrent={prog.current}
+                            progressRequired={prog.required}
+                            rewardXp={q.rewards.xp}
+                            state={prog.complete ? "complete" : "active"}
+                          />
+                        </div>
+                      </RoutineCard>
+                    </Link>
                   </li>
                 )
               })
@@ -261,25 +268,31 @@ export function ContractsClient() {
                   const prog = aggregateQuestProgress(q)
                   const meta = getQuestCatalogMeta(q)
                   const ops = buildMissionOpsPresentation(q)
+                  const href = `/contracts/${q.id}?tab=side`
                   return (
                     <li key={q.id}>
-                      <OperativeCard className="flex items-stretch gap-2 !p-3">
-                      <ContractTypeIcon type={q.type} />
-                      <div className="min-w-0 flex-1">
-                        <StoryQuestCard
-                          index={meta.missionIndex ?? 1}
-                          title={q.title}
-                          titleJa={meta.titleJa}
-                          sectorBlurb={ops.sectorBlurb}
-                          dangerTier={ops.dangerTier}
-                          progressCurrent={prog.current}
-                          progressRequired={prog.required}
-                          rewardXp={q.rewards.xp}
-                          state={prog.complete ? "complete" : "active"}
-                          href={`/contracts/${q.id}?tab=side`}
-                        />
-                      </div>
-                      </OperativeCard>
+                      <Link
+                        href={href}
+                        className="block rounded-xl transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                        aria-label={`Open contract: ${q.title}`}
+                      >
+                        <OperativeCard className="flex items-stretch gap-2 !p-3">
+                          <ContractTypeIcon type={q.type} />
+                          <div className="min-w-0 flex-1">
+                            <StoryQuestCard
+                              index={meta.missionIndex ?? 1}
+                              title={q.title}
+                              titleJa={meta.titleJa}
+                              sectorBlurb={ops.sectorBlurb}
+                              dangerTier={ops.dangerTier}
+                              progressCurrent={prog.current}
+                              progressRequired={prog.required}
+                              rewardXp={q.rewards.xp}
+                              state={prog.complete ? "complete" : "active"}
+                            />
+                          </div>
+                        </OperativeCard>
+                      </Link>
                     </li>
                   )
                 })

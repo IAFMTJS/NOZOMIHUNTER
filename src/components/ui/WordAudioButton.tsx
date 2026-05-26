@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react"
 import {
   isJapaneseTtsSupported,
   speakJapanese,
@@ -12,6 +12,7 @@ interface WordAudioButtonProps {
   japanese: string
   reading?: string
   className?: string
+  onPlayClick?: (event: MouseEvent<HTMLButtonElement>) => void
 }
 
 /** Lightweight play control — shares global speechSynthesis queue (no per-button RAF). */
@@ -19,6 +20,7 @@ export function WordAudioButton({
   japanese,
   reading,
   className = "",
+  onPlayClick,
 }: WordAudioButtonProps) {
   const [mounted, setMounted] = useState(false)
   const [playing, setPlaying] = useState(false)
@@ -53,7 +55,12 @@ export function WordAudioButton({
       aria-label="Play Japanese audio"
       className={`shrink-0 rounded-full border border-[var(--accent)]/40 px-2 py-1 text-[10px] uppercase tracking-wider text-[var(--accent-bright)] hover:bg-[var(--accent-dim)] ${className}`}
       disabled={playing}
-      onClick={() => void play()}
+      onClick={(event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        onPlayClick?.(event)
+        void play()
+      }}
     >
       {playing ? "…" : "▶"}
     </button>

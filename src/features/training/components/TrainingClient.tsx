@@ -6,7 +6,6 @@ import { useHunterSession } from "@/features/hunter/context/HunterSessionContext
 import { HunterPage } from "@/components/layout/HunterPage"
 import { Button } from "@/components/ui/Button"
 import { ArcadeCard } from "@/components/ui/cards/ArcadeCard"
-import { startTrainingMission } from "@/features/training/services/trainingActions"
 import { TRAINING_GAME_MODES } from "@/config/gameModeRegistry"
 import { isGameModeUnlocked } from "@/config/gameModeRegistry"
 import { GAME_MODE_REGISTRY } from "@/config/gameModeRegistry"
@@ -21,6 +20,9 @@ export function TrainingClient() {
     if (!user?.id || !player) return
     setBusy(true)
     try {
+      const { startTrainingMission } = await import(
+        "@/features/training/services/trainingActions"
+      )
       const quest = await startTrainingMission(user.id, mode)
       if (quest) router.push(`/contracts/${quest.id}`)
     } finally {
