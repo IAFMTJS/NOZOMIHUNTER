@@ -19,6 +19,16 @@ export interface PreparationChecklistContract {
   skillLoadout: boolean
   consumables: boolean
   vocabulary: boolean
+  /** False when operational readiness is below deploy minimum (CRITICAL band). */
+  operationalReadiness: boolean
+}
+
+export interface DeployBlockerContract {
+  id: string
+  title: string
+  detail: string
+  recoveryHref?: string
+  recoveryLabel?: string
 }
 
 export interface ReadinessResultContract {

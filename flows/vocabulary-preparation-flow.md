@@ -16,7 +16,7 @@ Player Reviews Vocabulary
 ↓
 Preparation Score Calculated
 ↓
-`/prepare` deploy gate (ring gauge + checklist; deploy blocked until checklist complete and readiness above CRITICAL)
+`/prepare` deploy gate (ring gauge, score breakdown, threat intel, blocker panel + checklist; deploy blocked until every checklist row is complete including operational readiness ≥ 35% and mission vocabulary ≥ 60% when applicable)
 ↓
 Quest Starts
 ↓

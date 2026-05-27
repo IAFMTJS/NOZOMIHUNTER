@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
@@ -9,22 +8,28 @@ import { HunterPageBack } from "@/components/layout/HunterPageBack"
 import { ScreenCTA } from "@/components/ui/ScreenCTA"
 import { PreparationRingGauge } from "@/components/preparation/PreparationRingGauge"
 import { PreparationChecklist } from "@/components/preparation/PreparationChecklist"
+import { PreparationScoreBreakdown } from "@/components/preparation/PreparationScoreBreakdown"
+import { DeploymentBlockersPanel } from "@/components/preparation/DeploymentBlockersPanel"
+import { MissionVocabularyIntel } from "@/components/preparation/MissionVocabularyIntel"
 import { PowerComparison } from "@/components/preparation/PowerComparison"
 import { LoadoutSlotGrid } from "@/components/preparation/LoadoutSlotGrid"
 import { HeroBanner } from "@/components/ui/screen/HeroBanner"
 import { computeReadiness, isReadinessHardBlocked } from "@/systems/readiness/readinessSystem"
+import { computePreparationChecklist } from "@/systems/readiness/preparationChecklistSystem"
 import {
-  checklistComplete,
-  computePreparationChecklist,
-} from "@/systems/readiness/preparationChecklistSystem"
+  isDeployBlocked,
+  resolveDeployBlockers,
+} from "@/systems/readiness/deployGateSystem"
 import { computeHunterPower, recommendedPowerForDungeon } from "@/systems/power/hunterPowerSystem"
 import { getDungeonDefinition } from "@/config/dungeonConfig"
 import { getQuestCatalogMeta } from "@/config/missionCatalogMetadata"
-import { hasActivePreparationPhase } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
-import { resolveQuestStaminaCost } from "@/systems/presentation/questRewardPresentation"
+import { VOCABULARY_PREPARATION_CONFIG } from "@/config/vocabularyPreparationConfig"
 import {
-  estimatedDungeonTimeLimitMinutes,
-} from "@/systems/presentation/questPresentationSystem"
+  getPreparationDisplayVocabulary,
+  hasActivePreparationPhase,
+} from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
+import { resolveQuestStaminaCost } from "@/systems/presentation/questRewardPresentation"
+import { estimatedDungeonTimeLimitMinutes } from "@/systems/presentation/questPresentationSystem"
 import { fetchItemCatalog } from "@/features/inventory/services/inventoryActions"
 import type { ItemCatalogEntryContract } from "@/contracts/economy-contract"
 import { isTrainingQuest } from "@/systems/training/trainingMissionSystem"
@@ -64,7 +69,8 @@ export function PrepareClient() {
     )
   }
 
-  const vocabScore = missionQuest?.vocabularyPreparation?.preparationScore
+  const vocabPrep = missionQuest?.vocabularyPreparation
+  const vocabScore = vocabPrep?.preparationScore
   const readiness = computeReadiness({
     player,
     quest: missionQuest
@@ -74,21 +80,40 @@ export function PrepareClient() {
         : undefined,
     vocabularyScore: vocabScore,
   })
+  const minVocabScore = VOCABULARY_PREPARATION_CONFIG.DEPLOY_MIN_PREPARATION_SCORE
+  const hasVocabPhase =
+    missionQuest != null && hasActivePreparationPhase(missionQuest)
   const vocabReady =
-    missionQuest != null
-      ? (vocabScore ?? 0) >= 60 || !hasActivePreparationPhase(missionQuest)
-      : true
-  const checklist = computePreparationChecklist(player, vocabReady, catalog)
+    missionQuest == null
+      ? true
+      : (vocabScore ?? 0) >= minVocabScore || !hasVocabPhase
+  const trainingQuest = Boolean(missionQuest && isTrainingQuest(missionQuest))
+  const allowCriticalDeploy = trainingQuest
+  const operationalReady = !isReadinessHardBlocked(readiness, {
+    allowCritical: allowCriticalDeploy,
+  })
+  const checklist = computePreparationChecklist(
+    player,
+    vocabReady,
+    catalog,
+    operationalReady
+  )
+  const blockers = resolveDeployBlockers({
+    readiness,
+    checklist,
+    allowCriticalDeploy,
+    vocabularyPrep:
+      missionQuest && hasVocabPhase && vocabPrep
+        ? {
+            missingCount: vocabPrep.newVocabulary.length,
+            currentScore: vocabScore ?? 0,
+          }
+        : undefined,
+  })
+  const deployBlocked = isDeployBlocked(blockers)
   const power = computeHunterPower(player)
   const recommended =
     def?.recommendedPower ?? recommendedPowerForDungeon(player.level)
-  const trainingQuest = Boolean(missionQuest && isTrainingQuest(missionQuest))
-  const allowCriticalDeploy = trainingQuest
-
-  const readinessBlocked = isReadinessHardBlocked(readiness, {
-    allowCritical: allowCriticalDeploy,
-  })
-  const deployBlocked = readinessBlocked || !checklistComplete(checklist)
   const underPower = power.total < recommended
   const staminaCost =
     def?.staminaCost ??
@@ -98,9 +123,25 @@ export function PrepareClient() {
     ? estimatedDungeonTimeLimitMinutes(def.encounterPlan.length)
     : 15
 
+  const displayVocabulary = missionQuest
+    ? getPreparationDisplayVocabulary(missionQuest)
+    : []
+  const missingVocabulary = vocabPrep?.newVocabulary ?? []
+
+  const readinessBaseScore = vocabScore ?? 100
+  const readinessBaseLabel =
+    vocabScore != null
+      ? "Mission vocabulary familiarity"
+      : def
+        ? "Sector baseline"
+        : "Operator baseline"
+
   async function handleDeploy() {
     if (deployBlocked) return
-    if (readiness.survivalBand === "UNSTABLE" || (trainingQuest && readiness.survivalBand === "CRITICAL")) {
+    if (
+      readiness.survivalBand === "UNSTABLE" ||
+      (trainingQuest && readiness.survivalBand === "CRITICAL")
+    ) {
       const ok = window.confirm(
         "Operational readiness unstable. Deployment is risky — proceed?"
       )
@@ -175,32 +216,32 @@ export function PrepareClient() {
       />
 
       <div className="space-y-6">
+        {deployBlocked && <DeploymentBlockersPanel blockers={blockers} />}
+
+        {missionQuest && (hasVocabPhase || displayVocabulary.length > 0) && (
+          <MissionVocabularyIntel
+            preparationScore={vocabScore ?? readiness.preparationScore}
+            displayVocabulary={displayVocabulary}
+            missingVocabulary={missingVocabulary}
+            missionType={missionQuest.type}
+          />
+        )}
+
         <PreparationRingGauge
           score={readiness.preparationScore}
           label="Preparation score"
         />
         <p className="text-center text-xs text-[var(--muted)]">{readiness.survivalLabel}</p>
+
+        <PreparationScoreBreakdown
+          readiness={readiness}
+          baseLabel={readinessBaseLabel}
+          baseScore={readinessBaseScore}
+        />
+
         <PreparationChecklist checklist={checklist} />
         <PowerComparison recommended={recommended} yours={power.total} />
 
-        {deployBlocked && (
-          <p className="text-center text-xs text-[var(--danger)]">
-            Deployment locked — complete preparation checklist and raise operational readiness.
-          </p>
-        )}
-        {deployBlocked && (
-          <p className="text-center text-xs text-[var(--muted)]">
-            Recovery route:{" "}
-            <Link href="/training" className="text-[var(--accent-bright)] hover:underline">
-              training drills
-            </Link>{" "}
-            and{" "}
-            <Link href="/vocabulary" className="text-[var(--accent-bright)] hover:underline">
-              vocabulary
-            </Link>
-            .
-          </p>
-        )}
         {underPower && !deployBlocked && (
           <p className="text-center text-xs text-[var(--warning)]">
             Power below sector advisory — confirm to deploy.

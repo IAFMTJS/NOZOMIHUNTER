@@ -21,13 +21,15 @@ function skillLoadoutReady(player: PlayerContract): boolean {
 export function computePreparationChecklist(
   player: PlayerContract,
   vocabularyReady: boolean,
-  catalog?: ItemCatalogEntryContract[]
+  catalog?: ItemCatalogEntryContract[] | undefined,
+  operationalReadinessReady = true
 ): PreparationChecklistContract {
   return {
     equipment: hasEquipmentReady(player.inventory, catalog),
     skillLoadout: skillLoadoutReady(player),
     consumables: hasConsumables(player.inventory, catalog),
     vocabulary: vocabularyReady,
+    operationalReadiness: operationalReadinessReady,
   }
 }
 
@@ -36,6 +38,7 @@ export function checklistComplete(checklist: PreparationChecklistContract): bool
     checklist.equipment &&
     checklist.skillLoadout &&
     checklist.consumables &&
-    checklist.vocabulary
+    checklist.vocabulary &&
+    checklist.operationalReadiness
   )
 }
