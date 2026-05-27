@@ -794,6 +794,22 @@ body {
   animation: nozomi-mask-unmask 0.45s ease-out;
 }
 
+.nozomi-hunter-vision-reveal {
+  animation: nozomi-hunter-vision-pulse 0.35s ease-out;
+  text-shadow: 0 0 12px var(--glow-accent);
+}
+
+@keyframes nozomi-hunter-vision-pulse {
+  0% {
+    filter: brightness(0.7);
+    opacity: 0.6;
+  }
+  100% {
+    filter: brightness(1.1);
+    opacity: 1;
+  }
+}
+
 .nozomi-corridor-action {
   flex-direction: column;
   align-items: center;

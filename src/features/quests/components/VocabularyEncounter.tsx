@@ -15,6 +15,13 @@ import {
   inputModePlaceholder,
 } from "@/systems/learning/challengeDisplaySystem"
 import { EncounterDisplayProvider } from "@/features/encounters/EncounterDisplayProvider"
+import { EncounterHintProvider } from "@/features/encounters/context/EncounterHintContext"
+import { EncounterHintControls } from "@/components/hints/EncounterHintControls"
+import { buildHintWordContext } from "@/features/encounters/hintWordContext"
+import {
+  effectiveAssistLevel,
+  resolveQuestGameMode,
+} from "@/systems/gameModes/gameModeSystem"
 import { EncounterRailWord } from "@/components/ui/EncounterRailWord"
 import { LearnerWordLine } from "@/components/ui/LearnerWordLine"
 import { learnerPartsFromEncounterWord } from "@/services/jmdict/learnerFormat"
@@ -170,7 +177,7 @@ export function VocabularyEncounter({
           {pressureLine && (
             <p className="mb-3 text-xs italic text-[var(--accent-bright)]">{pressureLine}</p>
           )}
-          <div className="mb-6 rounded-lg border border-[var(--border-accent)] bg-[var(--accent-dim)] px-4 py-6 text-center">
+          <div className="nozomi-hint-target mb-6 rounded-lg border border-[var(--border-accent)] bg-[var(--accent-dim)] px-4 py-6 text-center">
             <LearnerWordLine
               parts={learnerPartsFromEncounterWord({
                 japanese: displayWord.japanese,
@@ -185,6 +192,9 @@ export function VocabularyEncounter({
               forceReveal={phase === "REVEALED"}
             />
           </div>
+          {!showingReveal && (
+            <EncounterHintControls className="mb-4" />
+          )}
           {!showingReveal && (
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
               <Input
@@ -234,6 +244,20 @@ export function VocabularyEncounter({
 
   if (!word) return body
 
+  const gameMode = resolveQuestGameMode(quest)
+  const assistLevel = player
+    ? effectiveAssistLevel(player, gameMode)
+    : "FULL"
+  const hintContext = buildHintWordContext({
+    wordId: word.id,
+    japanese: word.japanese,
+    reading: word.reading,
+    romaji: word.romaji,
+    meanings: word.meanings,
+    promptDirection: word.promptDirection ?? "RETRIEVE_ENGLISH",
+    wrongAttempts: encounter.wrongAttempts,
+  })
+
   return (
     <EncounterDisplayProvider
       quest={quest}
@@ -242,7 +266,15 @@ export function VocabularyEncounter({
       inputMode={word.inputMode ?? inputMode}
       phase={phase}
     >
-      {body}
+      <EncounterHintProvider
+        questId={quest.id}
+        wordContext={hintContext}
+        assistLevel={assistLevel}
+        wrongAttempts={encounter.wrongAttempts}
+        phase={phase}
+      >
+        {body}
+      </EncounterHintProvider>
     </EncounterDisplayProvider>
   )
 }

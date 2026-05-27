@@ -43,3 +43,12 @@ Listening encounters: no visible gloss on the station until validation (`Listeni
 Compact format (browse only): `水 • みず • Water`
 
 Optional `audio` on reveal only during challenges (avoid leaking answers via TTS).
+
+## Adaptive hints (encounters)
+
+During active challenges, use `EncounterHintProvider` + `EncounterHintControls`:
+
+- **Hunter Vision** — hold to merge extra visible layers per `hintSystem` (respects assist level and mastery stage).
+- **Companion Whisper** — diagetic nudge lines; auto after repeated wrong answers.
+
+Hints must not bypass `challengeDisplaySystem` masks unless vision is active or phase is `REVEALED`.

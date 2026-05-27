@@ -4,6 +4,8 @@ import type { LearnerWordParts } from "@/services/jmdict/learnerFormat"
 import { WordAudioButton } from "@/components/ui/WordAudioButton"
 import { useChallengeDisplay } from "@/features/encounters/context/LearnerAssistContext"
 import { resolveVisibleLayers } from "@/systems/learning/challengeDisplaySystem"
+import { mergeVisibleLayers } from "@/systems/hints/hintSystem"
+import { useEncounterHintOptional } from "@/features/encounters/context/EncounterHintContext"
 
 interface LearnerWordLineProps {
   parts: LearnerWordParts
@@ -23,18 +25,27 @@ export function LearnerWordLine({
   forceReveal = false,
 }: LearnerWordLineProps) {
   const ctx = useChallengeDisplay()
+  const hint = useEncounterHintOptional()
   const phase = forceReveal ? "REVEALED" : ctx.phase
-  const layers = resolveVisibleLayers(
+  const baseLayers = resolveVisibleLayers(
     ctx.promptDirection,
     phase,
     ctx.assistLevel,
     ctx.challengeMode && !forceReveal
   )
+  const layers =
+    hint?.visionActive && hint.visionLayers && phase === "ACTIVE" && !forceReveal
+      ? mergeVisibleLayers(baseLayers, hint.visionLayers)
+      : baseLayers
 
   const jpSize =
     size === "lg" ? "text-2xl" : size === "sm" ? "text-base" : "text-lg"
   const revealClass =
-    phase === "REVEALED" && ctx.challengeMode ? "nozomi-mask-reveal" : ""
+    phase === "REVEALED" && ctx.challengeMode
+      ? "nozomi-mask-reveal"
+      : hint?.visionActive
+        ? "nozomi-hunter-vision-reveal"
+        : ""
 
   if (layout === "compact") {
     const segments: string[] = []

@@ -2,6 +2,12 @@
 
 ## v1.4.1 (unreleased) — UX audit remediation
 
+### Learning hints
+- Layered hint system: Hunter Vision (hold-to-reveal), companion whispers, radical glyph lore
+- `hintSystem`, `EncounterHintProvider`, encounter controls on vocab / listening / speech
+- Staged mastery policy; auto reinforcement whisper after repeated wrong answers
+- `flows/hint-system-flow.md`, `contracts/hint-contract.ts`
+
 ### Flow blockers
 - Guest sign-in gated by `NEXT_PUBLIC_ENABLE_GUEST_AUTH` (default off); README documents login paths
 - `resolveQuestRecord` — story/catalog contract detail resolves active, regular, and completed snapshots

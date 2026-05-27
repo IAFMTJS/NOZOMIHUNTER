@@ -15,6 +15,13 @@ import { VOCABULARY_ENCOUNTER_CONFIG } from "@/config/vocabularyEncounterConfig"
 import { useJapaneseTts } from "@/hooks/useJapaneseTts"
 import { stopJapaneseSpeech } from "@/systems/listening/japaneseTtsSystem"
 import { EncounterDisplayProvider } from "@/features/encounters/EncounterDisplayProvider"
+import { EncounterHintProvider } from "@/features/encounters/context/EncounterHintContext"
+import { EncounterHintControls } from "@/components/hints/EncounterHintControls"
+import { buildHintWordContext } from "@/features/encounters/hintWordContext"
+import {
+  effectiveAssistLevel,
+  resolveQuestGameMode,
+} from "@/systems/gameModes/gameModeSystem"
 import type { PlayerContract } from "@/contracts/player-contract"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
@@ -221,6 +228,10 @@ export function ListeningEncounter({
         )}
       </div>
 
+      {heardOnce && (
+        <EncounterHintControls className="mb-2" />
+      )}
+
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <Input
           label={inputModeLabel(inputMode)}
@@ -258,6 +269,20 @@ export function ListeningEncounter({
     </div>
   )
 
+  const gameMode = resolveQuestGameMode(quest)
+  const assistLevel = player
+    ? effectiveAssistLevel(player, gameMode)
+    : "FULL"
+  const hintContext = buildHintWordContext({
+    wordId: fragment.id,
+    japanese: fragment.japanese,
+    reading: fragment.reading,
+    romaji: fragment.romaji,
+    meanings: fragment.meanings,
+    promptDirection: fragment.promptDirection ?? "LISTEN_DECODE",
+    wrongAttempts: encounter.wrongAttempts,
+  })
+
   const wrapped = (
     <EncounterDisplayProvider
       quest={quest}
@@ -266,6 +291,13 @@ export function ListeningEncounter({
       inputMode={inputMode}
       phase="ACTIVE"
     >
+      <EncounterHintProvider
+        questId={quest.id}
+        wordContext={hintContext}
+        assistLevel={assistLevel}
+        wrongAttempts={encounter.wrongAttempts}
+        phase="ACTIVE"
+      >
       {focusMode ? (
         <ListeningFocusShell
           onPlaySignal={() => void playSignal()}
@@ -281,6 +313,7 @@ export function ListeningEncounter({
       ) : (
         <div className="mt-3">{body}</div>
       )}
+      </EncounterHintProvider>
     </EncounterDisplayProvider>
   )
 

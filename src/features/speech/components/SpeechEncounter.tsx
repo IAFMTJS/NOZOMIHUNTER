@@ -15,7 +15,14 @@ import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { EncounterTargetRail } from "@/components/ui/EncounterTargetRail"
 import { EncounterDisplayProvider } from "@/features/encounters/EncounterDisplayProvider"
+import { EncounterHintProvider } from "@/features/encounters/context/EncounterHintContext"
+import { EncounterHintControls } from "@/components/hints/EncounterHintControls"
+import { buildHintWordContext } from "@/features/encounters/hintWordContext"
 import { defaultSpeechDirection } from "@/systems/learning/challengeDisplaySystem"
+import {
+  effectiveAssistLevel,
+  resolveQuestGameMode,
+} from "@/systems/gameModes/gameModeSystem"
 import type { PlayerContract } from "@/contracts/player-contract"
 
 import { useSpeechEncounterController } from "@/features/speech/hooks/useSpeechEncounterController"
@@ -129,7 +136,7 @@ export function SpeechEncounter({
           <p className="mb-3 text-[10px] uppercase tracking-wider text-[var(--warning)]">
             THREAT · {threatDisplayLabel(resolveVocabularyThreat(phrase.id))}
           </p>
-          <div className="mb-6 rounded-lg border border-[var(--border-accent)] bg-[var(--accent-dim)] px-4 py-6 text-center">
+          <div className="nozomi-hint-target mb-6 rounded-lg border border-[var(--border-accent)] bg-[var(--accent-dim)] px-4 py-6 text-center">
             <LearnerWordLine
               parts={learnerPartsFromEncounterWord({
                 japanese: phrase.japanese,
@@ -143,6 +150,8 @@ export function SpeechEncounter({
               className="justify-center"
             />
           </div>
+
+          <EncounterHintControls className="mb-4" />
 
           <p
             className={`mb-3 text-xs uppercase tracking-wide ${
@@ -275,6 +284,20 @@ export function SpeechEncounter({
 
   if (!phrase) return panel
 
+  const gameMode = resolveQuestGameMode(quest)
+  const assistLevel = player
+    ? effectiveAssistLevel(player, gameMode)
+    : "FULL"
+  const hintContext = buildHintWordContext({
+    wordId: phrase.id,
+    japanese: phrase.japanese,
+    reading: phrase.reading,
+    romaji: phrase.romaji,
+    meanings: phrase.meanings,
+    promptDirection: phrase.promptDirection ?? defaultSpeechDirection(),
+    wrongAttempts: encounter.wrongAttempts,
+  })
+
   return (
     <EncounterDisplayProvider
       quest={quest}
@@ -283,7 +306,15 @@ export function SpeechEncounter({
       inputMode="japanese"
       phase="ACTIVE"
     >
-      {panel}
+      <EncounterHintProvider
+        questId={quest.id}
+        wordContext={hintContext}
+        assistLevel={assistLevel}
+        wrongAttempts={encounter.wrongAttempts}
+        phase="ACTIVE"
+      >
+        {panel}
+      </EncounterHintProvider>
     </EncounterDisplayProvider>
   )
 }
