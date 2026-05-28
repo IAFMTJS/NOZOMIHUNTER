@@ -2,7 +2,6 @@ import type { PlayerContract } from "@/contracts/player-contract"
 import type { QuestContract } from "@/contracts/quest-contract"
 import type { QuestVocabularyPreparationContract } from "@/contracts/vocabulary-contract"
 import { getMasteryMap } from "@/systems/mastery/masterySystem"
-import { computeReadiness } from "@/systems/readiness/readinessSystem"
 import {
   generateVocabularyExplanationForWord,
   threatContextFromQuest,
@@ -78,15 +77,9 @@ export function buildVocabularyPreparation(
     scoreBasis.length > 0 ? scoreBasis : unknownExplanations
   )
 
-  const readiness = options?.player
-    ? computeReadiness({
-        player: options.player,
-        vocabularyScore: briefing.preparationScore,
-        quest,
-      })
-    : null
-  const preparationScore =
-    readiness?.preparationScore ?? briefing.preparationScore
+  // Keep this score scoped to mission vocabulary familiarity only.
+  // Global penalties are applied later by readiness systems.
+  const preparationScore = briefing.preparationScore
 
   if (
     playerId &&

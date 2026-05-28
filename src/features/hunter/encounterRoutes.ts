@@ -3,6 +3,7 @@ export function isEncounterOverlayRoute(pathname: string): boolean {
   return (
     pathname === "/contracts" ||
     pathname === "/missions" ||
-    pathname === "/dungeons"
+    pathname === "/dungeons" ||
+    pathname === "/training"
   )
 }

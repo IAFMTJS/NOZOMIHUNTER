@@ -55,6 +55,7 @@ import { getVocabularyCatalog } from "@/systems/mastery/vocabularyCatalog"
 import { buildExtractionMasteryRecap } from "@/systems/dungeons/dungeonLexiconRecapSystem"
 import { EncounterFeedbackProvider } from "@/features/encounters/context/EncounterFeedbackContext"
 import { EncounterFeedbackBridge } from "@/features/encounters/EncounterFeedbackBridge"
+import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 
 interface DungeonRunnerProps {
   quest: QuestContract
@@ -170,6 +171,12 @@ export function DungeonRunner({
   const systemLine =
     explorationLine ?? run.explorationSystemLine ?? null
   const replayCap = hasReplayBan(run.modifiers) ? 1 : maxListeningReplays
+  const missingEncounterPayload =
+    state === "ENCOUNTER" &&
+    ((run.activeType === "VOCAB" && !(quest.vocabularyEncounter?.words.length ?? 0)) ||
+      (run.activeType === "LISTENING" && !(quest.listeningEncounter?.fragments.length ?? 0)) ||
+      (run.activeType === "NPC" && !(quest.conversationEncounter?.messages.length ?? 0)) ||
+      (run.activeType === "SPEECH" && !(quest.speechEncounter?.phrases.length ?? 0)))
 
   async function wrap<T>(fn: () => Promise<T>, okMsg?: string): Promise<T | undefined> {
     try {
@@ -333,6 +340,25 @@ export function DungeonRunner({
           onSubmit={onSubmitSpeech}
           onAbandon={onAbandon}
         />
+      )}
+      {missingEncounterPayload && (
+        <Panel tone="danger" className="mt-3 border-[var(--danger)]/40">
+          <p className="text-sm text-[var(--muted)]">
+            Encounter payload desynchronized after resume. Recover the run to continue.
+          </p>
+          <Button
+            className="mt-3 w-full"
+            disabled={disabled}
+            onClick={() =>
+              wrap(
+                onContinueReward,
+                "Run state recovered. Continue corridor routing."
+              )
+            }
+          >
+            Recover run state
+          </Button>
+        </Panel>
       )}
 
       {state === "BOSS" && isV2 && (
@@ -500,10 +526,11 @@ export function DungeonRunner({
           </p>
         )}
 
-        {state !== "EXTRACTION" && state !== "PREPARATION" && (
+        {state !== "EXTRACTION" && (
           <Button
             variant="danger"
             disabled={disabled}
+            data-testid={E2E_TEST_IDS.dungeonAbort}
             onClick={() => wrap(onAbandon)}
             className="mt-4 opacity-90"
           >

@@ -10,10 +10,11 @@ import { TRAINING_GAME_MODES } from "@/config/gameModeRegistry"
 import { isGameModeUnlocked } from "@/config/gameModeRegistry"
 import { GAME_MODE_REGISTRY } from "@/config/gameModeRegistry"
 import type { GameModeId } from "@/contracts/game-mode-contract"
+import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 
 export function TrainingClient() {
   const router = useRouter()
-  const { user, player } = useHunterSession()
+  const { user, player, setHubView } = useHunterSession()
   const [busy, setBusy] = useState(false)
 
   async function deploy(mode: GameModeId) {
@@ -23,8 +24,11 @@ export function TrainingClient() {
       const { startTrainingMission } = await import(
         "@/features/training/services/trainingActions"
       )
-      const quest = await startTrainingMission(user.id, mode)
-      if (quest) router.push(`/contracts/${quest.id}`)
+      const quest = await startTrainingMission(user.id, mode, player.level)
+      if (quest) {
+        setHubView("hunt")
+        router.push("/training")
+      }
     } finally {
       setBusy(false)
     }
@@ -74,6 +78,7 @@ export function TrainingClient() {
                 className="mt-4 w-full"
                 variant="cta"
                 disabled={busy || !unlocked}
+                data-testid={E2E_TEST_IDS.trainingPlay(modeId)}
                 onClick={() => void deploy(modeId)}
               >
                 {unlocked ? "Play" : `Requires L${def.minLevel}`}
