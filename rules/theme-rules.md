@@ -1,6 +1,6 @@
 # Theme & Color Mode Rules
 
-NOZOMI supports **dark** and **light** color modes. Dark mode is the current default. Light mode tokens exist but are not yet wired to settings.
+NOZOMI supports **dark** and **light** color modes. Default is dark. Toggle: **Profile → Settings → Light mode**.
 
 ---
 

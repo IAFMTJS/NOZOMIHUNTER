@@ -1,5 +1,5 @@
 import type { QuestContract } from "@/contracts/quest-contract"
-import { JMDICT_CURATED } from "@/data/jmdictCurated"
+import { getCatalogEntryById } from "@/systems/mastery/vocabularyCatalog"
 import { VOCABULARY_ENCOUNTER_CONFIG } from "@/config/vocabularyEncounterConfig"
 import { LISTENING_QUEST_CONFIG } from "@/config/listeningQuestConfig"
 import { toEncounterWord } from "@/services/jmdict/normalize"
@@ -21,8 +21,6 @@ import {
   resolveMessageReading,
   stripRomajiPairs,
 } from "@/services/jmdict/readingAnnotation"
-
-const curatedById = new Map(JMDICT_CURATED.map((e) => [e.id, e]))
 
 export function hasPlayableVocabulary(quest: QuestContract): boolean {
   const words = quest.vocabularyEncounter?.words
@@ -55,7 +53,7 @@ export function patchVocabularyWords(quest: QuestContract): QuestContract {
     let word = w
     if (!w.reading) {
       changed = true
-      const entry = curatedById.get(w.id)
+      const entry = getCatalogEntryById(w.id)
       word = entry ? toEncounterWord(entry) : { ...w, reading: w.romaji }
     }
     if (!word.promptDirection || !word.inputMode) {
@@ -81,7 +79,7 @@ export function patchSpeechPhrases(quest: QuestContract): QuestContract {
     let phrase = p
     if (!p.reading) {
       changed = true
-      const entry = curatedById.get(p.id)
+      const entry = getCatalogEntryById(p.id)
       phrase = entry ? toEncounterWord(entry) : { ...p, reading: p.romaji }
     }
     if (!phrase.promptDirection || !phrase.inputMode) {

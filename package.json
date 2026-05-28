@@ -22,7 +22,8 @@
     "db:push": "supabase db push --yes",
     "db:diff": "supabase db diff -f",
     "db:migration:new": "supabase migration new",
-    "ingest:jmdict": "tsx scripts/ingest-jmdict.ts"
+    "ingest:jmdict": "tsx scripts/ingest-jmdict.ts",
+    "build:curated": "tsx scripts/extract-jmdict-curated.ts --"
   },
   "dependencies": {
     "@fontsource/barlow-condensed": "^5.2.8",

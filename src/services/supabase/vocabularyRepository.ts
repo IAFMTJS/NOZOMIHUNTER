@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client"
 import type { VocabularyEntryContract, WordMasteryContract } from "@/contracts/vocabulary-contract"
+import { JMDICT_DB_LOAD_LIMIT } from "@/config/jmdictConfig"
 import { readingToRomaji } from "@/services/jmdict/normalize"
 
 function requireClient() {
@@ -33,7 +34,7 @@ function rowToEntry(row: {
 }
 
 export async function loadVocabularyEntries(
-  limit = 500
+  limit = JMDICT_DB_LOAD_LIMIT
 ): Promise<VocabularyEntryContract[]> {
   const supabase = requireClient()
   const { data, error } = await supabase

@@ -6,7 +6,7 @@ import { useHunterSession } from "@/features/hunter/context/HunterSessionContext
 import { HunterPage } from "@/components/layout/HunterPage"
 import { HunterPageBack } from "@/components/layout/HunterPageBack"
 import { Button } from "@/components/ui/Button"
-import { JMDICT_CURATED } from "@/data/jmdictCurated"
+import { getCatalogEntryByEntSeq } from "@/systems/mastery/vocabularyCatalog"
 import {
   loadWordMastery,
   markWordAsLearned,
@@ -30,7 +30,7 @@ export function WordDetailClient({ entSeq }: WordDetailClientProps) {
   const player = usePlayerStore((s) => s.player)
   const activeQuests = usePlayerStore((s) => s.activeQuests)
   const setQuests = usePlayerStore((s) => s.setQuests)
-  const entry = JMDICT_CURATED.find((e) => e.entSeq === entSeq)
+  const entry = getCatalogEntryByEntSeq(entSeq)
   const [masteryRow, setMasteryRow] = useState<WordMasteryContract | undefined>()
   const [tab, setTab] = useState<"MEANING" | "USAGE">("MEANING")
   const [marking, setMarking] = useState(false)

@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next"
+import Script from "next/script"
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister"
+import { ThemeBootstrap } from "@/components/ThemeBootstrap"
 import { DEFAULT_THEME, DEFAULT_THEME_BACKGROUND } from "@/styles/themeDefaults"
+import { THEME_STORAGE_KEY } from "@/styles/themePreference"
 import "./fonts.css"
 import "./globals.css"
 
@@ -37,6 +40,10 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme={DEFAULT_THEME} suppressHydrationWarning>
       <body className="min-h-screen antialiased" suppressHydrationWarning>
+        <Script id="nozomi-theme-bootstrap" strategy="beforeInteractive">
+          {`(function(){try{var t=localStorage.getItem("${THEME_STORAGE_KEY}");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}})();`}
+        </Script>
+        <ThemeBootstrap />
         <ServiceWorkerRegister />
         {children}
       </body>

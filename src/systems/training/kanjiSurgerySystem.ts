@@ -1,13 +1,15 @@
-import { JMDICT_CURATED } from "@/data/jmdictCurated"
+import { getCatalogEntries } from "@/systems/mastery/vocabularyCatalog"
 import { toEncounterWord } from "@/services/jmdict/normalize"
 import type { KanjiSurgeryTargetContract } from "@/contracts/encounter-contract"
 
-const KANJI_POOL = JMDICT_CURATED.filter((e) =>
-  e.japanese.some((ch) => /[\u4e00-\u9faf]/.test(ch))
-)
+function kanjiPool() {
+  return getCatalogEntries().filter((e) =>
+    e.japanese.some((ch) => /[\u4e00-\u9faf]/.test(ch))
+  )
+}
 
 export function createKanjiSurgeryTargets(count: number): KanjiSurgeryTargetContract[] {
-  const picked = [...KANJI_POOL].sort(() => Math.random() - 0.5).slice(0, count)
+  const picked = [...kanjiPool()].sort(() => Math.random() - 0.5).slice(0, count)
   return picked.map((entry) => {
     const word = toEncounterWord(entry)
     return {

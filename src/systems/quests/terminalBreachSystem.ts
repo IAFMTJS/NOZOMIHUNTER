@@ -1,6 +1,7 @@
 import type { TerminalBreachEncounterContract, TerminalSignContract } from "@/contracts/encounter-contract"
-import { JMDICT_CURATED } from "@/data/jmdictCurated"
+import { getCatalogEntries } from "@/systems/mastery/vocabularyCatalog"
 import { toEncounterWord } from "@/services/jmdict/normalize"
+import type { VocabularyEntryContract } from "@/contracts/vocabulary-contract"
 
 const SECTOR_SIGNS = [
   { label: "Emergency exit", trap: false },
@@ -11,7 +12,7 @@ const SECTOR_SIGNS = [
 ] as const
 
 function toSign(
-  entry: (typeof JMDICT_CURATED)[number],
+  entry: VocabularyEntryContract,
   label: string,
   isTrap?: boolean
 ): TerminalSignContract {
@@ -28,7 +29,7 @@ function toSign(
 }
 
 export function createTerminalBreachEncounter(): TerminalBreachEncounterContract {
-  const pool = [...JMDICT_CURATED].sort(() => Math.random() - 0.5)
+  const pool = [...getCatalogEntries()].sort(() => Math.random() - 0.5)
   const signs = SECTOR_SIGNS.map((s, i) =>
     toSign(pool[i] ?? pool[0]!, s.label, s.trap)
   )

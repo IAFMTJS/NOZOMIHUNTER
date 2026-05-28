@@ -2,14 +2,14 @@ import type {
   SemanticNetworkLinkContract,
   SemanticNetworkNodeContract,
 } from "@/contracts/encounter-contract"
-import { JMDICT_CURATED } from "@/data/jmdictCurated"
+import { sampleCatalogEntries } from "@/systems/mastery/vocabularyCatalog"
 
 export function createSemanticNetworkEncounter(): {
   nodes: SemanticNetworkNodeContract[]
   links: SemanticNetworkLinkContract[]
   matchedLinkIds: string[]
 } {
-  const entries = JMDICT_CURATED.slice(0, 4)
+  const entries = sampleCatalogEntries(4)
   const nodes: SemanticNetworkNodeContract[] = [
     ...entries.map((e, i) => ({
       id: `meaning-${i}`,

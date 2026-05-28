@@ -11,7 +11,7 @@ import { HunterPage } from "@/components/layout/HunterPage"
 import { Button } from "@/components/ui/Button"
 import { LearnerWordLine } from "@/components/ui/LearnerWordLine"
 import { WordAudioButton } from "@/components/ui/WordAudioButton"
-import { JMDICT_CURATED } from "@/data/jmdictCurated"
+import { getCatalogEntries } from "@/systems/mastery/vocabularyCatalog"
 import { loadWordMastery } from "@/services/supabase/vocabularyRepository"
 import type { WordMasteryContract } from "@/contracts/vocabulary-contract"
 import { brewWordGuarded } from "@/services/supabase/economyRepository"
@@ -73,8 +73,8 @@ export function VocabularyClient() {
 
   const entries = useMemo(() => {
     const known = new Map(mastery.map((m) => [m.wordId, m]))
-    const mapped = JMDICT_CURATED.map((e) =>
-      mapCuratedToCatalogEntry(e, known.get(String(e.entSeq)))
+    const mapped = getCatalogEntries().map((e) =>
+      mapCuratedToCatalogEntry(e, known.get(e.id))
     )
     return filterVocabularyCatalog(mapped, tab)
   }, [mastery, tab])

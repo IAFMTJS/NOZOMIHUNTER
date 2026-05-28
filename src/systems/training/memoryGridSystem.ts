@@ -1,4 +1,4 @@
-import { JMDICT_CURATED } from "@/data/jmdictCurated"
+import { getCatalogEntries } from "@/systems/mastery/vocabularyCatalog"
 import { toEncounterWord } from "@/services/jmdict/normalize"
 import type {
   MemoryGridCardContract,
@@ -11,7 +11,7 @@ const TIME_LIMIT_SEC = 90
 export function createMemoryGridRound(
   pairCount = DEFAULT_PAIRS
 ): MemoryGridRoundContract {
-  const pool = [...JMDICT_CURATED].sort(() => Math.random() - 0.5)
+  const pool = [...getCatalogEntries()].sort(() => Math.random() - 0.5)
   const cards: MemoryGridCardContract[] = []
   for (let i = 0; i < pairCount; i++) {
     const entry = pool[i]

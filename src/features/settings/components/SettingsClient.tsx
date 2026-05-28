@@ -10,6 +10,8 @@ import {
   setCorruptionAudioEnabled,
   syncCorruptionAudio,
 } from "@/systems/audio/registerAudioHandlers"
+import type { ThemeMode } from "@/styles/themeDefaults"
+import { persistTheme, readStoredTheme } from "@/styles/themePreference"
 
 const REDUCED_MOTION_KEY = "nozomi-reduced-motion"
 
@@ -17,8 +19,11 @@ export function SettingsClient() {
   const { signOut, player } = useHunterSession()
   const [reducedMotion, setReducedMotion] = useState(false)
   const [corruptionAudio, setCorruptionAudio] = useState(true)
+  const [colorMode, setColorMode] = useState<ThemeMode>("dark")
 
   useEffect(() => {
+    setColorMode(readStoredTheme())
+
     const stored = localStorage.getItem(REDUCED_MOTION_KEY) === "1"
     setReducedMotion(stored)
     document.documentElement.classList.toggle("nozomi-reduced-motion", stored)
@@ -40,6 +45,12 @@ export function SettingsClient() {
     setCorruptionAudio(next)
     setCorruptionAudioEnabled(next)
     if (player) syncCorruptionAudio(player.penalties.corruption)
+  }
+
+  function toggleColorMode() {
+    const next: ThemeMode = colorMode === "dark" ? "light" : "dark"
+    setColorMode(next)
+    persistTheme(next)
   }
 
   return (
@@ -71,6 +82,30 @@ export function SettingsClient() {
             <span
               className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-transform ${
                 corruptionAudio ? "left-6" : "left-1"
+              }`}
+            />
+          </button>
+        </li>
+        <li className="flex items-center justify-between px-4 py-3 text-sm">
+          <div>
+            <span className="block">Light mode</span>
+            <span className="text-xs text-[var(--muted)]">
+              {colorMode === "light" ? "On" : "Off"} — tactical light palette
+            </span>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={colorMode === "light"}
+            aria-label="Light mode"
+            onClick={toggleColorMode}
+            className={`relative h-7 w-12 rounded-full transition-colors ${
+              colorMode === "light" ? "bg-[var(--accent)]" : "bg-[var(--overlay-toggle-off)]"
+            }`}
+          >
+            <span
+              className={`absolute top-1 h-5 w-5 rounded-full bg-[var(--foreground)] transition-transform ${
+                colorMode === "light" ? "left-6" : "left-1"
               }`}
             />
           </button>

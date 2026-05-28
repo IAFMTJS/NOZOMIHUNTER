@@ -83,9 +83,23 @@ You do not need any AI API keys.
 
 If guest login fails, confirm Anonymous sign-in is enabled in the Supabase dashboard.
 
-## 7. JMDict ingest (optional)
+## 7. JMDict vocabulary
 
-1. Download **JMdict_e** XML from [EDRDG — JMdict_e](https://www.edrdg.org/wiki/index.php/JMdict_e) (pick the English XML archive; extract `JMdict_e.xml`).
+### Curated catalog (shipped in repo)
+
+The app ships **215** JMdict-backed entries in `src/data/jmdictCurated.generated.ts`. To regenerate from the manifest (`content/jmdict-curated-manifest.json`):
+
+```powershell
+npm run build:curated -- --download
+# or, if you already have the XML:
+npm run build:curated -- data/JMdict_e.xml
+```
+
+`data/JMdict_e.xml` is gitignored; `--download` fetches `JMdict_e.gz` into `data/` and decompresses.
+
+### Full dictionary ingest (optional)
+
+1. Download **JMdict_e** XML from [EDRDG — JMdict_e](https://www.edrdg.org/wiki/index.php/JMdict_e) (pick the English XML archive; extract `JMdict_e.xml`), or use `data/JMdict_e.xml` from `build:curated --download`.
 2. Run ingest with the **actual file path** (not the doc placeholder `path/to/...`):
 
 ```powershell

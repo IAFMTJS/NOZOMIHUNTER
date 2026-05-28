@@ -2,13 +2,20 @@
 
 ## v1.4.1 (unreleased) — UX audit remediation
 
+### JMDict vocabulary (full curated integration)
+- **215** JMdict-sourced curated entries (`src/data/jmdictCurated.generated.ts`) — RPG + N5–N3 core; real `ent_seq` ids
+- Manifest: `content/jmdict-curated-manifest.json`; regenerate via `npm run build:curated -- --download` or `npm run build:curated -- data/JMdict_e.xml`
+- All encounter/training/brew/Threat Index paths use `getVocabularyCatalog()` / `getCatalogEntries()` (DB merge when ingested)
+- `JMDICT_DB_LOAD_LIMIT` (2000) for Supabase vocabulary extend; romaji index sync via `setReadingAnnotationCatalog`
+- `tests/jmdictCurated.test.ts` — pool size, ent_seq, encounter shape
+
 ### Theming
 - Color tokens grouped under dark mode (`src/styles/themes/dark.css`) with parallel light palette (`light.css`, 188 matched keys)
 - Presentation utilities in `presentation.css` — zero hardcoded colors; all `var(--*)` theme tokens
 - `npm run check:theme` — parity + no hardcoded hex/rgba in UI source
 - Overlay classes migrated (`bg-white/5` → `var(--overlay-subtle)`, etc.)
 - `rules/theme-rules.md`: new UI must define colors in both dark and light token files
-- `html[data-theme="dark"]` set in root layout (light mode toggle later)
+- Settings toggle: Profile → Settings → **Light mode** (`localStorage` + `data-theme` on `<html>`)
 
 ### Learning hints
 - Layered hint system: Hunter Vision (hold-to-reveal), companion whispers, radical glyph lore

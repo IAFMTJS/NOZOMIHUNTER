@@ -20,6 +20,8 @@
 
 # misc
 .DS_Store
+/data/JMdict_e.xml
+/data/JMdict_e.gz
 *.pem
 
 # debug

@@ -1,6 +1,7 @@
 import { JMDICT_CURATED } from "@/data/jmdictCurated"
 import { containsKana, kanaToRomaji } from "./kanaRomaji"
 import { formatKanaRomajiLabel, normalizeJapanese, normalizeRomaji } from "./normalize"
+import type { VocabularyEntryContract } from "@/contracts/vocabulary-contract"
 
 /** Exact phrases used in conversation scenarios and director replies. */
 const PHRASE_READINGS: Record<string, string> = {
@@ -23,13 +24,39 @@ const PHRASE_READINGS: Record<string, string> = {
   "日本語": "nihongo",
 }
 
-const catalogByJapanese = new Map(
-  JMDICT_CURATED.flatMap((e) =>
-    e.japanese.map(
-      (k) => [normalizeJapanese(k), formatKanaRomajiLabel(e)] as const
+let catalogByJapaneseCache: Map<string, string> | null = null
+let catalogSource: VocabularyEntryContract[] = JMDICT_CURATED
+
+function buildCatalogByJapanese(
+  entries: VocabularyEntryContract[]
+): Map<string, string> {
+  return new Map(
+    entries.flatMap((e) =>
+      e.japanese.map(
+        (k) => [normalizeJapanese(k), formatKanaRomajiLabel(e)] as const
+      )
     )
   )
-)
+}
+
+/** Sync romaji lookup index when the vocabulary catalog grows (e.g. DB ingest). */
+export function setReadingAnnotationCatalog(
+  entries: VocabularyEntryContract[]
+): void {
+  catalogSource = entries
+  catalogByJapaneseCache = null
+}
+
+export function invalidateReadingAnnotationCache(): void {
+  catalogByJapaneseCache = null
+}
+
+function getCatalogByJapanese(): Map<string, string> {
+  if (!catalogByJapaneseCache) {
+    catalogByJapaneseCache = buildCatalogByJapanese(catalogSource)
+  }
+  return catalogByJapaneseCache
+}
 
 const JAPANESE_SEGMENT =
   /[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]+/g
@@ -67,7 +94,7 @@ function lookupSegmentReading(segment: string): string | undefined {
   const stripped = stripPunctuation(normalized)
   if (PHRASE_READINGS[stripped]) return PHRASE_READINGS[stripped]
 
-  const catalog = catalogByJapanese.get(normalized)
+  const catalog = getCatalogByJapanese().get(normalized)
   if (catalog) return catalog
 
   if (containsKana(normalized)) {

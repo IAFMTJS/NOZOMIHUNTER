@@ -17,6 +17,9 @@ export const JMDICT_MASTERY = {
   ENCOUNTER_PICK_POOL_MULTIPLIER: 3,
 } as const
 
+/** Max rows merged from Supabase into the in-memory catalog (post-curated). */
+export const JMDICT_DB_LOAD_LIMIT = 2000
+
 /** Map frequency tier bands to JLPT labels when XML has no JLPT tag. */
 export function inferJlptFromFrequencyTier(tier: number): string | undefined {
   if (tier <= 2) return "N5"

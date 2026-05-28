@@ -6,7 +6,7 @@ Instability: `memoryDecaySystem` from `last_seen_at` + mastery (surfaces on Thre
 Threat display: `resolveVocabularyThreat(wordId, context, instability)` — instability ≥ 70 bumps ROUTINE → ELEVATED and ELEVATED → CRITICAL (presentation only)
 Encounter rails: full compact triple via `EncounterRailWord`; listening station stays listen-first (no gloss until feedback)
 
-Catalog init (curated in-memory; optional DB read-only extend)
+Catalog init (`initVocabularyCatalog` — **215** JMdict curated entries; optional DB read-only extend up to `JMDICT_DB_LOAD_LIMIT`)
 ↓
 Player hydrate → load mastery from `word_mastery`
 ↓
@@ -32,7 +32,11 @@ Persist mastery row (Supabase)
 
 Preparation systems: `/src/systems/vocabulary/*` — see `flows/vocabulary-preparation-flow.md`
 
-Bulk ingest (optional):
+Curated rebuild (authoring):
+
+`content/jmdict-curated-manifest.json` → `npm run build:curated -- --download` (or pass path to `JMdict_e.xml`) → `src/data/jmdictCurated.generated.ts`
+
+Bulk ingest (optional, extends runtime catalog):
 
 JMDict XML → `parseJmdictXml` → `npm run ingest:jmdict -- <file.xml>`
 

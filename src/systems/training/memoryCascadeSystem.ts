@@ -1,4 +1,4 @@
-import { JMDICT_CURATED } from "@/data/jmdictCurated"
+import { getCatalogEntries } from "@/systems/mastery/vocabularyCatalog"
 import { toEncounterWord } from "@/services/jmdict/normalize"
 import type {
   MemoryCascadeRoundContract,
@@ -8,7 +8,7 @@ import type {
 export function createMemoryCascadeRound(
   wordCount = 5
 ): MemoryCascadeRoundContract {
-  const pool = [...JMDICT_CURATED].sort(() => Math.random() - 0.5)
+  const pool = [...getCatalogEntries()].sort(() => Math.random() - 0.5)
   const words: VocabularyWordContract[] = pool
     .slice(0, wordCount)
     .map((e) => toEncounterWord(e))
