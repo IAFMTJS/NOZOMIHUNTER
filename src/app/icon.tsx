@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og"
+import { DEFAULT_THEME_BACKGROUND, THEME_COLORS } from "@/styles/themeDefaults"
 
 export const size = { width: 32, height: 32 }
 export const contentType = "image/png"
@@ -13,9 +14,9 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#05070b",
+          background: DEFAULT_THEME_BACKGROUND,
           borderRadius: 6,
-          color: "#38bdf8",
+          color: THEME_COLORS.dark.accent,
           fontSize: 20,
           fontWeight: 700,
         }}

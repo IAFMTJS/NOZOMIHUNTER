@@ -70,6 +70,8 @@ export interface HunterSessionValue {
   dungeon: ReturnType<typeof useDungeonLogic>
   hubView: HubView
   setHubView: (view: HubView) => void
+  hubFocusQuestId: string | null
+  setHubFocusQuestId: (questId: string | null) => void
   trackMission: (questId: string) => Promise<void>
   claimRewards: () => Promise<void>
   signOut: () => Promise<void>
@@ -93,6 +95,7 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
   const setPlayer = usePlayerStore((s) => s.setPlayer)
   const [tutorialDismissed, setTutorialDismissed] = useState(false)
   const [hubView, setHubView] = useState<HubView>("menu")
+  const [hubFocusQuestId, setHubFocusQuestId] = useState<string | null>(null)
   const [claimError, setClaimError] = useState<string | null>(null)
   const [syncCeremonyKey, setSyncCeremonyKey] = useState<string | null>(null)
   const [achievementQueue, setAchievementQueue] = useState<AchievementContract[]>([])
@@ -289,6 +292,8 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
     dungeon,
     hubView,
     setHubView,
+    hubFocusQuestId,
+    setHubFocusQuestId,
     trackMission,
     claimRewards,
     signOut: handleSignOut,

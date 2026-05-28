@@ -9,8 +9,8 @@ export function SupabaseSetupNotice() {
       <p className="font-semibold text-amber-200">Supabase not configured</p>
       <ol className="mt-2 list-inside list-decimal space-y-1 text-amber-100/90">
         <li>
-          Copy <code className="rounded bg-black/40 px-1">.env.example</code> to{" "}
-          <code className="rounded bg-black/40 px-1">.env.local</code>
+          Copy <code className="rounded bg-[var(--overlay-panel)] px-1">.env.example</code> to{" "}
+          <code className="rounded bg-[var(--overlay-panel)] px-1">.env.local</code>
         </li>
         <li>
           Paste your project URL and anon key from{" "}
@@ -24,12 +24,12 @@ export function SupabaseSetupNotice() {
           </a>
         </li>
         <li>
-          Restart <code className="rounded bg-black/40 px-1">npm run dev</code>
+          Restart <code className="rounded bg-[var(--overlay-panel)] px-1">npm run dev</code>
         </li>
       </ol>
       <p className="mt-2 text-[var(--muted)]">
         See <Link href="/login" className="underline">login</Link> or{" "}
-        <code className="rounded bg-black/40 px-1">docs/supabase-setup.md</code>{" "}
+        <code className="rounded bg-[var(--overlay-panel)] px-1">docs/supabase-setup.md</code>{" "}
         for auth provider steps.
       </p>
     </div>

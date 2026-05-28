@@ -24,7 +24,7 @@ export function BossPhaseOverlay({ quest, run }: BossPhaseOverlayProps) {
   )
 
   return (
-    <div className="nozomi-boss-phase-overlay pointer-events-none absolute inset-0 z-[3] flex flex-col items-center justify-start bg-black/50 pt-6">
+    <div className="nozomi-boss-phase-overlay pointer-events-none absolute inset-0 z-[3] flex flex-col items-center justify-start bg-[var(--overlay-track)] pt-6">
       <span className="nozomi-master-crest mb-2 font-display text-3xl text-[var(--danger)]">
         {presence.crestGlyph}
       </span>

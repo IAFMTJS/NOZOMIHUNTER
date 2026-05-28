@@ -34,7 +34,7 @@ export function XPBar({
           )}
         </span>
       </div>
-      <div className="relative h-2.5 w-full overflow-hidden rounded-full border border-[var(--border-subtle)] bg-black/50">
+      <div className="relative h-2.5 w-full overflow-hidden rounded-full border border-[var(--border-subtle)] bg-[var(--overlay-track)]">
         {debtPct > 0 && (
           <div
             className="absolute inset-y-0 left-0 rounded-full bg-[var(--danger)]/50"

@@ -98,7 +98,7 @@ export function QuestFileDetail({
 
       <p className="text-sm leading-relaxed text-[var(--muted)]">{flavor}</p>
 
-      <div className="rounded-xl border border-[var(--border-subtle)] bg-black/20 p-3 text-xs text-[var(--muted)]">
+      <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--overlay-faint)] p-3 text-xs text-[var(--muted)]">
         <p>{ops.sectorBlurb}</p>
         <p className="mt-2">
           Instability {ops.instabilityPct}% · Signal {ops.signalStrength}% · Rank{" "}

@@ -28,10 +28,10 @@ export function HeroBanner({
       } ${className}`}
       aria-hidden={!title}
     >
-      <div className="absolute inset-0 bg-[linear-gradient(105deg,transparent_40%,rgba(122,92,255,0.15)_50%,transparent_60%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(105deg,transparent_40%,var(--overlay-highlight)_50%,transparent_60%)]" />
       <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)]/80 via-transparent to-transparent" />
       {rankLabel && (
-        <span className="absolute left-3 top-3 rounded bg-black/50 px-2 py-0.5 font-display text-[10px] uppercase tracking-widest text-[var(--accent-bright)]">
+        <span className="absolute left-3 top-3 rounded bg-[var(--overlay-track)] px-2 py-0.5 font-display text-[10px] uppercase tracking-widest text-[var(--accent-bright)]">
           Rank {rankLabel}
         </span>
       )}

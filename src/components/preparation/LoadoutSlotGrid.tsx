@@ -38,7 +38,7 @@ export function LoadoutSlotGrid({
         {slots.map((slot) => (
           <div
             key={slot.id}
-            className="flex aspect-square flex-col items-center justify-center rounded-xl border border-dashed border-[var(--border-subtle)] bg-black/30 p-2 text-center"
+            className="flex aspect-square flex-col items-center justify-center rounded-xl border border-dashed border-[var(--border-subtle)] bg-[var(--overlay-panel-strong)] p-2 text-center"
           >
             <p className="text-[9px] uppercase tracking-wider text-[var(--muted)]">
               {slot.label}

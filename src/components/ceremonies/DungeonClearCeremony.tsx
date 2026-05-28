@@ -66,7 +66,7 @@ export function DungeonClearCeremony({
       )}
 
       {data.masteryRecap && data.masteryRecap.length > 0 && (
-        <ul className="mx-auto max-w-xs space-y-1 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-left text-xs">
+        <ul className="mx-auto max-w-xs space-y-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--overlay-panel-strong)] px-3 py-2 text-left text-xs">
           <li className="uppercase tracking-[0.18em] text-[var(--muted)]">
             Lexicon stabilized
           </li>

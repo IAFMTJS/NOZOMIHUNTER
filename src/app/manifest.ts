@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next"
+import { DEFAULT_THEME_BACKGROUND } from "@/styles/themeDefaults"
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -7,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Immersive Japanese-learning RPG",
     start_url: "/home",
     display: "standalone",
-    background_color: "#05070b",
-    theme_color: "#05070b",
+    background_color: DEFAULT_THEME_BACKGROUND,
+    theme_color: DEFAULT_THEME_BACKGROUND,
     orientation: "portrait-primary",
     icons: [
       {

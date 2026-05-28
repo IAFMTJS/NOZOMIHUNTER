@@ -20,7 +20,7 @@ export function ContractRotationRail({ items }: ContractRotationRailProps) {
           <li key={item.id}>
             <Link
               href={`/contracts/${item.id}`}
-              className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 transition-colors hover:border-[var(--accent)]/40"
+              className="flex items-center justify-between rounded-lg border border-[var(--border-subtle)] bg-[var(--overlay-subtle)] px-3 py-2 transition-colors hover:border-[var(--accent)]/40"
             >
               <span className="text-sm text-[var(--foreground)]">{item.title}</span>
               <span className="text-[10px] uppercase tracking-wider text-[var(--muted)]">

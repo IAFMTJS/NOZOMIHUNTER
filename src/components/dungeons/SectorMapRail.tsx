@@ -47,7 +47,7 @@ export function SectorMapRail({
                       ? "border-[var(--accent)] bg-[var(--accent)]/20 text-[var(--accent-bright)]"
                       : node.isNextGate
                         ? "border-[var(--danger)]/50 bg-[var(--danger)]/10 text-[var(--danger)]"
-                        : "border-[var(--border-subtle)] bg-black/40 text-[var(--muted)]"
+                        : "border-[var(--border-subtle)] bg-[var(--overlay-panel)] text-[var(--muted)]"
                   }`}
                 >
                   {node.breachLabel}

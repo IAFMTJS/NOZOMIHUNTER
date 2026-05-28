@@ -8,7 +8,7 @@ export function RankChip({ rank, tone = "accent" }: RankChipProps) {
     tone === "locked"
       ? "border-[var(--border-subtle)] text-[var(--muted)]"
       : tone === "muted"
-        ? "border-white/10 text-[var(--muted)]"
+        ? "border-[var(--border-subtle)] text-[var(--muted)]"
         : "border-[var(--accent)]/50 text-[var(--accent-bright)] bg-[var(--accent)]/10"
 
   return (

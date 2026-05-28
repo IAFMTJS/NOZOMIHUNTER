@@ -112,6 +112,18 @@ Avoid:
 
 ---
 
+# Theme & Color Modes
+
+NOZOMI uses **dark** and **light** theme tokens. See `rules/theme-rules.md` for the full contract.
+
+**Mandatory:** Any new button, page, panel, shadow, gradient, or colored UI must:
+1. Use semantic CSS variables (`var(--accent)`, etc.) — never raw hex/rgba in components.
+2. Define the same variable in **both** `src/styles/themes/dark.css` and `src/styles/themes/light.css`.
+
+Default runtime theme: `data-theme="dark"` on `<html>`.
+
+---
+
 # Modal Rules
 
 Modals must:

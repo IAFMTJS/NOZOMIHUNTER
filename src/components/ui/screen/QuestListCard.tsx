@@ -39,7 +39,7 @@ export function QuestListCard({
         <p className="font-display text-sm font-semibold text-[var(--foreground)]">
           {title}
         </p>
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-black/50">
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--overlay-track)]">
           <div
             className={`h-full rounded-full bg-gradient-to-r ${
               claimable
@@ -99,7 +99,7 @@ function HexQuestIcon({
       <svg viewBox="0 0 44 44" className="h-11 w-11">
         <polygon
           points="22,2 40,12 40,32 22,42 4,32 4,12"
-          fill="rgba(122,92,255,0.12)"
+          fill="var(--accent-a12)"
           stroke={stroke}
           strokeWidth="1.5"
         />

@@ -27,7 +27,7 @@ export function StoryChapterHero({
               cy="18"
               r="15"
               fill="none"
-              stroke="rgba(255,255,255,0.08)"
+              stroke="var(--overlay-muted)"
               strokeWidth="3"
             />
             <circle

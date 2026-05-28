@@ -7,7 +7,7 @@ interface StatusChipProps {
 }
 
 const TONE_CLASS: Record<ChipTone, string> = {
-  neutral: "bg-white/10 text-[var(--muted)]",
+  neutral: "bg-[var(--overlay-muted)] text-[var(--muted)]",
   accent: "bg-[var(--accent)]/20 text-[var(--accent)]",
   danger: "bg-[var(--danger)]/20 text-[var(--danger)]",
   warning: "bg-[var(--warning)]/20 text-[var(--warning)]",

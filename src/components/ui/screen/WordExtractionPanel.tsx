@@ -28,8 +28,8 @@ export function WordExtractionPanel({ words, currentIndex }: WordExtractionPanel
   const list = tab === "new" ? newWords : reviewed
 
   return (
-    <div className="rounded-xl border border-[var(--border-subtle)] bg-black/20 p-3">
-      <div className="mb-3 flex gap-1 rounded-lg border border-[var(--border-subtle)] bg-black/30 p-1">
+    <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--overlay-faint)] p-3">
+      <div className="mb-3 flex gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--overlay-panel-strong)] p-1">
         {(
           [
             { id: "new" as const, label: `New Words (${newWords.length})` },

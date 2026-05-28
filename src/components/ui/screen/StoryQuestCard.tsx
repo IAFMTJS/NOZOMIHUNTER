@@ -39,16 +39,16 @@ export function StoryQuestCard({
     <div
       className={`flex items-center gap-3 rounded-xl border px-3 py-3 transition-all ${
         locked
-          ? "border-[var(--border-subtle)] bg-black/20 opacity-55"
+          ? "border-[var(--border-subtle)] bg-[var(--overlay-faint)] opacity-55"
           : complete
-            ? "border-[var(--border-subtle)] bg-black/25"
+            ? "border-[var(--border-subtle)] bg-[var(--overlay-scrim)]"
             : "border-[var(--accent)]/40 bg-[var(--accent-dim)] shadow-[0_0_20px_var(--glow-accent)]"
       }`}
     >
       <span
         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg font-display text-sm font-bold ${
           locked
-            ? "bg-black/40 text-[var(--muted)]"
+            ? "bg-[var(--overlay-panel)] text-[var(--muted)]"
             : "bg-[var(--accent)]/20 text-[var(--accent-bright)]"
         }`}
       >
@@ -70,7 +70,7 @@ export function StoryQuestCard({
           </span>
         )}
         {!locked && (
-          <div className="mt-2 h-1 overflow-hidden rounded-full bg-black/50">
+          <div className="mt-2 h-1 overflow-hidden rounded-full bg-[var(--overlay-track)]">
             <div
               className={`h-full rounded-full bg-gradient-to-r ${
                 complete

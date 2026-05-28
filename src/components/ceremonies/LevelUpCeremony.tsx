@@ -77,7 +77,7 @@ export function LevelUpCeremony({ data, onDismiss }: LevelUpCeremonyProps) {
         </ul>
       )}
       {showUnlocks && data.unlockLabels.length > 0 && (
-        <div className="rounded-lg border border-[var(--accent)]/30 bg-black/30 px-3 py-2 text-left">
+        <div className="rounded-lg border border-[var(--accent)]/30 bg-[var(--overlay-panel-strong)] px-3 py-2 text-left">
           <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--accent-bright)]">
             New unlocked
           </p>

@@ -30,14 +30,14 @@ export function ComprehensionChoiceList({
               className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm transition-colors ${
                 selected
                   ? "border-[var(--accent)] bg-[var(--accent-dim)] text-[var(--foreground)] shadow-[0_0_16px_var(--glow-accent)]"
-                  : "border-[var(--border-subtle)] bg-black/25 text-[var(--muted)] hover:border-[var(--accent)]/30"
+                  : "border-[var(--border-subtle)] bg-[var(--overlay-scrim)] text-[var(--muted)] hover:border-[var(--accent)]/30"
               }`}
             >
               <span
                 className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg font-display text-xs font-bold ${
                   selected
                     ? "bg-[var(--accent)]/30 text-[var(--accent-bright)]"
-                    : "bg-black/40"
+                    : "bg-[var(--overlay-panel)]"
                 }`}
               >
                 {letter}

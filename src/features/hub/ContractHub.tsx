@@ -17,30 +17,52 @@ import { HubMenuView } from "./HubMenuView"
 import { HubHuntView } from "./HubHuntView"
 import { HubDispatchView } from "./HubDispatchView"
 import { HubSectorView } from "./HubSectorView"
-import { defaultHubView, questReadyForHunt } from "./questReadyForHunt"
+import {
+  defaultHubView,
+  questReadyForHunt,
+  resolveHubHuntQuest,
+} from "./questReadyForHunt"
 import type { ContractHubProps, HubView } from "./hubTypes"
 
 export type { HubView } from "./hubTypes"
 
 export function ContractHub(props: ContractHubProps) {
   const defaultHunt = props.regularQuests.find(questReadyForHunt)
-  const [view, setView] = useState<HubView>(() =>
-    defaultHubView(props.activeDungeon, defaultHunt)
-  )
+  const forcedOverlay =
+    props.overlayView === "hunt" || props.overlayView === "sector"
+      ? props.overlayView
+      : undefined
+  const [view, setView] = useState<HubView>(() => {
+    if (forcedOverlay) return forcedOverlay
+    return defaultHubView(props.activeDungeon, defaultHunt)
+  })
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(
-    defaultHunt?.id ?? null
+    () => props.focusQuestId ?? defaultHunt?.id ?? null
   )
 
-  const { onViewChange } = props
+  const { onViewChange, overlayView, focusQuestId, activeQuests } = props
   useEffect(() => {
     onViewChange?.(view)
   }, [view, onViewChange])
 
+  useEffect(() => {
+    if (overlayView === "hunt" || overlayView === "sector") {
+      setView(overlayView)
+    }
+  }, [overlayView])
+
+  useEffect(() => {
+    if (focusQuestId) setSelectedQuestId(focusQuestId)
+  }, [focusQuestId])
+
   const activeHunt =
     view === "hunt"
-      ? props.regularQuests.find((q) => q.id === selectedQuestId) ??
-        defaultHunt ??
-        props.regularQuests[0]
+      ? resolveHubHuntQuest(
+          props.regularQuests,
+          activeQuests,
+          selectedQuestId,
+          defaultHunt
+        )
       : undefined
 
   const penaltyMods = {

@@ -107,7 +107,7 @@ export function DungeonRunHud({
           {run.modifiers.map((m) => (
             <span
               key={m.id}
-              className="nozomi-dungeon-mod-chip rounded border border-[var(--border-subtle)] bg-black/30 px-2 py-0.5 text-[10px] uppercase tracking-wide text-[var(--accent-bright)]"
+              className="nozomi-dungeon-mod-chip rounded border border-[var(--border-subtle)] bg-[var(--overlay-panel-strong)] px-2 py-0.5 text-[10px] uppercase tracking-wide text-[var(--accent-bright)]"
             >
               {m.label}
             </span>
@@ -131,7 +131,7 @@ export function DungeonRunHud({
               {pressure.pursuitLabel}
             </span>
           </div>
-          <div className="nozomi-pursuit-bar h-2 overflow-hidden rounded-full bg-white/8">
+          <div className="nozomi-pursuit-bar h-2 overflow-hidden rounded-full bg-[var(--overlay-muted)]">
             <div
               className={`nozomi-pursuit-fill nozomi-pursuit-fill--${pursuitTone} h-full rounded-full transition-all duration-700`}
               style={{ width: `${Math.min(100, pursuitDistance ?? 0)}%` }}

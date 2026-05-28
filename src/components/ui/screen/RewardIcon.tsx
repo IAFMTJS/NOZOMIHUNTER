@@ -8,7 +8,7 @@ interface RewardIconProps {
 
 const TONE_CLASS: Record<RewardIconTone, string> = {
   xp: "border-[var(--reward)]/50 bg-[var(--reward)]/15 text-[var(--reward)]",
-  credits: "border-white/20 bg-white/5 text-[var(--foreground)]",
+  credits: "border-white/20 bg-[var(--overlay-subtle)] text-[var(--foreground)]",
   item: "border-[var(--accent)]/40 bg-[var(--accent)]/15 text-[var(--accent-bright)]",
   token: "border-[var(--accent-bright)]/50 bg-[var(--accent)]/20 text-[var(--accent-bright)]",
 }

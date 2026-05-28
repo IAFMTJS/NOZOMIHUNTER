@@ -14,7 +14,7 @@ const VARIANT_CLASS: Record<ButtonVariant, string> = {
   cta:
     "nozomi-btn-cta border-transparent text-white hover:brightness-110",
   ghost:
-    "border-[var(--border-subtle)] text-[var(--muted)] hover:bg-white/10 hover:text-[var(--foreground)]",
+    "border-[var(--border-subtle)] text-[var(--muted)] hover:bg-[var(--overlay-muted)] hover:text-[var(--foreground)]",
   danger:
     "border-[var(--danger)] text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white",
   subtle:

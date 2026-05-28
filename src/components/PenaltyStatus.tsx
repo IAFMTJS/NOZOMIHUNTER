@@ -28,7 +28,7 @@ function PenaltyMeter({
         <span>{label}</span>
         <span className="tabular-nums">{value}</span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-black/40">
+      <div className="h-1.5 overflow-hidden rounded-full bg-[var(--overlay-panel)]">
         <div
           className="h-full rounded-full transition-all duration-500"
           style={{

@@ -109,7 +109,7 @@ function StatBlock({
   highlight?: boolean
 }) {
   return (
-    <div className="rounded-xl border border-[var(--border-subtle)] bg-black/30 px-2 py-3">
+    <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--overlay-panel-strong)] px-2 py-3">
       <p className="text-[9px] uppercase tracking-wider text-[var(--muted)]">{label}</p>
       <p
         className={`mt-1 font-display text-lg font-bold ${

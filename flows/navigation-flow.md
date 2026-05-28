@@ -16,7 +16,7 @@ Browsing `/contracts` shows `ContractsClient` only. The overlay appears after de
 
 Story tab links include `?tab=story` (or `daily` / `side`) so contract detail breadcrumbs match the catalog channel. Completed story files resolve from completed quest snapshots and open read-only (no deploy CTA).
 
-**Training recovery:** `/training` → Play → `/prepare?questId=` allows deploy when readiness is `CRITICAL` (training drills only). Standard contracts remain blocked until readiness recovers via training/vocabulary.
+**Training drills:** `/training` → Play → `/prepare?questId=` → Deploy → `/training` + hunt overlay (`hubView === "hunt"`, `hubFocusQuestId` set). Play does **not** open the overlay early (avoids showing an active Neon Corridor run). Critical readiness bypass applies on deploy only.
 
 Legacy: `/missions` and `/missions/[id]` redirect to `/contracts`.
 

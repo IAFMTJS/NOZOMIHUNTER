@@ -40,6 +40,11 @@ Avoid:
 - reward spam
 - excessive popups
 - chaotic color usage
+- hardcoded colors (use theme tokens; see rules/theme-rules.md)
+
+Color modes:
+- dark and light tokens live in src/styles/themes/dark.css and light.css
+- every new colored UI element needs tokens in BOTH files before merge
 
 HUD elements must:
 - remain readable

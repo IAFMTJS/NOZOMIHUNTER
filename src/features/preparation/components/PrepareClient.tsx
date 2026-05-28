@@ -47,6 +47,7 @@ export function PrepareClient() {
     quest: questLogic,
     dungeon,
     setHubView,
+    setHubFocusQuestId,
     hunterPresentation,
   } = useHunterSession()
 
@@ -158,8 +159,9 @@ export function PrepareClient() {
       if (hasActivePreparationPhase(missionQuest)) {
         await questLogic.dismissPreparation(missionQuest.id)
       }
+      setHubFocusQuestId(missionQuest.id)
       setHubView("hunt")
-      router.push("/contracts")
+      router.push(trainingQuest ? "/training" : "/contracts")
     } else if (dungeonKey) {
       await dungeon.deploy()
       setHubView("sector")

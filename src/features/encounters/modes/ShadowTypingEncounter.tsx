@@ -48,7 +48,7 @@ export function ShadowTypingEncounter({
 
   return (
     <ModeEncounterShell modeLabel="Shadow Typing" emotion="Anxiety">
-      <div className="mb-2 h-1 overflow-hidden rounded bg-black/40">
+      <div className="mb-2 h-1 overflow-hidden rounded bg-[var(--overlay-panel)]">
         <div
           className="h-full bg-[var(--danger)] transition-all duration-200"
           style={{ width: `${decay}%` }}

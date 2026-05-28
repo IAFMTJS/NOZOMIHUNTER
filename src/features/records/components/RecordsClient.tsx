@@ -85,7 +85,7 @@ export function RecordsClient() {
                   ? "border-[var(--danger)]/30 bg-[var(--danger)]/5"
                   : line.tone === "accent"
                     ? "border-[var(--accent)]/30 bg-[var(--accent)]/5"
-                    : "border-[var(--border-subtle)] bg-black/20"
+                    : "border-[var(--border-subtle)] bg-[var(--overlay-faint)]"
             }`}
           >
             <p className="text-sm font-medium text-[var(--foreground)]">

@@ -2,6 +2,14 @@
 
 ## v1.4.1 (unreleased) — UX audit remediation
 
+### Theming
+- Color tokens grouped under dark mode (`src/styles/themes/dark.css`) with parallel light palette (`light.css`, 188 matched keys)
+- Presentation utilities in `presentation.css` — zero hardcoded colors; all `var(--*)` theme tokens
+- `npm run check:theme` — parity + no hardcoded hex/rgba in UI source
+- Overlay classes migrated (`bg-white/5` → `var(--overlay-subtle)`, etc.)
+- `rules/theme-rules.md`: new UI must define colors in both dark and light token files
+- `html[data-theme="dark"]` set in root layout (light mode toggle later)
+
 ### Learning hints
 - Layered hint system: Hunter Vision (hold-to-reveal), companion whispers, radical glyph lore
 - `hintSystem`, `EncounterHintProvider`, encounter controls on vocab / listening / speech
@@ -13,6 +21,7 @@
 - `resolveQuestRecord` — story/catalog contract detail resolves active, regular, and completed snapshots
 - Vocabulary mastery updates refresh active quest preparation scores (`refreshVocabularyPreparationForActiveQuests`)
 - Training quests skip vocab prep on accept; critical readiness bypass for training deploy
+- Training **Play** → `/prepare` (no premature encounter overlay); deploy opens hunt on `/training` with focused drill quest (no active-dungeon hijack)
 - Dungeon `chooseDungeonRoute` from `REWARD` uses `REWARD → EXPLORATION` before sector engage
 - Dungeons hub: active-run banner with **Resume corridor** + **Abandon** (list no longer blocked by auto sector overlay)
 - `EncounterHost` no longer forces `hubView === "sector"` when visiting `/dungeons`; overlay only after deploy / resume

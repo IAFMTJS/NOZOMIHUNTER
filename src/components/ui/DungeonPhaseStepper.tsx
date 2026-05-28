@@ -55,7 +55,7 @@ export function DungeonPhaseStepper({ machineState }: DungeonPhaseStepperProps) 
                   ? "bg-[var(--accent)]/25 text-[var(--accent-bright)] ring-1 ring-[var(--border-accent)]"
                   : done
                     ? "bg-[var(--accent)]/10 text-[var(--accent)]"
-                    : "bg-white/5 text-[var(--muted)]"
+                    : "bg-[var(--overlay-subtle)] text-[var(--muted)]"
               }`}
             >
               {phase.label}

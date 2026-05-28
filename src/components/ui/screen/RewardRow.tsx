@@ -21,7 +21,7 @@ export function RewardRow({ items }: RewardRowProps) {
             item.tone === "xp"
               ? "border-[var(--reward)]/40 bg-[var(--reward)]/15 text-[var(--reward)]"
               : item.tone === "credits"
-                ? "border-white/20 bg-white/5 text-[var(--foreground)]"
+                ? "border-white/20 bg-[var(--overlay-subtle)] text-[var(--foreground)]"
                 : "border-[var(--accent)]/30 bg-[var(--accent)]/10 text-[var(--accent-bright)]"
           }`}
         >

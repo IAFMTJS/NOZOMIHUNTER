@@ -18,13 +18,16 @@ export function EncounterHost() {
     dungeon,
     hubView,
     setHubView,
+    hubFocusQuestId,
+    setHubFocusQuestId,
   } = useHunterSession()
 
   useEffect(() => {
     if (!isEncounterOverlayRoute(pathname)) {
       setHubView("menu")
+      setHubFocusQuestId(null)
     }
-  }, [pathname, setHubView])
+  }, [pathname, setHubView, setHubFocusQuestId])
 
   if (!player) return null
   if (!isEncounterOverlayRoute(pathname)) return null
@@ -37,6 +40,8 @@ export function EncounterHost() {
         hunterPortraitClass={hunterPresentation.portraitClass}
         hunterAuraClass={hunterPresentation.identityAuraClass}
         onViewChange={setHubView}
+        overlayView={hubView === "hunt" || hubView === "sector" ? hubView : undefined}
+        focusQuestId={hubFocusQuestId}
         regularQuests={regularQuests}
         activeQuests={activeQuests}
         activeDungeon={activeDungeon}

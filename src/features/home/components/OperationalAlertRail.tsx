@@ -24,7 +24,7 @@ export function OperationalAlertRail({ alerts }: OperationalAlertRailProps) {
       </p>
       <ul className="space-y-2">
         {alerts.map((alert) => (
-          <li key={alert.id} className="rounded-lg border border-white/10 bg-black/20 p-3">
+          <li key={alert.id} className="rounded-lg border border-[var(--border-subtle)] bg-[var(--overlay-faint)] p-3">
             <div className="mb-1 flex items-center gap-2">
               <StatusChip label={alert.headline} tone={TONE_MAP[alert.tone]} pulse />
             </div>

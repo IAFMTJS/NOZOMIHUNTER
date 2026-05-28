@@ -17,7 +17,7 @@ export function SyncDisciplineCeremony({
   const title = getUnlockLabel(unlockKey)
 
   return (
-    <div className="fixed inset-0 z-[115] flex items-end justify-center bg-black/85 p-4 pb-[calc(var(--hunter-nav-height)+1rem)] sm:items-center">
+    <div className="fixed inset-0 z-[115] flex items-end justify-center bg-[var(--overlay-modal)] p-4 pb-[calc(var(--hunter-nav-height)+1rem)] sm:items-center">
       <div className="nozomi-embedded-accent w-full max-w-md rounded-2xl p-6">
         <p className="font-display text-xs uppercase tracking-[0.28em] text-[var(--reward)]">
           Discipline cache opened

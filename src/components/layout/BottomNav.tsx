@@ -30,7 +30,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="pb-safe fixed bottom-0 left-0 right-0 z-[100] border-t border-[var(--border-subtle)] bg-[#0a0d14]/95 backdrop-blur-md"
+      className="pb-safe fixed bottom-0 left-0 right-0 z-[100] border-t border-[var(--border-subtle)] bg-[var(--nav-bar)] backdrop-blur-md"
       aria-label="Hunter navigation"
     >
       <ul className="mx-auto flex max-w-lg items-stretch justify-around px-1 pt-1">

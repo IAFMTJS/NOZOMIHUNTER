@@ -26,7 +26,7 @@ export function PreparationScoreBar({
         </span>
       </div>
       <div
-        className="h-2 overflow-hidden rounded-full bg-black/50"
+        className="h-2 overflow-hidden rounded-full bg-[var(--overlay-track)]"
         role="progressbar"
         aria-valuenow={clamped}
         aria-valuemin={0}

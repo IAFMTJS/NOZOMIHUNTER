@@ -68,10 +68,10 @@ export function RewardClaimOverlay({
     <div
       className={`fixed inset-0 z-[110] flex items-end justify-center p-4 pb-[calc(var(--hunter-nav-height)+1rem)] sm:items-center ${
         ceremony.tier === "light"
-          ? "bg-black/55"
+          ? "bg-[var(--overlay-backdrop-light)]"
           : ceremony.tier === "medium"
-            ? "bg-black/75"
-            : "bg-black/85 nozomi-reward-backdrop--heavy"
+            ? "bg-[var(--overlay-backdrop)]"
+            : "bg-[var(--overlay-modal)] nozomi-reward-backdrop--heavy"
       }`}
     >
       <div className={`nozomi-embedded-accent w-full rounded-2xl p-4 ${shellClass}`}>

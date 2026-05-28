@@ -113,9 +113,9 @@ export function LoginForm() {
   if (loading) {
     return (
       <div className="w-full max-w-sm space-y-3">
-        <div className="h-10 animate-pulse rounded bg-white/10" />
-        <div className="h-11 animate-pulse rounded bg-white/10" />
-        <div className="h-11 animate-pulse rounded bg-white/10" />
+        <div className="h-10 animate-pulse rounded bg-[var(--overlay-muted)]" />
+        <div className="h-11 animate-pulse rounded bg-[var(--overlay-muted)]" />
+        <div className="h-11 animate-pulse rounded bg-[var(--overlay-muted)]" />
       </div>
     )
   }

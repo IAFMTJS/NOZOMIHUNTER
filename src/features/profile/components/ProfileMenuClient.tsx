@@ -161,7 +161,7 @@ export function ProfileMenuClient() {
         {MODULES.map((mod) => (
           <Link key={mod.href} href={mod.href}>
             <GlassCard className="flex items-center gap-3 p-3 transition-colors hover:border-[var(--accent)]/30">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-black/30 text-[var(--accent-bright)]">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--overlay-panel-strong)] text-[var(--accent-bright)]">
                 {mod.icon}
               </span>
               <div className="min-w-0 flex-1">

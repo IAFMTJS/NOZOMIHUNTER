@@ -27,29 +27,29 @@ export const RARITY_COLORS: Record<
   { border: string; text: string; glow: string }
 > = {
   COMMON: {
-    border: "border-zinc-600/50",
-    text: "text-zinc-400",
+    border: "border-[var(--border-subtle)]",
+    text: "text-[var(--muted)]",
     glow: "",
   },
   RARE: {
-    border: "border-blue-500/40",
-    text: "text-blue-400",
-    glow: "shadow-[0_0_12px_rgba(59,130,246,0.15)]",
+    border: "border-[var(--border-accent)]",
+    text: "text-[var(--accent-bright)]",
+    glow: "shadow-[0_0_12px_var(--glow-accent)]",
   },
   EPIC: {
-    border: "border-purple-500/40",
-    text: "text-purple-400",
-    glow: "shadow-[0_0_12px_rgba(168,85,247,0.15)]",
+    border: "border-[var(--corruption)]/40",
+    text: "text-[var(--corruption)]",
+    glow: "shadow-[0_0_12px_var(--corruption-a15)]",
   },
   LEGENDARY: {
-    border: "border-amber-500/40",
-    text: "text-amber-400",
-    glow: "shadow-[0_0_16px_rgba(245,158,11,0.2)]",
+    border: "border-[var(--reward)]/40",
+    text: "text-[var(--reward)]",
+    glow: "shadow-[0_0_16px_var(--glow-reward)]",
   },
   CORRUPTED: {
-    border: "border-red-500/50",
-    text: "text-red-400",
-    glow: "shadow-[0_0_16px_rgba(239,68,68,0.25)]",
+    border: "border-[var(--danger)]/50",
+    text: "text-[var(--danger)]",
+    glow: "shadow-[0_0_16px_var(--danger-a25)]",
   },
 }
 

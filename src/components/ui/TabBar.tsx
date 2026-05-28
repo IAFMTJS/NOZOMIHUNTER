@@ -21,7 +21,7 @@ export function TabBar<T extends string>({
   return (
     <div
       role="tablist"
-      className={`flex gap-1 rounded-lg border border-[var(--border-subtle)] bg-black/30 p-1 ${className}`}
+      className={`flex gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--overlay-panel-strong)] p-1 ${className}`}
     >
       {tabs.map((tab) => {
         const selected = tab.id === active

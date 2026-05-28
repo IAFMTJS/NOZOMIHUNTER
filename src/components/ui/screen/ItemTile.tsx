@@ -30,7 +30,7 @@ export function ItemTile({
       className={`relative flex aspect-square flex-col items-center justify-center rounded-lg border p-2 text-center transition-colors ${
         selected || equipped
           ? "border-[var(--accent-bright)] bg-[var(--accent)]/20"
-          : "border-[var(--border-subtle)] bg-black/30"
+          : "border-[var(--border-subtle)] bg-[var(--overlay-panel-strong)]"
       } ${onClick && !disabled ? "cursor-pointer hover:border-[var(--accent)]" : ""} ${disabled ? "opacity-50" : ""}`}
     >
       <svg

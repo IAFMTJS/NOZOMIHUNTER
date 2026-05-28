@@ -26,3 +26,18 @@ export function defaultHubView(
   if (huntQuest) return "hunt"
   return "menu"
 }
+
+export function resolveHubHuntQuest(
+  regularQuests: QuestContract[],
+  activeQuests: QuestContract[],
+  selectedQuestId: string | null | undefined,
+  fallback?: QuestContract
+): QuestContract | undefined {
+  if (selectedQuestId) {
+    const fromRegular = regularQuests.find((q) => q.id === selectedQuestId)
+    if (fromRegular) return fromRegular
+    const fromActive = activeQuests.find((q) => q.id === selectedQuestId)
+    if (fromActive) return fromActive
+  }
+  return fallback ?? regularQuests.find(questReadyForHunt) ?? regularQuests[0]
+}

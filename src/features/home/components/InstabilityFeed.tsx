@@ -24,7 +24,7 @@ export function InstabilityFeed({ items }: InstabilityFeedProps) {
         {items.map((item) => (
           <li
             key={item.id}
-            className="rounded-lg border border-white/10 bg-black/20 px-2 py-2 text-center"
+            className="rounded-lg border border-[var(--border-subtle)] bg-[var(--overlay-faint)] px-2 py-2 text-center"
           >
             <p className="text-[10px] uppercase tracking-wider text-[var(--muted)]">
               {item.label}

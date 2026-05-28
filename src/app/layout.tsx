@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister"
+import { DEFAULT_THEME, DEFAULT_THEME_BACKGROUND } from "@/styles/themeDefaults"
 import "./fonts.css"
 import "./globals.css"
 
@@ -25,7 +26,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#05070b",
+  themeColor: DEFAULT_THEME_BACKGROUND,
 }
 
 export default function RootLayout({
@@ -34,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-theme={DEFAULT_THEME} suppressHydrationWarning>
       <body className="min-h-screen antialiased" suppressHydrationWarning>
         <ServiceWorkerRegister />
         {children}

@@ -19,13 +19,13 @@ const TONE_CLASS: Record<PanelTone, string> = {
   default: "nozomi-embedded border-transparent",
   accent: "nozomi-embedded-accent border-transparent",
   danger:
-    "border-transparent bg-[var(--danger)]/8 shadow-[inset_3px_0_0_rgba(255,77,109,0.5)]",
+    "border-transparent bg-[var(--danger)]/8 shadow-[inset_3px_0_0_var(--danger-a50)]",
   inset: "nozomi-embedded border-transparent opacity-90",
   corruption:
-    "border-transparent bg-[var(--corruption)]/10 shadow-[inset_3px_0_0_rgba(168,85,247,0.45),0_0_24px_rgba(168,85,247,0.1)]",
-  boss: "border-transparent bg-[var(--danger)]/8 shadow-[inset_3px_0_0_rgba(255,77,109,0.55),0_0_28px_rgba(255,77,109,0.08)]",
+    "border-transparent bg-[var(--corruption)]/10 shadow-[inset_3px_0_0_var(--corruption-a45),0_0_24px_var(--corruption-a10)]",
+  boss: "border-transparent bg-[var(--danger)]/8 shadow-[inset_3px_0_0_var(--danger-a55),0_0_28px_var(--danger-a08)]",
   reward:
-    "border-transparent bg-[var(--reward)]/8 shadow-[inset_3px_0_0_rgba(255,184,77,0.45),0_0_24px_var(--glow-reward)]",
+    "border-transparent bg-[var(--reward)]/8 shadow-[inset_3px_0_0_var(--reward-a45),0_0_24px_var(--glow-reward)]",
 }
 
 export function Panel({

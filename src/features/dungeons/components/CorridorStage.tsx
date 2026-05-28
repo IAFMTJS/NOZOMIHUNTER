@@ -145,7 +145,7 @@ export function CorridorStage({
                     ? "bg-[var(--accent)]/30 text-[var(--accent-bright)]"
                     : active
                       ? "bg-[var(--accent)]/20 text-[var(--foreground)] ring-1 ring-[var(--accent)]/50"
-                      : "bg-white/5 text-[var(--muted)]"
+                      : "bg-[var(--overlay-subtle)] text-[var(--muted)]"
                 }`}
               >
                 {b}
@@ -154,7 +154,7 @@ export function CorridorStage({
           })}
         </ol>
 
-        <div className="relative mt-4 h-2.5 overflow-hidden rounded-full bg-black/50 ring-1 ring-white/10">
+        <div className="relative mt-4 h-2.5 overflow-hidden rounded-full bg-[var(--overlay-track)] ring-1 ring-[var(--ring-subtle)]">
           <motion.div
             className="nozomi-corridor-progress h-full rounded-full bg-gradient-to-r from-[var(--accent)] via-[var(--accent-bright)] to-[var(--reward)]"
             initial={false}
@@ -167,7 +167,7 @@ export function CorridorStage({
         </p>
 
         {nextType && (
-          <div className="relative mt-4 flex items-center gap-3 rounded-lg border border-white/10 bg-black/40 px-3 py-2">
+          <div className="relative mt-4 flex items-center gap-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--overlay-panel)] px-3 py-2">
             <span
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--accent)]/40 bg-[var(--accent-dim)] font-display text-lg text-[var(--accent-bright)]"
               aria-hidden
@@ -240,7 +240,7 @@ export function CorridorStage({
               {listenBusy ? "Intercepting…" : "Listen"}
             </span>
             {holdProgress > 0 && (
-              <span className="mt-1 block h-1 w-full max-w-[8rem] overflow-hidden rounded-full bg-black/40">
+              <span className="mt-1 block h-1 w-full max-w-[8rem] overflow-hidden rounded-full bg-[var(--overlay-panel)]">
                 <span
                   className="block h-full bg-[var(--accent-bright)] transition-all"
                   style={{ width: `${holdProgress}%` }}

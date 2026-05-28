@@ -99,7 +99,7 @@ export function HomeClient() {
 
       <Link
         href="/training"
-        className="block rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:border-[var(--accent)]/40"
+        className="block rounded-xl border border-[var(--border-subtle)] bg-[var(--overlay-subtle)] p-4 transition-colors hover:border-[var(--accent)]/40"
       >
         <p className="text-xs uppercase tracking-widest text-[var(--muted)]">
           Training channel

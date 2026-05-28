@@ -84,6 +84,10 @@ export interface ContractHubProps {
   onAbandon: (questId: string) => void | Promise<void>
   onDismissPreparation: (questId: string) => void | Promise<void>
   onViewChange?: (view: HubView) => void
+  /** When set, hunt overlay targets this quest (e.g. training drill). */
+  focusQuestId?: string | null
+  /** Parent-controlled overlay mode; avoids active-dungeon hijacking hunt deploy. */
+  overlayView?: HubView
 }
 
 export interface PenaltyMods {

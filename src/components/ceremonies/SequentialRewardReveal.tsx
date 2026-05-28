@@ -14,9 +14,9 @@ import type { DungeonTheme } from "@/contracts/dungeon-contract"
 
 const TONE_CLASS: Record<NonNullable<RewardIconItem["tone"]>, string> = {
   xp: "border-[var(--reward)]/35 bg-[var(--reward)]/10 text-[var(--reward)]",
-  credits: "border-white/15 bg-white/5 text-[var(--foreground)]",
+  credits: "border-white/15 bg-[var(--overlay-subtle)] text-[var(--foreground)]",
   item: "border-[var(--accent)]/30 bg-[var(--accent)]/10 text-[var(--accent-bright)]",
-  neutral: "border-[var(--border-subtle)] bg-black/30 text-[var(--muted)]",
+  neutral: "border-[var(--border-subtle)] bg-[var(--overlay-panel-strong)] text-[var(--muted)]",
 }
 
 interface SequentialRewardRevealProps {

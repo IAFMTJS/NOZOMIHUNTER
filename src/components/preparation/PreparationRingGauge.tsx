@@ -20,7 +20,7 @@ export function PreparationRingGauge({
             cy="60"
             r="54"
             fill="none"
-            stroke="rgba(255,255,255,0.08)"
+            stroke="var(--overlay-muted)"
             strokeWidth="8"
           />
           <circle

@@ -25,7 +25,7 @@ export function StatBar({
         <span className="text-[var(--foreground)]">{label}</span>
         <span className="tabular-nums text-[var(--muted)]">{value}</span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-black/50">
+      <div className="h-2 overflow-hidden rounded-full bg-[var(--overlay-track)]">
         <div
           className={`h-full rounded-full bg-gradient-to-r ${fill}`}
           style={{ width: `${pct}%` }}

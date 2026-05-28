@@ -11,6 +11,7 @@
     "start": "next start",
     "lint": "next lint",
     "check:architecture": "node scripts/check-architecture.mjs",
+    "check:theme": "node scripts/verify-theme-parity.mjs && node scripts/verify-no-hardcoded-ui-colors.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "supabase": "supabase",

@@ -21,7 +21,7 @@ export function ObjectiveChecklist({ objectives }: ObjectiveChecklistProps) {
         return (
           <li
             key={obj.id}
-            className="flex items-start gap-3 rounded-xl border border-[var(--border-subtle)] bg-black/25 px-3 py-2.5"
+            className="flex items-start gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--overlay-scrim)] px-3 py-2.5"
           >
             <span
               className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border text-xs ${

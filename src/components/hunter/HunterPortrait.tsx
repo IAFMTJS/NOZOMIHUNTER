@@ -57,8 +57,8 @@ export function HunterPortrait({
       >
         <defs>
           <linearGradient id="portrait-fill" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgba(122, 92, 255, 0.35)" />
-            <stop offset="100%" stopColor="rgba(5, 7, 11, 0.9)" />
+            <stop offset="0%" stopColor="var(--accent-a35)" />
+            <stop offset="100%" stopColor="var(--surface-a90)" />
           </linearGradient>
         </defs>
         <rect
@@ -69,11 +69,11 @@ export function HunterPortrait({
         />
         <path
           d="M40 14c-8 0-14 6-14 14v4c0 4 2 8 6 10l-4 22h24l-4-22c4-2 6-6 6-10v-4c0-8-6-14-14-14z"
-          fill="rgba(243, 245, 255, 0.12)"
-          stroke="rgba(243, 245, 255, 0.2)"
+          fill="var(--foreground-a12)"
+          stroke="var(--foreground-a20)"
           strokeWidth="1"
         />
-        <circle cx="40" cy="26" r="9" fill="rgba(243, 245, 255, 0.08)" />
+        <circle cx="40" cy="26" r="9" fill="var(--foreground-a08)" />
       </svg>
 
       {imageUrl && (
@@ -122,7 +122,7 @@ export function HunterPortrait({
       )}
 
       {/* Rank badge */}
-      <span className="absolute bottom-1 right-1 rounded bg-black/60 px-1.5 py-0.5 font-display text-sm font-bold text-[var(--foreground)]">
+      <span className="absolute bottom-1 right-1 rounded bg-[var(--overlay-badge)] px-1.5 py-0.5 font-display text-sm font-bold text-[var(--foreground)]">
         {rank ?? "?"}
       </span>
 

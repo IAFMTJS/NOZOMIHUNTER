@@ -14,7 +14,7 @@ import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 
 export function TrainingClient() {
   const router = useRouter()
-  const { user, player, setHubView } = useHunterSession()
+  const { user, player } = useHunterSession()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -28,8 +28,7 @@ export function TrainingClient() {
       )
       const quest = await startTrainingMission(user.id, mode, player.level)
       if (quest) {
-        setHubView("hunt")
-        router.push(`/contracts/${quest.id}`)
+        router.push(`/prepare?questId=${encodeURIComponent(quest.id)}`)
       } else {
         setError("Training deployment unavailable. Retry in a moment.")
       }

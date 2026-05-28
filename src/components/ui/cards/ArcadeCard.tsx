@@ -17,8 +17,8 @@ export function ArcadeCard({
 }: ArcadeCardProps) {
   const accentClass =
     accent === "gold"
-      ? "border-[var(--reward)]/40 shadow-[0_0_20px_rgba(250,204,21,0.15)]"
-      : "border-[var(--accent)]/40 shadow-[0_0_20px_rgba(124,58,237,0.2)]"
+      ? "border-[var(--reward)]/40 shadow-[0_0_20px_var(--reward-gold-a15)]"
+      : "border-[var(--accent)]/40 shadow-[0_0_20px_var(--accent-violet-a20)]"
   return (
     <div
       className={`nozomi-card-arcade rounded-2xl border-2 bg-[var(--surface)]/80 ${accentClass} ${UI_TOKENS.cardPadding} ${className}`}

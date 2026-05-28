@@ -37,7 +37,7 @@ export function DungeonCorridorRail({ sectors }: DungeonCorridorRailProps) {
               className={`flex h-7 w-7 shrink-0 items-center justify-center rounded border text-[11px] font-display ${
                 sector.current
                   ? "border-[var(--accent)]/50 bg-[var(--accent-dim)] text-[var(--accent-bright)]"
-                  : "border-[var(--border-subtle)] bg-black/30 text-[var(--muted)]"
+                  : "border-[var(--border-subtle)] bg-[var(--overlay-panel-strong)] text-[var(--muted)]"
               }`}
               aria-hidden
             >

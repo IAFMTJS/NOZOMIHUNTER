@@ -54,7 +54,7 @@ export function PreparationChecklist({ checklist }: PreparationChecklistProps) {
               href={row.href}
               className={`flex flex-col gap-1 rounded-lg border px-4 py-3 text-sm transition-colors hover:border-[var(--accent)]/40 ${
                 done
-                  ? "border-[var(--border-subtle)] bg-black/20"
+                  ? "border-[var(--border-subtle)] bg-[var(--overlay-faint)]"
                   : "border-[var(--danger)]/35 bg-[var(--danger)]/5"
               }`}
             >

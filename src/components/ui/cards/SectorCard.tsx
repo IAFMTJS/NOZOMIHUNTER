@@ -11,7 +11,7 @@ interface SectorCardProps extends HTMLAttributes<HTMLDivElement> {
 export function SectorCard({ children, className = "", ...rest }: SectorCardProps) {
   return (
     <div
-      className={`nozomi-card-sector rounded-xl border border-[var(--danger)]/35 bg-black/40 shadow-[0_0_24px_rgba(255,77,109,0.12)] ${UI_TOKENS.cardPadding} ${className}`}
+      className={`nozomi-card-sector rounded-xl border border-[var(--danger)]/35 bg-[var(--overlay-panel)] shadow-[0_0_24px_var(--danger-a12)] ${UI_TOKENS.cardPadding} ${className}`}
       {...rest}
     >
       {children}

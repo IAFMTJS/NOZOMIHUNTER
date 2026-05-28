@@ -98,7 +98,7 @@ export function ConversationEncounter({
               className={`rounded px-3 py-2.5 text-sm ${
                 msg.role === "director"
                   ? "border border-[var(--accent)]/40 bg-[var(--accent)]/10 shadow-[inset_0_0_20px_var(--glow-accent)]"
-                  : "border border-white/10 bg-white/5"
+                  : "border border-[var(--border-subtle)] bg-[var(--overlay-subtle)]"
               }`}
             >
               <span className="mr-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">

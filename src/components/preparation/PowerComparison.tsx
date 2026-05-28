@@ -13,7 +13,7 @@ export function PowerComparison({ recommended, yours }: PowerComparisonProps) {
         : "text-[var(--danger)]"
 
   return (
-    <div className="grid grid-cols-2 gap-3 rounded-xl border border-[var(--border-subtle)] bg-black/20 p-4 text-center">
+    <div className="grid grid-cols-2 gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--overlay-faint)] p-4 text-center">
       <div>
         <p className="text-[10px] uppercase tracking-widest text-[var(--muted)]">
           Recommended power

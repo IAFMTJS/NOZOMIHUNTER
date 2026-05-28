@@ -51,7 +51,7 @@ export function SettingsClient() {
         <li>
           <Link
             href="/system"
-            className="flex items-center justify-between px-4 py-3 text-sm text-[var(--foreground)] hover:bg-white/5"
+            className="flex items-center justify-between px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--overlay-subtle)]"
           >
             System status
             <span className="text-[var(--muted)]">›</span>
@@ -65,7 +65,7 @@ export function SettingsClient() {
             aria-checked={corruptionAudio}
             onClick={toggleCorruptionAudio}
             className={`relative h-7 w-12 rounded-full transition-colors ${
-              corruptionAudio ? "bg-[var(--accent)]" : "bg-white/15"
+              corruptionAudio ? "bg-[var(--accent)]" : "bg-[var(--overlay-toggle-off)]"
             }`}
           >
             <span
@@ -83,7 +83,7 @@ export function SettingsClient() {
             aria-checked={reducedMotion}
             onClick={toggleReducedMotion}
             className={`relative h-7 w-12 rounded-full transition-colors ${
-              reducedMotion ? "bg-[var(--accent)]" : "bg-white/15"
+              reducedMotion ? "bg-[var(--accent)]" : "bg-[var(--overlay-toggle-off)]"
             }`}
           >
             <span
@@ -97,7 +97,7 @@ export function SettingsClient() {
           <button
             type="button"
             onClick={() => void signOut()}
-            className="w-full px-4 py-3 text-left text-sm text-[var(--danger)] hover:bg-white/5"
+            className="w-full px-4 py-3 text-left text-sm text-[var(--danger)] hover:bg-[var(--overlay-subtle)]"
           >
             Logout
           </button>
