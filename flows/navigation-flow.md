@@ -24,7 +24,7 @@ Legacy: `/missions` and `/missions/[id]` redirect to `/contracts`.
 
 `/dungeons` (list) → `/dungeons/[key]` → Enter (stamina RPC) → `/prepare?dungeonKey=` → Deploy → `/dungeons` + `EncounterHost` sector overlay (`hubView === "sector"`)
 
-**Stuck run recovery:** When a run is active, the dungeons hub shows **Abandon active run** (list-level). In-run **Abort dungeon** stays available in `REWARD` / route-select phases (not only mid-encounter).
+**Stuck run recovery:** With an active run, browsing `/dungeons` keeps the **list visible** (overlay does not auto-open). Use **Resume corridor** to reopen the sector overlay, **Abandon active run** on the list, or **Abort dungeon** inside the run (including `PREPARATION` before sector deploy). Stable `data-testid` hooks live in `src/config/e2eTestIds.ts`.
 
 **V2 route from REWARD:** After a sector reward, route selection uses `REWARD → EXPLORATION` then engages the chosen node (no direct `REWARD → ENCOUNTER` transition).
 

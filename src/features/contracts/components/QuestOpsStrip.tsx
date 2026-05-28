@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/Button"
 import { StatusChip } from "@/components/ui/StatusChip"
+import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 
 interface QuestOpsStripProps {
   stamina: number
@@ -50,6 +51,7 @@ export function QuestOpsStrip({
           variant="ghost"
           size="sm"
           disabled={requestBusy}
+          data-testid={E2E_TEST_IDS.contractsRequest}
           onClick={onRequest}
           className="ml-auto shrink-0"
         >

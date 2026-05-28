@@ -14,11 +14,14 @@
 - Vocabulary mastery updates refresh active quest preparation scores (`refreshVocabularyPreparationForActiveQuests`)
 - Training quests skip vocab prep on accept; critical readiness bypass for training deploy
 - Dungeon `chooseDungeonRoute` from `REWARD` uses `REWARD → EXPLORATION` before sector engage
-- Dungeons hub abandon banner for active runs; friendlier invalid-transition copy in `DungeonRunner`
+- Dungeons hub: active-run banner with **Resume corridor** + **Abandon** (list no longer blocked by auto sector overlay)
+- `EncounterHost` no longer forces `hubView === "sector"` when visiting `/dungeons`; overlay only after deploy / resume
+- **Abort dungeon** available in `PREPARATION` (and all non-extraction states); friendlier invalid-transition copy in `DungeonRunner`
 
 ### UX polish
 - `HunterSession` hydration messaging; login skeleton
 - `ScreenCTA` z-index above bottom nav; reduced duplicate scroll padding on contract/prepare screens
+- QA `data-testid` hooks (`src/config/e2eTestIds.ts`) on training play, contract request, prepare deploy, dungeon enter/resume/abandon/abort, encounter transmit
 - Middleware protects `/settings`, `/training`, `/records`
 - Channel-aware mission breadcrumbs and CTA labels (`Deploy contract` / `Enter sector` / `Start drill`)
 - Home operational alerts link to recovery routes; prepare screen recovery links

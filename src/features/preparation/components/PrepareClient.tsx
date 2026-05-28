@@ -33,6 +33,7 @@ import { estimatedDungeonTimeLimitMinutes } from "@/systems/presentation/questPr
 import { fetchItemCatalog } from "@/features/inventory/services/inventoryActions"
 import type { ItemCatalogEntryContract } from "@/contracts/economy-contract"
 import { isTrainingQuest } from "@/systems/training/trainingMissionSystem"
+import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 
 export function PrepareClient() {
   const router = useRouter()
@@ -254,6 +255,7 @@ export function PrepareClient() {
         staminaCost={staminaCost ?? undefined}
         disabled={deployBlocked || dungeon.busy}
         className={hunterPresentation.huntCtaClass}
+        data-testid={E2E_TEST_IDS.prepareDeploy}
         onClick={() => void handleDeploy()}
       />
     </HunterPage>

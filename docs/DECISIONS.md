@@ -26,3 +26,15 @@
 ## Guest authentication (UX audit, 2026-05)
 
 **Decision:** Guest sign-in is hidden unless `NEXT_PUBLIC_ENABLE_GUEST_AUTH=true` **and** Supabase anonymous auth is enabled for the project. Default is off to avoid a misleading login affordance.
+
+## Dungeon overlay vs. list recovery (UX audit, 2026-05)
+
+**Context:** `EncounterHost` auto-set `hubView` to `sector` whenever `/dungeons` loaded with an active run. The full-screen overlay intercepted clicks on list-level **Abandon active run**.
+
+**Decision:**
+
+- Do **not** auto-open the sector overlay on `/dungeons` navigation.
+- Set `hubView` to `sector` only from prepare deploy (`PrepareClient`) or explicit **Resume corridor** on the dungeons list.
+- Expose stable `data-testid` values via `src/config/e2eTestIds.ts` for automation.
+
+**Rationale:** List recovery actions must remain reachable; resume is an explicit operator choice.

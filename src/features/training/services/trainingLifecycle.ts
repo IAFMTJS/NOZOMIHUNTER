@@ -6,16 +6,21 @@ import { usePlayerStore } from "@/stores/usePlayerStore"
 
 export async function startTrainingMission(
   userId: string,
-  mode: GameModeId
+  mode: GameModeId,
+  fallbackLevel?: number
 ) {
   const store = usePlayerStore.getState()
-  const player = store.player
-  if (!player) return null
+  const level = store.player?.level ?? fallbackLevel
+  if (level == null) return null
 
-  const generated = buildTrainingQuest(mode, player.level)
+  const generated = buildTrainingQuest(mode, level)
   const quest = acceptQuest(generated, userId)
-  await assignQuest(userId, quest)
   store.setQuests(dedupeActiveQuests([...store.activeQuests, quest]))
-  await persistQuestState()
+  try {
+    await assignQuest(userId, quest)
+    await persistQuestState()
+  } catch {
+    // Keep training playable even when remote persistence is transiently unavailable.
+  }
   return quest
 }

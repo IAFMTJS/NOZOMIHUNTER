@@ -9,9 +9,11 @@ import { DungeonSectorCard } from "@/components/ui/screen/DungeonSectorCard"
 import { SectorCard } from "@/components/ui/cards/SectorCard"
 import { UI_TOKENS } from "@/config/uiTokens"
 import { Button } from "@/components/ui/Button"
+import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 
 export function DungeonsListClient() {
-  const { player, activeQuests, activeDungeon, dungeon, forecast } = useHunterSession()
+  const { player, activeQuests, activeDungeon, dungeon, forecast, setHubView } =
+    useHunterSession()
 
   if (!player) {
     return (
@@ -29,19 +31,35 @@ export function DungeonsListClient() {
         Select a sector. Atmospheric breach corridors await deployment.
       </p>
       {activeDungeon && (
-        <div className="mt-3 rounded-xl border border-[var(--warning)]/40 bg-[var(--warning)]/10 p-3">
+        <div
+          className="mt-3 rounded-xl border border-[var(--warning)]/40 bg-[var(--warning)]/10 p-3"
+          data-testid="dungeon-active-run-banner"
+        >
           <p className="text-xs text-[var(--warning)]">
             Active run detected: {activeDungeon.title}
           </p>
-          <Button
-            variant="danger"
-            size="sm"
-            disabled={dungeon.busy}
-            className="mt-2 w-full"
-            onClick={() => void dungeon.abandon()}
-          >
-            Abandon active run
-          </Button>
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+            <Button
+              variant="cta"
+              size="sm"
+              className="w-full sm:flex-1"
+              disabled={dungeon.busy}
+              data-testid={E2E_TEST_IDS.dungeonResume}
+              onClick={() => setHubView("sector")}
+            >
+              Resume corridor
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              disabled={dungeon.busy}
+              className="w-full sm:flex-1"
+              data-testid={E2E_TEST_IDS.dungeonAbandon}
+              onClick={() => void dungeon.abandon()}
+            >
+              Abandon active run
+            </Button>
+          </div>
         </div>
       )}
       <ul className={`mt-4 ${UI_TOKENS.channelSector}`}>

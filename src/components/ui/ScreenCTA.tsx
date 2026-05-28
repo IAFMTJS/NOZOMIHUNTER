@@ -8,6 +8,7 @@ interface ScreenCTAProps {
   staminaCost?: number
   children?: ReactNode
   className?: string
+  "data-testid"?: string
 }
 
 export function ScreenCTA({
@@ -17,6 +18,7 @@ export function ScreenCTA({
   staminaCost,
   children,
   className = "",
+  "data-testid": dataTestId,
 }: ScreenCTAProps) {
   return (
     <div
@@ -29,6 +31,7 @@ export function ScreenCTA({
           size="md"
           className="nozomi-btn-cta w-full !py-3.5"
           disabled={disabled}
+          data-testid={dataTestId}
           onClick={onClick}
         >
           {label}

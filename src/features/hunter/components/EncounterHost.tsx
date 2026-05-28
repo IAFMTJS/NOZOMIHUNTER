@@ -23,13 +23,8 @@ export function EncounterHost() {
   useEffect(() => {
     if (!isEncounterOverlayRoute(pathname)) {
       setHubView("menu")
-      return
     }
-
-    if (activeDungeon && pathname === "/dungeons") {
-      setHubView("sector")
-    }
-  }, [activeDungeon, pathname, setHubView])
+  }, [pathname, setHubView])
 
   if (!player) return null
   if (!isEncounterOverlayRoute(pathname)) return null

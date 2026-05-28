@@ -32,6 +32,7 @@ import { EncounterTargetRail } from "@/components/ui/EncounterTargetRail"
 import { WordExtractionPanel } from "@/components/ui/screen/WordExtractionPanel"
 import { ComboMeter } from "@/components/ceremonies/ComboMeter"
 import { isComboMilestone } from "@/systems/learning/encounterPressureSystem"
+import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 
 interface VocabularyEncounterProps {
   quest: QuestContract
@@ -212,6 +213,7 @@ export function VocabularyEncounter({
                   size="md"
                   disabled={disabled || submitting || !answer.trim()}
                   className="w-full sm:w-auto"
+                  data-testid={E2E_TEST_IDS.encounterTransmit}
                 >
                   {submitting ? "Transmitting…" : "Transmit"}
                 </Button>

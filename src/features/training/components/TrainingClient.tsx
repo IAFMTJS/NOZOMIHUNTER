@@ -16,10 +16,12 @@ export function TrainingClient() {
   const router = useRouter()
   const { user, player, setHubView } = useHunterSession()
   const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function deploy(mode: GameModeId) {
     if (!user?.id || !player) return
     setBusy(true)
+    setError(null)
     try {
       const { startTrainingMission } = await import(
         "@/features/training/services/trainingActions"
@@ -27,8 +29,12 @@ export function TrainingClient() {
       const quest = await startTrainingMission(user.id, mode, player.level)
       if (quest) {
         setHubView("hunt")
-        router.push("/training")
+        router.push(`/contracts/${quest.id}`)
+      } else {
+        setError("Training deployment unavailable. Retry in a moment.")
       }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Training deployment failed.")
     } finally {
       setBusy(false)
     }
@@ -87,6 +93,7 @@ export function TrainingClient() {
           )
         })}
       </div>
+      {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
     </HunterPage>
   )
 }

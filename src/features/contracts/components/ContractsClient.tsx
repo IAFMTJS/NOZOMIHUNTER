@@ -29,6 +29,7 @@ import {
 import { getTrackedQuest } from "@/systems/quests/contractTrackingSystem"
 import { buildMissionOpsPresentation } from "@/systems/presentation/missionOpsPresentationSystem"
 import type { QuestContract } from "@/contracts/quest-contract"
+import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 
 export type QuestChannelTab = "daily" | "story" | "side" | "achievements"
 
@@ -231,6 +232,7 @@ export function ContractsClient() {
                       href={href}
                       className="block rounded-xl transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                       aria-label={`Open contract: ${q.title}`}
+                      data-testid={E2E_TEST_IDS.contractOpen}
                     >
                       <RoutineCard className="flex items-stretch gap-2 !p-3">
                         <ContractTypeIcon type={q.type} />
@@ -275,6 +277,7 @@ export function ContractsClient() {
                         href={href}
                         className="block rounded-xl transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                         aria-label={`Open contract: ${q.title}`}
+                        data-testid={E2E_TEST_IDS.contractOpen}
                       >
                         <OperativeCard className="flex items-stretch gap-2 !p-3">
                           <ContractTypeIcon type={q.type} />

@@ -1293,7 +1293,7 @@ Responsibilities
 * single hydrate: player, quests, event handlers, audio unlock
 * shell: `HunterShellLayout` + page children + `EncounterHost` + progression ceremonies
 * overlays: `RewardClaimOverlay`, `LevelUpCeremony`, `AchievementUnlockCeremony`, `RankUpNotice`, `UnlockNotice`, `SyncDisciplineCeremony`
-* `trackMission`, `claimRewards`, `hubView` for ContractHub overlays (only on `/contracts` | `/missions` | `/dungeons` after deploy; other routes reset `hubView` to `menu`)
+* `trackMission`, `claimRewards`, `hubView` for ContractHub overlays (only on `/contracts` | `/missions` | `/dungeons` when `hubView` is `hunt` or `sector` after deploy or **Resume corridor**; leaving those routes resets `hubView` to `menu`; `/dungeons` does not auto-open sector overlay)
 
 Dependencies
 

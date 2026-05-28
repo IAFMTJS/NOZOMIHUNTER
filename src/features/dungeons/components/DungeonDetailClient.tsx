@@ -15,6 +15,7 @@ import { computeHunterPower } from "@/systems/power/hunterPowerSystem"
 import { canSpendStamina } from "@/systems/economy/staminaSystem"
 import { generateDungeon } from "@/systems/dungeons/dungeonGenerator"
 import { estimatedDungeonTimeLimitMinutes } from "@/systems/presentation/questPresentationSystem"
+import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 
 interface DungeonDetailClientProps {
   dungeonKey: string
@@ -114,6 +115,7 @@ export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
             size="md"
             className="w-full !py-3.5"
             disabled={!gate.ok || !hasStamina || dungeon.busy}
+            data-testid={E2E_TEST_IDS.dungeonEnter}
             onClick={async () => {
               await dungeon.enter(dungeonKey)
               router.push(`/prepare?dungeonKey=${encodeURIComponent(dungeonKey)}`)
