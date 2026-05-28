@@ -28,7 +28,7 @@ describe("encounterFeedbackOrchestrator", () => {
       previousStreak: 0,
     })
     expect(r.cssClasses).toContain("nozomi-dungeon-unstable")
-    expect(r.audioCues).toContain("corruption")
+    expect(r.audioCues).toContain("corruptionSting")
     expect(r.freezeMs).toBe(120)
   })
 

@@ -29,6 +29,7 @@ import {
 } from "@/systems/dungeons/dungeonLexiconRecapSystem"
 import { nextPeakEncounterStreak } from "@/systems/learning/encounterPressureSystem"
 import type { QuestContract } from "@/contracts/quest-contract"
+import { stopRunAudio } from "@/systems/audio/audioSystem"
 
 let saveRegistered = false
 
@@ -87,6 +88,7 @@ export async function handleDungeonFailure(
     store.applyPenalties(failResult.penalties)
     const remaining = store.activeQuests.filter((q) => q.id !== quest.id)
     store.setQuests(remaining)
+    if (typeof window !== "undefined") stopRunAudio()
     await failUserQuest(userId, quest.id)
     await persistDungeonState()
     return
@@ -115,6 +117,7 @@ export async function handleDungeonFailure(
     store.applyPenalties(failResult.penalties)
     const remaining = store.activeQuests.filter((q) => q.id !== quest.id)
     store.setQuests(remaining)
+    if (typeof window !== "undefined") stopRunAudio()
     await failUserQuest(userId, quest.id)
     await persistDungeonState()
     return

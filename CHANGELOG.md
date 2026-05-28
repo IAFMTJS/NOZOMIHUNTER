@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.5.0 (unreleased) — Architecture foundation + immersion wave 0
+
+### Architecture (M0)
+- Split `dungeonOrchestrator` into flow modules + thin facade
+- `encounterModeRegistry` extracted from `EncounterRouter`
+- Hunter session hooks: `useHunterHubState`, `useHunterCeremonies`, `useHunterRewardClaim`
+- Shared context re-exports under `src/context/encounters`
+- `missionTrackingRepository` — no `createClient` in feature service
+- `check-architecture` warns on systems files > 300 lines
+- Vitest: `dungeonOrchestratorFlows`, `learnerDisplayCompliance`
+
+### Immersion (partial M1–M2)
+- Landing whispers + time-of-day (`landingAmbienceSystem`, `LandingWhispers`)
+- Routes: `/map`, `/archive`, `/contacts`
+- Contract channel narrative labels; training discipline skins
+- Home hub: collapsible operational feed
+- `DungeonFailureCeremony` component
+- Docs: `immersion-rework-masterplan.md`, `ux-audit-status.md`, registry/architecture v1.5
+
 ## v1.4.1 (unreleased) — UX audit remediation
 
 ### JMDict vocabulary (full curated integration)

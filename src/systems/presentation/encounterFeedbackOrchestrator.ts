@@ -71,7 +71,7 @@ export function orchestrateEncounterFeedback(
     }
     if (profile.wrongAnswerFx === "corruption") {
       cssClasses.push("nozomi-feedback-flash--danger", "nozomi-dungeon-unstable")
-      audioCues.push("corruption")
+      audioCues.push("corruptionSting")
     } else if (profile.wrongAnswerFx === "glitch") {
       cssClasses.push("nozomi-encounter-glitch", "nozomi-feedback-flash--danger")
     } else {

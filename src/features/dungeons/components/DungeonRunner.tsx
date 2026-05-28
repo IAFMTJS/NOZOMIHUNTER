@@ -44,7 +44,10 @@ import { DungeonRunShell } from "@/features/dungeons/components/DungeonRunShell"
 import { DungeonRunHud } from "@/features/dungeons/components/DungeonRunHud"
 import { SectorRewardInterstitial } from "@/features/dungeons/components/SectorRewardInterstitial"
 import { DungeonClearCeremonyFlow } from "@/components/ceremonies/DungeonClearCeremonyFlow"
+import { DungeonFailureCeremony } from "@/components/ceremonies/DungeonFailureCeremony"
+import { dungeonFailureConsequenceLine } from "@/systems/dungeons/dungeonPresentationSystem"
 import { buildDungeonClearFromRun } from "@/systems/presentation/ceremonies/dungeonClearCeremonyData"
+import { DUNGEON_CONFIG } from "@/config/dungeonConfig"
 import {
   encounterTypeGlyph,
   sectorNodeLabel,
@@ -56,6 +59,7 @@ import { buildExtractionMasteryRecap } from "@/systems/dungeons/dungeonLexiconRe
 import { EncounterFeedbackProvider } from "@/features/encounters/context/EncounterFeedbackContext"
 import { EncounterFeedbackBridge } from "@/features/encounters/EncounterFeedbackBridge"
 import { E2E_TEST_IDS } from "@/config/e2eTestIds"
+import { stopRunAudio } from "@/systems/audio/audioSystem"
 
 interface DungeonRunnerProps {
   quest: QuestContract
@@ -109,6 +113,7 @@ export function DungeonRunner({
   escapeBeaconActive,
 }: DungeonRunnerProps) {
   const [status, setStatus] = useState<string | null>(null)
+  const [failureDismissed, setFailureDismissed] = useState(false)
   const [timeRemainingMs, setTimeRemainingMs] = useState<number | null>(null)
   const run = quest.dungeonRun
 
@@ -122,6 +127,8 @@ export function DungeonRunner({
     const id = window.setInterval(tick, 1000)
     return () => window.clearInterval(id)
   }, [run?.runStartedAt, run?.timeLimitMs, run?.frozenTimeMs, run?.frozenUntil, run])
+
+  useEffect(() => () => stopRunAudio(), [])
 
   const extractionRecap = useMemo(() => {
     const ids = run?.stabilizedWordIds ?? []
@@ -468,7 +475,18 @@ export function DungeonRunner({
     </>
   )
 
+  const failureLine =
+    state === "FAILURE"
+      ? dungeonFailureConsequenceLine(run, DUNGEON_CONFIG.MAX_ENCOUNTER_FAILURES)
+      : null
+
   return (
+    <>
+    <DungeonFailureCeremony
+      open={state === "FAILURE" && !failureDismissed}
+      detailLine={failureLine}
+      onContinue={() => setFailureDismissed(true)}
+    />
     <DungeonRunShell run={run} minimal={inEncounter && state !== "REWARD"}>
       <Panel
         as="article"
@@ -539,5 +557,6 @@ export function DungeonRunner({
         )}
       </Panel>
     </DungeonRunShell>
+    </>
   )
 }

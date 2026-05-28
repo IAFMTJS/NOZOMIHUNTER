@@ -6,6 +6,7 @@ import type { HunterRank } from "@/contracts/player-contract"
 import { dedupeActiveQuests } from "@/systems/quests/questListUtils"
 import { applyLevelUpDelta } from "@/systems/progression/rpgStatsSystem"
 import { buildLevelUpCeremonyViewModel } from "@/systems/presentation/ceremonies/levelUpCeremonyData"
+import { syncCorruptionAudio } from "@/systems/audio/registerAudioHandlers"
 import type { LevelUpCeremonyViewModel } from "@/systems/presentation/ceremonies/ceremonyTypes"
 
 interface PlayerStore {
@@ -107,6 +108,9 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         updatedAt: new Date().toISOString(),
       },
     })
+    if (typeof window !== "undefined") {
+      syncCorruptionAudio(penalties.corruption)
+    }
   },
 
   updateQuest: (quest) => {

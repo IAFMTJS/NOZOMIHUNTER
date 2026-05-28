@@ -29,7 +29,13 @@ import {
 } from "@/features/rewards/services/completionService"
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
-import { playAmbience, playAudioCue, unlockAudio, type AmbienceCue } from "@/systems/audio/audioSystem"
+import {
+  playAmbience,
+  playAudioCue,
+  stopRunAudio,
+  unlockAudio,
+  type AmbienceCue,
+} from "@/systems/audio/audioSystem"
 import { playThemedCue } from "@/systems/audio/themedAudioSystem"
 import { pulseHaptic } from "@/systems/presentation/hapticsSystem"
 import { explorationCorruptionDelta } from "@/systems/dungeons/explorationSystem"
@@ -265,6 +271,10 @@ export async function startDungeonSector(userId: string) {
 export async function abandonDungeon(userId: string) {
   const { quest, store, player } = getDungeonQuest()
   if (!quest || !player) return null
+
+  if (typeof window !== "undefined") {
+    stopRunAudio()
+  }
 
   const spent = quest.dungeonRun?.staminaSpent ?? 0
   if (spent > 0) {

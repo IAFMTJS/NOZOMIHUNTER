@@ -1,6 +1,4 @@
-import { createClient } from "@/lib/supabase/client"
-import { updateTrackedQuestRow } from "@/services/supabase/economyRepository"
-import { findActiveQuestRowId } from "@/services/supabase/playerRepository"
+import { persistTrackedMission } from "@/services/supabase/missionTrackingRepository"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
@@ -17,11 +15,11 @@ export async function trackMissionForUser(
   const updated = setTrackedQuest(player, questId)
   store.setPlayer(updated)
 
-  const supabase = createClient()
-  if (!supabase) return
-
-  const rowId = await findActiveQuestRowId(userId, questId)
-  await updateTrackedQuestRow(userId, rowId)
+  try {
+    await persistTrackedMission(userId, questId)
+  } catch {
+    // Offline or Supabase not configured — local track still applies
+  }
 
   eventBus.emit(GAME_EVENTS.QUEST_TRACKED, { playerId: userId, questId })
 }

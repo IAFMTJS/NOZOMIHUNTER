@@ -36,6 +36,18 @@ Leaving `/contracts`, `/missions`, or `/dungeons` (e.g. bottom nav) resets `hubV
 - Session gate: `HunterSessionProvider` waits for auth, then player hydration (`Signing in…` / `Loading hunter data…`).
 - Guest login only when `NEXT_PUBLIC_ENABLE_GUEST_AUTH=true` and Supabase anonymous auth is enabled (see README).
 
+## Hub overlay views
+
+`ContractHub` supports internal views: `menu`, `hunt`, `contracts`, `sector`. `EncounterHost` mounts the full hub overlay when `hubView` is `hunt` or `sector` on `/contracts`, `/missions`, `/dungeons`, or `/training`. The `menu` view is used in-session when not in an active encounter; it is not mounted as a route overlay by default.
+
+## World map and archive
+
+- `/map` — sector map (`WorldMapClient`, `worldMapSystem`)
+- `/archive` — Black Archive lore entries (`ArchiveClient`, `archiveSystem`)
+- `/contacts` — NPC trust summary (`ContactsClient`, `relationshipRepository`)
+
+Linked from Profile → modules.
+
 ## Overlays
 
 - `RewardClaimOverlay` when `player.pendingRewards` is set after guarded completion (tier: daily light / side medium / story+dungeon full — see `completionCeremonyTierSystem`)

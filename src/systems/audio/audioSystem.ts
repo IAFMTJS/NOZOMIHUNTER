@@ -8,6 +8,7 @@ export type AudioCueId =
   | "sectorClear"
   | "questComplete"
   | "corruption"
+  | "corruptionSting"
   | "combo2"
   | "combo5"
   | "comboBreak"
@@ -132,6 +133,9 @@ export function playAudioCue(cue: AudioCueId): void {
     case "corruption":
       startCorruptionHum()
       break
+    case "corruptionSting":
+      playCorruptionSting()
+      break
     case "combo2":
       tone(523, 70)
       setTimeout(() => tone(659, 80), 60)
@@ -161,7 +165,29 @@ export function playAudioCue(cue: AudioCueId): void {
   }
 }
 
-function startCorruptionHum(): void {
+/** Short wrong-answer / penalty sting — not the persistent corruption hum. */
+function playCorruptionSting(): void {
+  if (muted) return
+  const c = getContext()
+  if (!c) return
+  unlockAudio()
+
+  const osc = c.createOscillator()
+  const g = c.createGain()
+  osc.type = "sawtooth"
+  osc.frequency.setValueAtTime(92, c.currentTime)
+  osc.frequency.exponentialRampToValueAtTime(48, c.currentTime + 0.22)
+  g.gain.value = 0.028
+  osc.connect(g)
+  g.connect(c.destination)
+  const t = c.currentTime
+  g.gain.setValueAtTime(0.028, t)
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.28)
+  osc.start(t)
+  osc.stop(t + 0.3)
+}
+
+export function startCorruptionHum(): void {
   if (muted || corruptionLoop) return
   const c = getContext()
   if (!c) return
@@ -239,4 +265,10 @@ export function stopAmbience(): void {
   ambienceLoop = null
   ambienceGain = null
   activeAmbience = null
+}
+
+/** Stop looping dungeon / corruption audio (e.g. on extract, fail, abandon). */
+export function stopRunAudio(): void {
+  stopCorruptionHum()
+  stopAmbience()
 }

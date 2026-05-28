@@ -2,6 +2,8 @@
 
 # NOZOMI - Hunter System
 
+**Versioning:** Product releases are tracked in [`CHANGELOG.md`](CHANGELOG.md) (currently v1.4.1+ unreleased). The `package.json` `version` field is a placeholder for npm, not the product version.
+
 NOZOMI is an immersive Japanese-learning RPG inspired by:
 - oldschool MMORPG progression
 - Solo Leveling progression systems

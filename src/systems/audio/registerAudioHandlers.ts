@@ -1,6 +1,11 @@
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
-import { playAudioCue, stopCorruptionHum } from "./audioSystem"
+import {
+  playAudioCue,
+  startCorruptionHum,
+  stopCorruptionHum,
+  stopRunAudio,
+} from "./audioSystem"
 import { playThemedCue } from "./themedAudioSystem"
 import type { DungeonTheme } from "@/contracts/dungeon-contract"
 
@@ -30,12 +35,18 @@ export function registerAudioHandlers(): () => void {
       playAudioCue("encounterStart")
     }
   }
-  const onDungeonCompleted = () => playAudioCue("questComplete")
-  const onDungeonFailed = () => playAudioCue("error")
+  const onDungeonCompleted = () => {
+    stopRunAudio()
+    playAudioCue("questComplete")
+  }
+  const onDungeonFailed = () => {
+    stopRunAudio()
+    playAudioCue("error")
+  }
   const onPenalty = (payload: unknown) => {
     const p = payload as { corruption?: number } | undefined
     if (p && typeof p.corruption === "number" && p.corruption >= 25) {
-      playAudioCue("corruption")
+      playAudioCue("corruptionSting")
     } else {
       playAudioCue("error")
     }
@@ -104,7 +115,7 @@ export function syncCorruptionAudio(corruption: number): void {
     return
   }
   if (corruption >= 50) {
-    playAudioCue("corruption")
+    startCorruptionHum()
   } else {
     stopCorruptionHum()
   }

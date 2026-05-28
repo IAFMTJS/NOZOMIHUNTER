@@ -9,4 +9,8 @@ export const E2E_TEST_IDS = {
   dungeonAbandon: "dungeon-abandon",
   dungeonAbort: "dungeon-abort",
   encounterTransmit: "encounter-transmit",
+  worldMap: "world-map-grid",
+  archiveEntries: "archive-entries",
+  contactsList: "contacts-list",
+  dungeonFailureCeremony: "dungeon-failure-ceremony",
 } as const

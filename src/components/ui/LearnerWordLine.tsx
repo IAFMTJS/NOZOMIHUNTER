@@ -2,10 +2,10 @@
 
 import type { LearnerWordParts } from "@/services/jmdict/learnerFormat"
 import { WordAudioButton } from "@/components/ui/WordAudioButton"
-import { useChallengeDisplay } from "@/features/encounters/context/LearnerAssistContext"
+import { useChallengeDisplay } from "@/context/encounters/LearnerAssistContext"
 import { resolveVisibleLayers } from "@/systems/learning/challengeDisplaySystem"
 import { mergeVisibleLayers } from "@/systems/hints/hintSystem"
-import { useEncounterHintOptional } from "@/features/encounters/context/EncounterHintContext"
+import { useEncounterHintOptional } from "@/context/encounters/EncounterHintContext"
 
 interface LearnerWordLineProps {
   parts: LearnerWordParts

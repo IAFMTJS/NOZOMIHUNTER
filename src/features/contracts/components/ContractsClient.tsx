@@ -34,9 +34,9 @@ import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 export type QuestChannelTab = "daily" | "story" | "side" | "achievements"
 
 const TABS: { id: QuestChannelTab; label: string }[] = [
-  { id: "daily", label: "Daily" },
-  { id: "story", label: "Story" },
-  { id: "side", label: "Side" },
+  { id: "daily", label: "Daily Rituals" },
+  { id: "story", label: "Archive Recovery" },
+  { id: "side", label: "Whisper Hunts" },
   { id: "achievements", label: "Achievements" },
 ]
 

@@ -2,6 +2,7 @@ import { SupabaseSetupNotice } from "@/components/SupabaseSetupNotice"
 import { isSupabaseConfigured } from "@/lib/supabase/env"
 import { AtmosphericBackground } from "@/components/layout/AtmosphericBackground"
 import { HomeTerminal } from "@/components/layout/HomeTerminal"
+import { LandingWhispers } from "@/components/layout/LandingWhispers"
 
 export default function HomePage() {
   const configured = isSupabaseConfigured()
@@ -13,6 +14,7 @@ export default function HomePage() {
           <SupabaseSetupNotice />
         </div>
       )}
+      <LandingWhispers />
       <HomeTerminal />
     </AtmosphericBackground>
   )

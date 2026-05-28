@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
@@ -29,6 +30,7 @@ import { UI_TOKENS } from "@/config/uiTokens"
 export function HomeClient() {
   const { player, activeQuests, hunterPresentation, readiness, forecast } =
     useHunterSession()
+  const [opsExpanded, setOpsExpanded] = useState(false)
 
   if (!player) {
     return (
@@ -78,12 +80,23 @@ export function HomeClient() {
         </div>
       </div>
 
-      <OperationalAlertRail alerts={feed.alerts} />
-      <AnomalyChip anomalies={feed.anomalies} />
-      <InstabilityFeed items={feed.instability} />
-      <ActiveBoostsChip player={player} countOverride={feed.activeBoostCount} />
-      <SectorActivityTicker items={feed.sectorActivity} />
-      <ContractRotationRail items={feed.contractRotation} />
+      <button
+        type="button"
+        className="w-full text-left text-xs uppercase tracking-widest text-[var(--muted)] hover:text-[var(--accent)]"
+        onClick={() => setOpsExpanded((v) => !v)}
+      >
+        {opsExpanded ? "▼ Hide operational feed" : "▶ Operational feed (calm hub)"}
+      </button>
+      {opsExpanded && (
+        <>
+          <OperationalAlertRail alerts={feed.alerts} />
+          <AnomalyChip anomalies={feed.anomalies} />
+          <InstabilityFeed items={feed.instability} />
+          <ActiveBoostsChip player={player} countOverride={feed.activeBoostCount} />
+          <SectorActivityTicker items={feed.sectorActivity} />
+          <ContractRotationRail items={feed.contractRotation} />
+        </>
+      )}
 
       <HunterPowerSummary power={power} />
 

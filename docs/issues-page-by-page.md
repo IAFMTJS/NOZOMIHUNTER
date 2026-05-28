@@ -1,6 +1,8 @@
 # NOZOMI HUNTER - FULL PAGE-BY-PAGE UX / GAMEPLAY / LEARNING REVIEW
 ## Based On Real Screens & User Testing Feedback
 
+**Remediation status:** see [`ux-audit-status.md`](ux-audit-status.md) (v1.5.0).
+
 ---
 
 # OVERVIEW

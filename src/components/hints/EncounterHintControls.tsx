@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/Button"
-import { useEncounterHint } from "@/features/encounters/context/EncounterHintContext"
+import { useEncounterHint } from "@/context/encounters/EncounterHintContext"
 import { CompanionWhisperLine } from "@/components/hints/CompanionWhisperLine"
 import { HunterVisionControl } from "@/components/hints/HunterVisionControl"
 

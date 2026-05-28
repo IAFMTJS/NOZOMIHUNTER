@@ -11,6 +11,7 @@ import { isGameModeUnlocked } from "@/config/gameModeRegistry"
 import { GAME_MODE_REGISTRY } from "@/config/gameModeRegistry"
 import type { GameModeId } from "@/contracts/game-mode-contract"
 import { E2E_TEST_IDS } from "@/config/e2eTestIds"
+import { trainingDisciplineSkin } from "@/systems/presentation/trainingDisciplinePresentation"
 
 export function TrainingClient() {
   const router = useRouter()
@@ -65,13 +66,21 @@ export function TrainingClient() {
         {TRAINING_GAME_MODES.map((modeId) => {
           const def = GAME_MODE_REGISTRY[modeId]
           const unlocked = isGameModeUnlocked(modeId, player)
+          const discipline = trainingDisciplineSkin(modeId)
           return (
             <ArcadeCard
               key={modeId}
               accent={def.emotion === "DOPAMINE" ? "gold" : "purple"}
+              className={discipline.panelClass}
             >
+              <p className="text-[10px] uppercase tracking-widest text-[var(--muted)]">
+                {discipline.label}
+              </p>
               <p className="font-display text-lg text-[var(--foreground)]">
                 {def.label}
+              </p>
+              <p className="mt-1 text-xs italic text-[var(--muted)]">
+                {discipline.atmosphere}
               </p>
               <p className="mt-1 text-[10px] uppercase tracking-wider text-[var(--accent-bright)]">
                 {def.emotion.replace(/_/g, " ")}

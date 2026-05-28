@@ -1,6 +1,6 @@
 "use client"
 
-import { useEncounterHint } from "@/features/encounters/context/EncounterHintContext"
+import { useEncounterHint } from "@/context/encounters/EncounterHintContext"
 
 export function HunterVisionControl() {
   const {

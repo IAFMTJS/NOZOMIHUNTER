@@ -1,5 +1,7 @@
 NOZOMI System Registry
 
+Last updated: v1.5.0 (see CHANGELOG). Creative scope: `docs/immersion-rework-masterplan.md`.
+
 presentationCeremonySystem
 
 Location: `/src/systems/presentation/ceremonies/*`, `/src/components/ceremonies/*`
@@ -1620,3 +1622,72 @@ Responsibilities
 Consumers
 
 * vocabulary, listening, speech encounter systems and UI feedback
+
+⸻
+
+hintSystem (v1.4.1)
+
+Location: `/src/systems/hints/hintSystem.ts`, `/src/systems/hints/kanjiComponentHintSystem.ts`
+
+Responsibilities
+
+* Hunter Vision hold-to-reveal, companion whispers, radical glyph lore
+* staged mastery policy; auto reinforcement after repeated wrong answers
+
+Flow: `flows/hint-system-flow.md` · Contract: `contracts/hint-contract.ts`
+
+Consumers: `EncounterHintProvider`, `EncounterHintControls`, `HunterVisionControl`
+
+⸻
+
+dungeonOrchestrator facade (v1.5.0)
+
+Location: `/src/systems/dungeons/dungeonOrchestrator.ts` (re-exports)
+
+Modules: `dungeonDeployFlow`, `dungeonExplorationFlow`, `dungeonRouteFlow`, `dungeonEngagementFlow`, `dungeonProgressionFlow`, `dungeonExtractionFlow`, `dungeonConsequenceFlow`, `dungeonFailureFlow`, `dungeonBriefing`, `dungeonQuestPatch`
+
+Consumers: `dungeonLifecycle`, `dungeonPersistence`, `dungeonEncounterActions`, `DungeonRunner`
+
+⸻
+
+terminalBreachSystem (v1.3.x)
+
+Location: `/src/systems/quests/terminalBreachSystem.ts`
+
+Responsibilities: timed terminal breach game mode encounters
+
+Consumers: `gameModeQuestBuilder`, `TerminalBreachEncounter`
+
+⸻
+
+gameModeAnalytics (v1.4.x)
+
+Location: `/src/systems/analytics/gameModeAnalytics.ts`
+
+Responsibilities: thin wrapper — `recordGameModeAnalytics` → `analyticsSystem` + `persistGameplayEvent`
+
+⸻
+
+dungeonMasterSystem overlay (v1.4.0)
+
+Location: `/src/systems/dungeons/dungeonMasterDialogueSystem.ts`, `dungeonMasterRuleSystem.ts`, `dungeonMasterMemorySystem.ts`
+
+Flow: `flows/dungeon-masters.md` · Contract: `contracts/dungeon-master-contract.ts`
+
+⸻
+
+listeningEncounterSystem (v1.3.x)
+
+Location: `/src/systems/dungeons/listeningEncounterSystem.ts`, `/src/systems/listening/japaneseTtsSystem.ts`
+
+Consumers: `ListeningEncounter`, `EncounterRouter`
+
+⸻
+
+relationshipSystem (v1.4.x)
+
+Location: `/src/systems/contracts/relationshipSystem.ts`, `/src/services/supabase/relationshipRepository.ts`
+
+Responsibilities: NPC trust 0–100, conversation encounter persistence (migration 016)
+
+Consumers: `conversationEncounterSystem`, `/contacts` (planned)

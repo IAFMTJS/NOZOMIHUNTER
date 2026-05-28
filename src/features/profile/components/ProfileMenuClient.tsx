@@ -23,6 +23,9 @@ import { computeReadiness } from "@/systems/readiness/readinessSystem"
 import { synchronizationLabel } from "@/systems/synchronization/synchronizationSystem"
 
 const MODULES = [
+  { href: "/map", label: "Sector map", icon: "⌖", status: "Corridor network" },
+  { href: "/archive", label: "Black Archive", icon: "▤", status: "Forbidden records" },
+  { href: "/contacts", label: "Contacts", icon: "◉", status: "Trust vectors" },
   { href: "/achievements", label: "Achievements", icon: "★", status: "Registry honors" },
   { href: "/records", label: "Records", icon: "▣", status: "Mission archive" },
   { href: "/inventory", label: "Inventory", icon: "◈", status: "Loadout + store" },

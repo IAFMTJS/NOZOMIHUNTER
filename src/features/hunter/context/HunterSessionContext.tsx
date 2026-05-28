@@ -6,7 +6,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from "react"
@@ -27,31 +26,22 @@ import { EncounterHost } from "@/features/hunter/components/EncounterHost"
 import { RewardClaimOverlay } from "@/features/rewards/components/RewardClaimOverlay"
 import { LevelUpCeremony } from "@/components/ceremonies/LevelUpCeremony"
 import { AchievementUnlockCeremony } from "@/components/ceremonies/AchievementUnlockCeremony"
-import {
-  MasteryTierUpCeremony,
-  type MasteryTierUpCeremonyData,
-} from "@/components/ceremonies/MasteryTierUpCeremony"
-import type { CanonicalMasteryTier } from "@/systems/presentation/masteryPresentationSystem"
-import { detectNewAchievements } from "@/systems/presentation/achievements/achievementUnlockPresentation"
-import { achievementUnlockFingerprint } from "@/systems/presentation/achievements/achievementUnlockSnapshot"
-import type { AchievementContract } from "@/systems/progression/achievementSystem"
+import { MasteryTierUpCeremony } from "@/components/ceremonies/MasteryTierUpCeremony"
 import { RankUpNotice } from "@/components/RankUpNotice"
 import { UnlockNotice } from "@/components/UnlockNotice"
 import { InstallPrompt } from "@/components/InstallPrompt"
 import { FirstQuestTutorial } from "@/features/quests/components/FirstQuestTutorial"
-import { clearPendingRewardsGuarded } from "@/services/supabase/economyRepository"
-import { clearPendingRewards } from "@/systems/rewards/rewardClaimSystem"
 import { hydratePlayerFromDb } from "@/features/quests/services/questService"
 import { trackMissionForUser } from "@/features/hunter/services/missionTrackingService"
-import { eventBus } from "@/systems/events/eventBus"
-import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import type { HubView } from "@/features/hub/ContractHub"
+import { useHunterHubState } from "@/features/hunter/hooks/useHunterHubState"
+import { useHunterCeremonies } from "@/features/hunter/hooks/useHunterCeremonies"
+import { useHunterRewardClaim } from "@/features/hunter/hooks/useHunterRewardClaim"
 import type { PlayerContract } from "@/contracts/player-contract"
 import type { QuestContract } from "@/contracts/quest-contract"
 import type { ReadinessResultContract } from "@/contracts/readiness-contract"
 import type { DungeonForecastContract } from "@/systems/dungeons/dungeonForecastSystem"
 import { SyncDisciplineCeremony } from "@/features/rewards/components/SyncDisciplineCeremony"
-import { SYNCHRONIZATION_CONFIG } from "@/config/synchronizationConfig"
 import { useHunterReadiness } from "@/features/hunter/hooks/useHunterReadiness"
 
 let eventsRegistered = false
@@ -94,12 +84,21 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
   const dismissUnlockNotice = usePlayerStore((s) => s.dismissUnlockNotice)
   const setPlayer = usePlayerStore((s) => s.setPlayer)
   const [tutorialDismissed, setTutorialDismissed] = useState(false)
-  const [hubView, setHubView] = useState<HubView>("menu")
-  const [hubFocusQuestId, setHubFocusQuestId] = useState<string | null>(null)
-  const [claimError, setClaimError] = useState<string | null>(null)
-  const [syncCeremonyKey, setSyncCeremonyKey] = useState<string | null>(null)
-  const [achievementQueue, setAchievementQueue] = useState<AchievementContract[]>([])
-  const [masteryTierQueue, setMasteryTierQueue] = useState<MasteryTierUpCeremonyData[]>([])
+  const { hubView, setHubView, hubFocusQuestId, setHubFocusQuestId } =
+    useHunterHubState()
+  const {
+    achievementQueue,
+    masteryTierQueue,
+    syncCeremonyKey,
+    dismissSyncCeremony,
+    popAchievement,
+    popMasteryTier,
+  } = useHunterCeremonies(player, user?.id)
+  const { claimRewards, claimError } = useHunterRewardClaim(
+    player,
+    user?.id,
+    setPlayer
+  )
 
   const quest = useQuestLogic(user?.id)
   const dungeon = useDungeonLogic(user?.id)
@@ -114,102 +113,6 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
     !isTutorialComplete(player!) &&
     !tutorialDismissed &&
     activeQuests.some((q) => q.isTutorial)
-
-  const prevPlayerRef = useRef<PlayerContract | null>(null)
-
-  const achievementFingerprint = useMemo(
-    () => (player ? achievementUnlockFingerprint(player) : null),
-    [player]
-  )
-
-  useEffect(() => {
-    if (!player) {
-      prevPlayerRef.current = null
-      return
-    }
-    const prev = prevPlayerRef.current
-    if (prev && prev.id === player.id) {
-      const newly = detectNewAchievements(prev, player)
-      if (newly.length > 0) {
-        setAchievementQueue((q) => [...q, ...newly])
-        for (const a of newly) {
-          eventBus.emit(GAME_EVENTS.ACHIEVEMENT_UNLOCKED, {
-            playerId: player.id,
-            achievementId: a.id,
-            title: a.title,
-            description: a.description,
-          })
-        }
-      }
-    }
-    prevPlayerRef.current = player
-  }, [player, achievementFingerprint])
-
-  const syncTitleFingerprint = useMemo(
-    () => player?.progression.titles.slice().sort().join("|") ?? "",
-    [player?.progression.titles]
-  )
-
-  useEffect(() => {
-    if (!user?.id || !player) {
-      setSyncCeremonyKey(null)
-      return
-    }
-    const storageKey = `nozomi-sync-ceremony-seen:${user.id}`
-    let seen: string[] = []
-    try {
-      seen = JSON.parse(localStorage.getItem(storageKey) ?? "[]") as string[]
-    } catch {
-      seen = []
-    }
-    const disciplineKeys = SYNCHRONIZATION_CONFIG.MILESTONES.map((m) => m.unlock)
-    const earned = player.progression.titles.filter((t) =>
-      (disciplineKeys as string[]).includes(t)
-    )
-    const pending = earned.find((k) => !seen.includes(k))
-    setSyncCeremonyKey(pending ?? null)
-  }, [user?.id, player, syncTitleFingerprint])
-
-  const dismissSyncCeremony = useCallback(() => {
-    if (!user?.id || !syncCeremonyKey) return
-    const storageKey = `nozomi-sync-ceremony-seen:${user.id}`
-    let seen: string[] = []
-    try {
-      seen = JSON.parse(localStorage.getItem(storageKey) ?? "[]") as string[]
-    } catch {
-      seen = []
-    }
-    if (!seen.includes(syncCeremonyKey)) {
-      seen.push(syncCeremonyKey)
-      localStorage.setItem(storageKey, JSON.stringify(seen))
-    }
-    setSyncCeremonyKey(null)
-  }, [user?.id, syncCeremonyKey])
-
-  useEffect(() => {
-    const onMasteryTier = (payload: unknown) => {
-      const p = payload as {
-        wordId?: string
-        tier?: CanonicalMasteryTier
-        mastery?: number
-      }
-      const wordId = p.wordId
-      const tier = p.tier
-      if (!wordId || !tier) return
-      setMasteryTierQueue((q) => [
-        ...q,
-        {
-          wordId,
-          tier,
-          mastery: p.mastery ?? 0,
-        },
-      ])
-    }
-    eventBus.on(GAME_EVENTS.MASTERY_TIER_UP, onMasteryTier)
-    return () => {
-      eventBus.off(GAME_EVENTS.MASTERY_TIER_UP, onMasteryTier)
-    }
-  }, [])
 
   useEffect(() => {
     if (!eventsRegistered) {
@@ -255,22 +158,6 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
     },
     [user?.id]
   )
-
-  const claimRewards = useCallback(async () => {
-    if (!player) return
-    setClaimError(null)
-    try {
-      await clearPendingRewardsGuarded()
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Could not sync rewards with the registry."
-      setClaimError(message)
-      return
-    }
-    setPlayer(clearPendingRewards(player))
-    eventBus.emit(GAME_EVENTS.REWARDS_CLAIMED, { playerId: user?.id ?? player.id })
-    if (user?.id) await hydratePlayerFromDb(user.id)
-  }, [player, setPlayer, user?.id])
 
   const handleSignOut = useCallback(async () => {
     unlockAudio()
@@ -372,13 +259,13 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
       {masteryTierQueue[0] != null && achievementQueue[0] == null && (
         <MasteryTierUpCeremony
           data={masteryTierQueue[0]}
-          onDismiss={() => setMasteryTierQueue((q) => q.slice(1))}
+          onDismiss={popMasteryTier}
         />
       )}
       {achievementQueue[0] != null && (
         <AchievementUnlockCeremony
           achievement={achievementQueue[0]}
-          onDismiss={() => setAchievementQueue((q) => q.slice(1))}
+          onDismiss={popAchievement}
         />
       )}
       {levelUpCeremony != null && (

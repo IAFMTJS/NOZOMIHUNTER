@@ -56,10 +56,17 @@ for (const file of allSrc) {
 
 for (const file of allSrc) {
   const r = rel(file)
-  if (!r.startsWith("src/systems/economy/") || !r.endsWith(".ts")) continue
   const lines = fs.readFileSync(file, "utf8").split("\n").length
-  if (lines > 250) {
+  if (r.startsWith("src/systems/economy/") && r.endsWith(".ts") && lines > 250) {
     warn(`Economy file exceeds 250 lines: ${r} (${lines} lines)`)
+  }
+  if (
+    r.startsWith("src/systems/") &&
+    r.endsWith(".ts") &&
+    !r.includes(".generated.") &&
+    lines > 300
+  ) {
+    warn(`Systems file exceeds 300 lines: ${r} (${lines} lines)`)
   }
 }
 

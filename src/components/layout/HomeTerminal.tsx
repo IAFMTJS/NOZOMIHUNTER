@@ -7,7 +7,7 @@ import { MOTION } from "@/config/motionPresets"
 import { buttonClassName } from "@/components/ui/Button"
 
 const BOOT_LINES = [
-  "NOZOMI HUNTER SYSTEM v0.6",
+  "NOZOMI HUNTER SYSTEM v1.5",
   "Linking mastery grid…",
   "Corruption sensors: online",
   "Awaiting hunter authentication",

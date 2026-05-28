@@ -2,7 +2,7 @@
 
 
 
-Last updated: v1.4.0 — Dungeon V2 Neon Corridor MVP (route graph, threat meters, combat actions)
+Last updated: v1.5.0 — Dungeon orchestrator split; immersion roadmap in progress (see `docs/immersion-rework-masterplan.md`)
 
 
 
@@ -24,7 +24,10 @@ Last updated: v1.4.0 — Dungeon V2 Neon Corridor MVP (route graph, threat meter
 
 | Auth (Google + guest + email) | Yes |
 
-| DB migrations 001–014 | Yes (013 = completion boosts; 014 = starter bootstrap on signup) |
+| DB migrations 001–016 | Yes (013 = completion boosts; 014 = starter bootstrap; 015 = sell items; 016 = NPC relationships) |
+| Hint system (Hunter Vision, whispers, radical lore) | Yes (`hintSystem`, `EncounterHintProvider`, `flows/hint-system-flow.md`) |
+| Theme tokens (dark/light parity) | Yes (`src/styles/themes`, `npm run check:theme`) |
+| JMdict curated vocabulary (215 entries) | Yes (`jmdictCurated.generated.ts`, `npm run build:curated`) |
 
 | Progression systems | Yes (XP via `complete_quest_guarded`; autosave uses strict `apply_guarded_progression`) |
 
@@ -71,7 +74,7 @@ Last updated: v1.4.0 — Dungeon V2 Neon Corridor MVP (route graph, threat meter
 
 | Speech (recording state machine, MediaRecorder, browser STT, mobile gesture preflight) | Yes |
 
-| Dungeons (V2 + Dungeon Masters overlay) | Yes — all sector dungeons `runSchemaVersion: 2`; master config (`dungeonMastersConfig`), dialogue/memory/rules systems, presence UI layers; Shadow Archive 4-phase Archivist boss |
+| Dungeons (V2 + Dungeon Masters overlay) | Yes — `runSchemaVersion: 2`; flow modules (`dungeonDeployFlow`, `dungeonRouteFlow`, `dungeonEngagementFlow`, …) behind `dungeonOrchestrator` facade; masters overlay; Shadow Archive boss |
 
 | Unlock persistence + `UNLOCK_GRANTED` | Yes (`resolveQuestCompletion`) |
 
@@ -114,6 +117,9 @@ Last updated: v1.4.0 — Dungeon V2 Neon Corridor MVP (route graph, threat meter
 | `/vocabulary`, `/vocabulary/[id]` | Threat index (Threats default) + word detail |
 
 | `/training` | Repeatable stabilization drills |
+| `/map` | Sector world map |
+| `/archive` | Black Archive lore entries |
+| `/contacts` | NPC trust contacts |
 
 | `/inventory` | Inventory + Store tabs |
 
@@ -149,7 +155,9 @@ Route group `(hunter)/layout.tsx` wraps authenticated pages in `HunterSessionPro
 
 /docs
 
-/supabase/migrations   — 001–014
+/supabase/migrations   — 001–016
+
+/src/systems/dungeons  — orchestrator facade + *Flow.ts modules (deploy, route, engagement, progression, extraction, consequence, failure)
 
 /src/app
 
@@ -226,4 +234,9 @@ See `.env.example` and `DECISIONS.md`. Mobile dev: `npm run dev:mobile` (HTTPS o
 
 - Navigation + economy flows: `flows/navigation-flow.md`, `flows/economy-flow.md`
 - Game feel ceremonies: `flows/gamefeel-ceremonies.md`, `flows/presentation-flow.md`
+- Immersion creative masterplan: `docs/immersion-rework-masterplan.md`
+- UX audit tracking: `docs/ux-audit-status.md`
+- DECISIONS: `DECISIONS.md`
+- Hint flow: `flows/hint-system-flow.md`
+- Dungeon masters: `flows/dungeon-masters.md`
 
