@@ -9,20 +9,17 @@ import {
   useState,
   type ReactNode,
 } from "react"
-import Link from "next/link"
 import { useAuth } from "@/hooks/useAuth"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { useQuestLogic } from "@/features/quests/hooks/useQuestLogic"
 import { useDungeonLogic } from "@/features/dungeons/hooks/useDungeonLogic"
-import { registerCoreEventHandlers } from "@/systems/events/eventHandlers"
-import { syncCorruptionAudio } from "@/systems/audio/registerAudioHandlers"
 import { unlockAudio } from "@/systems/audio/audioSystem"
 import { getHunterPresentation } from "@/systems/presentation/hunterPresentationSystem"
 import { isTutorialComplete } from "@/systems/tutorial/tutorialSystem"
-import { SupabaseSetupNotice } from "@/components/SupabaseSetupNotice"
 import { HunterShellLayout } from "@/components/layout/HunterShellLayout"
-import { HunterPage } from "@/components/layout/HunterPage"
 import { EncounterHost } from "@/features/hunter/components/EncounterHost"
+import { HunterSessionGate } from "@/features/hunter/components/HunterSessionGate"
+import { useHunterHydration } from "@/features/hunter/hooks/useHunterHydration"
 import { RewardClaimOverlay } from "@/features/rewards/components/RewardClaimOverlay"
 import { LevelUpCeremony } from "@/components/ceremonies/LevelUpCeremony"
 import { AchievementUnlockCeremony } from "@/components/ceremonies/AchievementUnlockCeremony"
@@ -43,8 +40,6 @@ import type { ReadinessResultContract } from "@/contracts/readiness-contract"
 import type { DungeonForecastContract } from "@/systems/dungeons/dungeonForecastSystem"
 import { SyncDisciplineCeremony } from "@/features/rewards/components/SyncDisciplineCeremony"
 import { useHunterReadiness } from "@/features/hunter/hooks/useHunterReadiness"
-
-let eventsRegistered = false
 
 export interface HunterSessionValue {
   user: ReturnType<typeof useAuth>["user"]
@@ -72,10 +67,9 @@ export interface HunterSessionValue {
 const HunterSessionContext = createContext<HunterSessionValue | null>(null)
 
 export function HunterSessionProvider({ children }: { children: ReactNode }) {
-  const { user, signOut, loading, configured } = useAuth()
-  const player = usePlayerStore((s) => s.player)
+  const hydration = useHunterHydration()
+  const { user, signOut, configured, player, phase, quest } = hydration
   const activeQuests = usePlayerStore((s) => s.activeQuests)
-  const playerHydrated = usePlayerStore((s) => s.isHydrated)
   const levelUpCeremony = usePlayerStore((s) => s.levelUpCeremony)
   const clearLevelUpCeremony = usePlayerStore((s) => s.clearLevelUpCeremony)
   const rankUpNotice = usePlayerStore((s) => s.rankUpNotice)
@@ -100,7 +94,6 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
     setPlayer
   )
 
-  const quest = useQuestLogic(user?.id)
   const dungeon = useDungeonLogic(user?.id)
 
   const activeDungeon = activeQuests.find(
@@ -113,23 +106,6 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
     !isTutorialComplete(player!) &&
     !tutorialDismissed &&
     activeQuests.some((q) => q.isTutorial)
-
-  useEffect(() => {
-    if (!eventsRegistered) {
-      registerCoreEventHandlers()
-      eventsRegistered = true
-    }
-  }, [])
-
-  useEffect(() => {
-    if (user?.id) void quest.hydrate()
-    // Hydrate once per signed-in user — quest hook returns a new object each render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id])
-
-  useEffect(() => {
-    if (player) syncCorruptionAudio(player.penalties.corruption)
-  }, [player])
 
   const { readiness, forecast } = useHunterReadiness(player, activeQuests)
 
@@ -188,52 +164,8 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
     dismissTutorial: () => setTutorialDismissed(true),
   }
 
-  if (loading) {
-    return (
-      <HunterShellLayout shellClassName={hunterPresentation.shellClass}>
-        <HunterPage>
-          <p className="text-[var(--muted)]">Signing in…</p>
-        </HunterPage>
-      </HunterShellLayout>
-    )
-  }
-
-  if (configured && user && !playerHydrated) {
-    return (
-      <HunterShellLayout shellClassName={hunterPresentation.shellClass}>
-        <HunterPage>
-          <p className="text-[var(--muted)]">Loading hunter data…</p>
-        </HunterPage>
-      </HunterShellLayout>
-    )
-  }
-
-  if (!configured) {
-    return (
-      <HunterShellLayout>
-        <HunterPage>
-          <SupabaseSetupNotice />
-        </HunterPage>
-      </HunterShellLayout>
-    )
-  }
-
-  if (!user) {
-    return (
-      <HunterShellLayout>
-        <HunterPage>
-          <p>
-            <Link href="/login" className="text-[var(--accent-bright)] hover:underline">
-              Sign in
-            </Link>{" "}
-            to access the hunter system.
-          </p>
-        </HunterPage>
-      </HunterShellLayout>
-    )
-  }
-
   return (
+    <HunterSessionGate phase={phase} shellClassName={hunterPresentation.shellClass}>
     <HunterSessionContext.Provider value={value}>
       <HunterShellLayout
         shellClassName={hunterPresentation.shellClass}
@@ -294,6 +226,7 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
       {children}
       </HunterShellLayout>
     </HunterSessionContext.Provider>
+    </HunterSessionGate>
   )
 }
 

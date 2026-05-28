@@ -15,6 +15,7 @@ function rowToContract(row: {
   trust: number
   successful_exchanges: number
   failed_exchanges: number
+  last_dialogue_branch?: string | null
   updated_at: string
 }): NpcRelationshipContract {
   return {
@@ -23,6 +24,7 @@ function rowToContract(row: {
     trust: row.trust,
     successfulExchanges: row.successful_exchanges,
     failedExchanges: row.failed_exchanges,
+    lastDialogueBranch: row.last_dialogue_branch ?? null,
     updatedAt: row.updated_at,
   }
 }
@@ -35,7 +37,7 @@ export async function loadNpcRelationship(
   const { data, error } = await supabase
     .from("npc_relationships")
     .select(
-      "user_id, npc_key, trust, successful_exchanges, failed_exchanges, updated_at"
+      "user_id, npc_key, trust, successful_exchanges, failed_exchanges, last_dialogue_branch, updated_at"
     )
     .eq("user_id", userId)
     .eq("npc_key", npcKey)
@@ -56,6 +58,7 @@ export async function upsertNpcRelationship(
       trust: row.trust,
       successful_exchanges: row.successfulExchanges,
       failed_exchanges: row.failedExchanges,
+      last_dialogue_branch: row.lastDialogueBranch ?? null,
       updated_at: row.updatedAt,
     },
     { onConflict: "user_id,npc_key" }

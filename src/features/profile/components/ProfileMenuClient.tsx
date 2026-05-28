@@ -21,6 +21,7 @@ import { getUnlockEntry } from "@/config/unlockRegistry"
 import { profileSummary } from "@/features/profile/profilePresentation"
 import { computeReadiness } from "@/systems/readiness/readinessSystem"
 import { synchronizationLabel } from "@/systems/synchronization/synchronizationSystem"
+import { HunterIdentityStub } from "@/features/profile/components/HunterIdentityStub"
 
 const MODULES = [
   { href: "/map", label: "Sector map", icon: "⌖", status: "Corridor network" },
@@ -147,6 +148,8 @@ export function ProfileMenuClient() {
           </div>
         </GlassCard>
       )}
+
+      <HunterIdentityStub />
 
       {titles.length > 0 && (
         <GlassCard className="mt-4 nozomi-embedded">

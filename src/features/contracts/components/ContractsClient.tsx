@@ -11,8 +11,7 @@ import { RoutineCard } from "@/components/ui/cards/RoutineCard"
 import { OperativeCard } from "@/components/ui/cards/OperativeCard"
 import { UI_TOKENS } from "@/config/uiTokens"
 import { StoryQuestCard } from "@/components/ui/screen/StoryQuestCard"
-import { StoryChapterSection } from "@/components/ui/screen/StoryChapterSection"
-import { StoryChapterHero } from "@/components/ui/screen/StoryChapterHero"
+import { ContractsStoryChannel } from "@/features/contracts/components/ContractsStoryChannel"
 import { ContractTypeIcon } from "@/components/ui/screen/ContractTypeIcon"
 import { QuestChannelShell } from "@/features/contracts/components/QuestChannelShell"
 import { QuestChannelHeader } from "@/features/contracts/components/QuestChannelHeader"
@@ -30,6 +29,11 @@ import { getTrackedQuest } from "@/systems/quests/contractTrackingSystem"
 import { buildMissionOpsPresentation } from "@/systems/presentation/missionOpsPresentationSystem"
 import type { QuestContract } from "@/contracts/quest-contract"
 import { E2E_TEST_IDS } from "@/config/e2eTestIds"
+import {
+  contractChannelDefaultLine,
+  contractChannelKicker,
+} from "@/systems/presentation/contractChannelPresentation"
+import { ContractChannelMotion } from "@/features/contracts/components/ContractChannelMotion"
 
 export type QuestChannelTab = "daily" | "story" | "side" | "achievements"
 
@@ -107,7 +111,11 @@ export function ContractsClient() {
   return (
     <HunterPage className={`pb-4 ${screenClass}`}>
       <QuestChannelShell>
-        <QuestChannelHeader systemLine={systemLine} />
+        <QuestChannelHeader
+          channelKicker={contractChannelKicker(tab)}
+          systemLine={systemLine}
+          fallbackLine={contractChannelDefaultLine(tab)}
+        />
 
         <QuestOpsStrip
           stamina={player.economy.stamina}
@@ -124,94 +132,12 @@ export function ContractsClient() {
 
         <TabBar tabs={TABS} active={tab} onChange={setTab} />
 
+        <ContractChannelMotion tab={tab}>
         {tab === "story" && (
-          <div className="space-y-5">
-            {storyChapters.length === 0 ? (
-              <p className="text-center text-sm text-[var(--muted)]">
-                No story files indexed. Request a contract or complete the tutorial.
-              </p>
-            ) : (
-              storyChapters.map((chapter) => (
-                <div key={chapter.chapterId} className="space-y-4">
-                  <StoryChapterHero
-                    chapterTitle={chapter.chapterTitle}
-                    progressPercent={chapter.progressPercent}
-                    currentMission={chapter.currentMissionIndex}
-                    totalMissions={chapter.totalMissions}
-                  />
-                  <StoryChapterSection chapterTitle={chapter.chapterTitle}>
-                    {chapter.missions.map((row) => {
-                      if (row.kind === "placeholder") {
-                        const p = row.placeholder
-                        return (
-                          <li key={p.id}>
-                            <StoryQuestCard
-                              index={p.missionIndex}
-                              title={p.title}
-                              titleJa={p.titleJa}
-                              progressCurrent={0}
-                              progressRequired={1}
-                              rewardXp={p.rewardXp}
-                              state="locked"
-                            />
-                          </li>
-                        )
-                      }
-                      const q = row.quest
-                      const meta = getQuestCatalogMeta(q)
-                      const prog = aggregateQuestProgress(q)
-                      return (
-                        <li key={q.id}>
-                          <StoryQuestCard
-                            index={row.missionIndex}
-                            title={q.title}
-                            titleJa={meta.titleJa}
-                            progressCurrent={prog.current}
-                            progressRequired={prog.required}
-                            rewardXp={q.rewards.xp}
-                            state={
-                              row.locked
-                                ? "locked"
-                                : prog.complete
-                                  ? "complete"
-                                  : "active"
-                            }
-                            href={row.locked ? undefined : `/contracts/${q.id}?tab=story`}
-                          />
-                        </li>
-                      )
-                    })}
-                  </StoryChapterSection>
-                </div>
-              ))
-            )}
-            {catalog.completed.length > 0 && (
-              <section>
-                <p className="mb-2 text-xs uppercase tracking-widest text-[var(--muted)]">
-                  Extracted ({catalog.completed.length})
-                </p>
-                <ul className="space-y-2">
-                  {catalog.completed.map((q) => {
-                    const meta = getQuestCatalogMeta(q)
-                    return (
-                      <li key={q.id}>
-                        <StoryQuestCard
-                          index={meta.missionIndex ?? 0}
-                          title={q.title}
-                          titleJa={meta.titleJa}
-                          progressCurrent={1}
-                          progressRequired={1}
-                          rewardXp={q.rewards.xp}
-                          state="complete"
-                          href={`/contracts/${q.id}?tab=story`}
-                        />
-                      </li>
-                    )
-                  })}
-                </ul>
-              </section>
-            )}
-          </div>
+          <ContractsStoryChannel
+            storyChapters={storyChapters}
+            completed={catalog.completed}
+          />
         )}
 
         {tab === "daily" && (
@@ -319,6 +245,7 @@ export function ContractsClient() {
             ))}
           </ul>
         )}
+        </ContractChannelMotion>
       </QuestChannelShell>
     </HunterPage>
   )

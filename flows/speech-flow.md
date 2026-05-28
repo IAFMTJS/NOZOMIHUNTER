@@ -20,6 +20,8 @@ Player stops → `stopSpeechRecording`
 `clientTranscriptionSystem.resolveClientTranscript` — browser STT only, no server upload
 ↓
 `transcribeAndAnalyze` (rate-limited via `speechGuard` + `check_player_rate_limit` RPC)
+
+**Rate limits:** `canSubmitSpeech` enforces 24 submissions per player per 60s in-process; server RPC `checkSpeechRateLimitServer` is a second gate. Tests: `tests/speechGuard.test.ts`.
 ↓
 Pronunciation → Hesitation → Timing → Confidence → Composite
 ↓
@@ -35,4 +37,4 @@ Recovery: `speechRecoverySystem` clears stale RECORDING/PROCESSING on page hide 
 
 Debug: `NEXT_PUBLIC_SPEECH_DEBUG=true` → `MIC ACTIVE | STATE: … | STT: …`
 
-Components: `SpeechEncounter` + `useSpeechRecording` — display state only; no gameplay logic.
+Components: `SpeechEncounter` + `useSpeechEncounterController` (mic, transmit, typed fallback) — display state only; no gameplay logic.

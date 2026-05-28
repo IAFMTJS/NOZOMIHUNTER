@@ -4,8 +4,12 @@ export interface ArchiveEntry {
   id: string
   title: string
   teaser: string
+  /** Shown when entry is unlocked — full lore stub for future contracts. */
+  loreExcerpt?: string
   locked: boolean
   lockReason?: string
+  /** Future: contract id that unlocks deeper read. */
+  linkedContractId?: string
 }
 
 const ENTRIES: ArchiveEntry[] = [
@@ -13,6 +17,8 @@ const ENTRIES: ArchiveEntry[] = [
     id: "whisper-index",
     title: "Whisper index — fragment 0",
     teaser: "They recorded the corridor before the lights failed.",
+    loreExcerpt:
+      "…sector seven went dark at 03:12. The whisper index was the only file that survived the purge.",
     locked: false,
   },
   {
@@ -21,6 +27,7 @@ const ENTRIES: ArchiveEntry[] = [
     teaser: "Do not read aloud unless your rank permits.",
     locked: true,
     lockReason: "Requires Shadow Archive sector clear",
+    linkedContractId: "story:shadow-archive-intro",
   },
   {
     id: "night-report",

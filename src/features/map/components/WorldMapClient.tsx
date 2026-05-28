@@ -28,6 +28,14 @@ export function WorldMapClient() {
             <p className="font-display text-sm font-semibold tracking-wide text-[var(--foreground)]">
               {node.name}
             </p>
+            {node.corrupted && (
+              <div className="mt-2 h-1 overflow-hidden rounded-full bg-[var(--surface)]">
+                <div
+                  className="h-full bg-[var(--danger)] opacity-80"
+                  style={{ width: `${node.corruptionIndex}%` }}
+                />
+              </div>
+            )}
             {node.hint && (
               <p className="mt-1 text-xs text-[var(--muted)]">{node.hint}</p>
             )}

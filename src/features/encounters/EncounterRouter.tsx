@@ -2,8 +2,8 @@
 
 import type { QuestContract } from "@/contracts/quest-contract"
 import type { PlayerContract } from "@/contracts/player-contract"
-import { resolveQuestGameMode, effectiveAssistLevel } from "@/systems/gameModes/gameModeSystem"
-import { LearnerAssistProvider } from "@/features/encounters/context/LearnerAssistContext"
+import { resolveQuestGameMode } from "@/systems/gameModes/gameModeSystem"
+import { EncounterRouterDisplayShell } from "@/features/encounters/EncounterRouterDisplayShell"
 import { storyScreenClass } from "@/systems/presentation/storyMissionPresentation"
 import {
   EncounterFeedback,
@@ -72,7 +72,6 @@ export function EncounterRouter(props: EncounterRouterProps) {
   } = props
 
   const mode = resolveQuestGameMode(quest)
-  const assist = player ? effectiveAssistLevel(player, mode) : "FULL"
   const abandon = onAbandon ?? (async () => {})
 
   const feedback = lastResult ? (
@@ -87,7 +86,7 @@ export function EncounterRouter(props: EncounterRouterProps) {
   return (
     <EncounterFeedbackProvider quest={quest} isTraining={quest.hidden}>
       <EncounterFeedbackBridge />
-      <LearnerAssistProvider level={assist}>
+      <EncounterRouterDisplayShell quest={quest} player={player}>
         <div className={channelClass}>
           {renderEncounterMode({
             mode,
@@ -108,7 +107,7 @@ export function EncounterRouter(props: EncounterRouterProps) {
             onAbandon: abandon,
           })}
         </div>
-      </LearnerAssistProvider>
+      </EncounterRouterDisplayShell>
     </EncounterFeedbackProvider>
   )
 }

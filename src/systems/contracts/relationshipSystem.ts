@@ -10,6 +10,8 @@ export interface NpcRelationshipContract {
   trust: number
   successfulExchanges: number
   failedExchanges: number
+  /** Last branch opened on /contacts — persisted in npc_relationships. */
+  lastDialogueBranch?: string | null
   updatedAt: string
 }
 

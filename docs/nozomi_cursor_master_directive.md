@@ -1,5 +1,7 @@
 # NOZOMI - MASTER IMPLEMENTATION DIRECTIVE FOR CURSOR AI
 
+> **Superseded in part by v1.5 docs.** Follow [`current-architecture.md`](current-architecture.md), [`system-registry.md`](system-registry.md), and [`immersion-rework-masterplan.md`](immersion-rework-masterplan.md) for file placement, orchestrator splits, and immersion milestones.
+
 ## ROLE
 
 You are working as the lead implementation engineer for the NOZOMI project.

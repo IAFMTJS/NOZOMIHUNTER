@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { MOTION } from "@/config/motionPresets"
 import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
+import { DUNGEON_FAILURE_CEREMONY_TEST_ID } from "@/systems/dungeons/dungeonFailureCeremonyFlow"
 export interface DungeonFailureCeremonyProps {
   open: boolean
   detailLine?: string | null
@@ -29,7 +30,7 @@ export function DungeonFailureCeremony({
       role="alertdialog"
       aria-modal
       aria-labelledby="dungeon-failure-title"
-      data-testid="dungeon-failure-ceremony"
+      data-testid={DUNGEON_FAILURE_CEREMONY_TEST_ID}
     >
       <Panel tone="danger" className="max-w-md w-full text-center">
         <h2

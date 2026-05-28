@@ -54,6 +54,7 @@ export function MemoryCascadeEncounter({
                 parts={learnerPartsFromEncounterWord(w)}
                 layout="compact"
                 size="sm"
+                forceReveal={revealed}
               />
             ))}
           </div>

@@ -373,6 +373,14 @@ async function main() {
       await shot(page, "08-dungeon-detail")
       routeLog("/dungeons/[key]", "ok")
     }
+    const failureCeremony = page.getByTestId("dungeon-failure-ceremony")
+    if ((await failureCeremony.count()) > 0) {
+      await shot(page, "08b-dungeon-failure-ceremony")
+      routeLog("/run/FAILURE", "ok", "failure ceremony overlay visible")
+      note("info", "dungeons", "Dungeon failure ceremony actief — E2E selector OK")
+    } else {
+      routeLog("/run/FAILURE", "skip", "no active FAILURE run")
+    }
   }
 
   // ── Vocabulary ──
@@ -390,7 +398,18 @@ async function main() {
   }
 
   // ── Secondary routes ──
-  for (const route of ["/training", "/settings", "/stats", "/achievements", "/inventory", "/records", "/system"]) {
+  for (const route of [
+    "/map",
+    "/archive",
+    "/contacts",
+    "/training",
+    "/settings",
+    "/stats",
+    "/achievements",
+    "/inventory",
+    "/records",
+    "/system",
+  ]) {
     const t0 = Date.now()
     try {
       await page.goto(`${BASE}${route}`, { waitUntil: "domcontentloaded", timeout: 45000 })

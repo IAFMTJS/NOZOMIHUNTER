@@ -32,3 +32,17 @@ Encounter active target
 - Vocabulary encounters
 - Listening encounters (after first signal heard)
 - Speech encounters
+- Training / game-mode encounters via `EncounterRouterDisplayShell` (`isRecallChallengeQuest`)
+
+## Learner-display compliance checklist
+
+| Surface | Provider | challengeMode | Notes |
+|---------|----------|---------------|-------|
+| `EncounterRouter` | `EncounterRouterDisplayShell` | per `encounterDisplayPolicy` | Replaces bare `LearnerAssistProvider` |
+| Vocab / listen / speech | `EncounterDisplayProvider` | `promptDirection != null` | Inner provider overrides router defaults |
+| Memory cascade | Router shell + `forceReveal` on flash | Brief reveal window only |
+| Threat index browse | Default (full gloss) | `false` | Reference catalog, not active challenge |
+| Word detail `/vocabulary/[id]` | Default | `false` | Study reference |
+| Brew / prep panels | `forceReveal` or briefing context | N/A | Preparation is allowed to show more |
+
+Run `tests/learnerDisplayCompliance.test.ts` and `tests/encounterDisplayPolicy.test.ts` after policy changes.

@@ -1,5 +1,43 @@
 # Changelog
 
+## v1.6.0 (unreleased) — Immersion wave 2 + runner split
+
+### Architecture
+- `DungeonRunnerEncounterBody` — phase/encounter UI extracted from `DungeonRunner`
+- `dungeonFailureCeremonyFlow` — ceremony open logic + E2E test id export
+
+### Immersion
+- Contract board tab motion (`ContractChannelMotion`, stagger CSS)
+- Archive entries link to contracts (`archiveContractSystem`, recover CTAs)
+- NPC dialogue branch persisted (`npc_relationships.last_dialogue_branch`, migration 017)
+- Authenticated audit checks `dungeon-failure-ceremony` when FAILURE run active
+
+### Tests
+- `dungeonFailureCeremonyFlow.test.ts`, `archiveContractSystem.test.ts`
+
+## v1.5.1 (unreleased) — Platform integrity + immersion wave 1
+
+### Learning integrity (M1)
+- `encounterDisplayPolicy` — conversation-only quests skip recall masking; router shell uses policy
+- `useHunterHydration` + `HunterSessionGate`; Hunter session import fixes
+- `tests/encounterDisplayPolicy.test.ts`, `tests/speechGuard.test.ts`
+- `ContractsStoryChannel`, `DungeonRunnerFailureOverlay` extractions
+- Removed duplicate `useSpeechEncounter` (canonical: `useSpeechEncounterController`)
+
+### Immersion (M2)
+- Landing fog/rain (`LandingWeatherLayer`)
+- Dungeon sector entry tension (`DungeonEntryTension`, `dungeonEntryPresentation`)
+- Contract channel kickers (`contractChannelPresentation`)
+- UX audit status + historical doc banners on legacy roadmaps
+
+### World / archive / contacts (M3–M4 slice)
+- World map corruption index bars; archive lore excerpts
+- NPC dialogue branches on `/contacts` (`contactDialogueSystem`)
+- `HunterIdentityStub` on profile
+
+### Tooling (M5)
+- `authenticated-audit.mjs` — `/map`, `/archive`, `/contacts`
+
 ## v1.5.0 (unreleased) — Architecture foundation + immersion wave 0
 
 ### Architecture (M0)

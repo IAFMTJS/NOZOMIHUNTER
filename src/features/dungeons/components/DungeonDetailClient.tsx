@@ -16,6 +16,8 @@ import { canSpendStamina } from "@/systems/economy/staminaSystem"
 import { generateDungeon } from "@/systems/dungeons/dungeonGenerator"
 import { estimatedDungeonTimeLimitMinutes } from "@/systems/presentation/questPresentationSystem"
 import { E2E_TEST_IDS } from "@/config/e2eTestIds"
+import { buildDungeonEntryTension } from "@/systems/presentation/dungeonEntryPresentation"
+import { DungeonEntryTension } from "@/features/dungeons/components/DungeonEntryTension"
 
 interface DungeonDetailClientProps {
   dungeonKey: string
@@ -49,6 +51,7 @@ export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
   const lootPreview = generateDungeon(player.level, def).rewards
   const maxDifficulty = Math.max(...def.encounterPlan.map((e) => e.difficulty))
   const timeLimit = estimatedDungeonTimeLimitMinutes(def.encounterPlan.length)
+  const entryTension = buildDungeonEntryTension(def)
 
   return (
     <HunterPage className="pb-28">
@@ -61,6 +64,7 @@ export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
           tall
         />
         <p className="text-sm leading-relaxed text-[var(--muted)]">{def.description}</p>
+        <DungeonEntryTension copy={entryTension} />
 
         <StatGrid
           items={[

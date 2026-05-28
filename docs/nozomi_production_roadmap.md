@@ -1,5 +1,7 @@
 # NOZOMI: Production Roadmap & Vibecoding System Guide
 
+> **Historical reference.** For active implementation order and immersion scope, use [`immersion-rework-masterplan.md`](immersion-rework-masterplan.md), [`current-architecture.md`](current-architecture.md), and [`ux-audit-status.md`](ux-audit-status.md). Whisper/STT sections below describe earlier planning, not the current v1.5+ speech stack (`speechGuard`, client STT).
+
 ## 1. Why this document exists
 
 This is the point where the project stops being a collection of cool ideas and becomes a real production roadmap.
