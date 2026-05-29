@@ -28,7 +28,7 @@ export function SurvivalVocabEncounter({
   const wave = enc?.survivalWave ?? 1
 
   return (
-    <ModeEncounterShell modeLabel="Survival Mode" emotion="Survival">
+    <ModeEncounterShell modeLabel="Survival Mode" emotion="Survival" quest={quest}>
       <div className="mb-2 flex items-center justify-between gap-2">
         <ComboMeter streak={streak} />
         <span className="text-[10px] uppercase tracking-widest text-[var(--danger)]">

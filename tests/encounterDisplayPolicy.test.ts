@@ -46,4 +46,24 @@ describe("isRecallChallengeQuest", () => {
       true
     )
   })
+
+  it("false for ghost interrogation mode", () => {
+    expect(
+      isRecallChallengeQuest(
+        baseQuest({
+          type: "CONVERSATION",
+          gameMode: "GHOST_INTERROGATION",
+          conversationEncounter: {
+            scenarioId: "s1",
+            directorName: "Director",
+            briefing: "Brief",
+            requiredExchanges: 3,
+            messages: [],
+            successfulExchanges: 0,
+            wrongTurns: 0,
+          },
+        })
+      )
+    ).toBe(false)
+  })
 })

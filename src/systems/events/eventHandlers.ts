@@ -92,6 +92,30 @@ export function registerCoreEventHandlers(): void {
     track(GAME_EVENTS.QUEST_ACCEPTED, payload)
   })
 
+  eventBus.on(GAME_EVENTS.SECTOR_CLEARED, (payload) => {
+    track(GAME_EVENTS.SECTOR_CLEARED, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.TRAINING_PRIORITY_SHOWN, (payload) => {
+    track(GAME_EVENTS.TRAINING_PRIORITY_SHOWN, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.BOSS_PHASE_CHANGED, (payload) => {
+    track(GAME_EVENTS.BOSS_PHASE_CHANGED, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.SECTOR_CORRUPTION_TICK, (payload) => {
+    track(GAME_EVENTS.SECTOR_CORRUPTION_TICK, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.DISCIPLINE_SPENT, (payload) => {
+    track(GAME_EVENTS.DISCIPLINE_SPENT, payload)
+  })
+
+  eventBus.on(GAME_EVENTS.DAILY_MILESTONE_REACHED, (payload) => {
+    track(GAME_EVENTS.DAILY_MILESTONE_REACHED, payload)
+  })
+
   eventBus.on(GAME_EVENTS.STAMINA_SPENT, (payload) => {
     track(GAME_EVENTS.STAMINA_SPENT, payload)
   })

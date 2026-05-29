@@ -29,7 +29,7 @@ export function KanjiSurgeryEncounter({
   }
 
   return (
-    <ModeEncounterShell modeLabel="Kanji Surgery" emotion="Discipline">
+    <ModeEncounterShell modeLabel="Kanji Surgery" emotion="Discipline" quest={quest}>
       <Panel tone="inset" className="space-y-3 !p-4">
         <p className="text-xs text-[var(--muted)]">
           Trace and stabilize unstable kanji seals before corruption leaks.

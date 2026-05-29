@@ -397,6 +397,28 @@ async function main() {
     } else routeLog("/vocabulary", "warn", "geen woorden")
   }
 
+  await page.goto(`${BASE}/leaderboard`, { waitUntil: "domcontentloaded" })
+  await waitForHunterReady(page)
+  await shot(page, "10-leaderboard")
+  {
+    const text = await bodyText(page)
+    if (/weekly/i.test(text) && /lifetime/i.test(text)) {
+      routeLog("/leaderboard", "ok", "weekly + lifetime tabs")
+    } else {
+      note("medium", "leaderboard", "Leaderboard tabs niet gevonden")
+      routeLog("/leaderboard", "warn", "tabs missing")
+    }
+  }
+
+  await page.goto(`${BASE}/home`, { waitUntil: "domcontentloaded" })
+  await waitForHunterReady(page)
+  const loadingOverlay = page.locator("[data-testid='loading-screen-overlay']")
+  if ((await loadingOverlay.count()) > 0) {
+    routeLog("/home/loading-overlay", "ok", "marker present")
+  } else {
+    routeLog("/home/loading-overlay", "skip", "not visible after load")
+  }
+
   // ── Secondary routes ──
   for (const route of [
     "/map",

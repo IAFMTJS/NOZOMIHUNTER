@@ -7,7 +7,7 @@ export interface ReactiveToast {
 let seq = 0
 
 export function nextReactiveToast(
-  kind: "xp" | "warning" | "glitch" | "level" | "dungeonFail",
+  kind: "xp" | "warning" | "glitch" | "level" | "dungeonFail" | "contract",
   payload?: { xpGained?: number; level?: number; message?: string }
 ): ReactiveToast {
   seq += 1
@@ -39,6 +39,13 @@ export function nextReactiveToast(
         message: payload?.message ?? "Sector breach — penalties applied",
         className:
           "border-[var(--danger)]/50 bg-[var(--surface)] text-[var(--danger)] max-w-xs text-center",
+      }
+    case "contract":
+      return {
+        id: `toast-${seq}`,
+        message: payload?.message ?? "Contract accepted — channel open",
+        className:
+          "border-[var(--accent)]/40 bg-[var(--surface)] text-[var(--accent-bright)] max-w-xs text-center",
       }
     default:
       return {

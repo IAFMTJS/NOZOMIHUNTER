@@ -39,6 +39,7 @@ import type { QuestContract } from "@/contracts/quest-contract"
 import type { ReadinessResultContract } from "@/contracts/readiness-contract"
 import type { DungeonForecastContract } from "@/systems/dungeons/dungeonForecastSystem"
 import { SyncDisciplineCeremony } from "@/features/rewards/components/SyncDisciplineCeremony"
+import { TrainingResultsCeremony } from "@/components/ceremonies/TrainingResultsCeremony"
 import { useHunterReadiness } from "@/features/hunter/hooks/useHunterReadiness"
 
 export interface HunterSessionValue {
@@ -76,6 +77,10 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
   const clearRankUpNotice = usePlayerStore((s) => s.clearRankUpNotice)
   const unlockNoticeQueue = usePlayerStore((s) => s.unlockNoticeQueue)
   const dismissUnlockNotice = usePlayerStore((s) => s.dismissUnlockNotice)
+  const trainingResultsCeremony = usePlayerStore((s) => s.trainingResultsCeremony)
+  const clearTrainingResultsCeremony = usePlayerStore(
+    (s) => s.clearTrainingResultsCeremony
+  )
   const setPlayer = usePlayerStore((s) => s.setPlayer)
   const [tutorialDismissed, setTutorialDismissed] = useState(false)
   const { hubView, setHubView, hubFocusQuestId, setHubFocusQuestId } =
@@ -198,6 +203,13 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
         <AchievementUnlockCeremony
           achievement={achievementQueue[0]}
           onDismiss={popAchievement}
+        />
+      )}
+      {trainingResultsCeremony != null && (
+        <TrainingResultsCeremony
+          summary={trainingResultsCeremony.summary}
+          playAgainHref={trainingResultsCeremony.playAgainHref}
+          onDismiss={clearTrainingResultsCeremony}
         />
       )}
       {levelUpCeremony != null && (

@@ -15,6 +15,16 @@ import { applyPlayerActivityRecord } from "@/systems/player/playerActivitySystem
 import { emitUnlockGrants } from "@/systems/progression/resolveQuestCompletion"
 import { markTutorialComplete } from "@/systems/tutorial/tutorialSystem"
 import { applyQuestStatRewards } from "@/systems/progression/playerStatProgressionSystem"
+import {
+  disciplineEarnedForQuest,
+} from "@/systems/progression/disciplineCurrencySystem"
+import { isTrainingQuest } from "@/systems/training/trainingMissionSystem"
+import { buildTrainingSessionSummary } from "@/systems/training/trainingSessionSummarySystem"
+import { addSeasonPoints } from "@/services/supabase/seasonProgressRepository"
+import {
+  dailyMilestoneProgress,
+  DAILY_MILESTONE_BONUS_CREDITS,
+} from "@/systems/quests/dailyMilestoneSystem"
 
 export interface ActivityCompletionInput {
   userId: string
@@ -46,6 +56,11 @@ export async function applyActivityCompletion(
   let progression = input.progression
   if (input.quest.isTutorial) {
     progression = markTutorialComplete(progression)
+  }
+  const disciplineGain = disciplineEarnedForQuest(input.quest)
+  progression = {
+    ...progression,
+    discipline: progression.discipline + disciplineGain,
   }
 
   const leveledUp = input.server.level > input.server.previous_level
@@ -82,9 +97,34 @@ export async function applyActivityCompletion(
     }
   }
 
-  const pending = await syncRewardStateFromServer(input.userId, input.server)
+  let pending = await syncRewardStateFromServer(input.userId, input.server)
+
+  if (input.quest.narrativeTier === "DAILY") {
+    const quests = usePlayerStore.getState().activeQuests
+    const milestone = dailyMilestoneProgress(
+      [...quests, { ...input.quest, objectives: input.quest.objectives.map((o) => ({ ...o, completed: true })) }],
+      player.id
+    )
+    if (milestone.bonusReady) {
+      eventBus.emit(GAME_EVENTS.DAILY_MILESTONE_REACHED, {
+        playerId: input.userId,
+        completed: milestone.completed,
+      })
+      if (pending && !pending.claimed) {
+        pending = {
+          ...pending,
+          credits: (pending.credits ?? 0) + DAILY_MILESTONE_BONUS_CREDITS,
+        }
+        const p = usePlayerStore.getState().player
+        if (p) {
+          usePlayerStore.getState().setPlayer({ ...p, pendingRewards: pending })
+        }
+      }
+    }
+  }
 
   const activity = applyPlayerActivityRecord(usePlayerStore.getState().player!)
+  void addSeasonPoints(Math.max(5, Math.floor((input.quest.rewards.xp ?? 10) / 5)))
   const current = usePlayerStore.getState().player!
   usePlayerStore.getState().setPlayer({
     ...activity.player,
@@ -99,6 +139,14 @@ export async function applyActivityCompletion(
     usePlayerStore.setState((s) => ({
       unlockNoticeQueue: [...s.unlockNoticeQueue, ...syncUnlocks],
     }))
+  }
+
+  if (isTrainingQuest(input.quest) && input.quest.gameMode) {
+    const summary = buildTrainingSessionSummary(input.quest)
+    usePlayerStore.getState().setTrainingResultsCeremony({
+      summary,
+      playAgainHref: "/training",
+    })
   }
 
   return { pending, leveledUp, rankUp, syncUnlocks }

@@ -13,14 +13,24 @@ import {
   pickContactDialogue,
   type ContactDialogueBranch,
 } from "@/systems/contacts/contactDialogueSystem"
+import { GameAssetImage } from "@/components/ui/GameAssetImage"
+import { buildSectorCorruptionView } from "@/systems/world/sectorCorruptionSystem"
+import { irisWarningLine } from "@/systems/messaging/npcMessageSystem"
+import { usePlayerStore } from "@/stores/usePlayerStore"
 
 const NPC_CONTACTS = [
+  { key: "iris", label: "Iris", role: "Sector analyst" },
   { key: "operator-7", label: "Operator 7", role: "Dispatch liaison" },
   { key: "archivist", label: "The Archivist", role: "Shadow Archive" },
 ] as const
 
 export function ContactsClient() {
   const { user } = useAuth()
+  const player = usePlayerStore((s) => s.player)
+  const sectorWarning =
+    player != null
+      ? irisWarningLine(buildSectorCorruptionView(player, []).band)
+      : null
   const [trust, setTrust] = useState<Record<string, number>>({})
   const [branchByNpc, setBranchByNpc] = useState<Record<string, ContactDialogueBranch>>(
     {}
@@ -59,7 +69,12 @@ export function ContactsClient() {
   )
 
   return (
-    <HunterPage>
+    <HunterPage className="nozomi-screen-contacts space-y-6">
+      {sectorWarning && (
+        <p className="rounded-lg border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-3 py-2 text-xs text-[var(--danger)]">
+          Iris: {sectorWarning}
+        </p>
+      )}
       <div>
         <h1 className="font-display text-2xl text-[var(--foreground)]">Contacts</h1>
         <p className="mt-1 text-sm text-[var(--muted)]">
@@ -72,7 +87,13 @@ export function ContactsClient() {
           const branch = branchByNpc[npc.key] ?? "greeting"
           const open = activeNpc === npc.key
           return (
-            <Panel key={npc.key}>
+            <Panel key={npc.key} className="flex gap-3">
+              {npc.key === "iris" && (
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full">
+                  <GameAssetImage assetKey="npc.iris.portrait" alt="" fill />
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
               <p className="font-display text-sm font-semibold">{npc.label}</p>
               <p className="text-xs text-[var(--muted)]">{npc.role}</p>
               <p className="mt-2 text-sm">
@@ -118,6 +139,7 @@ export function ContactsClient() {
                   </div>
                 </div>
               )}
+              </div>
             </Panel>
           )
         })}

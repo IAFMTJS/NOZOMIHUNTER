@@ -2,6 +2,7 @@ import type { PlayerContract } from "@/contracts/player-contract"
 import { POWER_CONFIG } from "@/config/powerConfig"
 import { countEquippedItems } from "@/systems/inventory/inventorySystem"
 import { statBufferBonus } from "@/systems/economy/boostSystem"
+import { aggregateRelicModifiers } from "@/systems/inventory/relicEffectSystem"
 
 export interface HunterPowerBreakdown {
   total: number
@@ -35,7 +36,11 @@ export function computeHunterPower(player: PlayerContract): HunterPowerBreakdown
   const levelBonus = (player.level + bufferBonus) * POWER_CONFIG.LEVEL_MULTIPLIER
   const gearBonus =
     countEquippedItems(player.inventory) * POWER_CONFIG.GEAR_BONUS_PER_EQUIPPED
-  const total = Math.round(statSum + rpgSum + levelBonus + gearBonus)
+  const relic = aggregateRelicModifiers(player)
+  const relicBonus = Math.round(
+    relic.xpBonusPercent * 2 + relic.accuracyBonusPercent * 3
+  )
+  const total = Math.round(statSum + rpgSum + levelBonus + gearBonus + relicBonus)
 
   const attackBase = Math.round(
     r.strength * 4 + r.agility * 2 + total * 0.25

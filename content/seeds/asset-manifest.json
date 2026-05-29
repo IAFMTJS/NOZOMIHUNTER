@@ -1,0 +1,165 @@
+[
+  {
+    "asset_key": "hero.home.command",
+    "category": "hero",
+    "variant": "default",
+    "path": "/game-assets/heroes/hero.home.command.webp"
+  },
+  {
+    "asset_key": "hero.training.priority",
+    "category": "hero",
+    "variant": "default",
+    "path": "/game-assets/heroes/hero.training.priority.webp"
+  },
+  {
+    "asset_key": "hero.dungeon.entry",
+    "category": "hero",
+    "variant": "default",
+    "path": "/game-assets/heroes/hero.dungeon.entry.webp"
+  },
+  {
+    "asset_key": "hero.contract.file",
+    "category": "hero",
+    "variant": "default",
+    "path": "/game-assets/heroes/hero.contract.file.webp"
+  },
+  {
+    "asset_key": "hero.world.map",
+    "category": "hero",
+    "variant": "default",
+    "path": "/game-assets/heroes/hero.world.map.webp"
+  },
+  {
+    "asset_key": "boss.neon-warden",
+    "category": "boss",
+    "variant": "default",
+    "path": "/game-assets/bosses/boss.neon-warden.webp"
+  },
+  {
+    "asset_key": "boss.shadow-archivist",
+    "category": "boss",
+    "variant": "default",
+    "path": "/game-assets/bosses/boss.shadow-archivist.webp"
+  },
+  {
+    "asset_key": "boss.void-priest",
+    "category": "boss",
+    "variant": "default",
+    "path": "/game-assets/bosses/boss.void-priest.webp"
+  },
+  {
+    "asset_key": "season.fracture-week.banner",
+    "category": "season",
+    "variant": "default",
+    "path": "/game-assets/seasons/season.fracture-week.banner.webp",
+    "season_id": "fracture-week"
+  },
+  {
+    "asset_key": "npc.iris.portrait",
+    "category": "npc",
+    "variant": "default",
+    "path": "/game-assets/npc/npc.iris.portrait.webp"
+  },
+  {
+    "asset_key": "crest.system",
+    "category": "ui",
+    "variant": "default",
+    "path": "/game-assets/ui/crest.system.webp"
+  },
+  {
+    "asset_key": "corruption.stage.1",
+    "category": "vfx",
+    "variant": "minor",
+    "path": "/game-assets/vfx/corruption.stage.1.webp"
+  },
+  {
+    "asset_key": "corruption.stage.2",
+    "category": "vfx",
+    "variant": "moderate",
+    "path": "/game-assets/vfx/corruption.stage.2.webp"
+  },
+  {
+    "asset_key": "corruption.stage.3",
+    "category": "vfx",
+    "variant": "major",
+    "path": "/game-assets/vfx/corruption.stage.3.webp"
+  },
+  {
+    "asset_key": "corruption.stage.4",
+    "category": "vfx",
+    "variant": "critical",
+    "path": "/game-assets/vfx/corruption.stage.4.webp"
+  },
+  {
+    "asset_key": "loading.panel.1",
+    "category": "loading",
+    "variant": "default",
+    "path": "/game-assets/loading/loading.panel-1.webp"
+  },
+  {
+    "asset_key": "loading.panel.2",
+    "category": "loading",
+    "variant": "default",
+    "path": "/game-assets/loading/loading.panel-2.webp"
+  },
+  {
+    "asset_key": "loading.panel.3",
+    "category": "loading",
+    "variant": "default",
+    "path": "/game-assets/loading/loading.panel-3.webp"
+  },
+  {
+    "asset_key": "loading.panel.4",
+    "category": "loading",
+    "variant": "default",
+    "path": "/game-assets/loading/loading.panel-4.webp"
+  },
+  {
+    "asset_key": "loading.panel.5",
+    "category": "loading",
+    "variant": "default",
+    "path": "/game-assets/loading/loading.panel-5.webp"
+  },
+  {
+    "asset_key": "relic.focus-lens",
+    "category": "relic",
+    "variant": "default",
+    "path": "/game-assets/relics/relic.focus-lens.webp"
+  },
+  {
+    "asset_key": "relic.memory-core",
+    "category": "relic",
+    "variant": "default",
+    "path": "/game-assets/relics/relic.memory-core.webp"
+  },
+  {
+    "asset_key": "relic.void-seal",
+    "category": "relic",
+    "variant": "default",
+    "path": "/game-assets/relics/relic.void-seal.webp"
+  },
+  {
+    "asset_key": "relic.signal-cache",
+    "category": "relic",
+    "variant": "default",
+    "path": "/game-assets/relics/relic.signal-cache.webp"
+  },
+  {
+    "asset_key": "relic.shadow-shard",
+    "category": "relic",
+    "variant": "default",
+    "path": "/game-assets/relics/relic.shadow-shard.webp"
+  },
+  {
+    "asset_key": "relic.stamina-brew",
+    "category": "relic",
+    "variant": "default",
+    "path": "/game-assets/relics/relic.stamina-brew.webp"
+  },
+  {
+    "asset_key": "relic.corruption-ward",
+    "category": "relic",
+    "variant": "default",
+    "path": "/game-assets/relics/relic.corruption-ward.webp"
+  }
+]

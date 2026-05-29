@@ -32,6 +32,8 @@ export interface DungeonDefinitionConfig {
   requiredDungeon?: string
   encounterPlan: { id: string; type: EncounterType; difficulty: number }[]
   bossName: string
+  /** Key for content_boss_phases DB lookup (defaults to `key`). */
+  bossKey?: string
   rewardXpBase: number
   unlocks: string[]
   /** 2 = branching route / threat / combat actions. */
@@ -41,6 +43,12 @@ export interface DungeonDefinitionConfig {
 }
 
 export const DUNGEON_CONFIG = {
+  /** Presentation-only recovery route node (V2 route graphs may reference RECOVERY). */
+  RECOVERY_ROUTE: {
+    nodeType: "RECOVERY" as const,
+    label: "Recovery alcove",
+    corruptionReliefCopy: "Brief stabilization — sector pressure eases before the next breach.",
+  },
   MAX_ENCOUNTER_FAILURES: 2,
   DUNGEON_FAILURE_PENALTIES: {
     corruption: 3,

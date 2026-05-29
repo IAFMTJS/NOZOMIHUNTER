@@ -164,6 +164,11 @@ export async function onSectorCleared(
     dungeonId: run.dungeon.id,
     encounterType: run.activeType,
   })
+  eventBus.emit(GAME_EVENTS.SECTOR_CLEARED, {
+    playerId: userId,
+    dungeonId: run.dungeon.id,
+    encounterType: run.activeType,
+  })
 
   if (run.activeType === "BOSS") {
     const updated = advanceBossPhase(questWithRecap)

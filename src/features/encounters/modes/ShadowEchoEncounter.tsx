@@ -34,7 +34,7 @@ export function ShadowEchoEncounter(props: ShadowEchoEncounterProps) {
   const urgent = secondsLeft <= 6
 
   return (
-    <ModeEncounterShell modeLabel="Shadow Echo" emotion="Discipline">
+    <ModeEncounterShell modeLabel="Shadow Echo" emotion="Discipline" quest={props.quest}>
       <Panel tone="inset" className="mb-3 !p-3">
         <p className="text-xs text-[var(--muted)]">
           Mirror the transmission before the echo decays — type while the signal holds.

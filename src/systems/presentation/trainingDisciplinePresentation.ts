@@ -25,27 +25,27 @@ const DISCIPLINE_SKIN: Record<
   listen: {
     label: "Listening discipline",
     atmosphere: "Whispers in darkness — directional audio",
-    panelClass: "border-l-2 border-l-[var(--accent)]",
+    panelClass: "nozomi-training-lane--listening border-l-2 border-l-[var(--accent)]",
   },
   read: {
     label: "Reading discipline",
     atmosphere: "Hidden notes — decaying archives",
-    panelClass: "border-l-2 border-l-[var(--success)]",
+    panelClass: "nozomi-training-lane--reading border-l-2 border-l-[var(--success)]",
   },
   write: {
     label: "Writing discipline",
     atmosphere: "Ritual reconstruction — symbol tracing",
-    panelClass: "border-l-2 border-l-[var(--warning)]",
+    panelClass: "nozomi-training-lane--writing border-l-2 border-l-[var(--warning)]",
   },
   speak: {
     label: "Speaking discipline",
     atmosphere: "Voice trials — negotiation under pressure",
-    panelClass: "border-l-2 border-l-[var(--danger)]",
+    panelClass: "nozomi-training-lane--speaking border-l-2 border-l-[var(--danger)]",
   },
   arcade: {
     label: "Arcade stabilization",
     atmosphere: "General drill — mixed signal",
-    panelClass: "",
+    panelClass: "nozomi-training-lane--reading",
   },
 }
 

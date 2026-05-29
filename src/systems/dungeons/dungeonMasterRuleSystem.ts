@@ -1,4 +1,5 @@
 import type { DungeonRunContract } from "@/contracts/dungeon-contract"
+import { damageBossOnCorrect, restoreBossOnWrong } from "./bossVitalitySystem"
 import { resolveMasterForRun } from "./dungeonMasterSystem"
 import { initThreatState } from "./dungeonThreatSystem"
 import { createVocabularyEncounter } from "@/systems/quests/vocabularyEncounterSystem"
@@ -133,21 +134,14 @@ export function applyReflectionWordBias(
 }
 
 export function damageBossIntegrityOnCorrect(
-  run: DungeonRunContract
+  run: DungeonRunContract,
+  streak = 0
 ): DungeonRunContract {
-  const phases = run.dungeon.boss?.phaseSpecs?.length ?? run.dungeon.boss?.phases ?? 2
-  const perPhase = 100 / phases
-  return {
-    ...run,
-    bossIntegrity: Math.max(0, (run.bossIntegrity ?? 100) - perPhase),
-  }
+  return damageBossOnCorrect(run, streak)
 }
 
 export function restoreBossIntegrityOnWrong(run: DungeonRunContract): DungeonRunContract {
-  return {
-    ...run,
-    bossIntegrity: Math.min(100, (run.bossIntegrity ?? 100) + 5),
-  }
+  return restoreBossOnWrong(run)
 }
 
 export function getWeakWordCount(mastery?: Map<string, number>): number {

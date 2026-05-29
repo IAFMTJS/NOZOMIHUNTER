@@ -20,6 +20,8 @@ import {
   systemMessageSubline,
 } from "@/systems/messaging/systemMessagingSystem"
 import { SystemMessageRail } from "@/components/hunter/SystemMessageRail"
+import { GameAssetImage } from "@/components/ui/GameAssetImage"
+import { PrestigePanel } from "@/features/profile/components/PrestigePanel"
 
 interface HunterProfilePanelProps {
   player: PlayerContract
@@ -38,9 +40,16 @@ export function HunterProfilePanel({ player }: HunterProfilePanelProps) {
     seed: `${player.id}:${today}:profile`,
   })
 
+  const eliteRank = player.rank === "SS" || player.rank === "SSS"
+
   return (
-    <div className="space-y-6">
-      <Panel tone="accent" className="nozomi-screen-prep space-y-0 overflow-hidden !p-0">
+    <div className="nozomi-screen-profile space-y-6">
+      <Panel tone="accent" className="nozomi-screen-prep relative space-y-0 overflow-hidden !p-0">
+        {eliteRank && (
+          <div className="pointer-events-none absolute inset-0 opacity-25">
+            <GameAssetImage assetKey="season.fracture-week.banner" alt="" fill />
+          </div>
+        )}
         <HeroBanner title={player.identity.codename} rankLabel={player.rank} tall />
         <div className="space-y-6 p-4">
           <p className="text-xs uppercase tracking-[0.2em] text-[var(--accent-bright)]">
@@ -153,6 +162,8 @@ export function HunterProfilePanel({ player }: HunterProfilePanelProps) {
           </CollapsibleSection>
         </Panel>
       )}
+
+      <PrestigePanel player={player} />
 
       <Link
         href="/home"

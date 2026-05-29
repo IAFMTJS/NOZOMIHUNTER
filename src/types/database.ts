@@ -41,6 +41,7 @@ export interface ProgressionRow {
   rpg_agility?: number
   rpg_intelligence?: number
   rpg_vitality?: number
+  discipline?: number
 }
 
 export interface PlayerPenaltiesRow {

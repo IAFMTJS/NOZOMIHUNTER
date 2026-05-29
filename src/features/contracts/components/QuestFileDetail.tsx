@@ -22,6 +22,7 @@ import { buildMissionOpsPresentation } from "@/systems/presentation/missionOpsPr
 import { isQuestEncounterPlayable } from "@/systems/quests/questPlayabilitySystem"
 import { isTrainingQuest } from "@/systems/training/trainingMissionSystem"
 import type { QuestRequestChannel } from "@/contracts/quest-contract"
+import { GameAssetImage } from "@/components/ui/GameAssetImage"
 
 interface QuestFileDetailProps {
   quest: QuestContract
@@ -71,11 +72,24 @@ export function QuestFileDetail({
     ? "Start drill"
     : quest.type === "DUNGEON"
       ? "Enter sector"
-      : "Deploy contract"
+      : "Claim contract"
 
   return (
     <>
       <MissionBreadcrumb segments={breadcrumbSegments} />
+
+      <div className="nozomi-hero-art-slot relative mt-3 min-h-[10rem]">
+        <GameAssetImage
+          assetKey={
+            quest.type === "DUNGEON"
+              ? "hero.dungeon.entry"
+              : "hero.contract.file"
+          }
+          alt=""
+          fill
+          className="opacity-50"
+        />
+      </div>
 
       <HeroBanner
         theme={meta.heroTheme}
@@ -98,12 +112,26 @@ export function QuestFileDetail({
 
       <p className="text-sm leading-relaxed text-[var(--muted)]">{flavor}</p>
 
-      <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--overlay-faint)] p-3 text-xs text-[var(--muted)]">
+      <div className="nozomi-contract-ops rounded-xl border border-[var(--warning)]/25 bg-[var(--overlay-faint)] p-3 text-xs text-[var(--muted)]">
         <p>{ops.sectorBlurb}</p>
-        <p className="mt-2">
-          Instability {ops.instabilityPct}% · Signal {ops.signalStrength}% · Rank{" "}
-          {ops.recommendedRank} · {ops.dangerTier}
-        </p>
+        <ul className="mt-3 grid grid-cols-2 gap-2 text-[var(--foreground)]">
+          <li>
+            <span className="text-[var(--muted)]">Reward</span>
+            <p className="font-mono tabular-nums">{quest.rewards.xp} XP</p>
+          </li>
+          <li>
+            <span className="text-[var(--muted)]">Difficulty</span>
+            <p>{ops.dangerTier}</p>
+          </li>
+          <li>
+            <span className="text-[var(--muted)]">Corruption risk</span>
+            <p className="text-[var(--danger)]">{ops.corruptionRiskPct}%</p>
+          </li>
+          <li>
+            <span className="text-[var(--muted)]">Est. time</span>
+            <p>{ops.estimatedMinutes}</p>
+          </li>
+        </ul>
       </div>
 
       {!playable && (

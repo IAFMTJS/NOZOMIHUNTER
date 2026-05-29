@@ -60,6 +60,20 @@ export function buildWordEntityMetadata(
   }
 }
 
+/** 0–100 threat index for entity-hunt / semantic-network UI. */
+export function computeEntityThreatIndex(
+  mastery: number,
+  threatLevel: VocabularyThreatLevel = "ROUTINE"
+): number {
+  const base =
+    threatLevel === "SECTOR_CRITICAL" || threatLevel === "CRITICAL"
+      ? 85
+      : threatLevel === "ELEVATED"
+        ? 65
+        : 25
+  return Math.min(100, Math.max(0, base + Math.round((100 - mastery) * 0.35)))
+}
+
 export function recordEntityCaptureSource(
   meta: WordEntityMetadata,
   source: string

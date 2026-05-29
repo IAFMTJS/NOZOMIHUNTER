@@ -7,6 +7,7 @@ import { rollDungeonModifiers, rollSingleModifier } from "./dungeonModifierSyste
 import { initPursuitDistance } from "./explorationSystem"
 import { initRouteRun } from "./dungeonRouteSystem"
 import { initThreatState } from "./dungeonThreatSystem"
+import { initBossVitality } from "./bossVitalitySystem"
 import { applyMasterThreatInit } from "./dungeonMasterRuleSystem"
 import { NEON_CORRIDOR_MODIFIER_POOL } from "@/config/neonCorridorV2Config"
 
@@ -45,6 +46,7 @@ export function generateDungeonQuest(
     encounterFailures: 0,
     bossPhase: 0,
     bossIntegrity: 100,
+    sectorCorruption: 18,
     dungeonMode: mode,
     modifiers:
       mode === "ROGUELIKE_SECTOR"
@@ -63,6 +65,13 @@ export function generateDungeonQuest(
   }
 
   run = applyMasterThreatInit(run)
+  run = initBossVitality(run)
+  if (run.threat) {
+    run = {
+      ...run,
+      sectorCorruption: Math.round(run.threat.corruptionPressure ?? 18),
+    }
+  }
 
   return {
     id: createQuestInstanceId(),

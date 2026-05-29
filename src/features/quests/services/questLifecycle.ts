@@ -33,6 +33,10 @@ import { shouldAssignTutorialQuest } from "@/systems/tutorial/tutorialSystem"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { triggerSave } from "@/systems/save/saveSystem"
 import { applyEncounterStreakToQuestRewards } from "@/systems/quests/questCompletionRewardSystem"
+import {
+  applyLiveModifiersToQuest,
+  resolveLiveRewardModifiers,
+} from "@/systems/live/liveEventModifierSystem"
 import { resolveRewardProgression } from "@/systems/progression/resolveQuestCompletion"
 import {
   assignQuest,
@@ -170,7 +174,11 @@ export async function finishQuest(userId: string, questId: string) {
     throw new Error("Quest objectives not complete")
   }
 
-  const questForComplete = applyEncounterStreakToQuestRewards(quest)
+  const liveMods = resolveLiveRewardModifiers(userId)
+  const questForComplete = applyLiveModifiersToQuest(
+    applyEncounterStreakToQuestRewards(quest),
+    liveMods
+  )
   await updateUserQuest(userId, questForComplete)
 
   const snapshotCheck = QuestSnapshotSchema.safeParse(questForComplete)

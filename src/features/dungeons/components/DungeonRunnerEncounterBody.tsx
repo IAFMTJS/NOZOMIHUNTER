@@ -28,7 +28,8 @@ import { ExtractionDecisionPanel } from "@/features/dungeons/components/Extracti
 import { DungeonRunRecap } from "@/features/dungeons/components/DungeonRunRecap"
 import { BossPhaseBanner } from "@/features/dungeons/components/BossPhaseBanner"
 import { BossPhaseOverlay } from "@/features/dungeons/components/BossPhaseOverlay"
-import { BossIntegrityBar } from "@/features/dungeons/components/BossIntegrityBar"
+import { BossEncounterHUD } from "@/features/dungeons/components/BossEncounterHUD"
+import { BossIntroPanel } from "@/components/dungeons/BossIntroPanel"
 import { CorridorStage } from "@/features/dungeons/components/CorridorStage"
 import { SectorRewardInterstitial } from "@/features/dungeons/components/SectorRewardInterstitial"
 import { DungeonClearCeremonyFlow } from "@/components/ceremonies/DungeonClearCeremonyFlow"
@@ -69,6 +70,7 @@ export interface DungeonRunnerEncounterBodyProps {
   onListeningReplay?: () => Promise<void>
   onAbandon: () => Promise<void>
   onExtractionStatus: (message: string) => void
+  timeRemainingMs?: number | null
 }
 
 export function DungeonRunnerEncounterBody({
@@ -103,6 +105,7 @@ export function DungeonRunnerEncounterBody({
   onListeningReplay,
   onAbandon,
   onExtractionStatus,
+  timeRemainingMs,
 }: DungeonRunnerEncounterBodyProps) {
   const boss = run.dungeon.boss
   const v2 = isV2 && isDungeonV2Run(run)
@@ -258,9 +261,17 @@ export function DungeonRunnerEncounterBody({
 
       {state === "BOSS" && v2 && <BossPhaseOverlay quest={quest} run={run} />}
 
+      {state === "BOSS" && v2 && run.bossPhase === 0 && <BossIntroPanel run={run} />}
+
       {state === "BOSS" && (
         <Panel tone="boss" className="nozomi-boss-frame relative border-[var(--danger)]/40">
-          {v2 && <BossIntegrityBar run={run} />}
+          {v2 && (
+            <BossEncounterHUD
+              run={run}
+              bossName={boss?.name ?? "Warden"}
+              timeRemainingMs={timeRemainingMs}
+            />
+          )}
           {v2 && (
             <BossPhaseBanner
               copy={bossPhaseBannerCopy(

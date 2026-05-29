@@ -1,0 +1,62 @@
+name: GDD Quality
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run check:gdd-governance
+      - run: npm run check:theme
+      - run: npm run check:architecture
+
+  visual:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chromium
+      - run: npm run build
+      - run: npm run start &
+        env:
+          PORT: 3000
+      - run: npx wait-on http://localhost:3000 -t 60000
+      - run: npm run check:visual
+        env:
+          VISUAL_AUDIT_BASE: http://localhost:3000
+
+  verify-deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && secrets.SUPABASE_SERVICE_ROLE_KEY != ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run verify:deploy
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

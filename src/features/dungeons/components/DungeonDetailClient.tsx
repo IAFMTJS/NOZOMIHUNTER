@@ -18,6 +18,7 @@ import { estimatedDungeonTimeLimitMinutes } from "@/systems/presentation/questPr
 import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 import { buildDungeonEntryTension } from "@/systems/presentation/dungeonEntryPresentation"
 import { DungeonEntryTension } from "@/features/dungeons/components/DungeonEntryTension"
+import { buildSectorCorruptionView } from "@/systems/world/sectorCorruptionSystem"
 
 interface DungeonDetailClientProps {
   dungeonKey: string
@@ -33,7 +34,7 @@ function StaminaIcon() {
 
 export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
   const router = useRouter()
-  const { player, activeQuests, dungeon } = useHunterSession()
+  const { player, activeQuests, dungeon, regularQuests } = useHunterSession()
   const def = getDungeonDefinition(dungeonKey)
 
   if (!player) {
@@ -52,6 +53,7 @@ export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
   const maxDifficulty = Math.max(...def.encounterPlan.map((e) => e.difficulty))
   const timeLimit = estimatedDungeonTimeLimitMinutes(def.encounterPlan.length)
   const entryTension = buildDungeonEntryTension(def)
+  const sectorView = buildSectorCorruptionView(player, [...activeQuests, ...regularQuests])
 
   return (
     <HunterPage className="pb-28">
@@ -65,6 +67,9 @@ export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
         />
         <p className="text-sm leading-relaxed text-[var(--muted)]">{def.description}</p>
         <DungeonEntryTension copy={entryTension} />
+        <p className="text-xs text-[var(--muted)]">
+          Sector corruption: {sectorView.corruptionPercent}% — {sectorView.subline}
+        </p>
 
         <StatGrid
           items={[

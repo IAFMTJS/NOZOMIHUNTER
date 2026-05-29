@@ -1,0 +1,200 @@
+[
+  {
+    "id": "neon-corridor-phase-0",
+    "boss_key": "dungeon:neon-corridor",
+    "phase_index": 0,
+    "spec": {
+      "id": "phase-0",
+      "label": "Neon Warden — Phase 1",
+      "encounterKind": "VOCAB",
+      "wordCount": 3
+    }
+  },
+  {
+    "id": "neon-corridor-phase-1",
+    "boss_key": "dungeon:neon-corridor",
+    "phase_index": 1,
+    "spec": {
+      "id": "phase-1",
+      "label": "Neon Warden — Phase 2",
+      "encounterKind": "LISTENING",
+      "wordCount": 4
+    }
+  },
+  {
+    "id": "neon-corridor-phase-2",
+    "boss_key": "dungeon:neon-corridor",
+    "phase_index": 2,
+    "spec": {
+      "id": "phase-2",
+      "label": "Neon Warden — Phase 3",
+      "encounterKind": "SPEECH",
+      "wordCount": 5
+    }
+  },
+  {
+    "id": "shadow-archive-phase-0",
+    "boss_key": "dungeon:shadow-archive",
+    "phase_index": 0,
+    "spec": {
+      "id": "phase-0",
+      "label": "Shadow Archivist — Phase 1",
+      "encounterKind": "VOCAB",
+      "wordCount": 3
+    }
+  },
+  {
+    "id": "shadow-archive-phase-1",
+    "boss_key": "dungeon:shadow-archive",
+    "phase_index": 1,
+    "spec": {
+      "id": "phase-1",
+      "label": "Shadow Archivist — Phase 2",
+      "encounterKind": "LISTENING",
+      "wordCount": 4
+    }
+  },
+  {
+    "id": "shadow-archive-phase-2",
+    "boss_key": "dungeon:shadow-archive",
+    "phase_index": 2,
+    "spec": {
+      "id": "phase-2",
+      "label": "Shadow Archivist — Phase 3",
+      "encounterKind": "SPEECH",
+      "wordCount": 5
+    }
+  },
+  {
+    "id": "abyss-core-phase-0",
+    "boss_key": "dungeon:abyss-core",
+    "phase_index": 0,
+    "spec": {
+      "id": "phase-0",
+      "label": "Gate Devourer — Phase 1",
+      "encounterKind": "VOCAB",
+      "wordCount": 3
+    }
+  },
+  {
+    "id": "abyss-core-phase-1",
+    "boss_key": "dungeon:abyss-core",
+    "phase_index": 1,
+    "spec": {
+      "id": "phase-1",
+      "label": "Gate Devourer — Phase 2",
+      "encounterKind": "LISTENING",
+      "wordCount": 4
+    }
+  },
+  {
+    "id": "abyss-core-phase-2",
+    "boss_key": "dungeon:abyss-core",
+    "phase_index": 2,
+    "spec": {
+      "id": "phase-2",
+      "label": "Gate Devourer — Phase 3",
+      "encounterKind": "SPEECH",
+      "wordCount": 5
+    }
+  },
+  {
+    "id": "corruption-run-phase-0",
+    "boss_key": "dungeon:corruption-run",
+    "phase_index": 0,
+    "spec": {
+      "id": "phase-0",
+      "label": "Collapse Echo — Phase 1",
+      "encounterKind": "VOCAB",
+      "wordCount": 3
+    }
+  },
+  {
+    "id": "corruption-run-phase-1",
+    "boss_key": "dungeon:corruption-run",
+    "phase_index": 1,
+    "spec": {
+      "id": "phase-1",
+      "label": "Collapse Echo — Phase 2",
+      "encounterKind": "LISTENING",
+      "wordCount": 4
+    }
+  },
+  {
+    "id": "corruption-run-phase-2",
+    "boss_key": "dungeon:corruption-run",
+    "phase_index": 2,
+    "spec": {
+      "id": "phase-2",
+      "label": "Collapse Echo — Phase 3",
+      "encounterKind": "SPEECH",
+      "wordCount": 5
+    }
+  },
+  {
+    "id": "void-pursuit-phase-0",
+    "boss_key": "dungeon:void-pursuit",
+    "phase_index": 0,
+    "spec": {
+      "id": "phase-0",
+      "label": "Mirror Hunter — Phase 1",
+      "encounterKind": "VOCAB",
+      "wordCount": 3
+    }
+  },
+  {
+    "id": "void-pursuit-phase-1",
+    "boss_key": "dungeon:void-pursuit",
+    "phase_index": 1,
+    "spec": {
+      "id": "phase-1",
+      "label": "Mirror Hunter — Phase 2",
+      "encounterKind": "LISTENING",
+      "wordCount": 4
+    }
+  },
+  {
+    "id": "void-pursuit-phase-2",
+    "boss_key": "dungeon:void-pursuit",
+    "phase_index": 2,
+    "spec": {
+      "id": "phase-2",
+      "label": "Mirror Hunter — Phase 3",
+      "encounterKind": "SPEECH",
+      "wordCount": 5
+    }
+  },
+  {
+    "id": "roguelike-sector-phase-0",
+    "boss_key": "dungeon:roguelike-sector",
+    "phase_index": 0,
+    "spec": {
+      "id": "phase-0",
+      "label": "Broadcast Spirit — Phase 1",
+      "encounterKind": "VOCAB",
+      "wordCount": 3
+    }
+  },
+  {
+    "id": "roguelike-sector-phase-1",
+    "boss_key": "dungeon:roguelike-sector",
+    "phase_index": 1,
+    "spec": {
+      "id": "phase-1",
+      "label": "Broadcast Spirit — Phase 2",
+      "encounterKind": "LISTENING",
+      "wordCount": 4
+    }
+  },
+  {
+    "id": "roguelike-sector-phase-2",
+    "boss_key": "dungeon:roguelike-sector",
+    "phase_index": 2,
+    "spec": {
+      "id": "phase-2",
+      "label": "Broadcast Spirit — Phase 3",
+      "encounterKind": "SPEECH",
+      "wordCount": 5
+    }
+  }
+]

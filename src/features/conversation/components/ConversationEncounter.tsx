@@ -13,6 +13,8 @@ import {
   EncounterFeedback,
   feedbackToneFromMessage,
 } from "@/components/ui/EncounterFeedback"
+import { ContractProgressRail } from "@/components/encounters/ContractProgressRail"
+import { buildContractProgressView } from "@/systems/presentation/contractProgressPresentationSystem"
 
 interface ConversationEncounterProps {
   quest: QuestContract
@@ -40,6 +42,7 @@ export function ConversationEncounter({
   const encounter = quest.conversationEncounter
   const objective = quest.objectives[0]
   const briefing = getQuestBriefing(quest)
+  const progressView = buildContractProgressView(quest)
 
   if (!encounter?.messages.length) {
     return (
@@ -80,6 +83,8 @@ export function ConversationEncounter({
       {briefing && (
         <p className="mb-3 text-sm italic text-[var(--muted)]">{briefing}</p>
       )}
+
+      <ContractProgressRail view={progressView} />
 
       <p className="mb-2 text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
         Channel open · Operator ↔ Sector · Exchanges{" "}

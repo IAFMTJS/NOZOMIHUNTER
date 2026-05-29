@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img">
+  <defs>
+    <linearGradient id="b" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#05070b"/>
+      <stop offset="100%" stop-color="#7a5cff" stop-opacity="0.5"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#b)"/>
+  <g opacity="0.15" stroke="#7a5cff" fill="none">
+    <polygon points="320,40 580,320 60,320"/>
+  </g>
+  <text x="320" y="180" text-anchor="middle" fill="#7a5cff" font-size="120" font-family="serif" opacity="0.35">守</text>
+  <rect x="0" y="0" width="640" height="360" fill="none" stroke="#7a5cff" stroke-width="2" opacity="0.25"/>
+  <text x="32" y="48" fill="#9b7dff" font-size="11" letter-spacing="4" font-family="system-ui">WARDEN FRAME</text>
+  <text x="32" y="300" fill="#f0eef8" font-size="28" font-weight="600" font-family="system-ui">Neon Warden</text>
+</svg>

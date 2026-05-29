@@ -32,7 +32,7 @@ export function DungeonFailureCeremony({
       aria-labelledby="dungeon-failure-title"
       data-testid={DUNGEON_FAILURE_CEREMONY_TEST_ID}
     >
-      <Panel tone="danger" className="max-w-md w-full text-center">
+      <Panel tone="danger" className="nozomi-vfx-glitch-kanji max-w-md w-full text-center">
         <h2
           id="dungeon-failure-title"
           className="font-display text-lg font-bold tracking-wide text-[var(--foreground)]"

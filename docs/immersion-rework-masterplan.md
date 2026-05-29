@@ -6,16 +6,16 @@ NOZOMI HUNTER - IMMERSION REWORK MASTERPLAN
 
 | Screen | Route | Primary UI | Status |
 |--------|-------|------------|--------|
-| 1 Immersive homepage | `/` | `HomeTerminal` | Partial |
-| 2 World map | `/map` | `WorldMapClient` | Planned |
-| 3 Dungeon entry | `/dungeons/[key]` | `DungeonDetailClient` | Partial |
-| 4 Dungeon gameplay | overlay | `DungeonRunner` | Exists |
-| 5 Failure screen | overlay ceremony | `DungeonFailureCeremony` | Planned |
-| 6 Training realm | `/training` | `TrainingClient` | Partial |
-| 7 NPC system | encounters, `/contacts` | `ConversationEncounter` | Partial |
-| 8 Quest board | `/contracts` | `ContractsClient` | Partial |
-| Black Archive | `/archive` | `ArchiveClient` | Planned |
-| Hub warmth | `/home` | `HomeClient` | Partial |
+| 1 Immersive homepage | `/` | `HomeTerminal` | Done |
+| 2 World map | `/map` | `WorldMapClient` | Done |
+| 3 Dungeon entry | `/dungeons/[key]` | `DungeonDetailClient` | Done |
+| 4 Dungeon gameplay | overlay | `DungeonRunner` | Done |
+| 5 Failure screen | overlay ceremony | `DungeonFailureCeremony` | Done |
+| 6 Training realm | `/training` | `TrainingClient` | Done |
+| 7 NPC system | encounters, `/contacts` | `ContactsClient` | Done |
+| 8 Quest board | `/contracts` | `ContractsClient` | Done |
+| Black Archive | `/archive` | `ArchiveClient` | Done |
+| Hub warmth | `/home` | `HomeClient` | Done |
 
 ---
 

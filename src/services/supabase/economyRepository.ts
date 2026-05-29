@@ -176,6 +176,18 @@ export async function reactivateFailedQuestGuarded(
   if (error) throw new Error(error.message)
 }
 
+export async function spendDisciplineGuarded(
+  amount: number,
+  sink: string
+): Promise<void> {
+  const supabase = requireClient()
+  const { error } = await supabase.rpc("spend_discipline_guarded", {
+    p_amount: amount,
+    p_sink: sink,
+  })
+  if (error) throw new Error(error.message)
+}
+
 export async function updateTrackedQuestRow(
   userId: string,
   userQuestRowId: string | null

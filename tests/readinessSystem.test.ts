@@ -26,6 +26,7 @@ function basePlayer(overrides: Partial<PlayerContract> = {}): PlayerContract {
       unlockedSystems: ["quests", "home"],
       unlockedDungeons: [],
       titles: [],
+      discipline: 0,
     },
     economy: defaultEconomy(),
     inventory: [],

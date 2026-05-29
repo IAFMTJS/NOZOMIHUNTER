@@ -6,6 +6,11 @@ import {
   isPursuitEscaped,
   pursuitThreatLabel,
 } from "@/systems/dungeons/explorationSystem"
+import { corruptionBandFromPercent } from "@/config/corruptionThresholds"
+import {
+  runCorruptionPercent,
+  shellClassesForCorruptionBand,
+} from "@/systems/presentation/corruptionPresentationSystem"
 
 export function resolveDungeonModeLabel(mode: GameModeId | undefined): string {
   switch (mode) {
@@ -68,6 +73,11 @@ export function corridorAtmosphereClass(theme: string | undefined, sectorIndex: 
 
 export function dungeonRunShellClass(run: DungeonRunContract): string {
   const parts = ["nozomi-dungeon-run"]
+  const corruptionPct = runCorruptionPercent(
+    run.sectorCorruption,
+    run.threat?.corruptionPressure
+  )
+  parts.push(shellClassesForCorruptionBand(corruptionBandFromPercent(corruptionPct)))
   const mode = run.dungeonMode
   if (mode === "VOID_PURSUIT") parts.push("nozomi-dungeon-run--pursuit")
   if (mode === "CORRUPTION_RUN") parts.push("nozomi-dungeon-run--corruption")

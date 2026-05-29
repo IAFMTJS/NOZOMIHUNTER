@@ -23,7 +23,7 @@ export function KanaDashEncounter({
   onAbandon,
 }: KanaDashEncounterProps) {
   return (
-    <ModeEncounterShell modeLabel="Kana Dash" emotion="Dopamine">
+    <ModeEncounterShell modeLabel="Kana Dash" emotion="Dopamine" quest={quest}>
       <p className="mb-2 text-xs text-[var(--muted)]">
         Rapid-fire kana lock — chain correct answers for XP multiplier.
       </p>

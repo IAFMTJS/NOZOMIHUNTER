@@ -1,7 +1,7 @@
 import { PROGRESSION_CONFIG } from "@/config/progressionConfig"
 import type { HunterRank } from "@/contracts/player-contract"
 
-const RANK_ORDER: HunterRank[] = ["E", "D", "C", "B", "A", "S"]
+const RANK_ORDER: HunterRank[] = ["E", "D", "C", "B", "A", "S", "SS", "SSS"]
 
 export function rankFromLevel(level: number): HunterRank {
   let current: HunterRank = "E"

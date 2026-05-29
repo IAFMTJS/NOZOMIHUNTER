@@ -29,7 +29,7 @@ export function applyEncounterAnswerConsequence(
   const streak = quest.vocabularyEncounter?.correctStreak ?? 0
   if (correct) {
     const { run: next } = applyCorrectConsequence(run, streak)
-    let patched = damageBossIntegrityOnCorrect(next)
+    let patched = damageBossIntegrityOnCorrect(next, streak)
     patched = applyHungerOnStreak(patched, streak)
     patched = dialogueOnStreak(patched, streak)
     patched = dialogueOnAwarenessTier(patched)

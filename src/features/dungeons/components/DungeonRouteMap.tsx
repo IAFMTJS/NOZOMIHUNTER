@@ -30,13 +30,17 @@ export function DungeonRouteMap({
       <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--accent-bright)]">
         Scan route
       </p>
-      {choices.map((node, i) => (
+      {choices.map((node, i) => {
+        const isRecovery = node.label.toLowerCase().includes("recovery")
+        return (
         <div
           key={node.id}
-          className={`rounded border border-[var(--border-subtle)] p-3 ${sectorDangerClass(node.danger)}`}
+          className={`rounded border border-[var(--border-subtle)] p-3 ${sectorDangerClass(node.danger)} ${
+            isRecovery ? "nozomi-recovery-alcove border-[var(--success)]/40" : ""
+          }`}
         >
           <p className="font-display text-sm text-[var(--foreground)]">
-            {String.fromCharCode(65 + i)}: {node.label}
+            {isRecovery ? "Recovery alcove" : `${String.fromCharCode(65 + i)}: ${node.label}`}
           </p>
           <p className="mt-1 text-xs text-[var(--muted)]">
             Threat: {node.danger}
@@ -51,10 +55,10 @@ export function DungeonRouteMap({
             className="mt-3 w-full"
             onClick={() => onChoose(node.id)}
           >
-            Breach this route
+            {isRecovery ? "Stabilize in alcove" : "Breach this route"}
           </Button>
         </div>
-      ))}
+      )})}
     </div>
   )
 }

@@ -49,7 +49,7 @@ function testPlayer(overrides: Partial<PlayerContract> = {}): PlayerContract {
       consistency: 50,
     },
     penalties: { corruption: 0, fatigue: 0, xpDebt: 0 },
-    progression: { unlockedDungeons: [], unlockedSystems: [], titles: [] },
+    progression: { unlockedDungeons: [], unlockedSystems: [], titles: [], discipline: 0 },
     economy: { ...defaultEconomy(), credits: 500, ...overrides.economy },
     inventory: [],
     trackedQuestId: null,

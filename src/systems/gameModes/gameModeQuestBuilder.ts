@@ -15,6 +15,7 @@ import { createShadowTypingEncounter } from "@/systems/training/shadowTypingSyst
 import { createMemoryGridRound } from "@/systems/training/memoryGridSystem"
 import { createSurvivalVocabEncounter } from "@/systems/training/survivalVocabSystem"
 import { createSemanticNetworkEncounter } from "@/systems/vocabulary/semanticNetworkSystem"
+import { createVocabularyEncounter } from "@/systems/quests/vocabularyEncounterSystem"
 import { LISTENING_QUEST_CONFIG } from "@/config/listeningQuestConfig"
 
 export function applyGameModeToQuest(
@@ -148,6 +149,13 @@ export function applyGameModeToQuest(
         gameMode: modeId,
         type: "VOCABULARY",
         semanticNetworkEncounter: createSemanticNetworkEncounter(),
+      }
+    case "ENTITY_HUNT":
+      return {
+        ...quest,
+        gameMode: modeId,
+        type: "VOCABULARY",
+        vocabularyEncounter: createVocabularyEncounter(4),
       }
   }
   return { ...quest, gameMode: modeId }

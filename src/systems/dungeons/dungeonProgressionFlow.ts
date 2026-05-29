@@ -15,6 +15,8 @@ import {
   scoreSectorClear,
 } from "./dungeonRewardSystem"
 import { mountBossPhaseEncounter } from "./dungeonBossSystem"
+import { eventBus } from "@/systems/events/eventBus"
+import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import {
   patchRun,
   advanceDungeonObjective,
@@ -74,6 +76,10 @@ export function completeDungeonSector(quest: QuestContract): QuestContract {
 export function advanceBossPhase(quest: QuestContract): QuestContract {
   const run = quest.dungeonRun!
   const nextPhase = run.bossPhase + 1
+  eventBus.emit(GAME_EVENTS.BOSS_PHASE_CHANGED, {
+    dungeonId: run.dungeon.id,
+    phase: nextPhase,
+  })
   const bossPhases = resolveBossPhaseCount(run)
 
   if (nextPhase >= bossPhases) {

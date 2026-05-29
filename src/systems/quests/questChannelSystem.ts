@@ -10,6 +10,11 @@ import {
 import { buildQuestRewards } from "./questRewardFactory"
 import { pickWeightedGameMode } from "@/systems/gameModes/gameModeSystem"
 import { applyGameModeToQuest } from "@/systems/gameModes/gameModeQuestBuilder"
+import { hashSeed } from "@/systems/economy/shopRotationHash"
+import {
+  pickContentContractTemplate,
+  buildQuestFromContentTemplate,
+} from "@/systems/content/contentContractTemplateSystem"
 
 const DAILY_MODES: GameModeId[] = ["SIGNAL_CALIBRATION", "MEMORY_CASCADE"]
 const STORY_MODES: GameModeId[] = [
@@ -18,9 +23,12 @@ const STORY_MODES: GameModeId[] = [
   "TERMINAL_BREACH",
 ]
 const SIDE_MODES: GameModeId[] = [
+  "ENTITY_HUNT",
+  "SEMANTIC_NETWORK",
   "GHOST_INTERROGATION",
   "PANIC_CHANNEL",
   "TERMINAL_BREACH",
+  "DEEP_COVER",
 ]
 
 export function meetsQuestRequirements(
@@ -58,6 +66,13 @@ export function generateQuestForChannel(
   if (channel === "daily") {
     const existing = findActiveDailyQuest(activeQuests, player.id, date)
     if (existing) return existing
+    const dailyTemplate = pickContentContractTemplate("daily", player.id, date)
+    if (dailyTemplate && hashSeed(`${player.id}:daily`) % 100 < 70) {
+      const quest = buildQuestFromContentTemplate(dailyTemplate, player)
+      if (meetsQuestRequirements(quest, player)) {
+        return quest.gameMode ? quest : assignChannelGameMode(quest, "daily", player)
+      }
+    }
     return assignChannelGameMode(
       generateDailyQuest(
         player.id,
@@ -71,6 +86,15 @@ export function generateQuestForChannel(
   }
 
   if (channel === "side") {
+    const template = pickContentContractTemplate("side", player.id, date)
+    if (template && hashSeed(`${player.id}:side`) % 100 < 70) {
+      const quest = buildQuestFromContentTemplate(template, player)
+      if (meetsQuestRequirements(quest, player)) {
+        return quest.gameMode
+          ? quest
+          : assignChannelGameMode(quest, "side", player)
+      }
+    }
     const roll = Math.random()
     const base =
       roll < 0.35
@@ -85,6 +109,14 @@ export function generateQuestForChannel(
       "side",
       player
     )
+  }
+
+  const storyTemplate = pickContentContractTemplate("story", player.id, date)
+  if (storyTemplate && hashSeed(`${player.id}:story`) % 100 < 70) {
+    const quest = buildQuestFromContentTemplate(storyTemplate, player)
+    if (meetsQuestRequirements(quest, player)) {
+      return quest.gameMode ? quest : assignChannelGameMode(quest, "story", player)
+    }
   }
 
   return assignChannelGameMode(

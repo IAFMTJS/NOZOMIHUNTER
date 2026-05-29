@@ -29,6 +29,8 @@ export function mockPlayerContract(
       unlockedSystems: ["quests", "home"],
       unlockedDungeons: [],
       titles: [],
+      discipline: 0,
+      prestigeCount: 0,
     },
     economy: defaultEconomy(),
     inventory: [],

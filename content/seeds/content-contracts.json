@@ -1,0 +1,1702 @@
+[
+  {
+    "id": "contract-story-001",
+    "title": "Main arc 1",
+    "channel": "story",
+    "template": {
+      "description": "Sector neon-corridor: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 2,
+      "narrativeTier": "MAIN",
+      "gameMode": "LOST_TRANSMISSION",
+      "minimumLevel": 1,
+      "sector": "neon-corridor",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:neon-corridor"
+    }
+  },
+  {
+    "id": "contract-story-002",
+    "title": "Main arc 2",
+    "channel": "story",
+    "template": {
+      "description": "Sector shadow-archive: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 3,
+      "narrativeTier": "MAIN",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 2,
+      "sector": "shadow-archive",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-003",
+    "title": "Main arc 3",
+    "channel": "story",
+    "template": {
+      "description": "Sector void-sector: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "MAIN",
+      "gameMode": "GHOST_INTERROGATION",
+      "minimumLevel": 3,
+      "sector": "void-sector",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-004",
+    "title": "Main arc 4",
+    "channel": "story",
+    "template": {
+      "description": "Sector abyss-core: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "MAIN",
+      "gameMode": "DEEP_COVER",
+      "minimumLevel": 4,
+      "sector": "abyss-core",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:abyss-core"
+    }
+  },
+  {
+    "id": "contract-story-005",
+    "title": "Main arc 5",
+    "channel": "story",
+    "template": {
+      "description": "Sector registry-hub: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 6,
+      "narrativeTier": "MAIN",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 5,
+      "sector": "registry-hub",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-006",
+    "title": "Main arc 6",
+    "channel": "story",
+    "template": {
+      "description": "Sector neon-corridor: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 2,
+      "narrativeTier": "MAIN",
+      "gameMode": "LOST_TRANSMISSION",
+      "minimumLevel": 6,
+      "sector": "neon-corridor",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-007",
+    "title": "Main arc 7",
+    "channel": "story",
+    "template": {
+      "description": "Sector shadow-archive: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 3,
+      "narrativeTier": "MAIN",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 7,
+      "sector": "shadow-archive",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:shadow-archive"
+    }
+  },
+  {
+    "id": "contract-story-008",
+    "title": "Main arc 8",
+    "channel": "story",
+    "template": {
+      "description": "Sector void-sector: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "MAIN",
+      "gameMode": "GHOST_INTERROGATION",
+      "minimumLevel": 8,
+      "sector": "void-sector",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-009",
+    "title": "Main arc 9",
+    "channel": "story",
+    "template": {
+      "description": "Sector abyss-core: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 5,
+      "narrativeTier": "MAIN",
+      "gameMode": "DEEP_COVER",
+      "minimumLevel": 9,
+      "sector": "abyss-core",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-010",
+    "title": "Main arc 10",
+    "channel": "story",
+    "template": {
+      "description": "Sector registry-hub: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 6,
+      "narrativeTier": "MAIN",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 10,
+      "sector": "registry-hub",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:registry-hub"
+    }
+  },
+  {
+    "id": "contract-story-011",
+    "title": "Main arc 11",
+    "channel": "story",
+    "template": {
+      "description": "Sector neon-corridor: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 2,
+      "narrativeTier": "MAIN",
+      "gameMode": "LOST_TRANSMISSION",
+      "minimumLevel": 11,
+      "sector": "neon-corridor",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-012",
+    "title": "Main arc 12",
+    "channel": "story",
+    "template": {
+      "description": "Sector shadow-archive: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 3,
+      "narrativeTier": "MAIN",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 12,
+      "sector": "shadow-archive",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-013",
+    "title": "Main arc 13",
+    "channel": "story",
+    "template": {
+      "description": "Sector void-sector: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 4,
+      "narrativeTier": "MAIN",
+      "gameMode": "GHOST_INTERROGATION",
+      "minimumLevel": 1,
+      "sector": "void-sector",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:void-sector"
+    }
+  },
+  {
+    "id": "contract-story-014",
+    "title": "Main arc 14",
+    "channel": "story",
+    "template": {
+      "description": "Sector abyss-core: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 5,
+      "narrativeTier": "MAIN",
+      "gameMode": "DEEP_COVER",
+      "minimumLevel": 2,
+      "sector": "abyss-core",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-015",
+    "title": "Main arc 15",
+    "channel": "story",
+    "template": {
+      "description": "Sector registry-hub: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 6,
+      "narrativeTier": "MAIN",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 3,
+      "sector": "registry-hub",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-016",
+    "title": "Main arc 16",
+    "channel": "story",
+    "template": {
+      "description": "Sector neon-corridor: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 2,
+      "narrativeTier": "MAIN",
+      "gameMode": "LOST_TRANSMISSION",
+      "minimumLevel": 4,
+      "sector": "neon-corridor",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:neon-corridor"
+    }
+  },
+  {
+    "id": "contract-story-017",
+    "title": "Main arc 17",
+    "channel": "story",
+    "template": {
+      "description": "Sector shadow-archive: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 3,
+      "narrativeTier": "MAIN",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 5,
+      "sector": "shadow-archive",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-018",
+    "title": "Main arc 18",
+    "channel": "story",
+    "template": {
+      "description": "Sector void-sector: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 4,
+      "narrativeTier": "MAIN",
+      "gameMode": "GHOST_INTERROGATION",
+      "minimumLevel": 6,
+      "sector": "void-sector",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-019",
+    "title": "Main arc 19",
+    "channel": "story",
+    "template": {
+      "description": "Sector abyss-core: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "MAIN",
+      "gameMode": "DEEP_COVER",
+      "minimumLevel": 7,
+      "sector": "abyss-core",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:abyss-core"
+    }
+  },
+  {
+    "id": "contract-story-020",
+    "title": "Main arc 20",
+    "channel": "story",
+    "template": {
+      "description": "Sector registry-hub: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 6,
+      "narrativeTier": "MAIN",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 8,
+      "sector": "registry-hub",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-021",
+    "title": "Main arc 21",
+    "channel": "story",
+    "template": {
+      "description": "Sector neon-corridor: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 2,
+      "narrativeTier": "MAIN",
+      "gameMode": "LOST_TRANSMISSION",
+      "minimumLevel": 9,
+      "sector": "neon-corridor",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-022",
+    "title": "Main arc 22",
+    "channel": "story",
+    "template": {
+      "description": "Sector shadow-archive: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 3,
+      "narrativeTier": "MAIN",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 10,
+      "sector": "shadow-archive",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:shadow-archive"
+    }
+  },
+  {
+    "id": "contract-story-023",
+    "title": "Main arc 23",
+    "channel": "story",
+    "template": {
+      "description": "Sector void-sector: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "MAIN",
+      "gameMode": "GHOST_INTERROGATION",
+      "minimumLevel": 11,
+      "sector": "void-sector",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-024",
+    "title": "Main arc 24",
+    "channel": "story",
+    "template": {
+      "description": "Sector abyss-core: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "MAIN",
+      "gameMode": "DEEP_COVER",
+      "minimumLevel": 12,
+      "sector": "abyss-core",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-025",
+    "title": "Main arc 25",
+    "channel": "story",
+    "template": {
+      "description": "Sector registry-hub: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 6,
+      "narrativeTier": "MAIN",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 1,
+      "sector": "registry-hub",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:registry-hub"
+    }
+  },
+  {
+    "id": "contract-story-026",
+    "title": "Main arc 26",
+    "channel": "story",
+    "template": {
+      "description": "Sector neon-corridor: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 2,
+      "narrativeTier": "MAIN",
+      "gameMode": "LOST_TRANSMISSION",
+      "minimumLevel": 2,
+      "sector": "neon-corridor",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-027",
+    "title": "Main arc 27",
+    "channel": "story",
+    "template": {
+      "description": "Sector shadow-archive: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 3,
+      "narrativeTier": "MAIN",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 3,
+      "sector": "shadow-archive",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-028",
+    "title": "Main arc 28",
+    "channel": "story",
+    "template": {
+      "description": "Sector void-sector: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "MAIN",
+      "gameMode": "GHOST_INTERROGATION",
+      "minimumLevel": 4,
+      "sector": "void-sector",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:void-sector"
+    }
+  },
+  {
+    "id": "contract-story-029",
+    "title": "Main arc 29",
+    "channel": "story",
+    "template": {
+      "description": "Sector abyss-core: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 5,
+      "narrativeTier": "MAIN",
+      "gameMode": "DEEP_COVER",
+      "minimumLevel": 5,
+      "sector": "abyss-core",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-030",
+    "title": "Main arc 30",
+    "channel": "story",
+    "template": {
+      "description": "Sector registry-hub: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 6,
+      "narrativeTier": "MAIN",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 6,
+      "sector": "registry-hub",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-031",
+    "title": "Main arc 31",
+    "channel": "story",
+    "template": {
+      "description": "Sector neon-corridor: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 2,
+      "narrativeTier": "MAIN",
+      "gameMode": "LOST_TRANSMISSION",
+      "minimumLevel": 7,
+      "sector": "neon-corridor",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:neon-corridor"
+    }
+  },
+  {
+    "id": "contract-story-032",
+    "title": "Main arc 32",
+    "channel": "story",
+    "template": {
+      "description": "Sector shadow-archive: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 3,
+      "narrativeTier": "MAIN",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 8,
+      "sector": "shadow-archive",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-033",
+    "title": "Main arc 33",
+    "channel": "story",
+    "template": {
+      "description": "Sector void-sector: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 4,
+      "narrativeTier": "MAIN",
+      "gameMode": "GHOST_INTERROGATION",
+      "minimumLevel": 9,
+      "sector": "void-sector",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-034",
+    "title": "Main arc 34",
+    "channel": "story",
+    "template": {
+      "description": "Sector abyss-core: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 5,
+      "narrativeTier": "MAIN",
+      "gameMode": "DEEP_COVER",
+      "minimumLevel": 10,
+      "sector": "abyss-core",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:abyss-core"
+    }
+  },
+  {
+    "id": "contract-story-035",
+    "title": "Main arc 35",
+    "channel": "story",
+    "template": {
+      "description": "Sector registry-hub: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 6,
+      "narrativeTier": "MAIN",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 11,
+      "sector": "registry-hub",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-036",
+    "title": "Main arc 36",
+    "channel": "story",
+    "template": {
+      "description": "Sector neon-corridor: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 2,
+      "narrativeTier": "MAIN",
+      "gameMode": "LOST_TRANSMISSION",
+      "minimumLevel": 12,
+      "sector": "neon-corridor",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-037",
+    "title": "Main arc 37",
+    "channel": "story",
+    "template": {
+      "description": "Sector shadow-archive: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 3,
+      "narrativeTier": "MAIN",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 1,
+      "sector": "shadow-archive",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:shadow-archive"
+    }
+  },
+  {
+    "id": "contract-story-038",
+    "title": "Main arc 38",
+    "channel": "story",
+    "template": {
+      "description": "Sector void-sector: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 4,
+      "narrativeTier": "MAIN",
+      "gameMode": "GHOST_INTERROGATION",
+      "minimumLevel": 2,
+      "sector": "void-sector",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-039",
+    "title": "Main arc 39",
+    "channel": "story",
+    "template": {
+      "description": "Sector abyss-core: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "MAIN",
+      "gameMode": "DEEP_COVER",
+      "minimumLevel": 3,
+      "sector": "abyss-core",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-story-040",
+    "title": "Main arc 40",
+    "channel": "story",
+    "template": {
+      "description": "Sector registry-hub: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 6,
+      "narrativeTier": "MAIN",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 4,
+      "sector": "registry-hub",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:registry-hub"
+    }
+  },
+  {
+    "id": "contract-side-001",
+    "title": "Whisper op 1",
+    "channel": "side",
+    "template": {
+      "description": "Sector neon-corridor: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 2,
+      "narrativeTier": "SIDE",
+      "gameMode": "ENTITY_HUNT",
+      "minimumLevel": 1,
+      "sector": "neon-corridor",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:neon-corridor"
+    }
+  },
+  {
+    "id": "contract-side-002",
+    "title": "Whisper op 2",
+    "channel": "side",
+    "template": {
+      "description": "Sector shadow-archive: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 3,
+      "narrativeTier": "SIDE",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 2,
+      "sector": "shadow-archive",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-003",
+    "title": "Whisper op 3",
+    "channel": "side",
+    "template": {
+      "description": "Sector void-sector: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 3,
+      "sector": "void-sector",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-004",
+    "title": "Whisper op 4",
+    "channel": "side",
+    "template": {
+      "description": "Sector abyss-core: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "GHOST_INTERROGATION",
+      "minimumLevel": 4,
+      "sector": "abyss-core",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:abyss-core"
+    }
+  },
+  {
+    "id": "contract-side-005",
+    "title": "Whisper op 5",
+    "channel": "side",
+    "template": {
+      "description": "Sector registry-hub: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 6,
+      "narrativeTier": "SIDE",
+      "gameMode": "PANIC_CHANNEL",
+      "minimumLevel": 5,
+      "sector": "registry-hub",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-006",
+    "title": "Whisper op 6",
+    "channel": "side",
+    "template": {
+      "description": "Sector neon-corridor: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 2,
+      "narrativeTier": "SIDE",
+      "gameMode": "KANJI_SURGERY",
+      "minimumLevel": 6,
+      "sector": "neon-corridor",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-007",
+    "title": "Whisper op 7",
+    "channel": "side",
+    "template": {
+      "description": "Sector shadow-archive: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 3,
+      "narrativeTier": "SIDE",
+      "gameMode": "SIGNAL_CALIBRATION",
+      "minimumLevel": 7,
+      "sector": "shadow-archive",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:shadow-archive"
+    }
+  },
+  {
+    "id": "contract-side-008",
+    "title": "Whisper op 8",
+    "channel": "side",
+    "template": {
+      "description": "Sector void-sector: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "MEMORY_CASCADE",
+      "minimumLevel": 8,
+      "sector": "void-sector",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-009",
+    "title": "Whisper op 9",
+    "channel": "side",
+    "template": {
+      "description": "Sector abyss-core: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "ENTITY_HUNT",
+      "minimumLevel": 9,
+      "sector": "abyss-core",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-010",
+    "title": "Whisper op 10",
+    "channel": "side",
+    "template": {
+      "description": "Sector registry-hub: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 6,
+      "narrativeTier": "SIDE",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 10,
+      "sector": "registry-hub",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:registry-hub"
+    }
+  },
+  {
+    "id": "contract-side-011",
+    "title": "Whisper op 11",
+    "channel": "side",
+    "template": {
+      "description": "Sector neon-corridor: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 2,
+      "narrativeTier": "SIDE",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 11,
+      "sector": "neon-corridor",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-012",
+    "title": "Whisper op 12",
+    "channel": "side",
+    "template": {
+      "description": "Sector shadow-archive: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 3,
+      "narrativeTier": "SIDE",
+      "gameMode": "GHOST_INTERROGATION",
+      "minimumLevel": 12,
+      "sector": "shadow-archive",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-013",
+    "title": "Whisper op 13",
+    "channel": "side",
+    "template": {
+      "description": "Sector void-sector: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "PANIC_CHANNEL",
+      "minimumLevel": 1,
+      "sector": "void-sector",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:void-sector"
+    }
+  },
+  {
+    "id": "contract-side-014",
+    "title": "Whisper op 14",
+    "channel": "side",
+    "template": {
+      "description": "Sector abyss-core: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "KANJI_SURGERY",
+      "minimumLevel": 2,
+      "sector": "abyss-core",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-015",
+    "title": "Whisper op 15",
+    "channel": "side",
+    "template": {
+      "description": "Sector registry-hub: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 6,
+      "narrativeTier": "SIDE",
+      "gameMode": "SIGNAL_CALIBRATION",
+      "minimumLevel": 3,
+      "sector": "registry-hub",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-016",
+    "title": "Whisper op 16",
+    "channel": "side",
+    "template": {
+      "description": "Sector neon-corridor: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 2,
+      "narrativeTier": "SIDE",
+      "gameMode": "MEMORY_CASCADE",
+      "minimumLevel": 4,
+      "sector": "neon-corridor",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:neon-corridor"
+    }
+  },
+  {
+    "id": "contract-side-017",
+    "title": "Whisper op 17",
+    "channel": "side",
+    "template": {
+      "description": "Sector shadow-archive: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 3,
+      "narrativeTier": "SIDE",
+      "gameMode": "ENTITY_HUNT",
+      "minimumLevel": 5,
+      "sector": "shadow-archive",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-018",
+    "title": "Whisper op 18",
+    "channel": "side",
+    "template": {
+      "description": "Sector void-sector: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 6,
+      "sector": "void-sector",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-019",
+    "title": "Whisper op 19",
+    "channel": "side",
+    "template": {
+      "description": "Sector abyss-core: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 7,
+      "sector": "abyss-core",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:abyss-core"
+    }
+  },
+  {
+    "id": "contract-side-020",
+    "title": "Whisper op 20",
+    "channel": "side",
+    "template": {
+      "description": "Sector registry-hub: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 6,
+      "narrativeTier": "SIDE",
+      "gameMode": "GHOST_INTERROGATION",
+      "minimumLevel": 8,
+      "sector": "registry-hub",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-021",
+    "title": "Whisper op 21",
+    "channel": "side",
+    "template": {
+      "description": "Sector neon-corridor: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 2,
+      "narrativeTier": "SIDE",
+      "gameMode": "PANIC_CHANNEL",
+      "minimumLevel": 9,
+      "sector": "neon-corridor",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-022",
+    "title": "Whisper op 22",
+    "channel": "side",
+    "template": {
+      "description": "Sector shadow-archive: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 3,
+      "narrativeTier": "SIDE",
+      "gameMode": "KANJI_SURGERY",
+      "minimumLevel": 10,
+      "sector": "shadow-archive",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:shadow-archive"
+    }
+  },
+  {
+    "id": "contract-side-023",
+    "title": "Whisper op 23",
+    "channel": "side",
+    "template": {
+      "description": "Sector void-sector: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "SIGNAL_CALIBRATION",
+      "minimumLevel": 11,
+      "sector": "void-sector",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-024",
+    "title": "Whisper op 24",
+    "channel": "side",
+    "template": {
+      "description": "Sector abyss-core: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "MEMORY_CASCADE",
+      "minimumLevel": 12,
+      "sector": "abyss-core",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-025",
+    "title": "Whisper op 25",
+    "channel": "side",
+    "template": {
+      "description": "Sector registry-hub: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 6,
+      "narrativeTier": "SIDE",
+      "gameMode": "ENTITY_HUNT",
+      "minimumLevel": 1,
+      "sector": "registry-hub",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:registry-hub"
+    }
+  },
+  {
+    "id": "contract-side-026",
+    "title": "Whisper op 26",
+    "channel": "side",
+    "template": {
+      "description": "Sector neon-corridor: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 2,
+      "narrativeTier": "SIDE",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 2,
+      "sector": "neon-corridor",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-027",
+    "title": "Whisper op 27",
+    "channel": "side",
+    "template": {
+      "description": "Sector shadow-archive: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 3,
+      "narrativeTier": "SIDE",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 3,
+      "sector": "shadow-archive",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-028",
+    "title": "Whisper op 28",
+    "channel": "side",
+    "template": {
+      "description": "Sector void-sector: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "GHOST_INTERROGATION",
+      "minimumLevel": 4,
+      "sector": "void-sector",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:void-sector"
+    }
+  },
+  {
+    "id": "contract-side-029",
+    "title": "Whisper op 29",
+    "channel": "side",
+    "template": {
+      "description": "Sector abyss-core: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "PANIC_CHANNEL",
+      "minimumLevel": 5,
+      "sector": "abyss-core",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-030",
+    "title": "Whisper op 30",
+    "channel": "side",
+    "template": {
+      "description": "Sector registry-hub: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 6,
+      "narrativeTier": "SIDE",
+      "gameMode": "KANJI_SURGERY",
+      "minimumLevel": 6,
+      "sector": "registry-hub",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-031",
+    "title": "Whisper op 31",
+    "channel": "side",
+    "template": {
+      "description": "Sector neon-corridor: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 2,
+      "narrativeTier": "SIDE",
+      "gameMode": "SIGNAL_CALIBRATION",
+      "minimumLevel": 7,
+      "sector": "neon-corridor",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:neon-corridor"
+    }
+  },
+  {
+    "id": "contract-side-032",
+    "title": "Whisper op 32",
+    "channel": "side",
+    "template": {
+      "description": "Sector shadow-archive: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 3,
+      "narrativeTier": "SIDE",
+      "gameMode": "MEMORY_CASCADE",
+      "minimumLevel": 8,
+      "sector": "shadow-archive",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-033",
+    "title": "Whisper op 33",
+    "channel": "side",
+    "template": {
+      "description": "Sector void-sector: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "ENTITY_HUNT",
+      "minimumLevel": 9,
+      "sector": "void-sector",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-034",
+    "title": "Whisper op 34",
+    "channel": "side",
+    "template": {
+      "description": "Sector abyss-core: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 10,
+      "sector": "abyss-core",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:abyss-core"
+    }
+  },
+  {
+    "id": "contract-side-035",
+    "title": "Whisper op 35",
+    "channel": "side",
+    "template": {
+      "description": "Sector registry-hub: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 6,
+      "narrativeTier": "SIDE",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 11,
+      "sector": "registry-hub",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-036",
+    "title": "Whisper op 36",
+    "channel": "side",
+    "template": {
+      "description": "Sector neon-corridor: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 2,
+      "narrativeTier": "SIDE",
+      "gameMode": "GHOST_INTERROGATION",
+      "minimumLevel": 12,
+      "sector": "neon-corridor",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-037",
+    "title": "Whisper op 37",
+    "channel": "side",
+    "template": {
+      "description": "Sector shadow-archive: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 3,
+      "narrativeTier": "SIDE",
+      "gameMode": "PANIC_CHANNEL",
+      "minimumLevel": 1,
+      "sector": "shadow-archive",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:shadow-archive"
+    }
+  },
+  {
+    "id": "contract-side-038",
+    "title": "Whisper op 38",
+    "channel": "side",
+    "template": {
+      "description": "Sector void-sector: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "KANJI_SURGERY",
+      "minimumLevel": 2,
+      "sector": "void-sector",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-039",
+    "title": "Whisper op 39",
+    "channel": "side",
+    "template": {
+      "description": "Sector abyss-core: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "SIGNAL_CALIBRATION",
+      "minimumLevel": 3,
+      "sector": "abyss-core",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-side-040",
+    "title": "Whisper op 40",
+    "channel": "side",
+    "template": {
+      "description": "Sector registry-hub: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 6,
+      "narrativeTier": "SIDE",
+      "gameMode": "MEMORY_CASCADE",
+      "minimumLevel": 4,
+      "sector": "registry-hub",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:registry-hub"
+    }
+  },
+  {
+    "id": "contract-daily-001",
+    "title": "Daily sweep 1",
+    "channel": "daily",
+    "template": {
+      "description": "Sector neon-corridor: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 2,
+      "narrativeTier": "DAILY",
+      "gameMode": "SIGNAL_CALIBRATION",
+      "minimumLevel": 1,
+      "sector": "neon-corridor",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:neon-corridor"
+    }
+  },
+  {
+    "id": "contract-daily-002",
+    "title": "Daily sweep 2",
+    "channel": "daily",
+    "template": {
+      "description": "Sector shadow-archive: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 3,
+      "narrativeTier": "DAILY",
+      "gameMode": "MEMORY_CASCADE",
+      "minimumLevel": 2,
+      "sector": "shadow-archive",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-daily-003",
+    "title": "Daily sweep 3",
+    "channel": "daily",
+    "template": {
+      "description": "Sector void-sector: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "DAILY",
+      "gameMode": "KANA_DASH",
+      "minimumLevel": 3,
+      "sector": "void-sector",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-daily-004",
+    "title": "Daily sweep 4",
+    "channel": "daily",
+    "template": {
+      "description": "Sector abyss-core: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "DAILY",
+      "gameMode": "ECHO_LISTENING",
+      "minimumLevel": 4,
+      "sector": "abyss-core",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:abyss-core"
+    }
+  },
+  {
+    "id": "contract-daily-005",
+    "title": "Daily sweep 5",
+    "channel": "daily",
+    "template": {
+      "description": "Sector registry-hub: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 6,
+      "narrativeTier": "DAILY",
+      "gameMode": "SIGNAL_CALIBRATION",
+      "minimumLevel": 5,
+      "sector": "registry-hub",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-daily-006",
+    "title": "Daily sweep 6",
+    "channel": "daily",
+    "template": {
+      "description": "Sector neon-corridor: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 2,
+      "narrativeTier": "DAILY",
+      "gameMode": "MEMORY_CASCADE",
+      "minimumLevel": 6,
+      "sector": "neon-corridor",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-daily-007",
+    "title": "Daily sweep 7",
+    "channel": "daily",
+    "template": {
+      "description": "Sector shadow-archive: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 3,
+      "narrativeTier": "DAILY",
+      "gameMode": "KANA_DASH",
+      "minimumLevel": 7,
+      "sector": "shadow-archive",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:shadow-archive"
+    }
+  },
+  {
+    "id": "contract-daily-008",
+    "title": "Daily sweep 8",
+    "channel": "daily",
+    "template": {
+      "description": "Sector void-sector: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "DAILY",
+      "gameMode": "ECHO_LISTENING",
+      "minimumLevel": 8,
+      "sector": "void-sector",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-daily-009",
+    "title": "Daily sweep 9",
+    "channel": "daily",
+    "template": {
+      "description": "Sector abyss-core: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 5,
+      "narrativeTier": "DAILY",
+      "gameMode": "SIGNAL_CALIBRATION",
+      "minimumLevel": 9,
+      "sector": "abyss-core",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-daily-010",
+    "title": "Daily sweep 10",
+    "channel": "daily",
+    "template": {
+      "description": "Sector registry-hub: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 6,
+      "narrativeTier": "DAILY",
+      "gameMode": "MEMORY_CASCADE",
+      "minimumLevel": 10,
+      "sector": "registry-hub",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:registry-hub"
+    }
+  },
+  {
+    "id": "contract-daily-011",
+    "title": "Daily sweep 11",
+    "channel": "daily",
+    "template": {
+      "description": "Sector neon-corridor: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 2,
+      "narrativeTier": "DAILY",
+      "gameMode": "KANA_DASH",
+      "minimumLevel": 11,
+      "sector": "neon-corridor",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-daily-012",
+    "title": "Daily sweep 12",
+    "channel": "daily",
+    "template": {
+      "description": "Sector shadow-archive: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 3,
+      "narrativeTier": "DAILY",
+      "gameMode": "ECHO_LISTENING",
+      "minimumLevel": 12,
+      "sector": "shadow-archive",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-daily-013",
+    "title": "Daily sweep 13",
+    "channel": "daily",
+    "template": {
+      "description": "Sector void-sector: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 4,
+      "narrativeTier": "DAILY",
+      "gameMode": "SIGNAL_CALIBRATION",
+      "minimumLevel": 1,
+      "sector": "void-sector",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:void-sector"
+    }
+  },
+  {
+    "id": "contract-daily-014",
+    "title": "Daily sweep 14",
+    "channel": "daily",
+    "template": {
+      "description": "Sector abyss-core: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 5,
+      "narrativeTier": "DAILY",
+      "gameMode": "MEMORY_CASCADE",
+      "minimumLevel": 2,
+      "sector": "abyss-core",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-daily-015",
+    "title": "Daily sweep 15",
+    "channel": "daily",
+    "template": {
+      "description": "Sector registry-hub: grammar anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 6,
+      "narrativeTier": "DAILY",
+      "gameMode": "KANA_DASH",
+      "minimumLevel": 3,
+      "sector": "registry-hub",
+      "learning_focus": "grammar",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-daily-016",
+    "title": "Daily sweep 16",
+    "channel": "daily",
+    "template": {
+      "description": "Sector neon-corridor: reading anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 2,
+      "narrativeTier": "DAILY",
+      "gameMode": "ECHO_LISTENING",
+      "minimumLevel": 4,
+      "sector": "neon-corridor",
+      "learning_focus": "reading",
+      "boss_connection": "dungeon:neon-corridor"
+    }
+  },
+  {
+    "id": "contract-daily-017",
+    "title": "Daily sweep 17",
+    "channel": "daily",
+    "template": {
+      "description": "Sector shadow-archive: speaking anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
+      "type": "CONVERSATION",
+      "wordCount": 3,
+      "narrativeTier": "DAILY",
+      "gameMode": "SIGNAL_CALIBRATION",
+      "minimumLevel": 5,
+      "sector": "shadow-archive",
+      "learning_focus": "speaking",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-daily-018",
+    "title": "Daily sweep 18",
+    "channel": "daily",
+    "template": {
+      "description": "Sector void-sector: kanji anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
+      "type": "LISTENING",
+      "wordCount": 4,
+      "narrativeTier": "DAILY",
+      "gameMode": "MEMORY_CASCADE",
+      "minimumLevel": 6,
+      "sector": "void-sector",
+      "learning_focus": "kanji",
+      "boss_connection": null
+    }
+  },
+  {
+    "id": "contract-daily-019",
+    "title": "Daily sweep 19",
+    "channel": "daily",
+    "template": {
+      "description": "Sector abyss-core: vocabulary anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "DAILY",
+      "gameMode": "KANA_DASH",
+      "minimumLevel": 7,
+      "sector": "abyss-core",
+      "learning_focus": "vocabulary",
+      "boss_connection": "dungeon:abyss-core"
+    }
+  },
+  {
+    "id": "contract-daily-020",
+    "title": "Daily sweep 20",
+    "channel": "daily",
+    "template": {
+      "description": "Sector registry-hub: listening anomaly containment protocol.",
+      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
+      "type": "VOCABULARY",
+      "wordCount": 6,
+      "narrativeTier": "DAILY",
+      "gameMode": "ECHO_LISTENING",
+      "minimumLevel": 8,
+      "sector": "registry-hub",
+      "learning_focus": "listening",
+      "boss_connection": null
+    }
+  }
+]

@@ -23,6 +23,8 @@ export function mergeUnlocks(
     unlockedSystems: [...systems],
     unlockedDungeons: [...dungeons],
     titles: [...titles],
+    discipline: current.discipline,
+    prestigeCount: current.prestigeCount,
   }
 }
 
@@ -31,6 +33,8 @@ export function defaultProgression(): PlayerProgressionContract {
     unlockedDungeons: ["dungeon:neon-corridor"],
     unlockedSystems: ["quests", "home"],
     titles: [],
+    discipline: 0,
+    prestigeCount: 0,
   }
 }
 

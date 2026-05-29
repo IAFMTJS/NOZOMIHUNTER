@@ -6,6 +6,7 @@ Data layer:
 - Curated vocabulary ships in-memory (`JMDICT_CURATED`); DB extends the catalog when ingested
 
 Before generating code:
+- read docs/Complete Game Design Document.md (or docs/game-design-document.md index)
 - read architecture rules
 - read naming rules
 - read gameplay philosophy

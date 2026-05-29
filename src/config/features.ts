@@ -12,5 +12,5 @@ export const FEATURE_FLAGS = {
   /** Co-op: audio-only vs visual-only operators (future) */
   DUAL_OPERATOR: false,
   /** Weekly sector instability events on home + rewards */
-  LIVE_SECTOR_EVENTS: false,
+  LIVE_SECTOR_EVENTS: true,
 } as const

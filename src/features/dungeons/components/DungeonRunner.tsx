@@ -34,6 +34,10 @@ import { EncounterFeedbackProvider } from "@/features/encounters/context/Encount
 import { EncounterFeedbackBridge } from "@/features/encounters/EncounterFeedbackBridge"
 import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 import { stopRunAudio } from "@/systems/audio/audioSystem"
+import { eventBus } from "@/systems/events/eventBus"
+import { GAME_EVENTS } from "@/systems/events/eventTypes"
+import { SectorClearedBeat } from "@/components/ceremonies/SectorClearedBeat"
+import { DUNGEON_CONSEQUENCE_COPY } from "@/contracts/presentation-contract"
 
 interface DungeonRunnerProps {
   quest: QuestContract
@@ -83,7 +87,19 @@ export function DungeonRunner(props: DungeonRunnerProps) {
   const [status, setStatus] = useState<string | null>(null)
   const [failureDismissed, setFailureDismissed] = useState(false)
   const [timeRemainingMs, setTimeRemainingMs] = useState<number | null>(null)
+  const [sectorBeatOpen, setSectorBeatOpen] = useState(false)
   const run = quest.dungeonRun
+
+  useEffect(() => {
+    const onSectorCleared = (payload: unknown) => {
+      const p = payload as { dungeonId?: string }
+      if (run?.dungeon.id && p.dungeonId === run.dungeon.id) {
+        setSectorBeatOpen(true)
+      }
+    }
+    eventBus.on(GAME_EVENTS.SECTOR_CLEARED, onSectorCleared)
+    return () => eventBus.off(GAME_EVENTS.SECTOR_CLEARED, onSectorCleared)
+  }, [run?.dungeon.id])
 
   useEffect(() => {
     if (!run?.runStartedAt || !run.timeLimitMs) {
@@ -230,11 +246,17 @@ export function DungeonRunner(props: DungeonRunnerProps) {
       onSubmitListening={props.onSubmitListening}
       onListeningReplay={props.onListeningReplay}
       onAbandon={props.onAbandon}
+      timeRemainingMs={timeRemainingMs}
     />
   )
 
   return (
     <>
+      <SectorClearedBeat
+        open={sectorBeatOpen}
+        line={DUNGEON_CONSEQUENCE_COPY.sectorCleared}
+        onDone={() => setSectorBeatOpen(false)}
+      />
       <DungeonRunnerFailureOverlay
         open={failureCeremonyOpen}
         detailLine={failureLine}

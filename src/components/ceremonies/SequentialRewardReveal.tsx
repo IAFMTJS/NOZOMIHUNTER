@@ -79,7 +79,7 @@ export function SequentialRewardReveal({
             transition={MOTION.feedback}
             className={`flex min-w-[4.5rem] flex-col items-center justify-center rounded-xl border px-2 py-3 text-center ${
               TONE_CLASS[item.tone ?? "neutral"]
-            }`}
+            } ${item.tone === "item" ? "nozomi-vfx-relic-acquire" : ""}`}
           >
             <span className="font-display text-[10px] font-bold uppercase tracking-wider">
               {item.label}

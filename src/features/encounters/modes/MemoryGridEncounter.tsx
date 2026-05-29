@@ -47,7 +47,7 @@ export function MemoryGridEncounter({
     )
 
   return (
-    <ModeEncounterShell modeLabel="Memory Grid" emotion="Dopamine">
+    <ModeEncounterShell modeLabel="Memory Grid" emotion="Dopamine" quest={quest}>
       <p className="mb-2 text-xs text-[var(--muted)]">
         Match pairs under time pressure — {timeLeft}s remaining · moves {round.moves}
       </p>

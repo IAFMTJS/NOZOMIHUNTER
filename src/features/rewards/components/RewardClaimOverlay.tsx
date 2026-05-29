@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import type { PendingRewardBundleContract } from "@/contracts/economy-contract"
 import type { PlayerContract } from "@/contracts/player-contract"
 import type { QuestContract } from "@/contracts/quest-contract"
@@ -29,6 +30,7 @@ export function RewardClaimOverlay({
   claimError,
   onClaimAll,
 }: RewardClaimOverlayProps) {
+  const router = useRouter()
   const ceremony = resolveCompletionCeremony(bundle, activeQuests)
   const quest = bundle.questId
     ? activeQuests.find((q) => q.id === bundle.questId)
@@ -83,7 +85,12 @@ export function RewardClaimOverlay({
           subheadline={ceremony.sourceTitle ?? tierSubhead}
           performanceLabel={performanceLabel}
           intensityClass={overlayIntensityClass(ceremony.tier)}
-          onContinue={onClaimAll}
+          onContinue={() => {
+            onClaimAll()
+            if (quest?.narrativeTier === "MAIN") {
+              router.push("/contracts?tab=story")
+            }
+          }}
         />
         {claimError && (
           <p className="mt-3 text-center text-sm text-[var(--danger)]">{claimError}</p>

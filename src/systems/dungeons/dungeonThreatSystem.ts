@@ -1,5 +1,7 @@
 import type { DungeonRunContract, DungeonThreatState } from "@/contracts/dungeon-contract"
 import { DUNGEON_CONSEQUENCE_COPY } from "@/contracts/presentation-contract"
+import { eventBus } from "@/systems/events/eventBus"
+import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import type { DungeonModifierContract } from "@/contracts/game-mode-contract"
 import { combinedCorruptionMutation } from "./dungeonModifierSystem"
 
@@ -68,10 +70,16 @@ export function applyCorrectConsequence(
       hunterFocus: Math.min(THREAT_LIMITS.hunterFocus, next.hunterFocus + 4),
     }
   }
+  const clamped = clampThreat(next)
+  eventBus.emit(GAME_EVENTS.SECTOR_CORRUPTION_TICK, {
+    dungeonId: run.dungeon.id,
+    corruptionPercent: clamped.corruptionPressure,
+  })
   return {
     run: {
       ...run,
-      threat: clampThreat(next),
+      threat: clamped,
+      sectorCorruption: clamped.corruptionPressure,
       lastConsequenceLine: DUNGEON_CONSEQUENCE_COPY.correct,
     },
     line: DUNGEON_CONSEQUENCE_COPY.correct,
@@ -93,10 +101,15 @@ export function applyWrongConsequence(
   const forceBoss =
     next.bossAwareness >= BOSS_AWARENESS_THRESHOLDS.forced &&
     run.machineState !== "BOSS"
+  eventBus.emit(GAME_EVENTS.SECTOR_CORRUPTION_TICK, {
+    dungeonId: run.dungeon.id,
+    corruptionPercent: next.corruptionPressure,
+  })
   return {
     run: {
       ...run,
       threat: next,
+      sectorCorruption: next.corruptionPressure,
       lastConsequenceLine: DUNGEON_CONSEQUENCE_COPY.wrong,
     },
     line: DUNGEON_CONSEQUENCE_COPY.wrong,

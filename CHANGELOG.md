@@ -1,5 +1,101 @@
 # Changelog
 
+## v3.1.1 (unreleased) — Deploy + art MVP slice
+
+### Step 1 — Remote activation
+- Migration `023_gdd_completion.sql` pushed (leaderboard, prestige, season RPCs)
+- `ingest:content` + `ingest:assets` against remote Supabase (20 contracts, 12 archive, 25 assets)
+- `npm run verify:deploy` — row-count + RPC smoke test
+
+### Step 2 — Visual MVP art
+- Board-inspired placeholder SVGs (heroes, bosses, loading×5, relics×5)
+- New manifest keys: `hero.contract.file`, `hero.world.map`, `loading.panel.4–5`
+- Wired contract hero + world map backdrop; [`docs/art-commission-brief.md`](docs/art-commission-brief.md)
+
+## v3.1.0 (unreleased) — GDD completion pass
+
+### Content (Vol 6 / Vol 10)
+- 20 side contract templates in `content/seeds/content-contracts.json` + DB ingest
+- 15 archive entries, boss phase seeds, relic effect seeds
+- `contentContractTemplateSystem` — DB + fallback seeds drive side contract generation
+- Archive/boss/contract hydration in `contentCatalogSystem`
+
+### Live service (Vol 7)
+- Migration `023_gdd_completion.sql` — global `leaderboard_aggregate`, `apply_prestige_reset`, `add_season_points`
+- Global leaderboard via `leaderboardRepository`; season progress persisted on quest complete
+- `SeasonProgressChip` on home (loads `season_progress`)
+
+### Endgame (prestige)
+- `prestigeSystem` + `PrestigePanel` on profile (SSS level 100 reset loop)
+
+### Mode identity (Vol 2–3)
+- `EntityHuntEncounter`, `DeepCoverEncounter`; ENTITY_HUNT / DEEP_COVER wired in registry
+- `modeIdentitySystem` + tests for unique mode payloads
+
+### Governance & visual QA (Vol 8)
+- Three-filter `check:gdd-governance` (progression touch, mode identity, retention)
+- `check:visual` validates screen markers + reference size sanity
+
+## v3.0.0 (unreleased) — Complete GDD + visual/design
+
+### Vol 9 asset pipeline
+- `021_asset_manifest` migration + `game-assets` storage bucket
+- `assetManifestSystem`, `GameAssetImage`, placeholder SVG set, `ingest:assets`
+- [`docs/art-pipeline.md`](docs/art-pipeline.md), [`docs/visual-parity-spec.md`](docs/visual-parity-spec.md)
+
+### Visual parity (boards 1–3 + immersion)
+- Home command node hero art, corruption stages, Iris portrait, landing weather/whispers
+- Training priority hero, discipline lane backgrounds, arcade HUD ring layout
+- Dungeon boss frame, entry tension art, failure glitch layer, relic acquire flash
+- Hex world map selection; archive/contacts/profile screen classes
+
+### Gameplay & meta
+- Arcade combo decay; boss intro panel; discipline research spend UI
+- Daily milestone bonus credits; SS/SSS rank ceremony art
+- `022_season_progress`; leaderboard scaffold; loading screen overlay
+
+### Governance
+- Expanded `check:gdd-governance`; `check:visual` scaffold; flows for asset/discipline/sector-cleared
+
+## v2.1.0 (unreleased) — GDD remaining roadmap (phases A–G)
+
+### Phase A — Mockup gaps
+- Boss integrity 0–100 unified; HUD timer + corruption shell on dungeon run
+- `SectorClearedBeat`, training `ArcadeSessionHud`, contract progress on terminal/vocab
+- Corruption home alert, contract-accepted toast, sector corruption on dungeon detail
+
+### Phase B–G
+- Mode differentiation matrix doc; recovery route config; expanded system message pools
+- Hex sector map, daily milestone rail, discipline spend RPC (`019`), content tables (`020`)
+- Relics feed `hunterPowerSystem`; season chip; `LIVE_SECTOR_EVENTS` enabled
+- Leaderboard scaffold; archive catalog expansion; `check:gdd-governance` script
+- GDD analytics events: sector cleared, boss phase, corruption tick, discipline spent, daily milestone
+
+## v2.0.0-gdd-wave (unreleased) — Complete GDD + mockup implementation
+
+### Home command node (board 1)
+- `almostThereSystem`, `ActiveObjectiveCard`, `SectorCorruptionCard`, `ProgressProximityRail`, `NpcMessageCard` (Iris)
+- `sectorCorruptionSystem` — sector vs hunter corruption split
+- `trainingPrioritySystem` + `TrainingPriorityTeaser` on home
+
+### Training (board 2)
+- Today's priority hero on `/training`
+- `TrainingResultsCeremony` + `trainingSessionSummarySystem`
+
+### Contracts & dungeons (boards 2–3)
+- `QuestFileDetail` corruption risk + Claim contract CTA
+- `ContractProgressRail` on conversation encounters
+- `bossVitalitySystem`, `BossEncounterHUD`, run `sectorCorruption`, S-grade in `dungeonRunSummarySystem`
+- `corruptionPresentationSystem` + threshold CSS bands
+
+### Meta
+- `disciplineCurrencySystem` + migration `018_discipline_gdd.sql`
+- `relicEffectSystem` + `RelicSlotsRail`
+- Rank ladder SS / SSS in config
+- NPC Iris on `/contacts`
+- Docs: GDD index, mockup assets, system-registry entries
+- Tests: `almostThereSystem`, `bossVitalitySystem`, `trainingPrioritySystem`
+
 ## v1.6.0 (unreleased) — Immersion wave 2 + runner split
 
 ### Architecture

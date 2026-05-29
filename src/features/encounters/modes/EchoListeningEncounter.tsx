@@ -47,7 +47,7 @@ export function EchoListeningEncounter({
     .filter(Boolean)
 
   return (
-    <ModeEncounterShell modeLabel="Echo Listening" emotion="Discipline">
+    <ModeEncounterShell modeLabel="Echo Listening" emotion="Discipline" quest={quest}>
       <p className="mb-2 text-xs text-[var(--warning)]">
         One playback only — tap phrase tiles in correct order.
       </p>

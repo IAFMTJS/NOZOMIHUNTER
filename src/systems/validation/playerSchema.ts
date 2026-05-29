@@ -27,7 +27,7 @@ export const PlayerSchema = z.object({
   username: z.string().min(1),
   level: z.number().int().min(1),
   xp: z.number().int().min(0),
-  rank: z.enum(["E", "D", "C", "B", "A", "S"]),
+  rank: z.enum(["E", "D", "C", "B", "A", "S", "SS", "SSS"]),
   rpgStats: rpgStatsSchema.optional(),
   economy: economySchema.optional(),
   inventory: z.array(inventoryItemSchema).optional(),

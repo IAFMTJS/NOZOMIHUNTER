@@ -1,6 +1,21 @@
 NOZOMI System Registry
 
-Last updated: v1.5.0 (see CHANGELOG). Creative scope: `docs/immersion-rework-masterplan.md`.
+Last updated: v3.2.0-gdd-final (see CHANGELOG). Creative scope: `docs/immersion-rework-masterplan.md`.
+
+## v3.2 systems (GDD final)
+
+| System | Location | Notes |
+|--------|----------|-------|
+| assetManifestSystem | `src/systems/content/assetManifestSystem.ts` | DB + fallback; `GameAssetImage` |
+| contentContractTemplateSystem | `src/systems/content/contentContractTemplateSystem.ts` | 100+ templates story/side/daily |
+| contentBossPhaseCache | `src/systems/content/contentBossPhaseCache.ts` | DB boss phases override config |
+| contentAchievementCatalog | `src/systems/content/contentAchievementCatalog.ts` | DB achievements |
+| leaderboard_aggregate | `supabase/migrations/023_gdd_completion.sql` | Weekly global ranks |
+| prestigeSystem | `src/systems/progression/prestigeSystem.ts` | SSS reset RPC |
+| seasonProgressRepository | `src/services/supabase/seasonProgressRepository.ts` | `add_season_points` |
+| liveEventModifierSystem | `src/systems/live/liveEventModifierSystem.ts` | Sector event XP/credits |
+| modeIdentitySystem | `src/systems/gameModes/modeIdentitySystem.ts` | GDD mode identity test |
+| audioCategorySystem | `src/systems/audio/audioCategorySystem.ts` | Category stems routing |
 
 presentationCeremonySystem
 
@@ -1690,4 +1705,64 @@ Location: `/src/systems/contracts/relationshipSystem.ts`, `/src/services/supabas
 
 Responsibilities: NPC trust 0–100, conversation encounter persistence (migration 016)
 
-Consumers: `conversationEncounterSystem`, `/contacts` (planned)
+Consumers: `conversationEncounterSystem`, `/contacts`
+
+⸻
+
+almostThereSystem (v2.0.0-gdd)
+
+Location: `/src/systems/progression/almostThereSystem.ts`
+
+Responsibilities: home active objective VM, rank proximity %, proximity chips, hunter power percentile copy
+
+Consumers: `/home` (`ActiveObjectiveCard`, `ProgressProximityRail`)
+
+⸻
+
+disciplineCurrencySystem (v2.0.0-gdd)
+
+Location: `/src/systems/progression/disciplineCurrencySystem.ts`
+
+Responsibilities: discipline earn on quest complete; `progression.discipline` (migration 018)
+
+Consumers: `completionService`, `/home`, `TrainingResultsCeremony`
+
+⸻
+
+sectorCorruptionSystem (v2.0.0-gdd)
+
+Location: `/src/systems/world/sectorCorruptionSystem.ts`
+
+Responsibilities: sector corruption % for home card and dungeon runs (`sectorCorruption` on `DungeonRunContract`)
+
+⸻
+
+trainingPrioritySystem (v2.0.0-gdd)
+
+Location: `/src/systems/training/trainingPrioritySystem.ts`
+
+Consumers: `/training`, `/home` teaser
+
+⸻
+
+bossVitalitySystem (v2.0.0-gdd)
+
+Location: `/src/systems/dungeons/bossVitalitySystem.ts`
+
+Consumers: `BossEncounterHUD`, `dungeonQuestGenerator`
+
+⸻
+
+corruptionPresentationSystem (v2.0.0-gdd)
+
+Location: `/src/systems/presentation/corruptionPresentationSystem.ts`
+
+Config: `/src/config/corruptionThresholds.ts`
+
+⸻
+
+relicEffectSystem (v2.0.0-gdd)
+
+Location: `/src/systems/inventory/relicEffectSystem.ts`
+
+Consumers: `RelicSlotsRail`, future `hunterPowerSystem` modifiers

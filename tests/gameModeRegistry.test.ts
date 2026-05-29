@@ -18,6 +18,7 @@ describe("gameModeRegistry", () => {
             unlockedDungeons: ["dungeon:corruption-run"],
             unlockedSystems: ["system:semantic-network"],
             titles: [],
+            discipline: 0,
           },
         })
       )
@@ -31,6 +32,7 @@ describe("gameModeRegistry", () => {
             unlockedDungeons: ["dungeon:corruption-run"],
             unlockedSystems: ["system:semantic-network"],
             titles: [],
+            discipline: 0,
           },
         })
       )

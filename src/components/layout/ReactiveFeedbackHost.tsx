@@ -48,6 +48,11 @@ export function ReactiveFeedbackHost() {
     eventBus.on(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, onWrong)
     eventBus.on(GAME_EVENTS.LEVEL_UP, onLevel)
     eventBus.on(GAME_EVENTS.DUNGEON_FAILED, onDungeonFail)
+    const onContract = () =>
+      setToast(
+        nextReactiveToast("contract", { message: "Contract accepted — mission channel open" })
+      )
+    eventBus.on(GAME_EVENTS.QUEST_ACCEPTED, onContract)
 
     return () => {
       eventBus.off(GAME_EVENTS.XP_GAINED, onXp)
@@ -55,6 +60,7 @@ export function ReactiveFeedbackHost() {
       eventBus.off(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, onWrong)
       eventBus.off(GAME_EVENTS.LEVEL_UP, onLevel)
       eventBus.off(GAME_EVENTS.DUNGEON_FAILED, onDungeonFail)
+      eventBus.off(GAME_EVENTS.QUEST_ACCEPTED, onContract)
     }
   }, [])
 

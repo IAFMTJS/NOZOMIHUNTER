@@ -9,6 +9,8 @@ export const PROGRESSION_CONFIG = {
     B: 35,
     A: 50,
     S: 75,
+    SS: 90,
+    SSS: 100,
   },
   MAX_XP_PER_QUEST_WINDOW_MS: 60_000,
   MAX_XP_PER_WINDOW: 500,

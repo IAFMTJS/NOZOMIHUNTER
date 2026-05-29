@@ -41,7 +41,7 @@ export function MemoryCascadeEncounter({
   }
 
   return (
-    <ModeEncounterShell modeLabel="Memory Cascade" emotion="Discipline">
+    <ModeEncounterShell modeLabel="Memory Cascade" emotion="Discipline" quest={quest}>
       <Panel tone="inset" className="space-y-3 !p-4">
         <p className="text-xs text-[var(--muted)]">
           Memorize the sequence — identify the intruder word when the ifades.

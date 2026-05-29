@@ -5,6 +5,11 @@ import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
 import { JapaneseText } from "@/components/JapaneseText"
 import { ModeEncounterShell } from "@/features/encounters/modes/ModeEncounterShell"
+import { ContractProgressRail } from "@/components/encounters/ContractProgressRail"
+import {
+  buildContractProgressView,
+  shouldShowContractProgress,
+} from "@/systems/presentation/contractProgressPresentationSystem"
 
 interface TerminalBreachEncounterProps {
   quest: QuestContract
@@ -25,10 +30,18 @@ export function TerminalBreachEncounter({
   }
 
   const items = [...breach.signs, ...breach.terminals]
+  const alarmEscalated = breach.alarmsTriggered >= 2
+  const progressView = shouldShowContractProgress(quest)
+    ? buildContractProgressView(quest)
+    : null
 
   return (
-    <ModeEncounterShell modeLabel="Terminal Breach" emotion="Curiosity">
-      <Panel tone="inset" className="space-y-3 !p-4">
+    <ModeEncounterShell modeLabel="Terminal Breach" emotion="Curiosity" quest={quest}>
+      <Panel
+        tone="inset"
+        className={`space-y-3 !p-4 ${alarmEscalated ? "nozomi-corruption-stage-3 nozomi-vfx-scanlines" : ""}`}
+      >
+        {progressView && <ContractProgressRail view={progressView} />}
         <p className="text-xs text-[var(--muted)]">
           Read sector signage and terminals. Wrong interpretation triggers alarms.
         </p>

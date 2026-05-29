@@ -23,6 +23,8 @@ import { SurvivalVocabEncounter } from "@/features/encounters/modes/SurvivalVoca
 import { storyScreenClass } from "@/systems/presentation/storyMissionPresentation"
 import { TerminalBreachEncounter } from "@/features/encounters/modes/TerminalBreachEncounter"
 import { SemanticNetworkEncounter } from "@/features/encounters/modes/SemanticNetworkEncounter"
+import { EntityHuntEncounter } from "@/features/encounters/modes/EntityHuntEncounter"
+import { DeepCoverEncounter } from "@/features/encounters/modes/DeepCoverEncounter"
 import { Panel } from "@/components/ui/Panel"
 export type EncounterModeRenderContext = {
   mode: ReturnType<typeof resolveQuestGameMode>
@@ -121,7 +123,6 @@ export function renderEncounterMode(ctx: EncounterModeRenderContext) {
         </>
       )
     case "GHOST_INTERROGATION":
-    case "DEEP_COVER":
     case "PANIC_CHANNEL":
       if (!onSendMessage) break
       return (
@@ -263,6 +264,34 @@ export function renderEncounterMode(ctx: EncounterModeRenderContext) {
             await onModeAction?.("semantic-link", `${from}:${to}`)
           }}
           onAbandon={onAbandon}
+        />
+      )
+    case "ENTITY_HUNT":
+      if (!onSubmitAnswer) break
+      return (
+        <>
+          <EntityHuntEncounter
+            quest={quest}
+            player={player}
+            disabled={disabled}
+            flashClassName={flashClassName}
+            onSubmit={async (a) => {
+              await onSubmitAnswer(a)
+            }}
+            onAbandon={onAbandon}
+          />
+          {feedback}
+        </>
+      )
+    case "DEEP_COVER":
+      if (!onSendMessage) break
+      return (
+        <DeepCoverEncounter
+          quest={quest}
+          disabled={disabled}
+          onSend={onSendMessage}
+          onAbandon={onAbandon}
+          flashClassName={flashClassName}
         />
       )
     default:

@@ -47,7 +47,7 @@ export function ShadowTypingEncounter({
   const expired = isShadowPromptExpired(elapsed)
 
   return (
-    <ModeEncounterShell modeLabel="Shadow Typing" emotion="Anxiety">
+    <ModeEncounterShell modeLabel="Shadow Typing" emotion="Anxiety" quest={quest}>
       <div className="mb-2 h-1 overflow-hidden rounded bg-[var(--overlay-panel)]">
         <div
           className="h-full bg-[var(--danger)] transition-all duration-200"

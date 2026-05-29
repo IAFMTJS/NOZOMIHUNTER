@@ -41,6 +41,15 @@ export function buildDungeonRunSummary(
   const master = resolveMasterForRun(run)
   const displayBoss = bossName ?? master.displayName
 
+  const runScore = run.runScore ?? 0
+  const peakCorruption = Math.round(
+    run.sectorCorruption ?? run.threat?.corruptionPressure ?? 0
+  )
+  const completed = run.completedNodeIds?.length ?? 0
+  const totalNodes = run.routeGraph
+    ? Object.keys(run.routeGraph.nodes).length
+    : completed
+
   return {
     wordsBound,
     weakSignals,
@@ -49,6 +58,19 @@ export function buildDungeonRunSummary(
       run.pendingExtractionChoice === "PUSH_DEEPER"
         ? "Counter Seal (trial)"
         : master.perfectClearReward.techniqueLabel,
-    runScore: run.runScore ?? 0,
+    runScore,
+    runGrade: computeRunGrade(runScore, peakCorruption),
+    peakCorruption,
+    sectorsCleared: `${completed}/${Math.max(1, totalNodes)}`,
   }
+}
+
+export function computeRunGrade(
+  runScore: number,
+  peakCorruption: number
+): "S" | "A" | "B" | "C" {
+  if (runScore >= 80 && peakCorruption < 60) return "S"
+  if (runScore >= 55 && peakCorruption < 75) return "A"
+  if (runScore >= 30) return "B"
+  return "C"
 }

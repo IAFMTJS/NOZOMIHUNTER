@@ -6,6 +6,7 @@ import { usePlayerStore } from "@/stores/usePlayerStore"
 import { useQuestLogic } from "@/features/quests/hooks/useQuestLogic"
 import { syncCorruptionAudio } from "@/systems/audio/registerAudioHandlers"
 import { registerCoreEventHandlers } from "@/systems/events/eventHandlers"
+import { hydrateContentCatalog } from "@/systems/content/contentCatalogSystem"
 
 let eventsRegistered = false
 
@@ -28,6 +29,10 @@ export function useHunterHydration() {
       eventsRegistered = true
     }
   }, [])
+
+  useEffect(() => {
+    void hydrateContentCatalog(player)
+  }, [player?.id, player?.rank])
 
   useEffect(() => {
     if (user?.id) void quest.hydrate()

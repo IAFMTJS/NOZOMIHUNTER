@@ -22,7 +22,7 @@ interface SignalCalibrationEncounterProps {
 export function SignalCalibrationEncounter(props: SignalCalibrationEncounterProps) {
   const budget = props.quest.listeningEncounter?.replayBudget ?? 5
   return (
-    <ModeEncounterShell modeLabel="Signal Calibration" emotion="Discipline">
+    <ModeEncounterShell modeLabel="Signal Calibration" emotion="Discipline" quest={props.quest}>
       <Panel tone="inset" className="mb-3 !p-3">
         <p className="text-xs text-[var(--muted)]">
           Isolate the primary channel. Reconstruct fragmented comms in order.

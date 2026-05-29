@@ -23,6 +23,7 @@ import {
   toggleItemEquipped,
 } from "@/features/inventory/services/inventoryActions"
 import { ShopPanel } from "@/features/inventory/components/ShopPanel"
+import { RelicSlotsRail } from "@/features/inventory/components/RelicSlotsRail"
 
 type View = "LOADOUT" | "SHOP"
 type Cat = "ALL" | "EQUIPMENT" | "CONSUMABLE" | "MISC"
@@ -196,7 +197,8 @@ export function InventoryClient() {
         />
       ) : (
         <>
-          <div className="mb-4 flex flex-wrap gap-2">
+          <RelicSlotsRail player={player} />
+          <div className="mb-4 mt-4 flex flex-wrap gap-2">
             {(["ALL", "EQUIPMENT", "CONSUMABLE", "MISC"] as Cat[]).map((t) => (
               <button
                 key={t}

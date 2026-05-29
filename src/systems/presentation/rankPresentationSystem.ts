@@ -1,6 +1,6 @@
 import type { HunterRank } from "@/contracts/player-contract"
 
-const RANK_ORDER: HunterRank[] = ["E", "D", "C", "B", "A", "S"]
+const RANK_ORDER: HunterRank[] = ["E", "D", "C", "B", "A", "S", "SS", "SSS"]
 
 const RANK_TITLES: Record<HunterRank, string> = {
   E: "Initiate Hunter",
@@ -9,6 +9,8 @@ const RANK_TITLES: Record<HunterRank, string> = {
   B: "Advanced Hunter",
   A: "Elite Hunter",
   S: "Shadow Hunter",
+  SS: "Void Hunter",
+  SSS: "Legend Hunter",
 }
 
 export function rankDisplayTitle(rank: HunterRank): string {

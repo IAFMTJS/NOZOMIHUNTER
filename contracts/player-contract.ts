@@ -63,6 +63,18 @@ export type HunterRank =
   | "B"
   | "A"
   | "S"
+  | "SS"
+  | "SSS"
+
+/** Home command-node primary goal (GDD "almost there"). */
+export interface AlmostThereObjectiveContract {
+  title: string
+  progressPercent: number
+  detailLine: string
+  contractsRemaining: number | null
+  ctaHref: string
+  ctaLabel: string
+}
 
 export interface PlayerStatsContract {
   vocabulary: number
@@ -92,6 +104,10 @@ export interface PlayerProgressionContract {
   unlockedDungeons: string[]
   unlockedSystems: string[]
   titles: string[]
+  /** Secondary meta currency (GDD discipline system). */
+  discipline: number
+  /** SSS prestige resets completed. */
+  prestigeCount?: number
   /** Learner assist visibility — FULL shows romaji/meanings; BLACKOUT hides assists. */
   assistLevel?: import("./game-mode-contract").AssistLevel
 }

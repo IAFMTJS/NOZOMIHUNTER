@@ -5,6 +5,7 @@ import type {
 import type { DungeonDefinitionConfig } from "@/config/dungeonConfig"
 import { resolveMasterForDefinition } from "@/systems/dungeons/dungeonMasterSystem"
 import { FEATURE_FLAGS } from "@/config/features"
+import { resolveBossPhaseSpecs } from "@/systems/content/contentBossPhaseCache"
 
 function rankForLevel(level: number): DungeonDifficulty {
   if (level < 10) return "RANK_E"
@@ -25,6 +26,8 @@ export function generateDungeon(
   const xpBonus = playerLevel * 8
   const master = resolveMasterForDefinition(definition)
   const bossName = definition.bossName || master.displayName
+  const bossKey = definition.bossKey ?? definition.key
+  const phaseSpecs = resolveBossPhaseSpecs(bossKey, definition.bossPhaseSpecs)
 
   return {
     id: `dungeon-${definition.key}-${Date.now()}`,
@@ -42,8 +45,8 @@ export function generateDungeon(
     boss: {
       id: `boss-${definition.key}`,
       name: bossName,
-      phases: definition.bossPhaseSpecs?.length ?? 2,
-      phaseSpecs: definition.bossPhaseSpecs,
+      phases: phaseSpecs?.length ?? definition.bossPhaseSpecs?.length ?? 2,
+      phaseSpecs,
       speechDifficulty: Math.min(5, 2 + Math.floor(playerLevel / 5)),
       grammarDifficulty: Math.min(5, 1 + Math.floor(playerLevel / 6)),
     },

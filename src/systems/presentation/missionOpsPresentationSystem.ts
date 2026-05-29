@@ -6,6 +6,8 @@ export interface MissionOpsPresentation {
   instabilityPct: number
   signalStrength: number
   recommendedRank: string
+  corruptionRiskPct: number
+  estimatedMinutes: string
 }
 
 const TYPE_BLURBS: Record<QuestContract["type"], string> = {
@@ -32,6 +34,14 @@ export function buildMissionOpsPresentation(
             ? 45
             : 28
 
+  const corruptionRiskPct = Math.min(85, Math.round(instabilityPct * 0.35 + 12))
+  const estimatedMinutes =
+    quest.type === "DUNGEON"
+      ? "12–18 min"
+      : quest.type === "CONVERSATION"
+        ? "5–8 min"
+        : "3–5 min"
+
   return {
     sectorBlurb: TYPE_BLURBS[quest.type] ?? "Registry anomaly indexed.",
     dangerTier: tier,
@@ -39,5 +49,7 @@ export function buildMissionOpsPresentation(
     signalStrength: Math.max(20, 100 - instabilityPct),
     recommendedRank:
       tier === "HARD" || tier === "ELITE" || tier === "NIGHTMARE" ? "C" : "E",
+    corruptionRiskPct,
+    estimatedMinutes,
   }
 }

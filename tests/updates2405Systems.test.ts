@@ -211,7 +211,12 @@ describe("questChannelSystem", () => {
   const stubPlayer = mockPlayerContract({
     id: "p1",
     level: 10,
-    progression: { unlockedSystems: ["system:listening"], unlockedDungeons: [], titles: [] },
+    progression: {
+      unlockedSystems: ["system:listening"],
+      unlockedDungeons: [],
+      titles: [],
+      discipline: 0,
+    },
   })
 
   it("applies SIDE rewards on side channel", () => {

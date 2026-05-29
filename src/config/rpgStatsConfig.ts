@@ -20,6 +20,8 @@ export const RPG_STATS_CONFIG = {
     B: 6,
     A: 10,
     S: 14,
+    SS: 18,
+    SSS: 22,
   } satisfies Record<HunterRank, number>,
   CAPS: {
     strength: 500,

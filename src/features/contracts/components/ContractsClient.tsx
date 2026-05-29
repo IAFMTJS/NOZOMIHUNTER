@@ -34,6 +34,8 @@ import {
   contractChannelKicker,
 } from "@/systems/presentation/contractChannelPresentation"
 import { ContractChannelMotion } from "@/features/contracts/components/ContractChannelMotion"
+import { DailyContractMilestoneRail } from "@/features/contracts/components/DailyContractMilestoneRail"
+import { dailyMilestoneProgress } from "@/systems/quests/dailyMilestoneSystem"
 
 export type QuestChannelTab = "daily" | "story" | "side" | "achievements"
 
@@ -141,6 +143,10 @@ export function ContractsClient() {
         )}
 
         {tab === "daily" && (
+          <>
+            <DailyContractMilestoneRail
+              {...dailyMilestoneProgress([...activeQuests, ...completedQuests], player.id)}
+            />
           <ul className={`nozomi-contract-list-daily ${UI_TOKENS.channelDaily}`}>
             {dailyQuests.length === 0 ? (
               <p className="text-center text-sm text-[var(--muted)]">
@@ -182,6 +188,7 @@ export function ContractsClient() {
               })
             )}
           </ul>
+          </>
         )}
 
         {tab === "side" && (

@@ -217,6 +217,37 @@
   border-color: var(--corruption-a45) !important;
 }
 
+/* Screen motion presets (visual-direction-v2 + motionPresets.ts) */
+@keyframes nozomi-screen-enter {
+  from {
+    opacity: 0.94;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nozomi-screen-home,
+.nozomi-screen-training,
+.nozomi-screen-quests,
+.nozomi-screen-archive,
+.nozomi-screen-contacts,
+.nozomi-screen-profile,
+.nozomi-screen-map {
+  animation: nozomi-screen-enter 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nozomi-screen-sector,
+.nozomi-screen-hunt {
+  animation: nozomi-screen-enter 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nozomi-screen-extraction {
+  animation: nozomi-screen-enter 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* Screen moods (visual-direction-v2) */
 .nozomi-screen-prep {
   background:
@@ -478,6 +509,22 @@
 }
 
 /* Screen moods â€” home command node */
+.nozomi-screen-archive {
+  background: linear-gradient(180deg, var(--overlay-panel) 0%, transparent 35%);
+}
+
+.nozomi-screen-contacts {
+  background: linear-gradient(180deg, var(--accent-a04) 0%, transparent 30%);
+}
+
+.nozomi-screen-profile {
+  background: linear-gradient(180deg, var(--overlay-faint) 0%, transparent 40%);
+}
+
+.nozomi-screen-training {
+  background: linear-gradient(180deg, var(--overlay-faint) 0%, transparent 40%);
+}
+
 .nozomi-screen-home {
   background:
     radial-gradient(ellipse 70% 45% at 50% 0%, var(--accent-a07), transparent),
@@ -1387,6 +1434,61 @@ html.nozomi-moment-freeze::after {
   }
 }
 
+/* GDD sector corruption bands (home + dungeon HUD) */
+.nozomi-corruption-band--stable {
+  border-color: var(--border-subtle);
+}
+
+.nozomi-corruption-band--unstable {
+  animation: nozomi-corruption-pulse 4s ease-in-out infinite;
+}
+
+.nozomi-corruption-band--dangerous,
+.nozomi-corruption-band--critical {
+  animation: nozomi-corruption-pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 24px var(--danger-a12);
+}
+
+.nozomi-corruption-band--collapse {
+  animation: nozomi-corruption-pulse 0.8s ease-in-out infinite;
+}
+
+.nozomi-corruption-wave {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--danger-a12),
+    var(--danger),
+    var(--danger-a12),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: nozomi-corruption-wave 3s linear infinite;
+}
+
+@keyframes nozomi-corruption-wave {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes nozomi-corruption-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.88;
+  }
+}
+
+.nozomi-screen-home--command .nozomi-active-objective {
+  box-shadow: 0 0 32px var(--glow-accent);
+}
+
 /* Landing entry — fog + rain drift */
 .nozomi-landing-weather {
   overflow: hidden;
@@ -1437,4 +1539,171 @@ html.nozomi-moment-freeze::after {
 
 .nozomi-dungeon-entry-tension {
   box-shadow: 0 0 24px var(--danger-a15);
+}
+
+/* Vol 9 corruption stages */
+.nozomi-corruption-stage-1::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 12px,
+    var(--accent-a08) 12px,
+    var(--accent-a08) 13px
+  );
+}
+
+.nozomi-corruption-stage-2 {
+  animation: nozomi-corruption-pulse 4s ease-in-out infinite;
+}
+
+.nozomi-corruption-stage-2::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.08;
+  background: var(--danger-a08);
+  mix-blend-mode: screen;
+}
+
+.nozomi-corruption-stage-3 {
+  animation: nozomi-corruption-pulse 2.5s ease-in-out infinite;
+}
+
+.nozomi-corruption-stage-3::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background: linear-gradient(180deg, transparent, var(--danger-a15));
+}
+
+.nozomi-corruption-stage-4 {
+  animation: nozomi-corruption-pulse 1.2s ease-in-out infinite;
+}
+
+.nozomi-corruption-stage-4::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  background: var(--danger-a20);
+}
+
+.nozomi-vfx-boss-frame {
+  box-shadow:
+    0 0 0 1px var(--danger-a25),
+    0 0 40px var(--danger-a15),
+    inset 0 0 60px var(--black-a40);
+}
+
+.nozomi-vfx-relic-acquire {
+  animation: nozomi-relic-flash 0.6s ease-out;
+}
+
+@keyframes nozomi-relic-flash {
+  0% {
+    filter: brightness(1.4);
+    transform: scale(1.08);
+  }
+  100% {
+    filter: brightness(1);
+    transform: scale(1);
+  }
+}
+
+.nozomi-vfx-glitch-kanji {
+  position: relative;
+}
+
+.nozomi-vfx-glitch-kanji::before {
+  content: "断";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: var(--danger-a40);
+  animation: nozomi-glitch-kanji 0.35s steps(2) infinite;
+  pointer-events: none;
+}
+
+@keyframes nozomi-glitch-kanji {
+  0% {
+    transform: translate(2px, 0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(-2px, 1px);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(0, -1px);
+    opacity: 0.25;
+  }
+}
+
+.nozomi-hero-art-slot {
+  position: relative;
+  min-height: 7rem;
+  overflow: hidden;
+  border-radius: var(--radius-panel);
+}
+
+.nozomi-hero-art-slot img {
+  object-position: center 30%;
+}
+
+.nozomi-training-lane--listening {
+  background: linear-gradient(135deg, var(--overlay-panel) 0%, var(--accent-a08) 100%);
+}
+
+.nozomi-training-lane--reading {
+  background: linear-gradient(135deg, var(--overlay-panel) 0%, var(--reward-a08) 100%);
+}
+
+.nozomi-training-lane--writing {
+  background: linear-gradient(135deg, var(--overlay-panel) 0%, var(--danger-a08) 100%);
+}
+
+.nozomi-training-lane--speaking {
+  background: linear-gradient(135deg, var(--overlay-panel) 0%, var(--accent-dim) 100%);
+}
+
+.nozomi-map-node--selected {
+  box-shadow: 0 0 28px var(--glow-accent);
+  transform: scale(1.04);
+}
+
+.nozomi-landing-whisper {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  animation: nozomi-whisper-fade 6s ease-in-out infinite;
+}
+
+@keyframes nozomi-whisper-fade {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.nozomi-recovery-alcove {
+  background: linear-gradient(160deg, var(--success-a08) 0%, var(--overlay-panel) 55%);
+}
+
+.nozomi-entity-network .h-full.bg-\[var\(--danger\)\] {
+  box-shadow: 0 0 12px var(--danger-a40);
 }

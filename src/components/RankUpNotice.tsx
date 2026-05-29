@@ -11,6 +11,7 @@ import {
   rankDisplayTitle,
   rankPromotionRewards,
 } from "@/systems/presentation/rankPresentationSystem"
+import { GameAssetImage } from "@/components/ui/GameAssetImage"
 
 interface RankUpNoticeProps {
   rank: HunterRank
@@ -20,6 +21,7 @@ interface RankUpNoticeProps {
 export function RankUpNotice({ rank, onDismiss }: RankUpNoticeProps) {
   const prev = previousRank(rank)
   const rewards = rankPromotionRewards(rank)
+  const eliteRank = rank === "SS" || rank === "SSS"
 
   return (
     <AnimatePresence>
@@ -38,12 +40,20 @@ export function RankUpNotice({ rank, onDismiss }: RankUpNoticeProps) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={MOTION.panel}
-          className="nozomi-glass-card nozomi-glass-card-accent w-full max-w-sm space-y-6 p-6 text-center"
+          className={`nozomi-glass-card w-full max-w-sm space-y-6 p-6 text-center ${
+            eliteRank ? "nozomi-glass-card-accent nozomi-rank-elite" : "nozomi-glass-card-accent"
+          }`}
         >
           <p className="text-xs uppercase tracking-[0.28em] text-[var(--accent-bright)]">
-            Rank increased
+            {eliteRank ? "Elite rank ceremony" : "Rank increased"}
           </p>
-          <SystemCrest className="!h-24 !w-24" />
+          {eliteRank ? (
+            <div className="relative mx-auto h-24 w-full max-w-xs">
+              <GameAssetImage assetKey="season.fracture-week.banner" alt="" fill className="rounded-lg" />
+            </div>
+          ) : (
+            <SystemCrest className="!h-24 !w-24" />
+          )}
           <div id="rank-up-title">
             <p className="font-display text-2xl font-bold text-[var(--foreground)]">
               {prev} → {rank}

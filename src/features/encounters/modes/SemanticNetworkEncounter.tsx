@@ -6,6 +6,7 @@ import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
 import { ModeEncounterShell } from "@/features/encounters/modes/ModeEncounterShell"
 import { semanticNetworkComplete } from "@/systems/vocabulary/semanticNetworkSystem"
+import { computeEntityThreatIndex } from "@/systems/vocabulary/entityHuntSystem"
 
 interface SemanticNetworkEncounterProps {
   quest: QuestContract
@@ -28,6 +29,10 @@ export function SemanticNetworkEncounter({
   }
 
   const complete = semanticNetworkComplete(enc.links, enc.matchedLinkIds)
+  const threatIndex = computeEntityThreatIndex(
+    Math.round((enc.matchedLinkIds.length / Math.max(1, enc.links.length)) * 100),
+    "ELEVATED"
+  )
 
   async function pickNode(id: string) {
     if (!selected) {
@@ -41,11 +46,22 @@ export function SemanticNetworkEncounter({
   }
 
   return (
-    <ModeEncounterShell modeLabel="Semantic Network" emotion="Discovery">
-      <Panel tone="inset" className="space-y-3 !p-4">
+    <ModeEncounterShell modeLabel="Semantic Network" emotion="Discovery" quest={quest}>
+      <Panel tone="inset" className="space-y-3 !p-4 nozomi-entity-network">
         <p className="text-xs text-[var(--muted)]">
           Connect meanings, kanji, and context nodes — investigative analysis.
         </p>
+        <div className="space-y-1">
+          <p className="text-[10px] uppercase tracking-widest text-[var(--muted)]">
+            Entity threat index
+          </p>
+          <div className="h-2 overflow-hidden rounded-full bg-[var(--surface-inset)]">
+            <div
+              className="h-full bg-[var(--danger)] transition-all"
+              style={{ width: `${threatIndex}%` }}
+            />
+          </div>
+        </div>
         <NetworkGrid
           nodes={enc.nodes}
           selected={selected}

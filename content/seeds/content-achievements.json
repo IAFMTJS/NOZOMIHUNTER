@@ -1,0 +1,182 @@
+[
+  {
+    "id": "first-level",
+    "title": "Rank elevation",
+    "description": "Reach hunter level 2.",
+    "unlock_key": "level:2"
+  },
+  {
+    "id": "discipline-3",
+    "title": "Discipline chain",
+    "description": "Maintain synchronization 3 days.",
+    "unlock_key": "sync:3"
+  },
+  {
+    "id": "neon-clear",
+    "title": "Neon breach",
+    "description": "Unlock Neon Corridor.",
+    "unlock_key": "dungeon:neon-corridor"
+  },
+  {
+    "id": "abyss-clear",
+    "title": "Abyss breach",
+    "description": "Unlock Abyss Core.",
+    "unlock_key": "dungeon:abyss-core"
+  },
+  {
+    "id": "vocab-master",
+    "title": "Threat neutralized",
+    "description": "Earn vocabulary mastery title.",
+    "unlock_key": "title:mastery"
+  },
+  {
+    "id": "gatebreaker",
+    "title": "Gatebreaker",
+    "description": "Perfect clear Neon Warden.",
+    "unlock_key": "boss:neon-warden"
+  },
+  {
+    "id": "archive-breaker",
+    "title": "Archive Breaker",
+    "description": "Perfect clear Archivist.",
+    "unlock_key": "boss:archivist"
+  },
+  {
+    "id": "master-rival",
+    "title": "Rival bound",
+    "description": "Rival state with a master.",
+    "unlock_key": "master:rival"
+  },
+  {
+    "id": "gdd-achievement-9",
+    "title": "Registry mark 9",
+    "description": "Complete 5 sector operations.",
+    "unlock_key": "ops:5"
+  },
+  {
+    "id": "gdd-achievement-10",
+    "title": "Registry mark 10",
+    "description": "Complete 6 sector operations.",
+    "unlock_key": "ops:6"
+  },
+  {
+    "id": "gdd-achievement-11",
+    "title": "Registry mark 11",
+    "description": "Complete 7 sector operations.",
+    "unlock_key": "ops:7"
+  },
+  {
+    "id": "gdd-achievement-12",
+    "title": "Registry mark 12",
+    "description": "Complete 8 sector operations.",
+    "unlock_key": "ops:8"
+  },
+  {
+    "id": "gdd-achievement-13",
+    "title": "Registry mark 13",
+    "description": "Complete 9 sector operations.",
+    "unlock_key": "ops:9"
+  },
+  {
+    "id": "gdd-achievement-14",
+    "title": "Registry mark 14",
+    "description": "Complete 10 sector operations.",
+    "unlock_key": "ops:10"
+  },
+  {
+    "id": "gdd-achievement-15",
+    "title": "Registry mark 15",
+    "description": "Complete 11 sector operations.",
+    "unlock_key": "ops:11"
+  },
+  {
+    "id": "gdd-achievement-16",
+    "title": "Registry mark 16",
+    "description": "Complete 12 sector operations.",
+    "unlock_key": "ops:12"
+  },
+  {
+    "id": "gdd-achievement-17",
+    "title": "Registry mark 17",
+    "description": "Complete 13 sector operations.",
+    "unlock_key": "ops:13"
+  },
+  {
+    "id": "gdd-achievement-18",
+    "title": "Registry mark 18",
+    "description": "Complete 14 sector operations.",
+    "unlock_key": "ops:14"
+  },
+  {
+    "id": "gdd-achievement-19",
+    "title": "Registry mark 19",
+    "description": "Complete 15 sector operations.",
+    "unlock_key": "ops:15"
+  },
+  {
+    "id": "gdd-achievement-20",
+    "title": "Registry mark 20",
+    "description": "Complete 16 sector operations.",
+    "unlock_key": "ops:16"
+  },
+  {
+    "id": "gdd-achievement-21",
+    "title": "Registry mark 21",
+    "description": "Complete 17 sector operations.",
+    "unlock_key": "ops:17"
+  },
+  {
+    "id": "gdd-achievement-22",
+    "title": "Registry mark 22",
+    "description": "Complete 18 sector operations.",
+    "unlock_key": "ops:18"
+  },
+  {
+    "id": "gdd-achievement-23",
+    "title": "Registry mark 23",
+    "description": "Complete 19 sector operations.",
+    "unlock_key": "ops:19"
+  },
+  {
+    "id": "gdd-achievement-24",
+    "title": "Registry mark 24",
+    "description": "Complete 20 sector operations.",
+    "unlock_key": "ops:20"
+  },
+  {
+    "id": "gdd-achievement-25",
+    "title": "Registry mark 25",
+    "description": "Complete 21 sector operations.",
+    "unlock_key": "ops:21"
+  },
+  {
+    "id": "gdd-achievement-26",
+    "title": "Registry mark 26",
+    "description": "Complete 22 sector operations.",
+    "unlock_key": "ops:22"
+  },
+  {
+    "id": "gdd-achievement-27",
+    "title": "Registry mark 27",
+    "description": "Complete 23 sector operations.",
+    "unlock_key": "ops:23"
+  },
+  {
+    "id": "gdd-achievement-28",
+    "title": "Registry mark 28",
+    "description": "Complete 24 sector operations.",
+    "unlock_key": "ops:24"
+  },
+  {
+    "id": "gdd-achievement-29",
+    "title": "Registry mark 29",
+    "description": "Complete 25 sector operations.",
+    "unlock_key": "ops:25"
+  },
+  {
+    "id": "gdd-achievement-30",
+    "title": "Registry mark 30",
+    "description": "Complete 26 sector operations.",
+    "unlock_key": "ops:26"
+  }
+]

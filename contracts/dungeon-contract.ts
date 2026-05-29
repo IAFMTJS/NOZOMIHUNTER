@@ -122,6 +122,10 @@ export interface DungeonRunSummary {
   bossSealLabel?: string
   techniqueLabel?: string
   runScore: number
+  /** Letter grade from run score + corruption (GDD run summary). */
+  runGrade?: "S" | "A" | "B" | "C"
+  peakCorruption?: number
+  sectorsCleared?: string
 }
 
 export interface DungeonBossContract {
@@ -223,6 +227,10 @@ export interface DungeonRunContract {
   masterDialogueMoment?: MasterDialogueMoment
   /** Boss phase integrity 0–100 (presentation + rules). */
   bossIntegrity?: number
+  /** Boss max HP for current phase (combat presentation). */
+  bossVitalityMax?: number
+  /** Sector corruption meter 0–100 for this run (distinct from hunter penalties). */
+  sectorCorruption?: number
   /** Run flags for master rules */
   firstMistakeLogged?: boolean
   lastAwarenessTier?: number

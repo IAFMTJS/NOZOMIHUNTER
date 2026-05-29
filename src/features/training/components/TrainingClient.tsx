@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
 import { Button } from "@/components/ui/Button"
@@ -12,12 +12,20 @@ import { GAME_MODE_REGISTRY } from "@/config/gameModeRegistry"
 import type { GameModeId } from "@/contracts/game-mode-contract"
 import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 import { trainingDisciplineSkin } from "@/systems/presentation/trainingDisciplinePresentation"
+import { pickDailyTrainingPriority } from "@/systems/training/trainingPrioritySystem"
+import { DISCIPLINE_REWARDS } from "@/systems/progression/disciplineCurrencySystem"
+import { GameAssetImage } from "@/components/ui/GameAssetImage"
 
 export function TrainingClient() {
   const router = useRouter()
   const { user, player } = useHunterSession()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const dateUtc = useMemo(() => new Date().toISOString().slice(0, 10), [])
+  const priorityId = player
+    ? pickDailyTrainingPriority(player, dateUtc)
+    : TRAINING_GAME_MODES[0]
 
   async function deploy(mode: GameModeId) {
     if (!user?.id || !player) return
@@ -48,8 +56,11 @@ export function TrainingClient() {
     )
   }
 
+  const priorityDef = GAME_MODE_REGISTRY[priorityId]
+  const otherModes = TRAINING_GAME_MODES.filter((id) => id !== priorityId)
+
   return (
-    <HunterPage className="space-y-6">
+    <HunterPage className="nozomi-screen-training space-y-6">
       <div>
         <p className="text-[10px] uppercase tracking-widest text-[var(--muted)]">
           Arcade channel
@@ -57,13 +68,38 @@ export function TrainingClient() {
         <h1 className="font-display text-2xl text-[var(--foreground)]">
           Stabilization drills
         </h1>
-        <p className="mt-2 text-sm text-[var(--muted)]">
-          Mini-games — no contract stakes. Chain combos for practice XP.
-        </p>
       </div>
 
+      <section className="relative overflow-hidden rounded-2xl border border-[var(--reward)]/35 bg-[var(--overlay-subtle)] p-5">
+        <div className="nozomi-hero-art-slot absolute inset-0 opacity-30">
+          <GameAssetImage assetKey="hero.training.priority" alt="" fill />
+        </div>
+        <div className="relative z-[1]">
+        <p className="text-[10px] uppercase tracking-widest text-[var(--reward)]">
+          Today&apos;s priority
+        </p>
+        <p className="mt-1 font-display text-xl text-[var(--foreground)]">
+          {priorityDef.label}
+        </p>
+        <p className="mt-1 text-sm text-[var(--muted)]">{trainingBlurb(priorityId)}</p>
+        <p className="mt-2 text-xs text-[var(--accent-bright)]">
+          +{DISCIPLINE_REWARDS.TRAINING_COMPLETE} discipline on clear · RECOMMENDED
+        </p>
+        <Button
+          className="mt-4 w-full"
+          variant="cta"
+          disabled={busy || !isGameModeUnlocked(priorityId, player)}
+          data-testid={E2E_TEST_IDS.trainingPlay(priorityId)}
+          onClick={() => void deploy(priorityId)}
+        >
+          Play
+        </Button>
+        </div>
+      </section>
+
+      <p className="text-xs uppercase tracking-widest text-[var(--muted)]">Other drills</p>
       <div className="grid gap-4 sm:grid-cols-2">
-        {TRAINING_GAME_MODES.map((modeId) => {
+        {otherModes.map((modeId) => {
           const def = GAME_MODE_REGISTRY[modeId]
           const unlocked = isGameModeUnlocked(modeId, player)
           const discipline = trainingDisciplineSkin(modeId)
@@ -73,24 +109,11 @@ export function TrainingClient() {
               accent={def.emotion === "DOPAMINE" ? "gold" : "purple"}
               className={discipline.panelClass}
             >
-              <p className="text-[10px] uppercase tracking-widest text-[var(--muted)]">
-                {discipline.label}
-              </p>
-              <p className="font-display text-lg text-[var(--foreground)]">
-                {def.label}
-              </p>
-              <p className="mt-1 text-xs italic text-[var(--muted)]">
-                {discipline.atmosphere}
-              </p>
-              <p className="mt-1 text-[10px] uppercase tracking-wider text-[var(--accent-bright)]">
-                {def.emotion.replace(/_/g, " ")}
-              </p>
-              <p className="mt-2 text-xs text-[var(--muted)]">
-                {trainingBlurb(modeId)}
-              </p>
+              <p className="font-display text-lg text-[var(--foreground)]">{def.label}</p>
+              <p className="mt-2 text-xs text-[var(--muted)]">{trainingBlurb(modeId)}</p>
               <Button
                 className="mt-4 w-full"
-                variant="cta"
+                variant="subtle"
                 disabled={busy || !unlocked}
                 data-testid={E2E_TEST_IDS.trainingPlay(modeId)}
                 onClick={() => void deploy(modeId)}
@@ -109,13 +132,13 @@ export function TrainingClient() {
 function trainingBlurb(mode: GameModeId): string {
   switch (mode) {
     case "SIGNAL_CALIBRATION":
-      return "Reconstruct distorted radio transmissions."
+      return "Directional audio training."
     case "KANJI_SURGERY":
-      return "Stabilize broken kanji seals before corruption leaks."
+      return "Seal reconstruction under corruption pressure."
     case "MEMORY_CASCADE":
-      return "High-speed sequence recall — spot the intruder."
+      return "Information chaining recall."
     case "SHADOW_ECHO":
-      return "Mirror operator pacing before the signal decays."
+      return "Mirror operator pacing."
     case "KANA_DASH":
       return "Rapid kana recognition with combo chains."
     case "ECHO_LISTENING":

@@ -6,6 +6,7 @@ import { SupabaseSetupNotice } from "@/components/SupabaseSetupNotice"
 import { HunterShellLayout } from "@/components/layout/HunterShellLayout"
 import { HunterPage } from "@/components/layout/HunterPage"
 import type { HunterHydrationPhase } from "@/features/hunter/hooks/useHunterHydration"
+import { LoadingScreenOverlay } from "@/components/layout/LoadingScreenOverlay"
 
 export function HunterSessionGate({
   phase,
@@ -17,23 +18,11 @@ export function HunterSessionGate({
   children: ReactNode
 }) {
   if (phase === "auth-loading") {
-    return (
-      <HunterShellLayout shellClassName={shellClassName}>
-        <HunterPage>
-          <p className="text-[var(--muted)]">Signing in…</p>
-        </HunterPage>
-      </HunterShellLayout>
-    )
+    return <LoadingScreenOverlay show />
   }
 
   if (phase === "hydrating") {
-    return (
-      <HunterShellLayout shellClassName={shellClassName}>
-        <HunterPage>
-          <p className="text-[var(--muted)]">Loading hunter data…</p>
-        </HunterPage>
-      </HunterShellLayout>
-    )
+    return <LoadingScreenOverlay show />
   }
 
   if (phase === "unconfigured") {

@@ -35,12 +35,17 @@ export function rewardsFromPendingBundle(
       tone: "credits",
     })
   }
-  if (bundle.items.length > 0) {
+  for (const item of bundle.items) {
+    const isEquipment =
+      item.itemKey.includes("relic") ||
+      item.itemKey.includes("lens") ||
+      item.itemKey.includes("core") ||
+      item.itemKey.includes("seal")
     items.push({
-      key: "drops",
-      label: "Drops",
-      sublabel: `${bundle.items.length} item(s)`,
-      tone: "neutral",
+      key: item.itemKey,
+      label: isEquipment ? "Relic acquired" : "Drop",
+      sublabel: item.itemKey.replace(/^item:/, ""),
+      tone: isEquipment ? "item" : "neutral",
     })
   }
   return items

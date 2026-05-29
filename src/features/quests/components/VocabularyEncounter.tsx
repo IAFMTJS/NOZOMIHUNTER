@@ -33,6 +33,11 @@ import { WordExtractionPanel } from "@/components/ui/screen/WordExtractionPanel"
 import { ComboMeter } from "@/components/ceremonies/ComboMeter"
 import { isComboMilestone } from "@/systems/learning/encounterPressureSystem"
 import { E2E_TEST_IDS } from "@/config/e2eTestIds"
+import { ContractProgressRail } from "@/components/encounters/ContractProgressRail"
+import {
+  buildContractProgressView,
+  shouldShowContractProgress,
+} from "@/systems/presentation/contractProgressPresentationSystem"
 
 interface VocabularyEncounterProps {
   quest: QuestContract
@@ -123,12 +128,16 @@ export function VocabularyEncounter({
   const streak = encounter?.correctStreak ?? 0
   const comboBurst = isComboMilestone(streak) ? " nozomi-combo-burst" : ""
   const wrongGlitch = flashClassName.includes("danger") ? " nozomi-encounter-glitch" : ""
+  const contractProgress = shouldShowContractProgress(quest)
+    ? buildContractProgressView(quest)
+    : null
 
   const body = (
     <Panel tone="inset" className={`mt-3 ${flashClassName}${comboBurst}${wrongGlitch}`}>
       {briefing && !hideLegacyBriefing && (
         <p className="mb-3 text-sm italic text-[var(--muted)]">{briefing}</p>
       )}
+      {contractProgress && <ContractProgressRail view={contractProgress} />}
 
       <WordExtractionPanel
         words={encounter.words.map((w) => ({

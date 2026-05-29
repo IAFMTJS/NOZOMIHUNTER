@@ -1,4 +1,5 @@
 import type { PlayerContract } from "@/contracts/player-contract"
+import { listContentAchievementDefinitions } from "@/systems/content/contentAchievementCatalog"
 
 export interface AchievementContract {
   id: string
@@ -7,48 +8,38 @@ export interface AchievementContract {
   unlocked: boolean
 }
 
-const DEFINITIONS: Omit<AchievementContract, "unlocked">[] = [
-  {
-    id: "first-level",
-    title: "Rank elevation",
-    description: "Reach hunter level 2.",
-  },
-  {
-    id: "discipline-3",
-    title: "Discipline chain",
-    description: "Maintain synchronization for 3 days.",
-  },
-  {
-    id: "neon-clear",
-    title: "Neon breach",
-    description: "Unlock the Neon Corridor sector.",
-  },
-  {
-    id: "abyss-clear",
-    title: "Abyss breach",
-    description: "Unlock the Abyss Core sector.",
-  },
-  {
-    id: "vocab-master",
-    title: "Threat neutralized",
-    description: "Earn a vocabulary mastery title.",
-  },
-  {
-    id: "gatebreaker",
-    title: "Gatebreaker",
-    description: "Perfect clear against The Neon Warden.",
-  },
-  {
-    id: "archive-breaker",
-    title: "Archive Breaker",
-    description: "Perfect clear against The Archivist.",
-  },
-  {
-    id: "master-rival",
-    title: "Rival bound",
-    description: "Reach rival state with any dungeon master.",
-  },
-]
+function isAchievementUnlocked(
+  defId: string,
+  player: PlayerContract,
+  unlocks: Set<string>,
+  titles: Set<string>
+): boolean {
+  switch (defId) {
+    case "first-level":
+      return player.level >= 2
+    case "discipline-3":
+      return player.synchronization.chainDays >= 3
+    case "neon-clear":
+      return unlocks.has("dungeon:neon-corridor")
+    case "abyss-clear":
+      return unlocks.has("dungeon:abyss-core")
+    case "vocab-master":
+      return [...titles].some((t) => t.includes("vocab") || t.includes("mastery"))
+    case "gatebreaker":
+      return titles.has("Gatebreaker")
+    case "archive-breaker":
+      return titles.has("Archive Breaker")
+    case "master-rival":
+      return [...titles].some((t) => t.includes("master:") && t.includes(":rival"))
+    default:
+      if (defId.startsWith("gdd-achievement-")) {
+        const n = parseInt(defId.replace("gdd-achievement-", ""), 10)
+        const threshold = 5 + (n - 9)
+        return player.level >= threshold || player.xp >= threshold * 50
+      }
+      return false
+  }
+}
 
 export function resolveAchievements(player: PlayerContract): AchievementContract[] {
   const titles = new Set(player.progression.titles)
@@ -58,34 +49,10 @@ export function resolveAchievements(player: PlayerContract): AchievementContract
     ...player.progression.titles,
   ])
 
-  return DEFINITIONS.map((def) => {
-    let unlocked = false
-    switch (def.id) {
-      case "first-level":
-        unlocked = player.level >= 2
-        break
-      case "discipline-3":
-        unlocked = player.synchronization.chainDays >= 3
-        break
-      case "neon-clear":
-        unlocked = unlocks.has("dungeon:neon-corridor")
-        break
-      case "abyss-clear":
-        unlocked = unlocks.has("dungeon:abyss-core")
-        break
-      case "vocab-master":
-        unlocked = [...titles].some((t) => t.includes("vocab") || t.includes("mastery"))
-        break
-      case "gatebreaker":
-        unlocked = titles.has("Gatebreaker")
-        break
-      case "archive-breaker":
-        unlocked = titles.has("Archive Breaker")
-        break
-      case "master-rival":
-        unlocked = [...titles].some((t) => t.includes("master:") && t.includes(":rival"))
-        break
-    }
-    return { ...def, unlocked }
-  })
+  return listContentAchievementDefinitions().map((def) => ({
+    id: def.id,
+    title: def.title,
+    description: def.description,
+    unlocked: isAchievementUnlocked(def.id, player, unlocks, titles),
+  }))
 }

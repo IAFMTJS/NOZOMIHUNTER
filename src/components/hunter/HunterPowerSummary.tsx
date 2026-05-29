@@ -3,10 +3,15 @@ import type { HunterPowerBreakdown } from "@/systems/power/hunterPowerSystem"
 
 interface HunterPowerSummaryProps {
   power: HunterPowerBreakdown
+  percentileLabel?: string
   className?: string
 }
 
-export function HunterPowerSummary({ power, className = "" }: HunterPowerSummaryProps) {
+export function HunterPowerSummary({
+  power,
+  percentileLabel,
+  className = "",
+}: HunterPowerSummaryProps) {
   return (
     <Link
       href="/stats"
@@ -20,6 +25,9 @@ export function HunterPowerSummary({ power, className = "" }: HunterPowerSummary
           <p className="mt-1 font-mono text-3xl font-semibold tabular-nums text-[var(--reward)]">
             {power.total.toLocaleString()}
           </p>
+          {percentileLabel && (
+            <p className="mt-1 text-xs text-[var(--muted)]">{percentileLabel}</p>
+          )}
         </div>
         <span className="text-xs text-[var(--accent-bright)]">Core stats →</span>
       </div>

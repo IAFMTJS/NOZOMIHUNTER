@@ -22,6 +22,8 @@ const RANK_AURA: Record<HunterRank, string> = {
   B: "nozomi-rank-b",
   A: "nozomi-rank-a",
   S: "nozomi-rank-s",
+  SS: "nozomi-rank-ss",
+  SSS: "nozomi-rank-sss",
 }
 
 const RANK_HEADER: Record<HunterRank, string> = {
@@ -31,6 +33,8 @@ const RANK_HEADER: Record<HunterRank, string> = {
   B: "nozomi-header-rank-b",
   A: "nozomi-header-rank-a",
   S: "nozomi-header-rank-s",
+  SS: "nozomi-header-rank-ss",
+  SSS: "nozomi-header-rank-sss",
 }
 
 export function getMenuDenialCopy(

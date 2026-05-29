@@ -8,6 +8,7 @@ import { applyLevelUpDelta } from "@/systems/progression/rpgStatsSystem"
 import { buildLevelUpCeremonyViewModel } from "@/systems/presentation/ceremonies/levelUpCeremonyData"
 import { syncCorruptionAudio } from "@/systems/audio/registerAudioHandlers"
 import type { LevelUpCeremonyViewModel } from "@/systems/presentation/ceremonies/ceremonyTypes"
+import type { TrainingSessionSummaryViewModel } from "@/systems/training/trainingSessionSummarySystem"
 
 interface PlayerStore {
   player: PlayerContract | null
@@ -16,6 +17,10 @@ interface PlayerStore {
   levelUpCeremony: LevelUpCeremonyViewModel | null
   rankUpNotice: HunterRank | null
   unlockNoticeQueue: string[]
+  trainingResultsCeremony: {
+    summary: TrainingSessionSummaryViewModel
+    playAgainHref: string
+  } | null
 
   setPlayer: (player: PlayerContract) => void
   setActiveQuests: (quests: QuestContract[]) => void
@@ -37,6 +42,10 @@ interface PlayerStore {
   clearLevelUpCeremony: () => void
   clearRankUpNotice: () => void
   dismissUnlockNotice: () => void
+  clearTrainingResultsCeremony: () => void
+  setTrainingResultsCeremony: (
+    payload: { summary: TrainingSessionSummaryViewModel; playAgainHref: string } | null
+  ) => void
   reset: () => void
   getProgressionState: () => ProgressionState | null
 }
@@ -48,6 +57,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   levelUpCeremony: null,
   rankUpNotice: null,
   unlockNoticeQueue: [],
+  trainingResultsCeremony: null,
 
   setPlayer: (player) => set({ player }),
 
@@ -131,6 +141,11 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   dismissUnlockNotice: () =>
     set((state) => ({ unlockNoticeQueue: state.unlockNoticeQueue.slice(1) })),
 
+  setTrainingResultsCeremony: (trainingResultsCeremony) =>
+    set({ trainingResultsCeremony }),
+
+  clearTrainingResultsCeremony: () => set({ trainingResultsCeremony: null }),
+
   reset: () =>
     set({
       player: null,
@@ -139,6 +154,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       levelUpCeremony: null,
       rankUpNotice: null,
       unlockNoticeQueue: [],
+      trainingResultsCeremony: null,
     }),
 
   getProgressionState: () => {

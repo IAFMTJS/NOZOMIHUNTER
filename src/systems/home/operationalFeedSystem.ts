@@ -6,8 +6,13 @@ import { activeBoostsForPlayer } from "@/systems/economy/boostSystem"
 import { listAvailableDungeons } from "@/config/dungeonConfig"
 import { FEATURE_FLAGS } from "@/config/features"
 import { getActiveSectorEvent } from "@/config/eventScheduleConfig"
+import { resolveLiveRewardModifiers } from "@/systems/live/liveEventModifierSystem"
 import { getActiveLanguageInvasion } from "@/systems/retention/languageInvasionSystem"
 import { buildContractCatalog } from "@/systems/quests/contractCatalogSystem"
+import {
+  dailyMilestoneProgress,
+  DAILY_MILESTONE_TARGET,
+} from "@/systems/quests/dailyMilestoneSystem"
 
 export interface OperationalAlert {
   id: string
@@ -74,6 +79,27 @@ export function buildOperationalFeed(
     })
   }
 
+  const milestone = dailyMilestoneProgress(activeQuests, player.id)
+  if (milestone.completed > 0 && milestone.completed < DAILY_MILESTONE_TARGET) {
+    alerts.push({
+      id: "daily-milestone",
+      tone: "accent",
+      headline: "Daily contract chain",
+      detail: `${milestone.completed}/${DAILY_MILESTONE_TARGET} clears — bonus at third extraction.`,
+      recoveryHref: "/contracts",
+    })
+  }
+
+  if (player.progression.discipline >= 5) {
+    alerts.push({
+      id: "discipline-cache",
+      tone: "accent",
+      headline: "Discipline cache available",
+      detail: `${player.progression.discipline} discipline — research relic nodes in inventory.`,
+      recoveryHref: "/inventory",
+    })
+  }
+
   if (player.penalties.corruption >= 50) {
     alerts.push({
       id: "corruption-high",
@@ -130,11 +156,16 @@ export function buildOperationalFeed(
 
   if (FEATURE_FLAGS.LIVE_SECTOR_EVENTS) {
     const event = getActiveSectorEvent(seed)
+    const liveMods = resolveLiveRewardModifiers(seed)
     if (event) {
+      const bonus =
+        liveMods.xpMultiplier > 1
+          ? ` XP ×${liveMods.xpMultiplier.toFixed(2)}`
+          : ""
       anomalies.push({
         id: event.id,
         label: event.title,
-        detail: event.description,
+        detail: `${event.description}${bonus}`,
       })
     }
   }

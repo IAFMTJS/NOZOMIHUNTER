@@ -18,7 +18,18 @@ export function DungeonRunRecap({ summary }: DungeonRunRecapProps) {
       {summary.techniqueLabel && (
         <p className="text-[var(--muted)]">Technique: {summary.techniqueLabel}</p>
       )}
-      <p className="mt-2 text-[var(--muted)]">Run score: {summary.runScore}</p>
+      <p className="mt-2 text-[var(--muted)]">
+        Run score: {summary.runScore}
+        {summary.runGrade != null && (
+          <span className="ml-2 font-mono text-[var(--reward)]">Grade {summary.runGrade}</span>
+        )}
+        {summary.peakCorruption != null && (
+          <span className="ml-2">· Peak corruption {summary.peakCorruption}%</span>
+        )}
+        {summary.sectorsCleared != null && (
+          <span className="ml-2">· Sectors {summary.sectorsCleared}</span>
+        )}
+      </p>
       {summary.wordsBound.length > 0 && (
         <div className="mt-2">
           <p className="text-xs uppercase text-[var(--accent)]">Words bound</p>

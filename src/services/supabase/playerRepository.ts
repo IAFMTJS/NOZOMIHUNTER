@@ -108,6 +108,8 @@ function mapPlayer(
           (prog.unlocked_systems as string[]) ?? defaults.unlockedSystems
         ),
         titles: (prog.titles as string[]) ?? [],
+        discipline: Math.max(0, (prog.discipline as number) ?? progRow.discipline ?? 0),
+        prestigeCount: Math.max(0, (prog.prestige_count as number) ?? 0),
       }
     })(),
     economy: mapEconomy(prog),
@@ -253,6 +255,7 @@ export async function savePlayer(
         rpg_agility: player.rpgStats.agility,
         rpg_intelligence: player.rpgStats.intelligence,
         rpg_vitality: player.rpgStats.vitality,
+        discipline: player.progression.discipline,
       })
       .eq("user_id", player.id),
     supabase.from("player_penalties").upsert({

@@ -1,6 +1,16 @@
 # Reference Mockup Integration Map
 
-Last updated: 2026-05-24
+Last updated: 2026-05-29 (GDD v2.0 mockup boards)
+
+**Reference images:** [`assets/reference/board-1-command-node.png`](./assets/reference/board-1-command-node.png) · [`board-2-mode-identity.png`](./assets/reference/board-2-mode-identity.png) · [`board-3-dungeon-flow.png`](./assets/reference/board-3-dungeon-flow.png)
+
+| GDD Vol 4 screen | Route | Primary UI |
+|------------------|-------|------------|
+| Home command node | `/home` | `ActiveObjectiveCard`, `SectorCorruptionCard`, `ProgressProximityRail`, `NpcMessageCard` |
+| Training priority | `/training` | Hero today's priority + `ArcadeCard` grid |
+| Contract detail | `/contracts/[id]` | `QuestFileDetail` (risk, claim CTA) |
+| Dungeon combat | dungeon overlay | `BossEncounterHUD`, corruption bands |
+| Relic loadout | `/inventory` | `RelicSlotsRail` |
 
 **Holistic UI plan (quest list → detail → deploy → run → extraction):** [`quest-channel-ui-plan.md`](quest-channel-ui-plan.md)
 

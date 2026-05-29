@@ -98,4 +98,5 @@ export const DUNGEON_CONSEQUENCE_COPY = {
   routeGreedy: "Greedy route logged. Boss trace intensified.",
   extractionSafe: "Safe extraction authorized. Relics preserved.",
   extractionPush: "Deep push authorized. Bonus data at risk.",
+  sectorCleared: "Sector stabilized. Transit corridor updated.",
 } as const
