@@ -50,7 +50,7 @@ export function orchestrateEncounterFeedback(
   let freezeMs = profile.ceremonyFreezeMs ?? 0
 
   if (input.outcome === "correct") {
-    cssClasses.push("nozomi-feedback-flash--success")
+    cssClasses.push("nozomi-flash-success")
     if (profile.impactLevel === "high") {
       cssClasses.push("nozomi-combo-burst")
     }
@@ -70,12 +70,12 @@ export function orchestrateEncounterFeedback(
       audioCues.push("error")
     }
     if (profile.wrongAnswerFx === "corruption") {
-      cssClasses.push("nozomi-feedback-flash--danger", "nozomi-dungeon-unstable")
+      cssClasses.push("nozomi-flash-danger", "nozomi-dungeon-unstable")
       audioCues.push("corruptionSting")
     } else if (profile.wrongAnswerFx === "glitch") {
-      cssClasses.push("nozomi-encounter-glitch", "nozomi-feedback-flash--danger")
+      cssClasses.push("nozomi-encounter-glitch", "nozomi-flash-danger")
     } else {
-      cssClasses.push("nozomi-feedback-flash--danger")
+      cssClasses.push("nozomi-flash-danger")
     }
   }
 

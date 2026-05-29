@@ -67,7 +67,7 @@ export function resolveDungeonAccess(
     }
   }
 
-  const unlocked = player.progression.unlockedDungeons.includes(dungeonKey)
+  const unlocked = player.progression.unlockedDungeons.includes(def.key)
   if (!unlocked) {
     const prereq = def.requiredDungeon
     const prereqLabel = prereq

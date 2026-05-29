@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -16,7 +17,7 @@ import {
   type EncounterFeedbackInput,
 } from "@/systems/presentation/encounterFeedbackOrchestrator"
 import { EncounterImpactLayer } from "@/components/feedback/EncounterImpactLayer"
-import { playAudioCues } from "@/systems/audio/audioSystem"
+import { playAudioCues, stopEncounterFeedbackAudio } from "@/systems/audio/audioSystem"
 import { triggerMomentFreeze } from "@/systems/presentation/momentFreezeSystem"
 
 interface EncounterFeedbackContextValue {
@@ -47,6 +48,8 @@ export function EncounterFeedbackProvider({
       }),
     [quest.narrativeTier, quest.type, quest.hidden, isTraining]
   )
+
+  useEffect(() => () => stopEncounterFeedbackAudio(), [])
 
   const flashFeedback = useCallback(
     (input: Omit<EncounterFeedbackInput, "channel" | "narrativeTier" | "isDungeon" | "isTraining">) => {

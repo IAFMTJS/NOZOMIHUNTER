@@ -3,6 +3,7 @@ import {
   orchestrateEncounterFeedback,
   resolveEncounterChannel,
 } from "@/systems/presentation/encounterFeedbackOrchestrator"
+import { getDungeonDefinition } from "@/config/dungeonConfig"
 import {
   ceremonyTierFromNarrative,
 } from "@/systems/presentation/ceremonies/ceremonyTypes"
@@ -21,12 +22,17 @@ import {
 import { advanceExploration } from "@/systems/dungeons/explorationSystem"
 
 describe("encounterFeedbackOrchestrator", () => {
+  it("resolves dungeon slugs without the dungeon: prefix", () => {
+    expect(getDungeonDefinition("shadow-archive").key).toBe("dungeon:shadow-archive")
+  })
+
   it("maps dungeon wrong answers to corruption fx", () => {
     const r = orchestrateEncounterFeedback({
       channel: "DUNGEON",
       outcome: "wrong",
       previousStreak: 0,
     })
+    expect(r.cssClasses).toContain("nozomi-flash-danger")
     expect(r.cssClasses).toContain("nozomi-dungeon-unstable")
     expect(r.audioCues).toContain("corruptionSting")
     expect(r.freezeMs).toBe(120)

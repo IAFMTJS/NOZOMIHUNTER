@@ -46,12 +46,18 @@ export function resolveAssetUrl(
     entries.find(
       (e) =>
         e.asset_key === assetKey &&
-        (!e.season_id || e.season_id === seasonId) &&
+        (!e.season_id || !seasonId || e.season_id === seasonId) &&
         rankMeetsMin(options?.playerRank, e.min_rank)
     ) ?? fallbackAssetEntry(assetKey)
 
   if (!match) return null
-  if (match.path.startsWith("http")) return match.path
+
+  const fallback = fallbackAssetEntry(assetKey)
+  // Prefer bundled /public paths — avoids Next image optimizer 400s on remote storage.
+  if (fallback?.path.startsWith("/")) {
+    return fallback.path
+  }
+
   return match.path
 }
 

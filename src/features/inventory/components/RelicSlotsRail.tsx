@@ -14,6 +14,17 @@ import { Button } from "@/components/ui/Button"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { GameAssetImage } from "@/components/ui/GameAssetImage"
 
+function relicAssetKey(itemKey: string): string {
+  if (itemKey.includes("focus-lens")) return "relic.focus-lens"
+  if (itemKey.includes("memory-core")) return "relic.memory-core"
+  if (itemKey.includes("void-seal")) return "relic.void-seal"
+  if (itemKey.includes("signal-cache")) return "relic.signal-cache"
+  if (itemKey.includes("shadow-shard")) return "relic.shadow-shard"
+  if (itemKey.includes("stamina-brew")) return "relic.stamina-brew"
+  if (itemKey.includes("corruption-ward")) return "relic.corruption-ward"
+  return "relic.focus-lens"
+}
+
 interface RelicSlotsRailProps {
   player: PlayerContract
 }
@@ -55,13 +66,7 @@ export function RelicSlotsRail({ player }: RelicSlotsRailProps) {
           >
             <div className="mx-auto mb-1 h-8 w-8">
               <GameAssetImage
-                assetKey={
-                  slot.itemKey.includes("lens")
-                    ? "relic.focus-lens"
-                    : slot.itemKey.includes("core")
-                      ? "relic.memory-core"
-                      : "relic.void-seal"
-                }
+                assetKey={relicAssetKey(slot.itemKey)}
                 alt=""
                 width={32}
                 height={32}

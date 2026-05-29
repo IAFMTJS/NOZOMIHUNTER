@@ -34,6 +34,7 @@ import { EncounterFeedbackProvider } from "@/features/encounters/context/Encount
 import { EncounterFeedbackBridge } from "@/features/encounters/EncounterFeedbackBridge"
 import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 import { stopRunAudio } from "@/systems/audio/audioSystem"
+import { syncDungeonCorruptionAudio } from "@/systems/audio/registerAudioHandlers"
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import { SectorClearedBeat } from "@/components/ceremonies/SectorClearedBeat"
@@ -111,6 +112,11 @@ export function DungeonRunner(props: DungeonRunnerProps) {
     const id = window.setInterval(tick, 1000)
     return () => window.clearInterval(id)
   }, [run?.runStartedAt, run?.timeLimitMs, run?.frozenTimeMs, run?.frozenUntil, run])
+
+  useEffect(() => {
+    const pressure = run?.threat?.corruptionPressure ?? 0
+    syncDungeonCorruptionAudio(pressure)
+  }, [run?.threat?.corruptionPressure])
 
   useEffect(() => () => stopRunAudio(), [])
 

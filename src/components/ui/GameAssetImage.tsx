@@ -28,6 +28,9 @@ export function GameAssetImage({
   const src = resolveAssetUrl(assetKey, { playerRank })
   if (!src) return null
 
+  const unoptimized =
+    src.startsWith("http") || /\.(svg|webp|avif)$/i.test(src)
+
   if (fill) {
     return (
       <Image
@@ -36,7 +39,7 @@ export function GameAssetImage({
         fill
         priority={priority}
         className={`object-cover ${className}`}
-        unoptimized={src.endsWith(".svg")}
+        unoptimized={unoptimized}
       />
     )
   }
@@ -49,7 +52,7 @@ export function GameAssetImage({
       height={height}
       priority={priority}
       className={className}
-      unoptimized={src.endsWith(".svg")}
+      unoptimized={unoptimized}
     />
   )
 }

@@ -41,7 +41,11 @@ async function main() {
     const body = fs.readFileSync(localPath)
     const contentType = localPath.endsWith(".svg")
       ? "image/svg+xml"
-      : "image/png"
+      : localPath.endsWith(".webp")
+        ? "image/webp"
+        : localPath.endsWith(".avif")
+          ? "image/avif"
+          : "image/png"
     const { error: upErr } = await supabase.storage
       .from("game-assets")
       .upload(storagePath, body, { upsert: true, contentType })

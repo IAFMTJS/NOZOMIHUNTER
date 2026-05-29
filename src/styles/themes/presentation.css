@@ -658,6 +658,10 @@
   animation: nozomi-dungeon-unstable 4s ease-in-out infinite;
 }
 
+.nozomi-dungeon-unstable {
+  animation: nozomi-dungeon-unstable 0.52s ease-in-out;
+}
+
 @keyframes nozomi-dungeon-unstable {
   0%,
   100% {

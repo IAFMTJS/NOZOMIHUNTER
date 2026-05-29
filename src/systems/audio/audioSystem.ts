@@ -25,6 +25,31 @@ let corruptionGain: GainNode | null = null
 let ambienceLoop: OscillatorNode | null = null
 let ambienceGain: GainNode | null = null
 let activeAmbience: AmbienceCue | null = null
+const pendingToneTimeouts = new Set<ReturnType<typeof setTimeout>>()
+const activeFeedbackOscillators = new Set<OscillatorNode>()
+
+function trackToneTimeout(id: ReturnType<typeof setTimeout>): void {
+  pendingToneTimeouts.add(id)
+}
+
+function scheduleTone(
+  fn: () => void,
+  delayMs: number
+): ReturnType<typeof setTimeout> {
+  const id = setTimeout(() => {
+    pendingToneTimeouts.delete(id)
+    fn()
+  }, delayMs)
+  trackToneTimeout(id)
+  return id
+}
+
+function trackFeedbackOscillator(osc: OscillatorNode): void {
+  activeFeedbackOscillators.add(osc)
+  osc.onended = () => {
+    activeFeedbackOscillators.delete(osc)
+  }
+}
 
 function readMuted(): boolean {
   if (typeof window === "undefined") return false
@@ -95,6 +120,7 @@ function tone(
   const t = c.currentTime
   g.gain.setValueAtTime(gain, t)
   g.gain.exponentialRampToValueAtTime(0.001, t + durationMs / 1000)
+  trackFeedbackOscillator(osc)
   osc.start(t)
   osc.stop(t + durationMs / 1000)
 }
@@ -116,19 +142,19 @@ export function playAudioCue(cue: AudioCueId): void {
       break
     case "levelUp":
       tone(330, 100)
-      setTimeout(() => tone(440, 120), 90)
-      setTimeout(() => tone(554, 160), 200)
+      scheduleTone(() => tone(440, 120), 90)
+      scheduleTone(() => tone(554, 160), 200)
       break
     case "encounterStart":
       tone(220, 120, "triangle", 0.05)
       break
     case "sectorClear":
       tone(392, 90)
-      setTimeout(() => tone(523, 110), 80)
+      scheduleTone(() => tone(523, 110), 80)
       break
     case "questComplete":
       tone(294, 100)
-      setTimeout(() => tone(370, 130), 100)
+      scheduleTone(() => tone(370, 130), 100)
       break
     case "corruption":
       startCorruptionHum()
@@ -138,12 +164,12 @@ export function playAudioCue(cue: AudioCueId): void {
       break
     case "combo2":
       tone(523, 70)
-      setTimeout(() => tone(659, 80), 60)
+      scheduleTone(() => tone(659, 80), 60)
       break
     case "combo5":
       tone(587, 80)
-      setTimeout(() => tone(740, 90), 70)
-      setTimeout(() => tone(880, 100), 150)
+      scheduleTone(() => tone(740, 90), 70)
+      scheduleTone(() => tone(880, 100), 150)
       break
     case "comboBreak":
       tone(140, 120, "square", 0.035)
@@ -153,12 +179,12 @@ export function playAudioCue(cue: AudioCueId): void {
       break
     case "achievement":
       tone(392, 90)
-      setTimeout(() => tone(523, 100), 90)
-      setTimeout(() => tone(659, 120), 180)
+      scheduleTone(() => tone(523, 100), 90)
+      scheduleTone(() => tone(659, 120), 180)
       break
     case "rewardCascade":
       tone(440, 50, "triangle", 0.04)
-      setTimeout(() => tone(554, 55, "triangle", 0.04), 55)
+      scheduleTone(() => tone(554, 55, "triangle", 0.04), 55)
       break
     default:
       break
@@ -183,8 +209,27 @@ function playCorruptionSting(): void {
   const t = c.currentTime
   g.gain.setValueAtTime(0.028, t)
   g.gain.exponentialRampToValueAtTime(0.001, t + 0.28)
+  trackFeedbackOscillator(osc)
   osc.start(t)
   osc.stop(t + 0.3)
+}
+
+/** Cancel pending encounter feedback tones (combo chains, stings). */
+export function stopEncounterFeedbackAudio(): void {
+  for (const id of pendingToneTimeouts) {
+    clearTimeout(id)
+  }
+  pendingToneTimeouts.clear()
+
+  for (const osc of activeFeedbackOscillators) {
+    try {
+      osc.stop()
+    } catch {
+      /* already stopped */
+    }
+    osc.disconnect()
+  }
+  activeFeedbackOscillators.clear()
 }
 
 export function startCorruptionHum(): void {
@@ -269,6 +314,7 @@ export function stopAmbience(): void {
 
 /** Stop looping dungeon / corruption audio (e.g. on extract, fail, abandon). */
 export function stopRunAudio(): void {
+  stopEncounterFeedbackAudio()
   stopCorruptionHum()
   stopAmbience()
 }

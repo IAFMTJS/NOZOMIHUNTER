@@ -213,8 +213,16 @@ export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [
   },
 ]
 
+/** Accept full keys (`dungeon:shadow-archive`) or URL slugs (`shadow-archive`). */
+export function normalizeDungeonKey(key: string): string {
+  const trimmed = key.trim()
+  if (!trimmed) return trimmed
+  return trimmed.startsWith("dungeon:") ? trimmed : `dungeon:${trimmed}`
+}
+
 export function getDungeonDefinition(key: string): DungeonDefinitionConfig {
-  const def = DUNGEON_DEFINITIONS.find((d) => d.key === key)
+  const normalized = normalizeDungeonKey(key)
+  const def = DUNGEON_DEFINITIONS.find((d) => d.key === normalized)
   if (!def) {
     throw new Error(`Unknown dungeon: ${key}`)
   }

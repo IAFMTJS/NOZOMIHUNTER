@@ -117,7 +117,20 @@ export function syncCorruptionAudio(corruption: number): void {
     stopCorruptionHum()
     return
   }
-  if (corruption >= 50) {
+  // Global player corruption only clears the hum; starting it is dungeon-scoped
+  // so wrong answers during training/home do not leave a looping drone.
+  if (corruption < 50) {
+    stopCorruptionHum()
+  }
+}
+
+/** Drive the persistent corruption hum from active dungeon threat pressure. */
+export function syncDungeonCorruptionAudio(corruptionPressure: number): void {
+  if (!isCorruptionAudioEnabled()) {
+    stopCorruptionHum()
+    return
+  }
+  if (corruptionPressure >= 50) {
     startCorruptionHum()
   } else {
     stopCorruptionHum()
