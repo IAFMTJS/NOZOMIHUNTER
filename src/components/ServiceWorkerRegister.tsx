@@ -1,10 +1,13 @@
 "use client"
 
 import { useEffect } from "react"
+import { isStandalonePwa } from "@/systems/retention/pwaEnvironmentSystem"
 
 export function ServiceWorkerRegister() {
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production") return
+    const shouldRegister =
+      process.env.NODE_ENV === "production" || isStandalonePwa()
+    if (!shouldRegister) return
     if (!("serviceWorker" in navigator)) return
 
     void navigator.serviceWorker.register("/sw.js").catch(() => {

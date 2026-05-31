@@ -4,6 +4,16 @@ NOZOMI can be installed as a lightweight PWA. Offline support is **shell-only**;
 
 ## Install
 
+### iOS (Safari → Home Screen)
+
+1. Open the site in Safari (HTTPS required).
+2. Tap **Share** → **Add to Home Screen**.
+3. Launch **from the home screen icon** — not from a Safari tab.
+4. On first open, tap **Allow invasion alerts** when prompted (iOS requires a tap each new install).
+5. If you skipped it: **Profile → Settings → Invasion alerts**.
+
+Push **does not work** in Safari tabs on iOS — only in the installed PWA (iOS 16.4+).
+
 ### Android / Chrome / Edge
 
 1. Open the app over HTTPS (production or `npm run dev:mobile` on LAN).
@@ -67,7 +77,7 @@ PUSH_DRY_RUN=true npm run push:send
 
 ## Mobile QA checklist (listening + encounters)
 
-- [ ] Install or Add to Home Screen; app opens to dashboard shell
+- [ ] **iOS PWA push**: Add to Home Screen → open from icon → allow invasion alerts on prompt
 - [ ] Safe-area: header and hunt focus mode clear notch/home indicator
 - [ ] **Listening contract**: Receive signal → TTS plays after tap; replay limit shown
 - [ ] **Hunt mode**: `EncounterFocusShell` fullscreen; Exit focus returns to board

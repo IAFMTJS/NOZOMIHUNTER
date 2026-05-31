@@ -36,6 +36,7 @@ import { TrainingPriorityTeaser } from "@/features/home/components/TrainingPrior
 import { UI_TOKENS } from "@/config/uiTokens"
 import { CorruptionAlertOverlay } from "@/components/home/CorruptionAlertOverlay"
 import { SeasonProgressChip } from "@/features/home/components/SeasonProgressChip"
+import { PushPermissionPrompt } from "@/features/home/components/PushPermissionPrompt"
 import { dailyMilestoneProgress } from "@/systems/quests/dailyMilestoneSystem"
 
 export function HomeClient() {
@@ -80,6 +81,8 @@ export function HomeClient() {
           {homeWhisper}
         </p>
       )}
+
+      <PushPermissionPrompt userId={player.id} />
 
       {feed.storyAlerts.length > 0 && (
         <OperationalAlertRail alerts={feed.storyAlerts} />

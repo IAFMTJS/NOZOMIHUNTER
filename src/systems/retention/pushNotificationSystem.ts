@@ -3,8 +3,14 @@ import {
   savePushSubscription,
   type PushSubscriptionJson,
 } from "@/services/supabase/pushSubscriptionRepository"
+import {
+  isIosDevice,
+  isIosPwaPushContext,
+  isStandalonePwa,
+} from "@/systems/retention/pwaEnvironmentSystem"
 
 const PUSH_OPT_IN_KEY = "nozomi-push-opt-in"
+export const PUSH_PROMPT_DISMISS_KEY = "nozomi-push-prompt-dismissed"
 
 function vapidPublicKey(): string | null {
   const key = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim()
@@ -21,16 +27,20 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 }
 
 export function isPushSupported(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    "serviceWorker" in navigator &&
-    "PushManager" in window &&
-    "Notification" in window
-  )
+  if (typeof window === "undefined") return false
+  if (!("serviceWorker" in navigator) || !("Notification" in window)) return false
+  // iOS exposes PushManager only in home-screen PWA (16.4+).
+  if (isIosDevice() && !isStandalonePwa()) return false
+  return "PushManager" in window
 }
 
 export function isPushConfigured(): boolean {
   return isPushSupported() && vapidPublicKey() != null
+}
+
+export function pushPermissionState(): NotificationPermission | "unsupported" {
+  if (!isPushSupported()) return "unsupported"
+  return Notification.permission
 }
 
 export function isPushOptIn(): boolean {
@@ -51,6 +61,47 @@ export function setPushOptIn(value: boolean): void {
   }
 }
 
+export function isPushPromptDismissed(): boolean {
+  if (typeof window === "undefined") return true
+  try {
+    return localStorage.getItem(PUSH_PROMPT_DISMISS_KEY) === "1"
+  } catch {
+    return false
+  }
+}
+
+export function dismissPushPermissionPrompt(): void {
+  if (typeof window === "undefined") return
+  try {
+    localStorage.setItem(PUSH_PROMPT_DISMISS_KEY, "1")
+  } catch {
+    /* ignore */
+  }
+}
+
+/** First launch after PWA install — permission still default, not dismissed. */
+export function shouldShowPushPermissionPrompt(): boolean {
+  if (!isPushConfigured()) return false
+  if (!isStandalonePwa()) return false
+  if (isPushPromptDismissed()) return false
+  if (Notification.permission === "denied") return false
+  if (Notification.permission === "granted" && isPushOptIn()) return false
+  return (
+    Notification.permission === "default" ||
+    (Notification.permission === "granted" && !isPushOptIn())
+  )
+}
+
+export async function ensurePushServiceWorker(): Promise<ServiceWorkerRegistration | null> {
+  if (!("serviceWorker" in navigator)) return null
+  try {
+    await navigator.serviceWorker.register("/sw.js")
+    return await navigator.serviceWorker.ready
+  } catch {
+    return null
+  }
+}
+
 export async function requestPushPermission(): Promise<NotificationPermission> {
   if (!isPushSupported()) return "denied"
   return Notification.requestPermission()
@@ -68,16 +119,20 @@ function subscriptionToJson(sub: PushSubscription): PushSubscriptionJson {
   }
 }
 
-/** Subscribe via VAPID and persist for GitHub Actions delivery. */
+/** Subscribe via VAPID — must be called from a user gesture (iOS requirement). */
 export async function subscribeToPush(userId: string): Promise<boolean> {
   if (!isPushConfigured()) return false
-  const permission = await requestPushPermission()
+
+  const reg = await ensurePushServiceWorker()
+  if (!reg?.pushManager) return false
+
+  let permission = Notification.permission
+  if (permission === "default") {
+    permission = await requestPushPermission()
+  }
   if (permission !== "granted") return false
 
   try {
-    const reg = await navigator.serviceWorker.ready
-    if (!reg.pushManager) return false
-
     const publicKey = vapidPublicKey()!
     let sub = await reg.pushManager.getSubscription()
     if (!sub) {
@@ -91,6 +146,11 @@ export async function subscribeToPush(userId: string): Promise<boolean> {
     if (!saved) return false
 
     setPushOptIn(true)
+    try {
+      localStorage.removeItem(PUSH_PROMPT_DISMISS_KEY)
+    } catch {
+      /* ignore */
+    }
     return true
   } catch {
     return false
@@ -111,6 +171,15 @@ export async function unsubscribeFromPush(userId: string): Promise<void> {
   }
 }
 
+export function pushUnavailableReason(): string | null {
+  if (!vapidPublicKey()) return "Push not configured on this deployment."
+  if (isIosDevice() && !isStandalonePwa()) {
+    return "On iPhone: Add to Home Screen, then open NOZOMI from the icon — Safari tabs cannot receive push."
+  }
+  if (!isPushSupported()) return "Push is not supported on this browser."
+  return null
+}
+
 /** @deprecated use subscribeToPush */
 export const subscribeToPushStub = subscribeToPush
 
@@ -126,7 +195,8 @@ export function scheduleNarrativePushStub(payload: NarrativePushPayload): void {
   if (!isPushOptIn() || typeof window === "undefined") return
   if (Notification.permission !== "granted") return
   try {
-    void navigator.serviceWorker.ready.then((reg) => {
+    void ensurePushServiceWorker().then((reg) => {
+      if (!reg) return
       reg.showNotification(payload.title, {
         body: payload.body,
         tag: payload.tag ?? "nozomi-narrative",
@@ -138,3 +208,5 @@ export function scheduleNarrativePushStub(payload: NarrativePushPayload): void {
     /* preview only */
   }
 }
+
+export { isIosPwaPushContext, isStandalonePwa }
