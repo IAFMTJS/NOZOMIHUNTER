@@ -3,12 +3,13 @@
 import { useEffect, useMemo, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { MOTION } from "@/config/motionPresets"
+import { maxWrongAttemptsWithBoosts } from "@/systems/economy/boostSystem"
+import { aggregateRelicModifiers } from "@/systems/inventory/relicEffectSystem"
 import {
   hasSignalDegradation,
-  listeningReplayLimitForPenalties,
+  listeningReplayLimitForPlayer,
   maxWrongAttemptsForPenalties,
 } from "@/systems/penalties/penaltyGameplaySystem"
-import { maxWrongAttemptsWithBoosts } from "@/systems/economy/boostSystem"
 import { computeReadiness } from "@/systems/readiness/readinessSystem"
 import { getNextDungeonForecast } from "@/systems/dungeons/dungeonForecastSystem"
 import { selectSystemMessage } from "@/systems/messaging/systemMessagingSystem"
@@ -69,8 +70,8 @@ export function ContractHub(props: ContractHubProps) {
     maxWrongAttempts: maxWrongAttemptsWithBoosts(
       props.player,
       maxWrongAttemptsForPenalties(props.player.penalties)
-    ),
-    maxListeningReplays: listeningReplayLimitForPenalties(props.player.penalties),
+    ) + aggregateRelicModifiers(props.player).extraWrongAttempts,
+    maxListeningReplays: listeningReplayLimitForPlayer(props.player),
     signalDegraded: hasSignalDegradation(props.player.penalties),
   }
 

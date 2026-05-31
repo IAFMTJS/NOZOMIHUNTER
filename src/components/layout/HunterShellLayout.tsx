@@ -1,6 +1,6 @@
 "use client"
 
-import type { ReactNode } from "react"
+import { useEffect, type ReactNode } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { BottomNav } from "@/components/layout/BottomNav"
@@ -10,14 +10,14 @@ import { ReactiveFeedbackHost } from "@/components/layout/ReactiveFeedbackHost"
 
 function resolvePageTitle(pathname: string): string {
   if (pathname === "/home" || pathname === "/dashboard") return "NOZOMI HUNTER SYSTEM"
-  if (pathname === "/contracts" || pathname === "/missions") return "MISSION LOG"
+  if (pathname === "/contracts" || pathname === "/missions") return "MISSIONS"
   if (pathname.startsWith("/contracts/") || pathname.startsWith("/missions/"))
-    return "CONTRACT FILE"
+    return "MISSION FILE"
   if (pathname === "/dungeons") return "DUNGEONS"
   if (pathname.startsWith("/dungeons/")) return "SECTOR"
   if (pathname === "/prepare") return "DEPLOYMENT"
-  if (pathname === "/vocabulary") return "VOCABULARY"
-  if (pathname.startsWith("/vocabulary/")) return "WORD"
+  if (pathname === "/vocabulary") return "THREAT INDEX"
+  if (pathname.startsWith("/vocabulary/")) return "THREAT ENTRY"
   if (pathname === "/inventory") return "INVENTORY"
   if (pathname === "/system") return "SYSTEM STATUS"
   if (pathname === "/profile") return "PROFILE"
@@ -31,26 +31,43 @@ function resolvePageTitle(pathname: string): string {
 
 interface HunterShellLayoutProps {
   children: ReactNode
-  shellClassName?: string
+  atmosphereClassName?: string
+  /** Fixed overlays (encounters, ceremonies) — outside scrollable page content. */
+  overlay?: ReactNode
   headerClassName?: string
   headerRight?: ReactNode
 }
 
-/** System chrome: atmosphere, header, scroll main, persistent bottom nav. */
+/** Viewport-locked shell: header + scrollable main + persistent bottom nav. */
 export function HunterShellLayout({
   children,
-  shellClassName = "",
+  atmosphereClassName = "",
+  overlay,
   headerClassName = "",
   headerRight,
 }: HunterShellLayoutProps) {
   const pathname = usePathname()
   const title = resolvePageTitle(pathname)
 
+  useEffect(() => {
+    document.body.classList.add("hunter-shell-lock")
+    return () => document.body.classList.remove("hunter-shell-lock")
+  }, [])
+
   return (
-    <AtmosphericBackground variant="lobby">
-      <div className={`relative flex min-h-screen flex-col ${shellClassName}`}>
+    <AtmosphericBackground
+      variant="lobby"
+      className={`h-dvh max-h-dvh overflow-hidden ${atmosphereClassName}`}
+    >
+      <div className="relative flex h-full min-h-0 flex-col">
+        <a
+          href="#hunter-main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-[var(--surface)] focus:px-3 focus:py-2 focus:text-sm focus:text-[var(--foreground)]"
+        >
+          Skip to main content
+        </a>
         <header
-          className={`pt-safe relative z-10 shrink-0 bg-gradient-to-b from-[var(--surface-header)] to-transparent backdrop-blur-md ${headerClassName}`}
+          className={`pt-safe relative z-20 shrink-0 bg-gradient-to-b from-[var(--surface-header)] to-transparent backdrop-blur-md ${headerClassName}`}
         >
           <div className="mx-auto flex max-w-lg items-center justify-between gap-3 px-4 py-2 sm:py-3">
             <span className="font-display text-sm font-semibold tracking-[0.2em] text-[var(--foreground)]">
@@ -70,8 +87,12 @@ export function HunterShellLayout({
           </div>
         </header>
 
-        <main className="hunter-main relative z-10 mx-auto w-full max-w-lg flex-1 px-3 pt-1 sm:px-4 sm:pt-2">
-          {children}
+        <main
+          id="hunter-main-content"
+          className="hunter-main relative z-10 mx-auto flex min-h-0 w-full max-w-lg flex-1 flex-col overflow-hidden px-3 pt-1 sm:px-4 sm:pt-2"
+        >
+          {overlay}
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{children}</div>
         </main>
 
         <ReactiveFeedbackHost />

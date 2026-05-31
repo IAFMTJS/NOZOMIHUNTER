@@ -19,4 +19,5 @@ export {
   submitDungeonExtractionChoice,
   abandonDungeon,
   extractDungeonRewards,
+  completeDungeonSpecialRoom,
 } from "./dungeonLifecycle"

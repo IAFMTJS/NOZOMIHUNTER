@@ -7,7 +7,7 @@ const TABS = [
   { href: "/home", label: "Home", icon: HomeIcon },
   { href: "/contracts", label: "Missions", icon: QuestIcon },
   { href: "/dungeons", label: "Dungeons", icon: DungeonIcon },
-  { href: "/vocabulary", label: "Vocab", icon: VocabIcon },
+  { href: "/vocabulary", label: "Threat index", icon: VocabIcon },
   { href: "/profile", label: "Profile", icon: ProfileIcon },
 ] as const
 
@@ -22,6 +22,8 @@ function isActive(pathname: string, href: string): boolean {
     )
   if (href === "/vocabulary")
     return pathname === "/vocabulary" || pathname.startsWith("/vocabulary/")
+  if (href === "/training")
+    return pathname === "/training" || pathname.startsWith("/training/")
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
@@ -30,10 +32,10 @@ export function BottomNav() {
 
   return (
     <nav
-      className="pb-safe fixed bottom-0 left-0 right-0 z-[100] border-t border-[var(--border-subtle)] bg-[var(--nav-bar)] backdrop-blur-md"
+      className="pb-safe shrink-0 border-t border-[var(--border-subtle)] bg-[var(--nav-bar)] backdrop-blur-md"
       aria-label="Hunter navigation"
     >
-      <ul className="mx-auto flex max-w-lg items-stretch justify-around px-1 pt-1">
+      <ul className="mx-auto flex max-w-lg items-stretch justify-around px-0.5 pt-1">
         {TABS.map((tab) => {
           const active = isActive(pathname, tab.href)
           const Icon = tab.icon
@@ -41,7 +43,8 @@ export function BottomNav() {
             <li key={tab.href} className="flex-1">
               <Link
                 href={tab.href}
-                className={`flex min-h-[52px] flex-col items-center justify-center gap-0.5 px-1 text-[10px] font-semibold uppercase tracking-wider transition-colors ${
+                aria-current={active ? "page" : undefined}
+                className={`flex min-h-[48px] flex-col items-center justify-center gap-0.5 px-1 text-xs font-semibold uppercase tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] sm:min-h-[52px] ${
                   active
                     ? "text-[var(--accent-bright)]"
                     : "text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -86,6 +89,22 @@ function QuestIcon({ active }: { active: boolean }) {
       className={active ? "drop-shadow-[0_0_6px_var(--accent)]" : ""}
     >
       <path d="M6 4h12v16l-6-3-6 3V4z" />
+    </svg>
+  )
+}
+
+function TrainIcon({ active }: { active: boolean }) {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      className={active ? "drop-shadow-[0_0_6px_var(--accent)]" : ""}
+    >
+      <path d="M8 5h8l2 4v8a2 2 0 01-2 2H8a2 2 0 01-2-2V9l2-4zM10 9h4M9 13h6" />
     </svg>
   )
 }

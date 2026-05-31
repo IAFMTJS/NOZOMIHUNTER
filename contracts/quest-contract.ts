@@ -94,6 +94,9 @@ export interface QuestContract {
   scenarioId?: string
   briefing?: string
 
+  /** Mode-specific intel unlocked on successful breach / interrogation. */
+  modeIntel?: string
+
   hidden?: boolean
 }
 

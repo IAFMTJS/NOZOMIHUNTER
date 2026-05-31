@@ -29,6 +29,7 @@ export interface ContractHubProps {
   onDungeonAdvanceExploration: (action: ExplorationAction) => Promise<void>
   onDungeonEngageSector: () => Promise<void>
   onDungeonContinueReward: () => Promise<void>
+  onDungeonCompleteSpecialRoom: () => Promise<void>
   onDungeonChooseRoute: (exitId: string) => Promise<void>
   onDungeonSelectCombatAction: (action: DungeonAction) => Promise<void>
   onDungeonExtractionChoice: (choice: DungeonExtractionChoice) => Promise<void>

@@ -1,5 +1,7 @@
 "use client"
 
+import { useCallback, type KeyboardEvent } from "react"
+
 interface TabBarItem<T extends string> {
   id: T
   label: string
@@ -18,6 +20,17 @@ export function TabBar<T extends string>({
   onChange,
   className = "",
 }: TabBarProps<T>) {
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return
+      event.preventDefault()
+      const delta = event.key === "ArrowRight" ? 1 : -1
+      const next = tabs[(index + delta + tabs.length) % tabs.length]
+      if (next) onChange(next.id)
+    },
+    [onChange, tabs]
+  )
+
   return (
     <div
       role="tablist"
@@ -25,14 +38,17 @@ export function TabBar<T extends string>({
     >
       {tabs.map((tab) => {
         const selected = tab.id === active
+        const index = tabs.findIndex((t) => t.id === tab.id)
         return (
           <button
             key={tab.id}
             type="button"
             role="tab"
             aria-selected={selected}
+            tabIndex={selected ? 0 : -1}
+            onKeyDown={(e) => handleKeyDown(e, index)}
             onClick={() => onChange(tab.id)}
-            className={`flex-1 rounded-md px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider transition-colors ${
+            className={`flex-1 rounded-md px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
               selected
                 ? "bg-[var(--accent)]/25 text-[var(--accent-bright)] shadow-[0_0_12px_var(--glow-accent)]"
                 : "text-[var(--muted)] hover:text-[var(--foreground)]"

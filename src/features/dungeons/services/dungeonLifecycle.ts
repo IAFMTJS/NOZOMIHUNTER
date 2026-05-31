@@ -39,7 +39,16 @@ import {
 import { playThemedCue } from "@/systems/audio/themedAudioSystem"
 import { pulseHaptic } from "@/systems/presentation/hapticsSystem"
 import { explorationCorruptionDelta } from "@/systems/dungeons/explorationSystem"
+import {
+  canSpendCorruptionForRoute,
+  CORRUPTION_SPEND_ROUTE_COST,
+} from "@/systems/dungeons/dungeonThreatSystem"
 import { mergePenalties } from "@/systems/penalties/penaltySystem"
+import { breakSynchronizationChain } from "@/systems/synchronization/synchronizationSystem"
+import {
+  applyInventoryToPlayer,
+  loseFirstConsumable,
+} from "@/systems/inventory/inventorySystem"
 import { applyQuestRewardModifiers } from "@/systems/quests/questCompletionRewardSystem"
 import type { GameModeId } from "@/contracts/game-mode-contract"
 import {
@@ -67,7 +76,10 @@ import {
   getDungeonQuest,
   persistDungeonQuest,
   persistDungeonState,
+  onSectorCleared,
 } from "./dungeonPersistence"
+
+const extractingDungeonIds = new Set<string>()
 
 export async function enterDungeon(userId: string, dungeonKey: string) {
   ensureDungeonSaveHandler()
@@ -198,7 +210,7 @@ export async function chooseDungeonRouteExit(
   userId: string,
   exitId: string
 ) {
-  const { quest, player } = getDungeonQuest()
+  const { quest, player, store } = getDungeonQuest()
   if (!quest) return null
 
   const masteryValues = [...getMasteryMap().values()]
@@ -207,12 +219,22 @@ export async function chooseDungeonRouteExit(
       ? masteryValues.reduce((a, b) => a + b, 0) / masteryValues.length
       : 0
 
+  const hadCorruption =
+    player != null && canSpendCorruptionForRoute(player.penalties.corruption)
+
   const updated = chooseDungeonRoute(
     quest,
     exitId,
     avgMastery,
-    player?.level ?? 1
+    player?.level ?? 1,
+    player?.penalties
   )
+  if (player && updated.dungeonRun?.routeIntel && hadCorruption) {
+    store.applyPenalties({
+      ...player.penalties,
+      corruption: Math.max(0, player.penalties.corruption - CORRUPTION_SPEND_ROUTE_COST),
+    })
+  }
   await persistDungeonQuest(userId, updated)
   return updated
 }
@@ -303,6 +325,12 @@ export async function abandonDungeon(userId: string) {
 
   const failResult = failDungeonRun(quest, player.penalties, userId)
   store.applyPenalties(failResult.penalties)
+  const { slots, lostItemKey } = loseFirstConsumable(player.inventory)
+  let nextPlayer = breakSynchronizationChain(player)
+  if (lostItemKey) {
+    nextPlayer = applyInventoryToPlayer(nextPlayer, slots)
+  }
+  store.setPlayer(nextPlayer)
   const remaining = store.activeQuests.filter((q) => q.id !== quest.id)
   store.setQuests(remaining)
   await failUserQuest(userId, quest.id)
@@ -325,8 +353,26 @@ export async function freezeDungeonTimer(userId: string) {
 }
 
 
+export async function completeDungeonSpecialRoom(userId: string) {
+  const { quest } = getDungeonQuest()
+  if (!quest?.dungeonRun) return null
+
+  const run = quest.dungeonRun
+  if (run.machineState !== "ENCOUNTER" || run.activeType !== null) {
+    throw new Error("No special room encounter active")
+  }
+
+  await onSectorCleared(userId, quest)
+  return getDungeonQuest().quest
+}
+
 export async function extractDungeonRewards(userId: string) {
   const { quest, store } = getDungeonQuest()
+  const questId = quest?.id
+  if (questId && extractingDungeonIds.has(questId)) return null
+  if (questId) extractingDungeonIds.add(questId)
+
+  try {
   const progressionState = store.getProgressionState()
   if (!quest?.dungeonRun || !progressionState || !store.player) return null
 
@@ -408,5 +454,8 @@ export async function extractDungeonRewards(userId: string) {
       leveledUp,
       rankUp,
     },
+  }
+  } finally {
+    if (questId) extractingDungeonIds.delete(questId)
   }
 }

@@ -38,7 +38,7 @@ export function QuestContractActions({
           onClick={onComplete}
           className="w-full sm:w-auto"
         >
-          Claim contract
+          Claim mission
         </Button>
       </div>
     </>

@@ -57,4 +57,11 @@ describe("deployGateSystem", () => {
     })
     expect(blockers.some((b) => b.id === "operational-readiness")).toBe(false)
   })
+
+  it("skips equipment and consumables for bootstrap players", () => {
+    const player = mockPlayerContract({ level: 1 })
+    const checklist = computePreparationChecklist(player, true, [], true)
+    expect(checklist.equipment).toBe(true)
+    expect(checklist.consumables).toBe(true)
+  })
 })

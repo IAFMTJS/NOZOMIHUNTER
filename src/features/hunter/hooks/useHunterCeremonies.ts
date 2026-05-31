@@ -12,6 +12,7 @@ import { achievementUnlockFingerprint } from "@/systems/presentation/achievement
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
 import { SYNCHRONIZATION_CONFIG } from "@/config/synchronizationConfig"
+import { pickActiveCeremonyQueue } from "@/systems/presentation/ceremonyQueueSystem"
 
 export function useHunterCeremonies(
   player: PlayerContract | null,
@@ -162,12 +163,21 @@ export function useHunterCeremonies(
     setWordBindQueue((q) => q.slice(1))
   }, [])
 
+  const activeCeremonyKind = pickActiveCeremonyQueue({
+    syncDiscipline: syncCeremonyKey,
+    achievement: achievementQueue,
+    masteryTier: masteryTierQueue,
+    archiveUnlock: archiveUnlockQueue,
+    wordBind: wordBindQueue,
+  })
+
   return {
     achievementQueue,
     masteryTierQueue,
     archiveUnlockQueue,
     wordBindQueue,
     syncCeremonyKey,
+    activeCeremonyKind,
     dismissSyncCeremony,
     popAchievement,
     popMasteryTier,

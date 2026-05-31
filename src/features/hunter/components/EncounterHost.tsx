@@ -31,6 +31,7 @@ export function EncounterHost() {
 
   if (!player) return null
   if (!isEncounterOverlayRoute(pathname)) return null
+  if (pathname === "/training") return null
   if (hubView !== "hunt" && hubView !== "sector") return null
 
   return (
@@ -66,6 +67,7 @@ export function EncounterHost() {
         onDungeonAdvanceExploration={dungeon.advanceExploration}
         onDungeonEngageSector={dungeon.engageSector}
         onDungeonContinueReward={dungeon.continueAfterReward}
+        onDungeonCompleteSpecialRoom={dungeon.completeSpecialRoom}
         onDungeonChooseRoute={dungeon.chooseRoute}
         onDungeonSelectCombatAction={dungeon.selectCombatAction}
         onDungeonExtractionChoice={dungeon.submitExtractionChoice}

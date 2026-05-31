@@ -3,6 +3,8 @@ import type {
   ItemCatalogEntryContract,
   ItemCategory,
 } from "@/contracts/economy-contract"
+import type { PlayerContract } from "@/contracts/player-contract"
+import { INVENTORY_CONFIG } from "@/config/inventoryConfig"
 
 function categoryMap(
   catalog?: ItemCatalogEntryContract[]
@@ -17,8 +19,20 @@ function slotCategory(
 ): ItemCategory | undefined {
   return map?.get(itemKey)
 }
-import type { PlayerContract } from "@/contracts/player-contract"
-import { INVENTORY_CONFIG } from "@/config/inventoryConfig"
+
+function isConsumableSlot(
+  slot: InventorySlotContract,
+  map?: Map<string, ItemCategory>
+): boolean {
+  if (slot.quantity <= 0) return false
+  const cat = slotCategory(slot.itemKey, map)
+  if (cat) return cat === "CONSUMABLE"
+  return (
+    slot.itemKey.includes("draft") ||
+    slot.itemKey.includes("cache") ||
+    slot.itemKey.includes("potion")
+  )
+}
 
 export function inventoryUsed(slots: InventorySlotContract[]): number {
   return slots.reduce((sum, s) => sum + s.quantity, 0)
@@ -37,16 +51,7 @@ export function hasConsumables(
   catalog?: ItemCatalogEntryContract[]
 ): boolean {
   const map = categoryMap(catalog)
-  return slots.some((s) => {
-    if (s.quantity <= 0) return false
-    const cat = slotCategory(s.itemKey, map)
-    if (cat) return cat === "CONSUMABLE"
-    return (
-      s.itemKey.includes("draft") ||
-      s.itemKey.includes("cache") ||
-      s.itemKey.includes("potion")
-    )
-  })
+  return slots.some((s) => isConsumableSlot(s, map))
 }
 
 export function hasEquipmentReady(
@@ -79,7 +84,23 @@ export function mergeInventoryGrant(
 
 export function applyInventoryToPlayer(
   player: PlayerContract,
-  slots: InventorySlotContract[]
+  slots: InventorySlotContract[],
 ): PlayerContract {
   return { ...player, inventory: slots, updatedAt: new Date().toISOString() }
+}
+
+/** Lose one consumable on catastrophic failure (local inventory only). */
+export function loseFirstConsumable(
+  slots: InventorySlotContract[],
+  catalog?: ItemCatalogEntryContract[]
+): { slots: InventorySlotContract[]; lostItemKey: string | null } {
+  const map = categoryMap(catalog)
+  const target = slots.find((s) => isConsumableSlot(s, map))
+  if (!target) return { slots, lostItemKey: null }
+  const next = slots
+    .map((s) =>
+      s.itemKey === target.itemKey ? { ...s, quantity: Math.max(0, s.quantity - 1) } : s
+    )
+    .filter((s) => s.quantity > 0)
+  return { slots: next, lostItemKey: target.itemKey }
 }

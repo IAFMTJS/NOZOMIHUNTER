@@ -21,6 +21,7 @@ interface RewardClaimOverlayProps {
   activeQuests?: QuestContract[]
   claimError?: string | null
   onClaimAll: () => void
+  onClaimLater?: () => void
 }
 
 export function RewardClaimOverlay({
@@ -29,6 +30,7 @@ export function RewardClaimOverlay({
   activeQuests = [],
   claimError,
   onClaimAll,
+  onClaimLater,
 }: RewardClaimOverlayProps) {
   const router = useRouter()
   const ceremony = resolveCompletionCeremony(bundle, activeQuests)
@@ -68,6 +70,9 @@ export function RewardClaimOverlay({
 
   return (
     <div
+      role="dialog"
+      aria-modal
+      aria-labelledby="reward-claim-headline"
       className={`fixed inset-0 z-[110] flex items-end justify-center p-4 pb-[calc(var(--hunter-nav-height)+1rem)] sm:items-center ${
         ceremony.tier === "light"
           ? "bg-[var(--overlay-backdrop-light)]"
@@ -94,6 +99,15 @@ export function RewardClaimOverlay({
         />
         {claimError && (
           <p className="mt-3 text-center text-sm text-[var(--danger)]">{claimError}</p>
+        )}
+        {onClaimLater && (
+          <button
+            type="button"
+            className="mt-4 w-full text-center text-xs uppercase tracking-widest text-[var(--muted)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+            onClick={onClaimLater}
+          >
+            Claim later
+          </button>
         )}
         <p className="sr-only">
           Hunter {player.username} level {player.level}

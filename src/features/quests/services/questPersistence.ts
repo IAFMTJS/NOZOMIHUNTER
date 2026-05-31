@@ -30,11 +30,15 @@ export async function persistQuestState(): Promise<void> {
 
 export async function hydratePlayerFromDb(userId: string) {
   ensureQuestSaveHandler()
-  await ensureVocabularyEngine(userId)
-  const data = await loadPlayer(userId)
-  if (!data) return null
+  try {
+    await ensureVocabularyEngine(userId)
+    const data = await loadPlayer(userId)
+    if (!data) {
+      usePlayerStore.getState().markHydrationTerminal()
+      throw new Error("Hunter profile not found. Check your connection and retry.")
+    }
 
-  const repairedQuests = data.activeQuests.map((q) => {
+    const repairedQuests = data.activeQuests.map((q) => {
     const repaired = repairQuestSnapshot(q)
     const dismissed = repaired.vocabularyPreparation?.briefingDismissed ?? false
     const withPrep = attachVocabularyPreparation(repaired, {
@@ -83,6 +87,10 @@ export async function hydratePlayerFromDb(userId: string) {
         activeQuests: usePlayerStore.getState().activeQuests,
       }
     : data
+  } catch (error) {
+    usePlayerStore.getState().markHydrationTerminal()
+    throw error
+  }
 }
 
 export async function persistQuestUpdate(

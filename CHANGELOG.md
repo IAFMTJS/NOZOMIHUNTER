@@ -1,5 +1,47 @@
 # Changelog
 
+## v3.3.0 (unreleased) — Expert remediation
+
+### P0/P1 bug fixes
+- Training quests sync `requiredProgress` to encounter size; claim blocked until encounter complete
+- Word passive XP capped at 35% and scoped to encounter-relevant words
+- Dungeon STORY/RECOVERY/TREASURE rooms show Continue interstitial (no softlock)
+- Training excluded from daily milestone bonus; `narrativeTier: SIDE`
+- Hydration failure shows retry UI instead of infinite loading
+- Quest/dungeon completion mutex prevents double-claim
+
+### Integrity & UX
+- `gameModeActionGuard` + server rate limit for mode actions
+- 5-tab bottom nav (Train merged into home/Missions); Threat index label; 12px nav text
+- Home simplified: removed power rail, training teaser, contract rotation from default view
+- `ConfirmDeployDialog` replaces native deploy confirms
+- Reward overlay "Claim later"; ceremony queue gated behind rewards
+- Survival mode renamed Vocab Sprint; fragment progress → objectives/intel
+- Stronger dungeon failure penalties; relic modifier caps
+- Map shows unlocked sectors + one next sealed corridor only
+- Removed orphan `HunterProfilePanel`
+
+### Tests
+- `trainingObjectiveSync`, `wordPassiveSystem`, `dungeonSpecialRoomFlow`
+
+### Phase 2–5 completion
+- Supabase `apply_game_mode_action_guarded` RPC + client wiring; quest reward XP clamp in SQL
+- Mastery persist retry; training quest dedup on deploy; bootstrap deploy gate (L1 tutorial)
+- Hub sector `ConfirmDeployDialog`; training drills route through `/prepare?trainingMode=`
+- Ceremony queue priority helper; skip link + TabBar arrow keys + modal focus trap; Prestige on profile menu
+- Dungeon fail: consumable loss + discipline chain break; corruption run loop cap (5)
+- Daily milestone → single anomaly target; Lost Ones side mission + scenario + archive entry
+- Variable objective progress; corruption spend intel routes; mode intel on terminal/ghost clears
+- Boss rehearsal drill link on dungeon prepare; relic run-rules wired to penalties
+- Terminology pass (missions, threat index); removed orphan home components
+
+### Tests (extended)
+- `ceremonyQueueSystem`, `dailyMilestoneSystem`, `questLifecycle`, `hydrationTerminal`
+- `questCompletionRewardSystem.extended`, `dungeonCorruptionSpend`, deploy gate bootstrap
+
+### Deploy note
+- Run migration `supabase/migrations/029_remediation_guards.sql` against production Supabase
+
 ## v3.2.0 (unreleased) — Season 1 Crave Masterplan
 
 ### Narrative & content pipeline

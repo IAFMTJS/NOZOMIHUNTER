@@ -112,6 +112,21 @@ export function mergeSyncMilestonesIntoPlayer(
   }
 }
 
+export function breakSynchronizationChain(player: PlayerContract): PlayerContract {
+  if (player.synchronization.chainDays === 0 && player.synchronization.status === "BROKEN") {
+    return player
+  }
+  return {
+    ...player,
+    synchronization: {
+      ...player.synchronization,
+      chainDays: 0,
+      status: "BROKEN",
+      atRisk: false,
+    },
+  }
+}
+
 export function synchronizationLabel(status: SynchronizationStatus): string {
   switch (status) {
     case "STABLE":

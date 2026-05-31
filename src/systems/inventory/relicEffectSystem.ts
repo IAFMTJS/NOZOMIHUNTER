@@ -48,11 +48,15 @@ export function aggregateRelicModifiers(player: PlayerContract): {
   xpBonusPercent: number
   corruptionReductionPercent: number
   accuracyBonusPercent: number
+  extraWrongAttempts: number
+  listeningReplayBonus: number
 } {
   const effects = relicEffectsFromInventory(player.inventory)
   let xpBonusPercent = 0
   let corruptionReductionPercent = 0
   let accuracyBonusPercent = 0
+  let extraWrongAttempts = 0
+  let listeningReplayBonus = 0
   for (const e of effects) {
     switch (e.effectType) {
       case "xp_bonus":
@@ -64,11 +68,23 @@ export function aggregateRelicModifiers(player: PlayerContract): {
       case "accuracy_bonus":
         accuracyBonusPercent += e.value
         break
+      case "crit_bonus":
+        extraWrongAttempts += 1
+        break
       default:
         break
     }
   }
-  return { xpBonusPercent, corruptionReductionPercent, accuracyBonusPercent }
+  if (effects.some((e) => e.sourceItemKey === "item:void-seal")) {
+    listeningReplayBonus += 1
+  }
+  return {
+    xpBonusPercent: Math.min(25, xpBonusPercent),
+    corruptionReductionPercent: Math.min(40, corruptionReductionPercent),
+    accuracyBonusPercent: Math.min(20, accuracyBonusPercent),
+    extraWrongAttempts: Math.min(1, extraWrongAttempts),
+    listeningReplayBonus: Math.min(1, listeningReplayBonus),
+  }
 }
 
 export const MAX_RELIC_SLOTS = 3

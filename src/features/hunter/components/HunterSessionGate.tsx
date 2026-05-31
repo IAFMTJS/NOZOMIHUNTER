@@ -7,15 +7,18 @@ import { HunterShellLayout } from "@/components/layout/HunterShellLayout"
 import { HunterPage } from "@/components/layout/HunterPage"
 import type { HunterHydrationPhase } from "@/features/hunter/hooks/useHunterHydration"
 import { LoadingScreenOverlay } from "@/components/layout/LoadingScreenOverlay"
+import { Button } from "@/components/ui/Button"
 
 export function HunterSessionGate({
   phase,
-  shellClassName,
   children,
+  onRetryHydrate,
+  hydrateError,
 }: {
   phase: HunterHydrationPhase
-  shellClassName?: string
   children: ReactNode
+  onRetryHydrate?: () => void
+  hydrateError?: string | null
 }) {
   if (phase === "auth-loading") {
     return <LoadingScreenOverlay show />
@@ -23,6 +26,35 @@ export function HunterSessionGate({
 
   if (phase === "hydrating") {
     return <LoadingScreenOverlay show />
+  }
+
+  if (phase === "hydrate-error") {
+    return (
+      <HunterShellLayout>
+        <HunterPage>
+          <h1 className="font-display text-xl text-[var(--foreground)]">
+            Registry sync failed
+          </h1>
+          <p className="mt-2 text-sm text-[var(--muted)]">
+            {hydrateError ??
+              "Could not load hunter status. Check your connection and try again."}
+          </p>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            {onRetryHydrate && (
+              <Button type="button" onClick={onRetryHydrate}>
+                Retry sync
+              </Button>
+            )}
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center rounded-md border border-[var(--border-subtle)] px-4 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--surface-elevated)]"
+            >
+              Return to login
+            </Link>
+          </div>
+        </HunterPage>
+      </HunterShellLayout>
+    )
   }
 
   if (phase === "unconfigured") {

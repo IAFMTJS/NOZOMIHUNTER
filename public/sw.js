@@ -1,4 +1,4 @@
-const CACHE = "nozomi-static-v1"
+const CACHE = "nozomi-static-v2"
 const PRECACHE = ["/", "/home", "/login"]
 
 self.addEventListener("install", (event) => {

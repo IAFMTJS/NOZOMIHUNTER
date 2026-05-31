@@ -140,7 +140,7 @@ export function applyGameModeToQuest(
         ...quest,
         gameMode: modeId,
         type: "VOCABULARY",
-        title: quest.title || "Survival Mode",
+        title: quest.title || "Vocab Sprint",
         vocabularyEncounter: createSurvivalVocabEncounter(),
       }
     case "SEMANTIC_NETWORK":

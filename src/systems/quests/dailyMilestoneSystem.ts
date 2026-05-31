@@ -1,7 +1,8 @@
 import type { QuestContract } from "@/contracts/quest-contract"
 import { utcDateKey } from "@/systems/quests/dailyQuestSystem"
+import { isTrainingQuest } from "@/systems/training/trainingMissionSystem"
 
-export const DAILY_MILESTONE_TARGET = 3
+export const DAILY_MILESTONE_TARGET = 1
 
 export const DAILY_MILESTONE_BONUS_CREDITS = 25
 
@@ -13,6 +14,7 @@ export function countDailyCompletionsToday(
   const prefix = `daily-${playerId}-${date}`
   return quests.filter(
     (q) =>
+      !isTrainingQuest(q) &&
       q.narrativeTier === "DAILY" &&
       q.id.startsWith(prefix) &&
       q.objectives.length > 0 &&
@@ -35,9 +37,9 @@ export function dailyMilestoneProgress(
 export function dailyChainRemainingLabel(completed: number): string {
   const remaining = Math.max(0, DAILY_MILESTONE_TARGET - completed)
   if (remaining === 0) {
-    return `${DAILY_MILESTONE_TARGET}/${DAILY_MILESTONE_TARGET} clears — extraction bonus ready.`
+    return `${DAILY_MILESTONE_TARGET}/${DAILY_MILESTONE_TARGET} clear — daily anomaly bonus ready.`
   }
-  return `${completed}/${DAILY_MILESTONE_TARGET} clears — ${remaining} more for extraction bonus.`
+  return `${completed}/${DAILY_MILESTONE_TARGET} clears — complete today's anomaly for bonus credits.`
 }
 
 export function dailyChainStepReward(step: number): number {

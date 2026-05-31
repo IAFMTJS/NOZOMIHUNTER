@@ -199,9 +199,10 @@
   --overlay-subtle: rgba(var(--rgb-foreground), 0.04);
   --overlay-muted: rgba(var(--rgb-foreground), 0.08);
   --overlay-toggle-off: rgba(var(--rgb-foreground), 0.12);
-  --overlay-faint: rgba(var(--rgb-foreground), 0.06);
+  --overlay-faint: rgba(var(--rgb-accent), 0.04);
   --overlay-panel: rgba(var(--rgb-foreground), 0.06);
-  --overlay-panel-strong: rgba(var(--rgb-foreground), 0.08);
+  --overlay-panel-strong: rgba(var(--rgb-foreground), 0.06);
+  --surface-elevated: rgba(var(--rgb-surface), 0.98);
   --overlay-track: rgba(var(--rgb-foreground), 0.12);
   --overlay-badge: rgba(var(--rgb-black), 0.55);
   --overlay-scrim: rgba(var(--rgb-black), 0.2);

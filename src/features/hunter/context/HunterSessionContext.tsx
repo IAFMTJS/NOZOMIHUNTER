@@ -85,6 +85,7 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
   )
   const setPlayer = usePlayerStore((s) => s.setPlayer)
   const [tutorialDismissed, setTutorialDismissed] = useState(false)
+  const [rewardOverlayDismissed, setRewardOverlayDismissed] = useState(false)
   const { hubView, setHubView, hubFocusQuestId, setHubFocusQuestId } =
     useHunterHubState()
   const {
@@ -117,6 +118,16 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
     !isTutorialComplete(player!) &&
     !tutorialDismissed &&
     activeQuests.some((q) => q.isTutorial)
+
+  useEffect(() => {
+    if (player?.pendingRewards && !player.pendingRewards.claimed) {
+      setRewardOverlayDismissed(false)
+    }
+  }, [player?.pendingRewards?.questId, player?.pendingRewards?.claimed])
+
+  const rewardOverlayOpen =
+    Boolean(player?.pendingRewards && !player.pendingRewards.claimed) &&
+    !rewardOverlayDismissed
 
   const { readiness, forecast } = useHunterReadiness(player, activeQuests)
 
@@ -176,12 +187,24 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <HunterSessionGate phase={phase} shellClassName={hunterPresentation.shellClass}>
+    <HunterSessionGate
+      phase={phase}
+      hydrateError={quest.error}
+      onRetryHydrate={
+        user?.id
+          ? () => {
+              usePlayerStore.setState({ isHydrated: false })
+              void quest.hydrate()
+            }
+          : undefined
+      }
+    >
     <HunterSessionContext.Provider value={value}>
       <HunterShellLayout
-        shellClassName={hunterPresentation.shellClass}
+        atmosphereClassName={hunterPresentation.shellClass}
         headerClassName={hunterPresentation.headerClass}
-      >
+        overlay={
+          <>
       {syncCeremonyKey && player && (
         <SyncDisciplineCeremony
           unlockKey={syncCeremonyKey}
@@ -189,17 +212,19 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
           onDismiss={dismissSyncCeremony}
         />
       )}
-      {player?.pendingRewards && !player.pendingRewards.claimed && (
+      {rewardOverlayOpen && player && (
         <RewardClaimOverlay
           player={player}
-          bundle={player.pendingRewards}
+          bundle={player.pendingRewards!}
           activeQuests={activeQuests}
           claimError={claimError}
           onClaimAll={() => void claimRewards()}
+          onClaimLater={() => setRewardOverlayDismissed(true)}
         />
       )}
 
-      {wordBindQueue[0] != null &&
+      {!rewardOverlayOpen &&
+        wordBindQueue[0] != null &&
         masteryTierQueue[0] == null &&
         achievementQueue[0] == null &&
         archiveUnlockQueue[0] == null && (
@@ -253,7 +278,9 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
       )}
 
       <EncounterHost />
-
+          </>
+        }
+      >
       {children}
       </HunterShellLayout>
     </HunterSessionContext.Provider>

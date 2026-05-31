@@ -225,6 +225,8 @@ export interface DungeonRunContract {
   /** Player-selected combat action for current encounter. */
   selectedDungeonAction?: DungeonAction
   lastConsequenceLine?: string
+  /** Sector intel recovered via corruption spend shortcut on risky routes. */
+  routeIntel?: string
   /** Resolved master for this run (mirrors dungeon.masterId). */
   masterId?: DungeonMasterId
   masterDialogueLine?: string

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import type { QuestRequestChannel } from "@/contracts/quest-contract"
 import {
   hydratePlayerFromDb,
@@ -20,6 +20,7 @@ export function useQuestLogic(userId: string | undefined) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [questMessage, setQuestMessage] = useState<string | null>(null)
+  const completingRef = useRef(false)
 
   const hydrate = useCallback(async () => {
     if (!userId) return
@@ -225,7 +226,8 @@ export function useQuestLogic(userId: string | undefined) {
 
   const complete = useCallback(
     async (questId: string) => {
-      if (!userId) return
+      if (!userId || completingRef.current) return
+      completingRef.current = true
       setBusy(true)
       setQuestMessage(null)
       try {
@@ -233,6 +235,7 @@ export function useQuestLogic(userId: string | undefined) {
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to complete quest")
       } finally {
+        completingRef.current = false
         setBusy(false)
       }
     },

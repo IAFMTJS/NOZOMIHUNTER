@@ -7,6 +7,10 @@ import {
 } from "@/systems/inventory/inventorySystem"
 import { isTutorialComplete } from "@/systems/tutorial/tutorialSystem"
 
+function isBootstrapPlayer(player: PlayerContract): boolean {
+  return player.level <= 1 && !isTutorialComplete(player)
+}
+
 function skillLoadoutReady(player: PlayerContract): boolean {
   if (player.level >= 2 || isTutorialComplete(player)) return true
   const { vocabulary, listening, speaking, grammar } = player.stats
@@ -24,10 +28,11 @@ export function computePreparationChecklist(
   catalog?: ItemCatalogEntryContract[] | undefined,
   operationalReadinessReady = true
 ): PreparationChecklistContract {
+  const bootstrap = isBootstrapPlayer(player)
   return {
-    equipment: hasEquipmentReady(player.inventory, catalog),
+    equipment: bootstrap ? true : hasEquipmentReady(player.inventory, catalog),
     skillLoadout: skillLoadoutReady(player),
-    consumables: hasConsumables(player.inventory, catalog),
+    consumables: bootstrap ? true : hasConsumables(player.inventory, catalog),
     vocabulary: vocabularyReady,
     operationalReadiness: operationalReadinessReady,
   }

@@ -168,8 +168,17 @@ export function listArchiveEntries(player: PlayerContract | null): ArchiveEntry[
       lockReason = shadowClear ? undefined : (lockReason ?? "Requires Shadow Archive sector clear")
     }
     if (entry.id === "night-report") {
-      locked = !nightOk
-      lockReason = nightOk ? undefined : (lockReason ?? "Time-gated — return after neon dusk")
+      const beatUnlocked =
+        player &&
+        entry.requiredBeatId &&
+        isBeatCompleted(resolveStoryProgress(player), entry.requiredBeatId)
+      if (!nightOk && !beatUnlocked) {
+        locked = true
+        lockReason = lockReason ?? "Time-gated — return after neon dusk"
+      } else if (beatUnlocked || nightOk) {
+        locked = false
+        lockReason = undefined
+      }
     }
 
     if (player && entry.japaneseExcerpt && locked) {

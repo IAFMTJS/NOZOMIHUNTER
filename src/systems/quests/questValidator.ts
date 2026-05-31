@@ -2,6 +2,10 @@ import type {
   QuestContract,
   QuestObjectiveContract,
 } from "@/contracts/quest-contract"
+import {
+  hasPlayableEncounterPayload,
+  isEncounterPayloadComplete,
+} from "./questEncounterCompletion"
 
 export function isQuestComplete(quest: QuestContract): boolean {
   return quest.objectives
@@ -29,7 +33,15 @@ export function advanceObjective(
 }
 
 export function canCompleteQuest(quest: QuestContract): boolean {
-  return quest.objectives
+  const objectivesMet = quest.objectives
     .filter((o) => !o.hidden)
     .every((o) => o.currentProgress >= o.requiredProgress)
+
+  if (!objectivesMet) return false
+
+  if (hasPlayableEncounterPayload(quest)) {
+    return isEncounterPayloadComplete(quest)
+  }
+
+  return true
 }

@@ -1,7 +1,8 @@
-import type { PlayerPenaltyContract } from "@/contracts/player-contract"
+import type { PlayerContract, PlayerPenaltyContract } from "@/contracts/player-contract"
 import type { QuestPenaltyContract } from "@/contracts/quest-contract"
 import { PENALTY_CONFIG } from "@/config/penaltyConfig"
 import { DUNGEON_CONFIG } from "@/config/dungeonConfig"
+import { aggregateRelicModifiers } from "@/systems/inventory/relicEffectSystem"
 
 export function maxWrongAttemptsForPenalties(
   penalties: PlayerPenaltyContract
@@ -22,6 +23,16 @@ export function listeningReplayLimitForPenalties(
     penalties.corruption / PENALTY_CONFIG.CORRUPTION_REPLAY_STEP
   )
   return Math.max(PENALTY_CONFIG.MIN_LISTENING_REPLAYS, base - reduction)
+}
+
+export function listeningReplayLimitForPlayer(player: PlayerContract): number {
+  const relic = aggregateRelicModifiers(player).listeningReplayBonus
+  return listeningReplayLimitForPenalties(player.penalties) + relic
+}
+
+export function maxWrongAttemptsForPlayer(player: PlayerContract): number {
+  const base = maxWrongAttemptsForPenalties(player.penalties)
+  return base + aggregateRelicModifiers(player).extraWrongAttempts
 }
 
 export function maxDungeonEncounterFailures(

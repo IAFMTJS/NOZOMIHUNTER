@@ -1,6 +1,6 @@
 # Current Architecture
 
-Last updated: v3.2.0 — Season 1 Crave Masterplan. See `docs/crave-doctrine.md`, `docs/season-01-broken-signal-bible.md`, `docs/content-pipeline.md`.
+Last updated: v3.3.0 — Expert remediation. See `docs/ux-audit-status.md`, `docs/crave-doctrine.md`.
 
 ## Season 1 narrative stack (v3.2)
 
@@ -11,7 +11,7 @@ Last updated: v3.2.0 — Season 1 Crave Masterplan. See `docs/crave-doctrine.md`
 | Beat-gated archive | `archiveSystem` + `content/seeds/content-archive.json` |
 | Dungeon encounter scripts | `encounterScriptSystem`, `encounterScriptsConfig` |
 | Japanese-as-key | `japaneseKeySystem`, `corruptedLanguageSystem` |
-| Word entity passives | `wordPassiveSystem` → `questCompletionRewardSystem` |
+| Word entity passives | `wordPassiveSystem` (35% cap, encounter-scoped) → `questCompletionRewardSystem` |
 
 Content ingest: `npm run build:content-seeds` → `sync:content-contracts` → `validate:content` → `ingest:content`.
 
@@ -50,7 +50,9 @@ Content ingest: `npm run build:content-seeds` → `sync:content-contracts` → `
 | Global learner display + TTS | Yes (`LearnerWordLine`, `EncounterRailWord`, `WordAudioButton`, `learnerFormat`) |
 | Reactive feedback toasts | Yes (`ReactiveFeedbackHost`, `reactiveFeedbackSystem`) |
 
-| Mobile shell (`HunterShellLayout`, `BottomNav`, `(hunter)` routes) | Yes |
+| Mobile shell (`HunterShellLayout`, `BottomNav` 5-tab, `(hunter)` routes) | Yes |
+| Quest completion guards (`questEncounterCompletion`, training objective sync) | Yes (v3.3) |
+| Game mode action guard + rate limit | Yes (v3.3) |
 
 | Session layer (`HunterSessionProvider`, `EncounterHost`, ceremonies, `RewardClaimOverlay`) | Yes — level-up, achievement, rank/unlock notices |
 

@@ -15,6 +15,7 @@ export type HunterHydrationPhase =
   | "unconfigured"
   | "guest"
   | "hydrating"
+  | "hydrate-error"
   | "ready"
 
 export function useHunterHydration() {
@@ -48,6 +49,7 @@ export function useHunterHydration() {
   else if (!configured) phase = "unconfigured"
   else if (!user) phase = "guest"
   else if (!playerHydrated) phase = "hydrating"
+  else if (!player) phase = "hydrate-error"
 
   return {
     user,

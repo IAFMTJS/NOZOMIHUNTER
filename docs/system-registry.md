@@ -1568,11 +1568,11 @@ Location: `/src/systems/home/operationalFeedSystem.ts`
 
 Responsibilities
 
-* compose home operational rails: alerts, contract rotation, instability, sector activity, anomalies
+* compose home operational rails: alerts, instability, sector activity, anomalies (v3.3 removed contract rotation rail from default home)
 
 UI
 
-* `OperationalAlertRail`, `ContractRotationRail`, `InstabilityFeed`, `ActiveBoostsChip`, `SectorActivityTicker`, `AnomalyChip` on `/home`
+* `OperationalAlertRail`, `InstabilityFeed`, `ActiveBoostsChip`, `SectorActivityTicker`, `AnomalyChip` on `/home`
 
 ⸻
 

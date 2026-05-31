@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useHunterSession } from "@/features/hunter/context/HunterSessionContext"
 import { HunterPage } from "@/components/layout/HunterPage"
@@ -33,15 +34,24 @@ import { estimatedDungeonTimeLimitMinutes } from "@/systems/presentation/questPr
 import { fetchItemCatalog } from "@/features/inventory/services/inventoryActions"
 import type { ItemCatalogEntryContract } from "@/contracts/economy-contract"
 import { isTrainingQuest } from "@/systems/training/trainingMissionSystem"
+import type { GameModeId } from "@/contracts/game-mode-contract"
+import type { QuestContract } from "@/contracts/quest-contract"
+import { GAME_MODE_REGISTRY } from "@/config/gameModeRegistry"
 import { E2E_TEST_IDS } from "@/config/e2eTestIds"
+import { ConfirmDeployDialog } from "@/components/preparation/ConfirmDeployDialog"
+
+type DeployConfirmKind = "unstable" | "underpower" | null
 
 export function PrepareClient() {
   const router = useRouter()
   const params = useSearchParams()
   const questId = params.get("questId")
   const dungeonKey = params.get("dungeonKey")
+  const trainingMode = params.get("trainingMode") as GameModeId | null
+  const isTrainingPrep = Boolean(trainingMode)
   const {
     player,
+    user,
     regularQuests,
     activeQuests,
     quest: questLogic,
@@ -52,16 +62,18 @@ export function PrepareClient() {
   } = useHunterSession()
 
   const [catalog, setCatalog] = useState<ItemCatalogEntryContract[]>([])
+  const [deployConfirm, setDeployConfirm] = useState<DeployConfirmKind>(null)
 
   useEffect(() => {
     void fetchItemCatalog().then(setCatalog)
   }, [])
 
-  const missionQuest =
+  const missionQuest: QuestContract | undefined =
     regularQuests.find((q) => q.id === questId) ??
     activeQuests.find((q) => q.id === questId)
   const def = dungeonKey ? getDungeonDefinition(dungeonKey) : null
   const questMeta = missionQuest ? getQuestCatalogMeta(missionQuest) : null
+  const trainingModeDef = trainingMode ? GAME_MODE_REGISTRY[trainingMode] : null
 
   if (!player) {
     return (
@@ -92,7 +104,9 @@ export function PrepareClient() {
       : missingVocabulary.length > 0
         ? (vocabScore ?? 0) >= minVocabScore
         : !hasVocabPhase || (vocabScore ?? 0) >= minVocabScore
-  const trainingQuest = Boolean(missionQuest && isTrainingQuest(missionQuest))
+  const trainingQuest = Boolean(
+    isTrainingPrep || (missionQuest && isTrainingQuest(missionQuest))
+  )
   const allowCriticalDeploy = trainingQuest
   const operationalReady = !isReadinessHardBlocked(readiness, {
     allowCritical: allowCriticalDeploy,
@@ -140,22 +154,18 @@ export function PrepareClient() {
         ? "Sector baseline (penalties apply)"
         : "Operator baseline (penalties apply)"
 
-  async function handleDeploy() {
-    if (deployBlocked) return
-    if (
-      readiness.survivalBand === "UNSTABLE" ||
-      (trainingQuest && readiness.survivalBand === "CRITICAL")
-    ) {
-      const ok = window.confirm(
-        "Operational readiness unstable. Deployment is risky — proceed?"
+  async function executeDeploy() {
+    if (!player) return
+    if (isTrainingPrep && trainingMode && user?.id) {
+      const { startTrainingMission } = await import(
+        "@/features/training/services/trainingActions"
       )
-      if (!ok) return
-    }
-    if (underPower) {
-      const ok = window.confirm(
-        `Recommended power ${recommended.toLocaleString()} — yours ${power.total.toLocaleString()}. Deploy anyway?`
-      )
-      if (!ok) return
+      const nextQuest = await startTrainingMission(user.id, trainingMode, player.level)
+      if (!nextQuest) return
+      setHubFocusQuestId(nextQuest.id)
+      setHubView("hunt")
+      router.push("/training")
+      return
     }
     if (missionQuest) {
       if (hasActivePreparationPhase(missionQuest)) {
@@ -171,20 +181,41 @@ export function PrepareClient() {
     }
   }
 
-  const deploymentTitle = def?.name ?? missionQuest?.title ?? "Deployment"
+  async function handleDeploy() {
+    if (deployBlocked) return
+    if (
+      readiness.survivalBand === "UNSTABLE" ||
+      (trainingQuest && readiness.survivalBand === "CRITICAL")
+    ) {
+      setDeployConfirm("unstable")
+      return
+    }
+    if (underPower) {
+      setDeployConfirm("underpower")
+      return
+    }
+    await executeDeploy()
+  }
+
+  const deploymentTitle =
+    def?.name ??
+    missionQuest?.title ??
+    (trainingModeDef ? `${trainingModeDef.label} drill` : "Deployment")
   const rankLabel = def ? "D" : missionQuest?.difficulty?.slice(0, 1) ?? "C"
 
   return (
     <HunterPage className="nozomi-screen-prep">
       <HunterPageBack
         href={
-          missionQuest
-            ? `/contracts/${missionQuest.id}`
-            : dungeonKey
-              ? `/dungeons`
-              : "/contracts"
+          isTrainingPrep
+            ? "/training"
+            : missionQuest
+              ? `/contracts/${missionQuest.id}`
+              : dungeonKey
+                ? `/dungeons`
+                : "/contracts"
         }
-        label="Mission file"
+        label={isTrainingPrep ? "Training channel" : "Mission file"}
       />
 
       <HeroBanner
@@ -201,7 +232,9 @@ export function PrepareClient() {
         <p className="mt-2">
           {def?.description ??
             missionQuest?.description ??
-            "Confirm loadout and readiness before entering the gate."}
+            (trainingModeDef
+              ? `Confirm readiness before starting ${trainingModeDef.label}.`
+              : "Confirm loadout and readiness before entering the gate.")}
         </p>
         <div className="mt-3 flex flex-wrap gap-2 text-[10px] uppercase tracking-wider">
           {staminaCost != null && <span>Stamina {staminaCost}</span>}
@@ -221,7 +254,17 @@ export function PrepareClient() {
       />
 
       <div className="space-y-6">
-        {deployBlocked && <DeploymentBlockersPanel blockers={blockers} />}
+        {deployBlocked ? (
+          <section className="space-y-4 rounded-xl border border-[var(--danger)]/30 bg-[var(--overlay-faint)] p-4">
+            <p className="font-display text-xs uppercase tracking-widest text-[var(--danger)]">
+              Deployment blocked
+            </p>
+            <DeploymentBlockersPanel blockers={blockers} />
+            <PreparationChecklist checklist={checklist} />
+          </section>
+        ) : (
+          <PreparationChecklist checklist={checklist} />
+        )}
 
         {missionQuest && (hasVocabPhase || displayVocabulary.length > 0) && (
           <MissionVocabularyIntel
@@ -244,7 +287,6 @@ export function PrepareClient() {
           baseScore={readinessBaseScore}
         />
 
-        <PreparationChecklist checklist={checklist} />
         <PowerComparison recommended={recommended} yours={power.total} />
 
         {underPower && !deployBlocked && (
@@ -252,15 +294,52 @@ export function PrepareClient() {
             Power below sector advisory — confirm to deploy.
           </p>
         )}
+
+        {dungeonKey && def && (
+          <p className="text-center text-xs text-[var(--muted)]">
+            Boss phase ahead?{" "}
+            <Link
+              href="/prepare?trainingMode=KANJI_SURGERY"
+              className="text-[var(--accent-bright)] underline-offset-2 hover:underline"
+            >
+              Run boss rehearsal drill
+            </Link>
+          </p>
+        )}
       </div>
 
       <ScreenCTA
-        label={trainingQuest ? "Start drill" : missionQuest ? "Deploy contract" : "Enter dungeon"}
+        label={trainingQuest ? "Start drill" : missionQuest ? "Deploy mission" : "Enter dungeon"}
         staminaCost={staminaCost ?? undefined}
         disabled={deployBlocked || dungeon.busy}
         className={hunterPresentation.huntCtaClass}
         data-testid={E2E_TEST_IDS.prepareDeploy}
         onClick={() => void handleDeploy()}
+      />
+
+      <ConfirmDeployDialog
+        open={deployConfirm === "unstable"}
+        title="Unstable readiness"
+        message="Operational readiness is unstable. Deployment is risky — proceed?"
+        onCancel={() => setDeployConfirm(null)}
+        onConfirm={() => {
+          setDeployConfirm(null)
+          if (underPower) {
+            setDeployConfirm("underpower")
+          } else {
+            void executeDeploy()
+          }
+        }}
+      />
+      <ConfirmDeployDialog
+        open={deployConfirm === "underpower"}
+        title="Below recommended power"
+        message={`Recommended power ${recommended.toLocaleString()} — yours ${power.total.toLocaleString()}. Deploy anyway?`}
+        onCancel={() => setDeployConfirm(null)}
+        onConfirm={() => {
+          setDeployConfirm(null)
+          void executeDeploy()
+        }}
       />
     </HunterPage>
   )

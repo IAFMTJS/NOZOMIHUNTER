@@ -45,9 +45,13 @@ body {
 }
 
 .hunter-main {
-  padding-bottom: calc(
-    var(--hunter-nav-height) + max(1rem, env(safe-area-inset-bottom)) + 0.5rem
-  );
+  /* Nav sits in flex column — only small scroll cushion needed */
+  padding-bottom: 0.5rem;
+}
+
+body.hunter-shell-lock {
+  overflow: hidden;
+  height: 100dvh;
 }
 
 .hunter-overlay-above-nav {

@@ -44,6 +44,8 @@ import {
   persistQuestState,
 } from "./questPersistence"
 
+const completingQuestIds = new Set<string>()
+
 export async function ensureTutorialQuest(userId: string) {
   const store = usePlayerStore.getState()
   const player = store.player
@@ -127,7 +129,8 @@ export async function advanceQuest(
   if (
     (quest.type === "VOCABULARY" && quest.vocabularyEncounter) ||
     (quest.type === "CONVERSATION" && quest.conversationEncounter) ||
-    (quest.type === "SPEECH" && quest.speechEncounter)
+    (quest.type === "SPEECH" && quest.speechEncounter) ||
+    (quest.type === "LISTENING" && quest.listeningEncounter)
   ) {
     return null
   }
@@ -165,6 +168,10 @@ export async function failQuestForPlayer(userId: string, questId: string) {
 
 
 export async function finishQuest(userId: string, questId: string) {
+  if (completingQuestIds.has(questId)) return null
+  completingQuestIds.add(questId)
+
+  try {
   const store = usePlayerStore.getState()
   const quest = store.activeQuests.find((q) => q.id === questId)
   const progressionState = store.getProgressionState()
@@ -228,6 +235,9 @@ export async function finishQuest(userId: string, questId: string) {
       leveledUp,
       rankUp,
     },
+  }
+  } finally {
+    completingQuestIds.delete(questId)
   }
 }
 

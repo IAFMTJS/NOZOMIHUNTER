@@ -1,4 +1,5 @@
 import type { QuestContract } from "@/contracts/quest-contract"
+import type { PlayerPenaltyContract } from "@/contracts/player-contract"
 import { transition } from "./dungeonStateMachine"
 import { isDungeonV2Run } from "./dungeonV2Helpers"
 import {
@@ -6,7 +7,7 @@ import {
   getCurrentNode,
   isNodeCompleted,
 } from "./dungeonRouteSystem"
-import { applyGreedyRoute } from "./dungeonThreatSystem"
+import { applyGreedyRoute, applyCorruptionSpendIntelRoute, canSpendCorruptionForRoute, CORRUPTION_SPEND_ROUTE_COST } from "./dungeonThreatSystem"
 import { dialogueOnRouteChoice } from "./dungeonMasterDialogueSystem"
 import { applyGateProtocolRoutePenalty } from "./dungeonMasterRuleSystem"
 import { patchRun } from "./dungeonQuestPatch"
@@ -16,7 +17,8 @@ export function chooseDungeonRoute(
   quest: QuestContract,
   exitId: string,
   masteryScore = 0,
-  playerLevel = 1
+  playerLevel = 1,
+  playerPenalties?: PlayerPenaltyContract
 ): QuestContract {
   const run = quest.dungeonRun!
   if (!isDungeonV2Run(run)) {
@@ -25,7 +27,13 @@ export function chooseDungeonRoute(
 
   const node = getCurrentNode(run)
   if (node?.danger === "high") {
-    const greedy = applyGreedyRoute(run)
+    let greedy = applyGreedyRoute(run)
+    if (
+      playerPenalties &&
+      canSpendCorruptionForRoute(playerPenalties.corruption)
+    ) {
+      greedy = applyCorruptionSpendIntelRoute(greedy, CORRUPTION_SPEND_ROUTE_COST)
+    }
     quest = patchRun(quest, greedy)
   }
 

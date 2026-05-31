@@ -1,5 +1,6 @@
 import type { QuestContract } from "@/contracts/quest-contract"
 import type { DungeonRunContract } from "@/contracts/dungeon-contract"
+import { DUNGEON_CONFIG } from "@/config/dungeonConfig"
 import { clearEncounterPayloads } from "./dungeonEncounterFactory"
 import { transition } from "./dungeonStateMachine"
 import { initExplorationFields } from "./explorationSystem"
@@ -144,7 +145,11 @@ export function continueAfterReward(quest: QuestContract): QuestContract {
     run.dungeon.encounters.every((e) => e.completed) &&
     run.machineState === "REWARD"
   ) {
-    const endlessSectorCount = (run.endlessSectorCount ?? 0) + 1
+    const loopCount = run.endlessSectorCount ?? 0
+    if (loopCount >= DUNGEON_CONFIG.CORRUPTION_RUN_MAX_LOOPS) {
+      return beginBossPhase(quest)
+    }
+    const endlessSectorCount = loopCount + 1
     const resetEncounters = run.dungeon.encounters.map((e) => ({
       ...e,
       completed: false,

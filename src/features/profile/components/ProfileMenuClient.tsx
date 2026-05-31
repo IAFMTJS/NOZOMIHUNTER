@@ -22,6 +22,7 @@ import { profileSummary } from "@/features/profile/profilePresentation"
 import { computeReadiness } from "@/systems/readiness/readinessSystem"
 import { synchronizationLabel } from "@/systems/synchronization/synchronizationSystem"
 import { HunterIdentityStub } from "@/features/profile/components/HunterIdentityStub"
+import { PrestigePanel } from "@/features/profile/components/PrestigePanel"
 
 const MODULES = [
   { href: "/map", label: "Sector map", icon: "⌖", status: "Corridor network" },
@@ -184,6 +185,8 @@ export function ProfileMenuClient() {
         <span className="text-sm">Audio</span>
         <AudioMuteToggle />
       </GlassCard>
+
+      <PrestigePanel player={player} />
 
       <button
         type="button"

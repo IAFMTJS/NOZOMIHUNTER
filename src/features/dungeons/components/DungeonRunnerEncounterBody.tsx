@@ -59,6 +59,7 @@ export interface DungeonRunnerEncounterBodyProps {
   onAdvanceExploration: (action: ExplorationAction) => Promise<void>
   onEngageSector: () => Promise<void>
   onContinueReward: () => Promise<void>
+  onCompleteSpecialRoom: () => Promise<void>
   onChooseRoute: (exitId: string) => Promise<void>
   onSelectCombatAction: (action: DungeonAction) => Promise<void>
   onExtractionChoice: (choice: DungeonExtractionChoice) => Promise<void>
@@ -94,6 +95,7 @@ export function DungeonRunnerEncounterBody({
   onAdvanceExploration,
   onEngageSector,
   onContinueReward,
+  onCompleteSpecialRoom,
   onChooseRoute,
   onSelectCombatAction,
   onExtractionChoice,
@@ -240,6 +242,19 @@ export function DungeonRunnerEncounterBody({
           onSubmit={onSubmitSpeech}
           onAbandon={onAbandon}
         />
+      )}
+
+      {state === "ENCOUNTER" && run.activeType === null && systemLine && (
+        <Panel tone="default" className="mt-3 border-[var(--accent)]/30">
+          <p className="text-sm leading-relaxed text-[var(--foreground)]">{systemLine}</p>
+          <Button
+            className="mt-4 w-full"
+            disabled={disabled}
+            onClick={() => wrap(onCompleteSpecialRoom, "Sector beat acknowledged.")}
+          >
+            Continue
+          </Button>
+        </Panel>
       )}
 
       {missingEncounterPayload && (

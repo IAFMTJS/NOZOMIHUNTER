@@ -124,15 +124,24 @@
 }
 
 .nozomi-corruption-high {
-  filter: hue-rotate(-6deg);
+  /* Avoid filter on layout ancestors — it breaks fixed/sticky nav and overlays */
+}
+
+.nozomi-atmosphere-lobby.nozomi-corruption-high::after {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  backdrop-filter: hue-rotate(-6deg);
 }
 
 .nozomi-corruption-high .nozomi-encounter-panel {
   animation: nozomi-glitch 4s ease-in-out infinite;
 }
 
-.nozomi-corruption-extreme {
-  filter: hue-rotate(-12deg) saturate(1.15);
+.nozomi-atmosphere-lobby.nozomi-corruption-extreme::after {
+  backdrop-filter: hue-rotate(-12deg) saturate(1.15);
 }
 
 .nozomi-corruption-extreme .nozomi-encounter-panel {

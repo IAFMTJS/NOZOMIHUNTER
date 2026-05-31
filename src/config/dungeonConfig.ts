@@ -51,14 +51,16 @@ export const DUNGEON_CONFIG = {
   },
   MAX_ENCOUNTER_FAILURES: 2,
   DUNGEON_FAILURE_PENALTIES: {
-    corruption: 3,
-    fatigue: 4,
-    xpDebt: 15,
+    corruption: 5,
+    fatigue: 6,
+    xpDebt: 25,
   } satisfies QuestPenaltyContract,
   LISTENING_FRAGMENT_COUNT: 2,
   SECTOR_VOCAB_WORDS: 3,
   BOSS_VOCAB_WORDS: 2,
   BOSS_SPEECH_SCENARIO: "gate-check",
+  /** Max endless loops in corruption run mode before forced boss gate. */
+  CORRUPTION_RUN_MAX_LOOPS: 5,
 } as const
 
 export const DUNGEON_DEFINITIONS: DungeonDefinitionConfig[] = [

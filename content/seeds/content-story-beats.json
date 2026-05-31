@@ -310,5 +310,13 @@
       "missionId": "story-s01-m24",
       "linkedSectorId": "sector-04"
     }
+  },
+  {
+    "id": "beat-s01-side-lost-ones",
+    "seasonId": "season-01-broken-signal",
+    "title": "Lost Ones recovered",
+    "summary": "Side channel — operators trapped between sectors.",
+    "missionId": "side-s01-031",
+    "archiveUnlockId": "lost-ones-transcript"
   }
 ]

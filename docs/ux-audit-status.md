@@ -13,7 +13,34 @@ Tracks remediation against [`issues-page-by-page.md`](issues-page-by-page.md) an
 | P2 | Contract board tone | Done (v1.5.1) | Channel kickers + Archive Recovery / Whisper Hunts labels |
 | P2 | Dedicated failure screen | Done (v1.5.0) | `DungeonFailureCeremony` via `DungeonRunnerFailureOverlay` |
 
-Last updated: v3.2.0-gdd-final.
+Last updated: v3.3.0-remediation.
+
+## Expert remediation (v3.3.0)
+
+| Priority | Theme | Status | Notes |
+|----------|-------|--------|-------|
+| P0 | Training one-answer claim exploit | Done | `syncTrainingObjectivesFromEncounter`, `canCompleteQuest` encounter gate |
+| P0 | Word passive XP runaway | Done | Cap 35%, scope to encounter words |
+| P0 | Dungeon special-room softlock | Done | Continue UI + `completeDungeonSpecialRoom` |
+| P1 | Training daily milestone exploit | Done | `narrativeTier: SIDE`, guards in milestone + completion |
+| P1 | Hydration infinite loading | Done | `hydrate-error` phase + retry UI |
+| P1 | Double-click completion | Done | Mutex in lifecycle + hook refs |
+| P2 | Game mode client trust | Done | `gameModeActionGuard` + rate limit RPC |
+| P2 | Home / nav simplification | Done | 5-tab nav, home widget cuts |
+| P2 | Prepare confirm modal | Done | `ConfirmDeployDialog` replaces `window.confirm` |
+| P2 | Accessibility baseline | Done | Button focus-visible, nav aria-current, Escape on ceremonies |
+| P2 | Reward overlay escape | Done | Claim later dismisses overlay |
+| P2 | Fragment label reskin | Done | Objectives/intel copy vs universal fragments |
+| P2 | Map scope honesty | Done | Show unlocked + next sealed corridor only |
+| P2 | Modal focus traps | Done | `useFocusTrap` on `CeremonyOverlay` |
+| P2 | Light mode polish | Done | Tactical light palette tokens tuned |
+| P3 | Lost Ones side content | Done | `side-s01-031`, `lost-ones-rescue` scenario, archive transcript |
+| P3 | Corruption spend route | Done | High-danger routes spend corruption for intel |
+| P3 | Mode intel rewards | Done | Terminal breach + ghost interrogation set `modeIntel` |
+| P3 | Boss rehearsal link | Done | Dungeon prepare links to kanji surgery drill |
+| P3 | Relic run-rule wiring | Done | Extra wrong attempts + listening replays from relics |
+| P3 | Daily anomaly target | Done | Single daily clear milestone |
+| P3 | Migration 029 | Pending deploy | Apply `029_remediation_guards.sql` to Supabase |
 
 ## Immersion 16-screen masterplan
 

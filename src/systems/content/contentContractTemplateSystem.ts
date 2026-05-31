@@ -5,6 +5,7 @@ import { hashSeed } from "@/systems/economy/shopRotationHash"
 import { buildQuestRewards } from "@/systems/quests/questRewardFactory"
 import { attachVocabularyPreparation } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
 import { applyGameModeToQuest } from "@/systems/gameModes/gameModeQuestBuilder"
+import { syncTrainingObjectivesFromEncounter } from "@/systems/training/trainingMissionSystem"
 import { utcDateKey } from "@/systems/quests/dailyQuestSystem"
 import { createVocabularyEncounter } from "@/systems/quests/vocabularyEncounterSystem"
 import { createConversationEncounter } from "@/systems/quests/conversationEncounterSystem"
@@ -166,6 +167,30 @@ export function buildQuestFromContentTemplate(
 
   if (t.gameMode && t.gameMode !== "STANDARD") {
     quest = applyGameModeToQuest(quest, t.gameMode)
+  }
+
+  const requiredProgress =
+    quest.vocabularyEncounter?.words.length ??
+    quest.listeningEncounter?.fragments.length ??
+    quest.speechEncounter?.phrases.length ??
+    quest.conversationEncounter?.requiredExchanges ??
+    1
+
+  quest = {
+    ...quest,
+    objectives: quest.objectives.map((o, i) =>
+      i === 0
+        ? {
+            ...o,
+            requiredProgress,
+            description: t.briefing ?? o.description,
+          }
+        : o
+    ),
+  }
+
+  if (t.gameMode && t.gameMode !== "STANDARD") {
+    quest = syncTrainingObjectivesFromEncounter(quest)
   }
 
   return attachVocabularyPreparation(quest)

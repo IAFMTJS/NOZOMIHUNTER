@@ -11,6 +11,7 @@ import type { SectorMapNode } from "@/systems/dungeons/dungeonSectorMapSystem"
 import { HubBack } from "./HubBack"
 import { QuestBoostActions } from "@/features/inventory/components/QuestBoostActions"
 import { hasEscapeBeacon } from "@/systems/economy/boostSystem"
+import { ConfirmDeployDialog } from "@/components/preparation/ConfirmDeployDialog"
 import type { ContractHubProps, PenaltyMods } from "./hubTypes"
 
 interface HubSectorViewProps {
@@ -45,6 +46,8 @@ export function HubSectorView({
   props,
 }: HubSectorViewProps) {
   const [corridorNotice, setCorridorNotice] = useState<string | null>(null)
+  const [pendingDeployKey, setPendingDeployKey] = useState<string | null>(null)
+  const [deployWarning, setDeployWarning] = useState<string | null>(null)
 
   function handleEnterCorridor(dungeonKey: string) {
     const advisory = resolveDungeonDeployAdvisory(player, activeQuests, dungeonKey)
@@ -52,15 +55,21 @@ export function HubSectorView({
       setCorridorNotice(advisory.warning ?? "Access denied.")
       return
     }
-    if (
-      advisory.warning &&
-      typeof window !== "undefined" &&
-      !window.confirm(`${advisory.warning}\n\nProceed with deployment?`)
-    ) {
+    if (advisory.warning) {
+      setDeployWarning(advisory.warning)
+      setPendingDeployKey(dungeonKey)
       return
     }
     setCorridorNotice(null)
     onEnterDungeon(dungeonKey)
+  }
+
+  function confirmDeploy() {
+    if (!pendingDeployKey) return
+    setCorridorNotice(null)
+    onEnterDungeon(pendingDeployKey)
+    setPendingDeployKey(null)
+    setDeployWarning(null)
   }
 
   return (
@@ -109,6 +118,7 @@ export function HubSectorView({
             onAdvanceExploration={props.onDungeonAdvanceExploration}
             onEngageSector={props.onDungeonEngageSector}
             onContinueReward={props.onDungeonContinueReward}
+            onCompleteSpecialRoom={props.onDungeonCompleteSpecialRoom}
             onChooseRoute={props.onDungeonChooseRoute}
             onSelectCombatAction={props.onDungeonSelectCombatAction}
             onExtractionChoice={props.onDungeonExtractionChoice}
@@ -129,6 +139,21 @@ export function HubSectorView({
           />
         </HubScreenFrame>
       ) : null}
+
+      <ConfirmDeployDialog
+        open={pendingDeployKey != null}
+        title="Deployment advisory"
+        message={
+          deployWarning
+            ? `${deployWarning}\n\nProceed with deployment?`
+            : "Proceed with deployment?"
+        }
+        onCancel={() => {
+          setPendingDeployKey(null)
+          setDeployWarning(null)
+        }}
+        onConfirm={confirmDeploy}
+      />
     </>
   )
 }

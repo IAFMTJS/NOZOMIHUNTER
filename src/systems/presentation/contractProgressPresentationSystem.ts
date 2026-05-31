@@ -23,7 +23,7 @@ export function buildContractProgressView(quest: QuestContract): ContractProgres
 
   return {
     recoveredPercent,
-    fragmentLabel: `${objectives.filter((o) => o.completed).length}/${objectives.length} fragments`,
+    fragmentLabel: `${objectives.filter((o) => o.completed).length}/${objectives.length} objectives`,
     objectiveLine: active?.description ?? "Investigate transmission",
   }
 }

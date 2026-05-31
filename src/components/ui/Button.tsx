@@ -31,7 +31,7 @@ export function buttonClassName(
   size: "sm" | "md" = "sm",
   className = ""
 ): string {
-  return `inline-flex items-center justify-center rounded border font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${VARIANT_CLASS[variant]} ${SIZE_CLASS[size]} ${className}`
+  return `inline-flex items-center justify-center rounded border font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] disabled:cursor-not-allowed disabled:opacity-50 ${VARIANT_CLASS[variant]} ${SIZE_CLASS[size]} ${className}`
 }
 
 export function Button({

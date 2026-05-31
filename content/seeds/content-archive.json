@@ -405,6 +405,16 @@
     "japanese_excerpt": "深淵探査"
   },
   {
+    "id": "lost-ones-transcript",
+    "title": "Lost Ones — final transcript",
+    "teaser": "Operators trapped between sectors.",
+    "lore_excerpt": "Designation Lost One ×3. Last vector: sector fracture between neon and archive stacks.",
+    "min_rank": "C",
+    "linked_contract_id": "side-s01-031",
+    "required_beat_id": "beat-s01-side-lost-ones",
+    "japanese_excerpt": "助けて、まだ生きている"
+  },
+  {
     "id": "finale-oath-echo",
     "title": "Finale oath echo",
     "teaser": "Broken signal closure.",

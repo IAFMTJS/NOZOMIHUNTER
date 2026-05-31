@@ -130,6 +130,32 @@ export function applyFocusCost(run: DungeonRunContract): DungeonRunContract {
   }
 }
 
+export const CORRUPTION_SPEND_ROUTE_COST = 10
+
+export function canSpendCorruptionForRoute(
+  corruption: number,
+  cost = CORRUPTION_SPEND_ROUTE_COST
+): boolean {
+  return corruption >= cost
+}
+
+export function applyCorruptionSpendIntelRoute(
+  run: DungeonRunContract,
+  corruptionSpent: number
+): DungeonRunContract {
+  const threat = run.threat ?? initThreatState(run.activeModifier)
+  return {
+    ...run,
+    threat: clampThreat({
+      ...threat,
+      corruptionPressure: Math.max(0, threat.corruptionPressure - 4),
+      hunterFocus: Math.min(THREAT_LIMITS.hunterFocus, threat.hunterFocus + 5),
+    }),
+    routeIntel: `Corruption spend ${corruptionSpent} — sector intel recovered: next hazard flagged.`,
+    lastConsequenceLine: "Corruption converted to route intel.",
+  }
+}
+
 export function applyGreedyRoute(run: DungeonRunContract): DungeonRunContract {
   const threat = run.threat ?? initThreatState(run.activeModifier)
   return {

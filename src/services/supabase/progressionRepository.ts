@@ -88,6 +88,39 @@ export async function recordGameplayEvent(
   }
 }
 
+export async function applyGameModeActionGuarded(
+  questId: string,
+  action: string,
+  payload: string | undefined,
+  nextSnapshot: Record<string, unknown>
+): Promise<void> {
+  const supabase = requireClient()
+  const { error } = await supabase.rpc("apply_game_mode_action_guarded", {
+    p_quest_id: questId,
+    p_action: action,
+    p_payload: payload ?? "",
+    p_next_snapshot: nextSnapshot,
+  })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}
+
+export async function checkGameModeRateLimitServer(): Promise<boolean> {
+  const supabase = requireClient()
+  const { data, error } = await supabase.rpc("check_player_rate_limit", {
+    p_action_type: "game_mode_action",
+    p_max_per_window: 60,
+    p_window_ms: 60_000,
+  })
+
+  if (error) {
+    return true
+  }
+  return data === true
+}
+
 export async function checkSpeechRateLimitServer(): Promise<boolean> {
   const supabase = requireClient()
   const { data, error } = await supabase.rpc("check_player_rate_limit", {

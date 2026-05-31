@@ -1,8 +1,10 @@
 "use client"
 
+import { useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { MOTION } from "@/config/motionPresets"
 import type { ReactNode } from "react"
+import { useFocusTrap } from "@/hooks/useFocusTrap"
 
 export type CeremonyIntensity = "default" | "slam"
 
@@ -24,6 +26,18 @@ export function CeremonyOverlay({
   intensity = "default",
 }: CeremonyOverlayProps) {
   const slam = intensity === "slam"
+  const cardRef = useRef<HTMLDivElement>(null)
+  useFocusTrap(cardRef, open)
+
+  useEffect(() => {
+    if (!open || !onDismiss) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onDismiss()
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [open, onDismiss])
+
   return (
     <AnimatePresence>
       {open && (
@@ -41,6 +55,7 @@ export function CeremonyOverlay({
           onClick={onDismiss}
         >
           <motion.div
+            ref={cardRef}
             initial={{ opacity: 0, scale: 0.92, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}

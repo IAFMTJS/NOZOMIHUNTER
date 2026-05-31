@@ -76,7 +76,9 @@ export function applyGameModeAction(
     const { correct, encounter } = interpretTerminalSign(breach, payload)
     const updated = { ...quest, terminalBreachEncounter: encounter }
     if (encounter.pathUnlocked) {
-      return completeModeObjective(updated, "Sector path unlocked.")
+      return completeModeObjective(updated, "Sector path unlocked.", {
+        modeIntel: "Terminal signage decoded — safe vector logged for extraction bonus.",
+      })
     }
     return {
       quest: updated,
@@ -158,14 +160,19 @@ export function applyGameModeAction(
 
 function completeModeObjective(
   quest: QuestContract,
-  message: string
+  message: string,
+  extras?: { modeIntel?: string }
 ): GameModeActionResult {
   const objectives = quest.objectives.map((o) => ({
     ...o,
     currentProgress: o.requiredProgress,
     completed: true,
   }))
-  const updated = { ...quest, objectives }
+  const updated = {
+    ...quest,
+    objectives,
+    modeIntel: extras?.modeIntel ?? quest.modeIntel,
+  }
   return {
     quest: updated,
     correct: true,

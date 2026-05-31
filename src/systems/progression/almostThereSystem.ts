@@ -78,14 +78,14 @@ export function buildAlmostThereObjective(
 
   if (dailyMilestone.completed > 0 && dailyMilestone.completed < DAILY_MILESTONE_TARGET) {
     return {
-      title: "Daily contract chain",
+      title: "Daily anomaly",
       progressPercent: Math.round(
         (dailyMilestone.completed / DAILY_MILESTONE_TARGET) * 100
       ),
-      detailLine: `${dailyMilestone.completed}/${DAILY_MILESTONE_TARGET} clears — bonus at third extraction`,
+      detailLine: `${dailyMilestone.completed}/${DAILY_MILESTONE_TARGET} clears — complete today's anomaly for bonus credits.`,
       contractsRemaining: DAILY_MILESTONE_TARGET - dailyMilestone.completed,
       ctaHref: "/contracts",
-      ctaLabel: "Continue daily chain",
+      ctaLabel: "Open daily ops",
     }
   }
 
@@ -181,12 +181,12 @@ export function buildProximityChips(
 
   if (dailyMilestone.completed > 0 && dailyMilestone.completed < DAILY_MILESTONE_TARGET) {
     chips.push({
-      id: "daily-chain",
-      label: "Daily chain",
+      id: "daily-anomaly",
+      label: "Daily anomaly",
       value: `${dailyMilestone.completed}/${DAILY_MILESTONE_TARGET}`,
       subline: dailyMilestone.bonusReady
         ? "Bonus unlocked"
-        : "Clear for extraction bonus",
+        : "Complete today's anomaly for credits",
       tone: "reward",
     })
   }

@@ -72,7 +72,7 @@ export function QuestFileDetail({
     ? "Start drill"
     : quest.type === "DUNGEON"
       ? "Enter sector"
-      : "Claim contract"
+      : "Claim mission"
 
   return (
     <>
@@ -178,7 +178,7 @@ export function QuestFileDetail({
           />
           {!levelOk && (
             <p className="text-center text-xs text-[var(--danger)]">
-              Hunter level does not meet contract requirements.
+              Hunter level does not meet mission requirements.
             </p>
           )}
         </>

@@ -20,6 +20,11 @@ import { updateUserQuest } from "@/services/supabase/playerRepository"
 import { failQuestForPlayer } from "./questLifecycle"
 import { persistQuestState } from "./questPersistence"
 import { applyGameModeAction } from "@/systems/gameModes/gameModeEncounterSystem"
+import { assertGameModeActionAllowed } from "@/systems/gameModes/gameModeActionGuard"
+import {
+  applyGameModeActionGuarded,
+  checkGameModeRateLimitServer,
+} from "@/services/supabase/progressionRepository"
 import { recordGameModeAnalytics } from "@/systems/analytics/gameModeAnalytics"
 
 export async function submitGameModeActionForQuest(
@@ -32,9 +37,24 @@ export async function submitGameModeActionForQuest(
   const quest = store.activeQuests.find((q) => q.id === questId)
   if (!quest || !store.player) return null
 
+  const allowed = await checkGameModeRateLimitServer()
+  if (!allowed) {
+    throw new Error("Too many mode actions — slow down.")
+  }
+
+  assertGameModeActionAllowed(quest, action, payload)
   const result = applyGameModeAction(quest, action, payload)
   store.updateQuest(result.quest)
-  await updateUserQuest(userId, result.quest)
+  try {
+    await applyGameModeActionGuarded(
+      questId,
+      action,
+      payload,
+      result.quest as unknown as Record<string, unknown>
+    )
+  } catch {
+    await updateUserQuest(userId, result.quest)
+  }
 
   recordGameModeAnalytics("ENCOUNTER_ANSWER_CORRECT", result.quest.gameMode, {
     action,

@@ -1,6 +1,9 @@
 import type { WordEntityMetadata } from "@/contracts/vocabulary-contract"
 import { classifyEntityState } from "./entityHuntSystem"
 
+/** Maximum total passive XP bonus percent from mastered words. */
+export const MAX_PASSIVE_XP_BONUS_PERCENT = 35
+
 export interface WordPassiveBonus {
   id: string
   label: string
@@ -70,6 +73,14 @@ export function aggregatePassiveBonuses(
   }
 
   return [...byId.values()]
+}
+
+/** Sum XP-related passive magnitudes with a hard cap. */
+export function cappedPassiveXpBonusPercent(bonuses: WordPassiveBonus[]): number {
+  const raw = bonuses
+    .filter((b) => b.id.includes("xp"))
+    .reduce((sum, b) => sum + b.magnitude, 0)
+  return Math.min(raw, MAX_PASSIVE_XP_BONUS_PERCENT)
 }
 
 export function passiveBonusSummary(bonuses: WordPassiveBonus[]): string {

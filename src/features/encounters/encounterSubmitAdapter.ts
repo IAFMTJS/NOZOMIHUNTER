@@ -9,6 +9,7 @@ import {
 } from "@/systems/penalties/penaltyGameplaySystem"
 import { mergePenalties } from "@/systems/penalties/penaltySystem"
 import { maxWrongAttemptsWithBoosts } from "@/systems/economy/boostSystem"
+import { aggregateRelicModifiers } from "@/systems/inventory/relicEffectSystem"
 import { upsertWordMastery } from "@/services/supabase/vocabularyRepository"
 
 export function maxWrongForPenalties(
@@ -17,7 +18,9 @@ export function maxWrongForPenalties(
 ): number {
   const base = maxWrongAttemptsForPenalties(penalties)
   if (!player) return base
-  return maxWrongAttemptsWithBoosts(player, base)
+  const withBoosts = maxWrongAttemptsWithBoosts(player, base)
+  const relicBonus = aggregateRelicModifiers(player).extraWrongAttempts
+  return withBoosts + relicBonus
 }
 
 export async function persistMasteryUpdate(
@@ -25,10 +28,19 @@ export async function persistMasteryUpdate(
   update: WordMasteryContract | null | undefined
 ): Promise<void> {
   if (!update) return
-  try {
-    await upsertWordMastery(userId, update)
-  } catch {
-    /* non-blocking — mastery syncs on next save */
+  const delays = [0, 400, 1200]
+  for (let attempt = 0; attempt < delays.length; attempt++) {
+    if (delays[attempt]! > 0) {
+      await new Promise((r) => setTimeout(r, delays[attempt]))
+    }
+    try {
+      await upsertWordMastery(userId, update)
+      return
+    } catch {
+      if (attempt === delays.length - 1) {
+        /* non-blocking — mastery syncs on next save */
+      }
+    }
   }
 }
 

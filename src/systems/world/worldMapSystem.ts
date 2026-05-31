@@ -27,7 +27,7 @@ function sectorCorruptionIndex(
 export function buildWorldMapNodes(player: PlayerContract | null): WorldMapNode[] {
   const unlocked = new Set(player?.progression.unlockedDungeons ?? [])
   const playerCorruption = player?.penalties.corruption ?? 0
-  return DUNGEON_DEFINITIONS.map((sector) => {
+  const all = DUNGEON_DEFINITIONS.map((sector) => {
     const locked = player ? !unlocked.has(sector.key) : true
     const corruptionIndex = sectorCorruptionIndex(
       sector.key,
@@ -47,10 +47,14 @@ export function buildWorldMapNodes(player: PlayerContract | null): WorldMapNode[
       corruptionIndex,
       href: locked ? "/dungeons" : `/dungeons/${encodeURIComponent(slug)}`,
       hint: locked
-        ? "Signal locked — clear prior sectors"
+        ? "Corridor sealed — clear prior sectors"
         : corrupted
           ? `Corruption bleed ${corruptionIndex}% — expect archive fog`
           : undefined,
     }
   })
+
+  const firstLockedIdx = all.findIndex((n) => n.locked)
+  if (firstLockedIdx === -1) return all
+  return all.filter((node, index) => !node.locked || index === firstLockedIdx)
 }

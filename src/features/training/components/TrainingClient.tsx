@@ -6,48 +6,56 @@ import { useHunterSession } from "@/features/hunter/context/HunterSessionContext
 import { HunterPage } from "@/components/layout/HunterPage"
 import { Button } from "@/components/ui/Button"
 import { ArcadeCard } from "@/components/ui/cards/ArcadeCard"
-import { TRAINING_GAME_MODES } from "@/config/gameModeRegistry"
-import { isGameModeUnlocked } from "@/config/gameModeRegistry"
-import { GAME_MODE_REGISTRY } from "@/config/gameModeRegistry"
+import { GAME_MODE_REGISTRY, isGameModeUnlocked, TRAINING_GAME_MODES } from "@/config/gameModeRegistry"
 import type { GameModeId } from "@/contracts/game-mode-contract"
 import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 import { trainingDisciplineSkin } from "@/systems/presentation/trainingDisciplinePresentation"
 import { pickDailyTrainingPriority } from "@/systems/training/trainingPrioritySystem"
 import { DISCIPLINE_REWARDS } from "@/systems/progression/disciplineCurrencySystem"
 import { GameAssetImage } from "@/components/ui/GameAssetImage"
+import { TrainingDrillView } from "@/features/training/components/TrainingDrillView"
+import { isTrainingQuest } from "@/systems/training/trainingMissionSystem"
 
 export function TrainingClient() {
   const router = useRouter()
-  const { user, player, setHubView, setHubFocusQuestId } = useHunterSession()
+  const {
+    user,
+    player,
+    activeQuests,
+    hubView,
+    hubFocusQuestId,
+    hunterPresentation,
+    quest,
+    setHubView,
+    setHubFocusQuestId,
+  } = useHunterSession()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const dateUtc = useMemo(() => new Date().toISOString().slice(0, 10), [])
-  const priorityId = player
-    ? pickDailyTrainingPriority(player, dateUtc)
-    : TRAINING_GAME_MODES[0]
+
+  const activeDrill = useMemo(() => {
+    if (hubView !== "hunt" || !hubFocusQuestId) return null
+    const match = activeQuests.find((q) => q.id === hubFocusQuestId)
+    return match && isTrainingQuest(match) ? match : null
+  }, [hubView, hubFocusQuestId, activeQuests])
 
   async function deploy(mode: GameModeId) {
     if (!user?.id || !player) return
     setBusy(true)
     setError(null)
     try {
-      const { startTrainingMission } = await import(
-        "@/features/training/services/trainingActions"
-      )
-      const quest = await startTrainingMission(user.id, mode, player.level)
-      if (quest) {
-        setHubFocusQuestId(quest.id)
-        setHubView("hunt")
-        router.push("/training")
-      } else {
-        setError("Training deployment unavailable. Retry in a moment.")
-      }
+      router.push(`/prepare?trainingMode=${encodeURIComponent(mode)}`)
     } catch (e) {
       setError(e instanceof Error ? e.message : "Training deployment failed.")
     } finally {
       setBusy(false)
     }
+  }
+
+  function exitDrill() {
+    setHubView("menu")
+    setHubFocusQuestId(null)
   }
 
   if (!player) {
@@ -58,6 +66,25 @@ export function TrainingClient() {
     )
   }
 
+  if (activeDrill) {
+    return (
+      <TrainingDrillView
+        quest={activeDrill}
+        player={player}
+        encounterClassName={hunterPresentation.encounterClass}
+        busy={quest.busy}
+        onBack={exitDrill}
+        onProgress={quest.progress}
+        onComplete={quest.complete}
+        onSubmitAnswer={quest.submitAnswer}
+        onGameModeAction={quest.submitGameModeAction}
+        onAbandon={quest.abandon}
+        onDismissPreparation={quest.dismissPreparation}
+      />
+    )
+  }
+
+  const priorityId = pickDailyTrainingPriority(player, dateUtc)
   const priorityDef = GAME_MODE_REGISTRY[priorityId]
   const otherModes = TRAINING_GAME_MODES.filter((id) => id !== priorityId)
 

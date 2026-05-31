@@ -187,11 +187,17 @@ export async function submitConversationMessage(
   const encounterComplete =
     successfulExchanges >= encounter.requiredExchanges
 
+  const modeIntel =
+    encounterComplete && quest.gameMode === "GHOST_INTERROGATION"
+      ? "Ghost interrogation intel — operator implication logged for archive review."
+      : quest.modeIntel
+
   return {
     quest: {
       ...quest,
       conversationEncounter: updatedEncounter,
       objectives,
+      modeIntel,
     },
     aiResponse,
     memory: updatedMemory,

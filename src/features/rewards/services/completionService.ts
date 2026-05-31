@@ -135,7 +135,7 @@ export async function applyActivityCompletion(
 
   let pending = await syncRewardStateFromServer(input.userId, input.server)
 
-  if (input.quest.narrativeTier === "DAILY") {
+  if (input.quest.narrativeTier === "DAILY" && !isTrainingQuest(input.quest)) {
     const quests = usePlayerStore.getState().activeQuests
     const milestone = dailyMilestoneProgress(
       [...quests, { ...input.quest, objectives: input.quest.objectives.map((o) => ({ ...o, completed: true })) }],

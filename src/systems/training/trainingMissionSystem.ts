@@ -22,6 +22,37 @@ export function isTrainingGameMode(mode: GameModeId): boolean {
   return TRAINING_MODES.includes(mode)
 }
 
+export function syncTrainingObjectivesFromEncounter(
+  quest: QuestContract
+): QuestContract {
+  const description =
+    quest.objectives[0]?.description ?? "Complete training objective"
+  let requiredProgress = 1
+
+  if (quest.vocabularyEncounter?.words.length) {
+    requiredProgress = quest.vocabularyEncounter.words.length
+  } else if (quest.listeningEncounter?.fragments.length) {
+    requiredProgress = quest.listeningEncounter.fragments.length
+  } else if (quest.speechEncounter?.phrases.length) {
+    requiredProgress = quest.speechEncounter.phrases.length
+  } else if (quest.conversationEncounter) {
+    requiredProgress = quest.conversationEncounter.requiredExchanges
+  }
+
+  return {
+    ...quest,
+    objectives: [
+      {
+        id: "obj-1",
+        description,
+        currentProgress: 0,
+        requiredProgress,
+        completed: false,
+      },
+    ],
+  }
+}
+
 export function buildTrainingQuest(
   kind: TrainingMissionKind,
   playerLevel: number
@@ -48,11 +79,11 @@ export function buildTrainingQuest(
       },
     ],
     hidden: true,
-    narrativeTier: "DAILY",
+    narrativeTier: "SIDE",
     gameMode: kind,
   }
 
-  return applyGameModeToQuest(base, kind)
+  return syncTrainingObjectivesFromEncounter(applyGameModeToQuest(base, kind))
 }
 
 function trainingTitle(kind: GameModeId): string {
@@ -74,7 +105,7 @@ function trainingTitle(kind: GameModeId): string {
     case "MEMORY_GRID":
       return "Memory Grid"
     case "SURVIVAL_VOCAB":
-      return "Survival Mode"
+      return "Vocab Sprint"
     default:
       return "Stabilization Training"
   }
@@ -99,7 +130,7 @@ function trainingDescription(kind: GameModeId): string {
     case "MEMORY_GRID":
       return "Pair-match drill under time pressure."
     case "SURVIVAL_VOCAB":
-      return "Endless vocab waves until failure."
+      return "Rapid vocab waves — clear all targets before extract."
     default:
       return "Repeatable training drill."
   }

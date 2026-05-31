@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import type {
   DungeonAction,
   DungeonExtractionChoice,
@@ -21,6 +21,7 @@ import {
   submitDungeonSpeech,
   abandonDungeon,
   extractDungeonRewards,
+  completeDungeonSpecialRoom,
   applyDungeonListeningReplayPenalty,
 } from "../services/dungeonService"
 
@@ -29,6 +30,7 @@ export function useDungeonLogic(userId: string | undefined) {
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const [explorationLine, setExplorationLine] = useState<string | null>(null)
+  const extractingRef = useRef(false)
 
   const enter = useCallback(
     async (dungeonKey: string) => {
@@ -108,6 +110,19 @@ export function useDungeonLogic(userId: string | undefined) {
     }
   }, [userId])
 
+  const completeSpecialRoom = useCallback(async () => {
+    if (!userId) return
+    setBusy(true)
+    try {
+      await completeDungeonSpecialRoom(userId)
+      setExplorationLine(null)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Special room continue failed")
+    } finally {
+      setBusy(false)
+    }
+  }, [userId])
+
   const chooseRoute = useCallback(
     async (exitId: string) => {
       if (!userId) return
@@ -158,7 +173,8 @@ export function useDungeonLogic(userId: string | undefined) {
   const enterSector = engageSector
 
   const extract = useCallback(async () => {
-    if (!userId) return
+    if (!userId || extractingRef.current) return
+    extractingRef.current = true
     setBusy(true)
     setMessage(null)
     try {
@@ -167,6 +183,7 @@ export function useDungeonLogic(userId: string | undefined) {
     } catch (e) {
       setError(e instanceof Error ? e.message : "Extraction failed")
     } finally {
+      extractingRef.current = false
       setBusy(false)
     }
   }, [userId])
@@ -268,6 +285,7 @@ export function useDungeonLogic(userId: string | undefined) {
     advanceExploration,
     engageSector,
     continueAfterReward,
+    completeSpecialRoom,
     chooseRoute,
     selectCombatAction,
     submitExtractionChoice,

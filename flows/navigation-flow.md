@@ -4,8 +4,8 @@
 
 1. User signs in → `/home`
 2. `HunterSessionProvider` hydrates player + quests once
-3. `BottomNav` routes: `/home`, `/contracts` (label **Missions**), `/dungeons`, `/vocabulary`, `/profile`
-4. Secondary routes (header/back, not in tab bar): `/prepare`, `/vocabulary`, `/system`, `/stats`, `/settings`, `/records`, `/achievements`
+3. `BottomNav` routes (5 tabs): `/home`, `/contracts` (label **Missions**), `/dungeons`, `/vocabulary` (label **Threat index**), `/profile`
+4. Secondary routes (header/back, not in tab bar): `/prepare`, `/training`, `/system`, `/stats`, `/settings`, `/records`, `/achievements`
 5. `/dashboard` redirects to `/home` (PWA `start_url` is `/home`)
 
 ## Mission flow
@@ -33,7 +33,7 @@ Leaving `/contracts`, `/missions`, or `/dungeons` (e.g. bottom nav) resets `hubV
 ## Auth and session
 
 - Protected routes include `/settings`, `/training`, and `/records` (middleware).
-- Session gate: `HunterSessionProvider` waits for auth, then player hydration (`Signing in…` / `Loading hunter data…`).
+- Session gate: `HunterSessionProvider` waits for auth, then player hydration; on failure shows **Retry sync** (`hydrate-error` phase).
 - Guest login only when `NEXT_PUBLIC_ENABLE_GUEST_AUTH=true` and Supabase anonymous auth is enabled (see README).
 
 ## Hub overlay views

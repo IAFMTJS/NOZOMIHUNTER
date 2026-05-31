@@ -10,7 +10,7 @@ export function ContractProgressRail({ view }: ContractProgressRailProps) {
   return (
     <div className="nozomi-contract-progress mb-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--overlay-subtle)] p-3">
       <div className="flex justify-between text-[10px] uppercase tracking-wider text-[var(--muted)]">
-        <span>Recovered data</span>
+        <span>Recovered intel</span>
         <span>{view.fragmentLabel}</span>
       </div>
       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--surface)]">

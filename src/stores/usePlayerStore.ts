@@ -25,6 +25,7 @@ interface PlayerStore {
   setPlayer: (player: PlayerContract) => void
   setActiveQuests: (quests: QuestContract[]) => void
   hydrate: (player: PlayerContract, quests: QuestContract[]) => void
+  markHydrationTerminal: () => void
   applyProgressionUpdate: (update: {
     xp: number
     level: number
@@ -65,6 +66,8 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   hydrate: (player, activeQuests) =>
     set({ player, activeQuests: dedupeActiveQuests(activeQuests), isHydrated: true }),
+
+  markHydrationTerminal: () => set({ isHydrated: true }),
 
   applyProgressionUpdate: (update) => {
     const player = get().player

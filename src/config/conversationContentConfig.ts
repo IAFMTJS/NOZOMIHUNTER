@@ -153,6 +153,30 @@ export const CONVERSATION_SCENARIOS: ConversationScenarioConfig[] = [
     ],
   },
   {
+    id: "lost-ones-rescue",
+    title: "Lost Ones Rescue",
+    description: "Decode the last transmissions from operators trapped between sectors.",
+    directorName: "Lost Signal",
+    briefing:
+      "Three operators went silent in the fracture. Reconstruct their final exchanges.",
+    openingLine:
+      "…can anyone hear— 助けて。Designation Lost One. Who are you?",
+    openingLineReading: "tasukete.",
+    requiredExchanges: 4,
+    responseFamilies: [
+      {
+        patterns: ["hunter", "registry", "nozomi", "operator", "ハンター", "救助"],
+        style: "hybrid",
+        qualityBonus: 0.15,
+      },
+      {
+        patterns: ["location", "sector", "where", "どこ", "座標"],
+        style: "formal",
+        qualityBonus: 0.1,
+      },
+    ],
+  },
+  {
     id: "broken-signal-finale",
     title: "Broken Signal Finale",
     description: "Season finale — the signal speaks in perfect grammar.",

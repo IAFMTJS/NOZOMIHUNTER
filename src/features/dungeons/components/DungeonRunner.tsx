@@ -54,6 +54,7 @@ interface DungeonRunnerProps {
   ) => Promise<void>
   onEngageSector: () => Promise<void>
   onContinueReward: () => Promise<void>
+  onCompleteSpecialRoom: () => Promise<void>
   onChooseRoute: (exitId: string) => Promise<void>
   onSelectCombatAction: (
     action: import("@/contracts/dungeon-contract").DungeonAction
@@ -242,6 +243,7 @@ export function DungeonRunner(props: DungeonRunnerProps) {
       onAdvanceExploration={props.onAdvanceExploration}
       onEngageSector={props.onEngageSector}
       onContinueReward={props.onContinueReward}
+      onCompleteSpecialRoom={props.onCompleteSpecialRoom}
       onChooseRoute={props.onChooseRoute}
       onSelectCombatAction={props.onSelectCombatAction}
       onExtractionChoice={props.onExtractionChoice}
