@@ -13,9 +13,15 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: "portrait-primary",
     icons: [
       {
-        src: "/icons/icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
+        src: "/icons/app-icon-dark.webp",
+        sizes: "512x512",
+        type: "image/webp",
+        purpose: "any",
+      },
+      {
+        src: "/icons/app-icon-light.webp",
+        sizes: "512x512",
+        type: "image/webp",
         purpose: "any",
       },
     ],

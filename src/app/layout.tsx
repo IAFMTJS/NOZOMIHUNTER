@@ -20,8 +20,21 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    icon: [{ url: "/icons/icon.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/icons/icon.svg", type: "image/svg+xml" }],
+    icon: [
+      {
+        url: "/icons/app-icon-dark.webp",
+        type: "image/webp",
+        media: "(prefers-color-scheme: dark)",
+      },
+      {
+        url: "/icons/app-icon-light.webp",
+        type: "image/webp",
+        media: "(prefers-color-scheme: light)",
+      },
+    ],
+    apple: [
+      { url: "/icons/app-icon-dark.webp", type: "image/webp" },
+    ],
   },
 }
 
@@ -41,7 +54,7 @@ export default function RootLayout({
     <html lang="en" data-theme={DEFAULT_THEME} suppressHydrationWarning>
       <body className="min-h-screen antialiased" suppressHydrationWarning>
         <Script id="nozomi-theme-bootstrap" strategy="beforeInteractive">
-          {`(function(){try{var t=localStorage.getItem("${THEME_STORAGE_KEY}");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}})();`}
+          {`(function(){try{var t=localStorage.getItem("${THEME_STORAGE_KEY}");if(t!=="light"&&t!=="dark")t="dark";document.documentElement.setAttribute("data-theme",t);var i=t==="light"?"/icons/app-icon-light.webp":"/icons/app-icon-dark.webp";var l=document.querySelector('link[rel="icon"][data-nozomi-app-icon]');if(!l){l=document.createElement("link");l.rel="icon";l.type="image/webp";l.setAttribute("data-nozomi-app-icon","1");document.head.appendChild(l)}l.href=i}catch(e){}})();`}
         </Script>
         <ThemeBootstrap />
         <ServiceWorkerRegister />

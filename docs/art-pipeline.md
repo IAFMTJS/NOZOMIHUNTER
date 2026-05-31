@@ -30,4 +30,11 @@ npm run ingest:assets                          # upload + DB (needs service role
 
 Replace placeholder SVGs with final WebP/AVIF from production art before season launch.
 
+## Light / dark art variants
+
+- **Dark (default):** paths in [`asset-manifest.json`](../content/seeds/asset-manifest.json), e.g. `hero.home.command.webp`
+- **Light:** same base name with `.light.webp`, e.g. `hero.home.command.light.webp` (resolved at runtime when `data-theme="light"`)
+- **Commission drop:** run `node scripts/normalize-light-assets.mjs` after adding `*-light.png` files with kebab names
+- **App icons:** `public/icons/app-icon-dark.webp` and `app-icon-light.webp` (synced on theme toggle)
+
 See [`art-commission-brief.md`](art-commission-brief.md) for the deliverable list and board references.

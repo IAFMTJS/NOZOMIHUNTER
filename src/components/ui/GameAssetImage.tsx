@@ -1,8 +1,10 @@
 "use client"
 
 import Image from "next/image"
+import { useEffect, useState } from "react"
 import type { HunterRank } from "@/contracts/player-contract"
 import { resolveAssetUrl } from "@/systems/content/assetManifestSystem"
+import { useThemeMode } from "@/styles/useThemeMode"
 
 interface GameAssetImageProps {
   assetKey: string
@@ -25,11 +27,23 @@ export function GameAssetImage({
   width = 640,
   height = 360,
 }: GameAssetImageProps) {
-  const src = resolveAssetUrl(assetKey, { playerRank })
+  const themeMode = useThemeMode()
+  const primarySrc = resolveAssetUrl(assetKey, { playerRank, themeMode })
+  const fallbackSrc = resolveAssetUrl(assetKey, { playerRank, themeMode: "dark" })
+  const [src, setSrc] = useState(primarySrc)
+
+  useEffect(() => {
+    setSrc(primarySrc)
+  }, [primarySrc])
+
   if (!src) return null
 
   const unoptimized =
     src.startsWith("http") || /\.(svg|webp|avif)$/i.test(src)
+
+  const handleError = () => {
+    if (fallbackSrc && fallbackSrc !== src) setSrc(fallbackSrc)
+  }
 
   if (fill) {
     return (
@@ -40,6 +54,7 @@ export function GameAssetImage({
         priority={priority}
         className={`object-cover ${className}`}
         unoptimized={unoptimized}
+        onError={handleError}
       />
     )
   }
@@ -53,6 +68,7 @@ export function GameAssetImage({
       priority={priority}
       className={className}
       unoptimized={unoptimized}
+      onError={handleError}
     />
   )
 }

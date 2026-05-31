@@ -18,6 +18,7 @@
     "generate:assets": "node scripts/generate-placeholder-assets.mjs",
     "generate:content-seeds": "node scripts/generate-content-seeds.mjs",
     "convert:webp": "node scripts/convert-png-to-webp.mjs",
+    "normalize:light": "node scripts/normalize-light-assets.mjs",
     "verify:deploy": "node scripts/verify-deploy.mjs",
     "smoke:routes": "node scripts/smoke-routes.mjs",
     "check:theme": "node scripts/verify-theme-parity.mjs && node scripts/verify-no-hardcoded-ui-colors.mjs",

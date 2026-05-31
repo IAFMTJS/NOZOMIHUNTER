@@ -5,6 +5,9 @@ import {
 } from "@/config/assetManifestFallback"
 import { getActiveSeason } from "@/config/seasonConfig"
 import type { HunterRank } from "@/contracts/player-contract"
+import type { ThemeMode } from "@/styles/themeDefaults"
+import { DEFAULT_THEME } from "@/styles/themeDefaults"
+import { resolveThemedAssetPath } from "@/systems/content/themedAssetPath"
 
 const RANK_ORDER: HunterRank[] = [
   "E",
@@ -36,10 +39,20 @@ function rankMeetsMin(playerRank: HunterRank | undefined, minRank?: string): boo
   return have >= need
 }
 
+function applyThemeToPath(path: string, themeMode: ThemeMode): string {
+  if (!path.startsWith("/")) return path
+  return resolveThemedAssetPath(path, themeMode)
+}
+
 export function resolveAssetUrl(
   assetKey: string,
-  options?: { playerRank?: HunterRank; seasonId?: string }
+  options?: {
+    playerRank?: HunterRank
+    seasonId?: string
+    themeMode?: ThemeMode
+  }
 ): string | null {
+  const themeMode = options?.themeMode ?? DEFAULT_THEME
   const seasonId = options?.seasonId ?? getActiveSeason()?.id
   const entries = listAssetManifestEntries()
   const match =
@@ -55,10 +68,10 @@ export function resolveAssetUrl(
   const fallback = fallbackAssetEntry(assetKey)
   // Prefer bundled /public paths — avoids Next image optimizer 400s on remote storage.
   if (fallback?.path.startsWith("/")) {
-    return fallback.path
+    return applyThemeToPath(fallback.path, themeMode)
   }
 
-  return match.path
+  return applyThemeToPath(match.path, themeMode)
 }
 
 export function resolveAssetsByCategory(

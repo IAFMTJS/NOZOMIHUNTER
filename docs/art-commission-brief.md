@@ -35,7 +35,7 @@ Palette: dark archive terminal — `#030508` base, accent violet `#7a5cff`, succ
 ## Technical requirements
 
 - **Format:** WebP primary, PNG fallback; SVG only for UI crest if needed
-- **Naming:** Match `asset_key` in [`content/seeds/asset-manifest.json`](../content/seeds/asset-manifest.json)
+- **Naming:** Match `asset_key` in [`content/seeds/asset-manifest.json`](../content/seeds/asset-manifest.json) — dark files use dot notation (`hero.home.command.webp`); light companions use `.light.webp` (`hero.home.command.light.webp`). Drop commission PNGs as `*-light.png` and run `npm run normalize:light`.
 - **Ingest:** `npm run ingest:assets` (updates Supabase `game-assets` bucket + `asset_manifest`)
 - **UI rule:** Features use `<GameAssetImage assetKey="…" />` — never hardcode paths
 
