@@ -18,7 +18,7 @@ import { GameAssetImage } from "@/components/ui/GameAssetImage"
 
 export function TrainingClient() {
   const router = useRouter()
-  const { user, player } = useHunterSession()
+  const { user, player, setHubView, setHubFocusQuestId } = useHunterSession()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -37,7 +37,9 @@ export function TrainingClient() {
       )
       const quest = await startTrainingMission(user.id, mode, player.level)
       if (quest) {
-        router.push(`/prepare?questId=${encodeURIComponent(quest.id)}`)
+        setHubFocusQuestId(quest.id)
+        setHubView("hunt")
+        router.push("/training")
       } else {
         setError("Training deployment unavailable. Retry in a moment.")
       }
@@ -60,12 +62,12 @@ export function TrainingClient() {
   const otherModes = TRAINING_GAME_MODES.filter((id) => id !== priorityId)
 
   return (
-    <HunterPage className="nozomi-screen-training space-y-6">
+    <HunterPage className="nozomi-screen-training space-y-4">
       <div>
         <p className="text-[10px] uppercase tracking-widest text-[var(--muted)]">
           Arcade channel
         </p>
-        <h1 className="font-display text-2xl text-[var(--foreground)]">
+        <h1 className="font-display text-xl text-[var(--foreground)]">
           Stabilization drills
         </h1>
       </div>

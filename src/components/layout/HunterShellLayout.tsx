@@ -52,7 +52,7 @@ export function HunterShellLayout({
         <header
           className={`pt-safe relative z-10 shrink-0 bg-gradient-to-b from-[var(--surface-header)] to-transparent backdrop-blur-md ${headerClassName}`}
         >
-          <div className="mx-auto flex max-w-lg items-center justify-between gap-3 px-4 py-3">
+          <div className="mx-auto flex max-w-lg items-center justify-between gap-3 px-4 py-2 sm:py-3">
             <span className="font-display text-sm font-semibold tracking-[0.2em] text-[var(--foreground)]">
               {title}
             </span>
@@ -70,7 +70,7 @@ export function HunterShellLayout({
           </div>
         </header>
 
-        <main className="hunter-main relative z-10 mx-auto w-full max-w-lg flex-1 px-4 pt-2">
+        <main className="hunter-main relative z-10 mx-auto w-full max-w-lg flex-1 px-3 pt-1 sm:px-4 sm:pt-2">
           {children}
         </main>
 

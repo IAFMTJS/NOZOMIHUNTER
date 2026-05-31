@@ -16,11 +16,10 @@ import {
   isPushConfigured,
   isPushOptIn,
   isPushSupported,
-  isStandalonePwa,
+  pushAlertsAvailabilityLabel,
   subscribeToPush,
   unsubscribeFromPush,
 } from "@/systems/retention/pushNotificationSystem"
-import { isIosDevice } from "@/systems/retention/pwaEnvironmentSystem"
 
 const REDUCED_MOTION_KEY = "nozomi-reduced-motion"
 
@@ -146,11 +145,7 @@ export function SettingsClient() {
             <div>
               <span className="block">Invasion alerts</span>
               <span className="text-xs text-[var(--muted)]">
-                {pushConfigured
-                  ? isIosDevice() && !isStandalonePwa()
-                    ? "Add to Home Screen first — iOS push requires installed PWA"
-                    : "Invasion alerts via GitHub scheduler"
-                  : "Set NEXT_PUBLIC_VAPID_PUBLIC_KEY to enable"}
+                {pushAlertsAvailabilityLabel()}
               </span>
             </div>
             <button

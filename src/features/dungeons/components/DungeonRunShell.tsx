@@ -20,7 +20,7 @@ export function DungeonRunShell({ run, children, minimal }: DungeonRunShellProps
   return (
     <div
       data-dungeon-theme={run.dungeon.theme.toLowerCase().replace(/_/g, "-")}
-      className={`relative overflow-hidden rounded-[var(--radius-panel)] ${dungeonRunShellClass(run)}`}
+      className={`relative min-h-[min(100dvh,48rem)] overflow-hidden rounded-[var(--radius-panel)] ${dungeonRunShellClass(run)}`}
     >
       <DungeonDomainBackdrop run={run} minimal={minimal} />
       <CorruptionDistortionLayer run={run} />

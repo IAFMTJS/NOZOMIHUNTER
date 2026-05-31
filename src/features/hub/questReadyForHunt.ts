@@ -1,21 +1,11 @@
 import type { QuestContract } from "@/contracts/quest-contract"
 import { hasActivePreparationPhase } from "@/systems/vocabulary/vocabularyPreparationOrchestrator"
+import { isQuestEncounterPlayable } from "@/systems/quests/questPlayabilitySystem"
 import type { HubView } from "./hubTypes"
 
 export function questReadyForHunt(quest: QuestContract): boolean {
   if (hasActivePreparationPhase(quest)) return false
-  switch (quest.type) {
-    case "VOCABULARY":
-      return (quest.vocabularyEncounter?.words.length ?? 0) > 0
-    case "CONVERSATION":
-      return (quest.conversationEncounter?.messages.length ?? 0) > 0
-    case "SPEECH":
-      return (quest.speechEncounter?.phrases.length ?? 0) > 0
-    case "LISTENING":
-      return (quest.listeningEncounter?.fragments.length ?? 0) > 0
-    default:
-      return false
-  }
+  return isQuestEncounterPlayable(quest)
 }
 
 export function defaultHubView(

@@ -18,6 +18,7 @@ import {
 } from "@/systems/quests/questPlayabilitySystem"
 import { EncounterFocusShell } from "@/components/ui/EncounterFocusShell"
 import { QuestContractActions } from "./QuestContractActions"
+import { isTrainingQuest } from "@/systems/training/trainingMissionSystem"
 import { MOTION } from "@/config/motionPresets"
 
 interface QuestCardProps {
@@ -235,6 +236,8 @@ export function QuestCard({
     />
   )
 
+  const trainingDrill = isTrainingQuest(quest)
+
   return (
     <motion.div
       layout
@@ -250,7 +253,28 @@ export function QuestCard({
         tone={inPreparationPhase ? "accent" : "default"}
         className="transition-colors"
       >
-        <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        {trainingDrill && !inPreparationPhase && hasEncounterUi && (
+          <div className="mb-3">
+            <QuestPreparationGate
+              quest={quest}
+              disabled={disabled}
+              onBriefingDismissed={onDismissPreparation}
+            >
+              <EncounterFocusShell
+                title={quest.title}
+                enabled={hasEncounterUi}
+                encounterClassName={encounterClassName}
+                footer={contractActions ?? undefined}
+              >
+                {encounterBlock}
+              </EncounterFocusShell>
+            </QuestPreparationGate>
+          </div>
+        )}
+
+        <div
+          className={`mb-2 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between ${trainingDrill ? "text-sm" : ""}`}
+        >
           <h3 className="font-display font-semibold leading-snug text-[var(--foreground)]">
             {quest.title}
             {quest.isTutorial && (
@@ -278,8 +302,11 @@ export function QuestCard({
           </div>
         )}
 
-        <p className="mb-3 text-sm text-[var(--muted)]">{quest.description}</p>
+        <p className={`text-[var(--muted)] ${trainingDrill ? "mb-2 text-xs" : "mb-3 text-sm"}`}>
+          {quest.description}
+        </p>
 
+        {!trainingDrill && (
         <QuestPreparationGate
           quest={quest}
           disabled={disabled}
@@ -288,7 +315,6 @@ export function QuestCard({
           <EncounterFocusShell
             title={quest.title}
             enabled={!inPreparationPhase && hasEncounterUi}
-            autoFocus
             encounterClassName={encounterClassName}
             footer={hasEncounterUi ? contractActions ?? undefined : undefined}
           >
@@ -296,7 +322,9 @@ export function QuestCard({
           </EncounterFocusShell>
           {!inPreparationPhase && hasEncounterUi && contractActions}
         </QuestPreparationGate>
+        )}
 
+        {trainingDrill && !inPreparationPhase && hasEncounterUi && contractActions}
         {!inPreparationPhase && !hasEncounterUi && contractActions}
       </Panel>
     </motion.div>

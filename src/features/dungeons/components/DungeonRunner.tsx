@@ -309,7 +309,6 @@ export function DungeonRunner(props: DungeonRunnerProps) {
               <EncounterFocusShell
                 title={quest.title}
                 enabled
-                autoFocus
                 encounterClassName={encounterClassName}
               >
                 {encounterBody}

@@ -171,8 +171,21 @@ export async function unsubscribeFromPush(userId: string): Promise<void> {
   }
 }
 
+export function pushAlertsAvailabilityLabel(): string {
+  if (!isPushSupported()) {
+    if (isIosDevice() && !isStandalonePwa()) {
+      return "Add NOZOMI to your Home Screen to enable alerts."
+    }
+    return "Notifications are not available on this device."
+  }
+  if (!vapidPublicKey()) {
+    return "Notifications are temporarily unavailable."
+  }
+  return "Invasion alerts — tap to enable."
+}
+
 export function pushUnavailableReason(): string | null {
-  if (!vapidPublicKey()) return "Push not configured on this deployment."
+  if (!vapidPublicKey()) return null
   if (isIosDevice() && !isStandalonePwa()) {
     return "On iPhone: Add to Home Screen, then open NOZOMI from the icon — Safari tabs cannot receive push."
   }

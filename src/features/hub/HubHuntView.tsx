@@ -1,6 +1,7 @@
 "use client"
 
 import type { QuestContract } from "@/contracts/quest-contract"
+import { isTrainingQuest } from "@/systems/training/trainingMissionSystem"
 import { Panel } from "@/components/ui/Panel"
 import { Button } from "@/components/ui/Button"
 import { QuestCard } from "@/features/quests/components/QuestCard"
@@ -34,7 +35,7 @@ export function HubHuntView({
       <HubScreenFrame
         variant="hunt"
         title="Active hunt"
-        subtitle="Encounter channel live. Maintain focus — signal errors stack corruption."
+        subtitle={activeHunt && isTrainingQuest(activeHunt) ? undefined : "Encounter channel live."}
       >
         {activeHunt ? (
           <>

@@ -34,7 +34,14 @@ export function EncounterHost() {
   if (hubView !== "hunt" && hubView !== "sector") return null
 
   return (
-    <div className="hunter-overlay-above-nav fixed inset-x-0 top-0 z-[90] overflow-y-auto bg-[var(--background)]">
+    <div
+      className="fixed inset-0 z-[90] flex flex-col bg-[var(--background)] pt-[env(safe-area-inset-top)]"
+      style={{
+        paddingBottom:
+          "calc(var(--hunter-nav-height) + max(0px, env(safe-area-inset-bottom)))",
+      }}
+    >
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-2">
       <ContractHub
         player={player}
         hunterPortraitClass={hunterPresentation.portraitClass}
@@ -86,6 +93,7 @@ export function EncounterHost() {
         onAbandon={quest.abandon}
         onDismissPreparation={quest.dismissPreparation}
       />
+      </div>
     </div>
   )
 }

@@ -23,7 +23,7 @@ export function HubScreenFrame({
   children,
 }: HubScreenFrameProps) {
   return (
-    <div className={`flex flex-col gap-6 ${VARIANT_CLASS[variant]}`}>
+    <div className={`flex flex-col gap-4 sm:gap-6 ${VARIANT_CLASS[variant]}`}>
       <header className="space-y-1">
         <p className="font-display text-xs uppercase tracking-[0.28em] text-[var(--muted)]">
           {title}
