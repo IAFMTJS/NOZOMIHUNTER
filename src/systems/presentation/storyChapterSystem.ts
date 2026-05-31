@@ -1,5 +1,7 @@
 import type { QuestContract } from "@/contracts/quest-contract"
+import type { PlayerContract } from "@/contracts/player-contract"
 import {
+  CHAPTER_TITLES,
   getQuestCatalogMeta,
   STORY_MISSION_PLACEHOLDERS,
   type StoryMissionPlaceholder,
@@ -30,10 +32,15 @@ export interface StoryChapterView {
   totalMissions: number
 }
 
+function resolveChapterTitle(chapterId: string, metaTitle?: string): string {
+  return metaTitle ?? CHAPTER_TITLES[chapterId] ?? chapterId
+}
+
 export function buildStoryChapters(
   mainStoryQuests: QuestContract[],
   completedQuests: QuestContract[],
-  completedIds: string[]
+  completedIds: string[],
+  player?: PlayerContract
 ): StoryChapterView[] {
   const completedMain = completedQuests.filter(
     (q) => q.narrativeTier === "MAIN" || q.isTutorial
@@ -41,11 +48,12 @@ export function buildStoryChapters(
 
   const chapterMap = new Map<string, StoryChapterView>()
 
-  function ensureChapter(chapterId: string, chapterTitle: string) {
+  function ensureChapter(chapterId: string, chapterTitle?: string) {
+    const title = resolveChapterTitle(chapterId, chapterTitle)
     if (!chapterMap.has(chapterId)) {
       chapterMap.set(chapterId, {
         chapterId,
-        chapterTitle,
+        chapterTitle: title,
         missions: [],
         progressPercent: 0,
         currentMissionIndex: 1,
@@ -57,10 +65,7 @@ export function buildStoryChapters(
 
   for (const q of completedMain) {
     const meta = getQuestCatalogMeta(q)
-    const chapter = ensureChapter(
-      meta.chapterId ?? "ch-01",
-      meta.chapterTitle ?? "Chapter 1"
-    )
+    const chapter = ensureChapter(meta.chapterId ?? "ch-01", meta.chapterTitle)
     chapter.missions.push({
       kind: "active",
       quest: q,
@@ -71,20 +76,20 @@ export function buildStoryChapters(
 
   for (const mainStory of mainStoryQuests) {
     const meta = getQuestCatalogMeta(mainStory)
-    const chapter = ensureChapter(
-      meta.chapterId ?? "ch-01",
-      meta.chapterTitle ?? "Chapter 1"
-    )
+    const chapter = ensureChapter(meta.chapterId ?? "ch-01", meta.chapterTitle)
     chapter.missions.push({
       kind: "active",
       quest: mainStory,
-      locked: !isQuestUnlocked(mainStory, completedIds),
+      locked: !isQuestUnlocked(mainStory, completedIds, player),
       missionIndex: meta.missionIndex ?? chapter.missions.length + 1,
     })
   }
 
   for (const placeholder of STORY_MISSION_PLACEHOLDERS) {
-    const chapter = ensureChapter(placeholder.chapterId, placeholder.chapterTitle)
+    const chapter = ensureChapter(
+      placeholder.chapterId,
+      placeholder.chapterTitle
+    )
     chapter.missions.push({
       kind: "placeholder",
       placeholder,

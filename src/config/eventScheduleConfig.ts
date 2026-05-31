@@ -64,16 +64,24 @@ export function getActiveSectorEvent(
   seed?: string
 ): SectorEventDefinition | null {
   if (!FEATURE_FLAGS.LIVE_SECTOR_EVENTS) return null
-  const week = isoWeekOfYear(new Date())
-  const matched = SECTOR_EVENT_SCHEDULE.find((e) => e.weekOfYear === week)
-  if (matched) return matched
-  const fallbackIndex = seed
-    ? hashSeed(seed) % SECTOR_EVENT_SCHEDULE.length
-    : week % SECTOR_EVENT_SCHEDULE.length
-  return SECTOR_EVENT_SCHEDULE[fallbackIndex] ?? null
+  return getWeeklyRotationEvent(seed)
 }
 
 export function sectorEventXpMultiplier(event: SectorEventDefinition | null): number {
   if (!event?.bonusXpPercent) return 1
   return 1 + event.bonusXpPercent / 100
+}
+
+/** Weekly rotation — cycles schedule when no fixed week match. */
+export function getWeeklyRotationEvent(
+  seed?: string,
+  date = new Date()
+): SectorEventDefinition {
+  const week = isoWeekOfYear(date)
+  const matched = SECTOR_EVENT_SCHEDULE.find((e) => e.weekOfYear === week)
+  if (matched) return matched
+  const index = seed
+    ? hashSeed(seed) % SECTOR_EVENT_SCHEDULE.length
+    : week % SECTOR_EVENT_SCHEDULE.length
+  return SECTOR_EVENT_SCHEDULE[index] ?? SECTOR_EVENT_SCHEDULE[0]!
 }

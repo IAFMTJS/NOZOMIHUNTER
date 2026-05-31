@@ -31,3 +31,16 @@ export function dailyMilestoneProgress(
     bonusReady: completed >= DAILY_MILESTONE_TARGET,
   }
 }
+
+export function dailyChainRemainingLabel(completed: number): string {
+  const remaining = Math.max(0, DAILY_MILESTONE_TARGET - completed)
+  if (remaining === 0) {
+    return `${DAILY_MILESTONE_TARGET}/${DAILY_MILESTONE_TARGET} clears — extraction bonus ready.`
+  }
+  return `${completed}/${DAILY_MILESTONE_TARGET} clears — ${remaining} more for extraction bonus.`
+}
+
+export function dailyChainStepReward(step: number): number {
+  if (step >= DAILY_MILESTONE_TARGET) return DAILY_MILESTONE_BONUS_CREDITS
+  return step === 2 ? Math.floor(DAILY_MILESTONE_BONUS_CREDITS / 2) : 0
+}

@@ -84,6 +84,91 @@ export const CONVERSATION_SCENARIOS: ConversationScenarioConfig[] = [
       },
     ],
   },
+  {
+    id: "iris-briefing",
+    title: "Iris Briefing",
+    description: "Iris assigns your first breach protocol.",
+    directorName: "Iris",
+    briefing: "Answer Iris with intent. Japanese replies earn trust.",
+    openingLine: "Hunter designation confirmed. 準備は整いましたか？",
+    openingLineReading: "junbi wa totonoimashita ka?",
+    requiredExchanges: 3,
+    responseFamilies: [
+      {
+        patterns: ["hai", "はい", "ready", "junbi", "準備"],
+        style: "formal",
+        qualityBonus: 0.15,
+      },
+    ],
+  },
+  {
+    id: "operator-seven",
+    title: "Operator Seven",
+    description: "A cold relay from Operator 7 tests your composure.",
+    directorName: "Operator 7",
+    briefing: "Decode the operator's implication under pressure.",
+    openingLine: "Channel open. 何が起きていますか？",
+    openingLineReading: "nani ga okite imasu ka?",
+    requiredExchanges: 3,
+    responseFamilies: [
+      {
+        patterns: ["signal", "corruption", "信号", "腐敗", "mieru"],
+        style: "hybrid",
+        qualityBonus: 0.12,
+      },
+    ],
+  },
+  {
+    id: "static-confession",
+    title: "Static Confession",
+    description: "Iris admits less than she knows.",
+    directorName: "Iris",
+    briefing: "Read between the lines. Trust shifts here.",
+    openingLine: "The registry knew your name before you logged in. 説明できますか？",
+    openingLineReading: "setsumei dekimasu ka?",
+    requiredExchanges: 4,
+    responseFamilies: [
+      {
+        patterns: ["explain", "why", "なぜ", "doushite", "registry"],
+        style: "formal",
+        qualityBonus: 0.12,
+      },
+    ],
+  },
+  {
+    id: "iris-truth",
+    title: "Iris Truth",
+    description: "Iris withholds the location of Nozomi.",
+    directorName: "Iris",
+    briefing: "Press carefully. Wrong tone closes the channel.",
+    openingLine: "Nozomi is not what the archive says. 信じますか？",
+    openingLineReading: "shinjimasu ka?",
+    requiredExchanges: 4,
+    responseFamilies: [
+      {
+        patterns: ["trust", "believe", "信じ", "nozomi", "望み"],
+        style: "formal",
+        qualityBonus: 0.15,
+      },
+    ],
+  },
+  {
+    id: "broken-signal-finale",
+    title: "Broken Signal Finale",
+    description: "Season finale — the signal speaks in perfect grammar.",
+    directorName: "Unknown",
+    briefing: "Semantic network active. Connect the fragments.",
+    openingLine: "望みは記録ではない。 What does that mean to you?",
+    openingLineReading: "nozomi wa kiroku dewa nai.",
+    requiredExchanges: 5,
+    responseFamilies: [
+      {
+        patterns: ["hope", "record", "望み", "記録", "truth", "真実"],
+        style: "hybrid",
+        qualityBonus: 0.2,
+      },
+    ],
+  },
 ]
 
 export function getConversationScenario(id: string): ConversationScenarioConfig {

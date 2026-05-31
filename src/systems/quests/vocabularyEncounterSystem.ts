@@ -18,6 +18,8 @@ import { getMasteryMap, recordWordAnswer } from "@/systems/mastery/masterySystem
 import { advanceObjective } from "./questValidator"
 import { eventBus } from "@/systems/events/eventBus"
 import { GAME_EVENTS } from "@/systems/events/eventTypes"
+import { pickFromSectorPool } from "@/systems/vocabulary/sectorWordPoolSystem"
+import type { SectorId } from "@/contracts/sector-contract"
 import { advanceSurvivalWave } from "@/systems/training/survivalVocabSystem"
 
 export function pickVocabularyWords(count: number): VocabularyWordContract[] {
@@ -35,9 +37,12 @@ export function pickVocabularyWords(count: number): VocabularyWordContract[] {
 }
 
 export function createVocabularyEncounter(
-  wordCount: number
+  wordCount: number,
+  sectorId?: SectorId | string
 ): VocabularyEncounterContract {
-  const words = pickVocabularyWords(wordCount)
+  const words = sectorId
+    ? pickFromSectorPool(wordCount, sectorId)
+    : pickVocabularyWords(wordCount)
   return {
     words,
     currentIndex: 0,

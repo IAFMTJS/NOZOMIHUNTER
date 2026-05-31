@@ -7,12 +7,19 @@ import { listAvailableDungeons } from "@/config/dungeonConfig"
 import { FEATURE_FLAGS } from "@/config/features"
 import { getActiveSectorEvent } from "@/config/eventScheduleConfig"
 import { resolveLiveRewardModifiers } from "@/systems/live/liveEventModifierSystem"
-import { getActiveLanguageInvasion } from "@/systems/retention/languageInvasionSystem"
+import {
+  getActiveLanguageInvasion,
+  invasionCorruptionDrift,
+} from "@/systems/retention/languageInvasionSystem"
 import { buildContractCatalog } from "@/systems/quests/contractCatalogSystem"
 import {
   dailyMilestoneProgress,
   DAILY_MILESTONE_TARGET,
+  dailyChainRemainingLabel,
 } from "@/systems/quests/dailyMilestoneSystem"
+import { getNextStoryMission } from "@/systems/content/seasonContentLoader"
+import { resolveStoryProgress } from "@/systems/narrative/storyProgressSystem"
+import { resolveNarrativePhase } from "@/config/seasonConfig"
 
 export interface OperationalAlert {
   id: string
@@ -46,6 +53,7 @@ export interface AnomalyFeedItem {
   id: string
   label: string
   detail: string
+  recoveryHref?: string
 }
 
 export interface OperationalFeedSnapshot {
@@ -55,6 +63,7 @@ export interface OperationalFeedSnapshot {
   sectorActivity: SectorActivityItem[]
   anomalies: AnomalyFeedItem[]
   activeBoostCount: number
+  storyAlerts: OperationalAlert[]
 }
 
 export function buildOperationalFeed(
@@ -67,8 +76,33 @@ export function buildOperationalFeed(
   const catalog = buildContractCatalog(activeQuests)
   const boosts = activeBoostsForPlayer(player)
   const alerts: OperationalAlert[] = []
+  const storyAlerts: OperationalAlert[] = []
   const instability: InstabilityFeedItem[] = []
   const anomalies: AnomalyFeedItem[] = []
+
+  const storyProgress = resolveStoryProgress(player)
+  const nextStory = getNextStoryMission(player)
+  const narrativePhase = resolveNarrativePhase(storyProgress.completedBeatIds.length)
+
+  if (nextStory) {
+    storyAlerts.push({
+      id: "story-next-beat",
+      tone: "accent",
+      headline: `Act ${narrativePhase.title} — ${nextStory.title}`,
+      detail: `${nextStory.titleJa} · Beat ${nextStory.missionIndex}/24 awaiting deployment.`,
+      recoveryHref: `/contracts`,
+    })
+  }
+
+  if (storyProgress.irisTrustTier === "COOPERATIVE") {
+    storyAlerts.push({
+      id: "iris-whisper-tier",
+      tone: "accent",
+      headline: "Iris trust: cooperative",
+      detail: "Japanese mission copy unlocked — whispers may appear on home.",
+      recoveryHref: "/contacts",
+    })
+  }
 
   if (player.synchronization.atRisk) {
     alerts.push({
@@ -85,7 +119,7 @@ export function buildOperationalFeed(
       id: "daily-milestone",
       tone: "accent",
       headline: "Daily contract chain",
-      detail: `${milestone.completed}/${DAILY_MILESTONE_TARGET} clears — bonus at third extraction.`,
+      detail: dailyChainRemainingLabel(milestone.completed),
       recoveryHref: "/contracts",
     })
   }
@@ -147,10 +181,18 @@ export function buildOperationalFeed(
 
   const invasion = getActiveLanguageInvasion(seed)
   if (invasion) {
+    const drift = invasionCorruptionDrift(invasion)
     anomalies.push({
       id: invasion.id,
       label: invasion.headline,
-      detail: invasion.detail,
+      detail: `${invasion.detail}${drift > 0 ? ` · Corruption drift +${drift}%` : ""}`,
+      recoveryHref: "/contracts?channel=anomaly",
+    })
+    instability.push({
+      id: "invasion-drift",
+      label: "Language invasion drift",
+      value: drift > 0 ? `+${drift}%` : "—",
+      severity: drift >= 3 ? "high" : drift >= 1 ? "medium" : "low",
     })
   }
 
@@ -166,6 +208,7 @@ export function buildOperationalFeed(
         id: event.id,
         label: event.title,
         detail: `${event.description}${bonus}`,
+        recoveryHref: "/contracts",
       })
     }
   }
@@ -205,6 +248,7 @@ export function buildOperationalFeed(
 
   return {
     alerts,
+    storyAlerts,
     contractRotation,
     instability,
     sectorActivity,

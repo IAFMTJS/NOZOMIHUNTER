@@ -1,10 +1,19 @@
 # Current Architecture
 
+Last updated: v3.2.0 — Season 1 Crave Masterplan. See `docs/crave-doctrine.md`, `docs/season-01-broken-signal-bible.md`, `docs/content-pipeline.md`.
 
+## Season 1 narrative stack (v3.2)
 
-Last updated: v1.5.0 — Dungeon orchestrator split; immersion roadmap in progress (see `docs/immersion-rework-masterplan.md`)
+| Layer | Location |
+|-------|----------|
+| Authored missions | `content/seasons/season-01-broken-signal/` |
+| Story progress (client + DB) | `storyProgressSystem`, migration `026_player_story_progress` |
+| Beat-gated archive | `archiveSystem` + `content/seeds/content-archive.json` |
+| Dungeon encounter scripts | `encounterScriptSystem`, `encounterScriptsConfig` |
+| Japanese-as-key | `japaneseKeySystem`, `corruptedLanguageSystem` |
+| Word entity passives | `wordPassiveSystem` → `questCompletionRewardSystem` |
 
-
+Content ingest: `npm run build:content-seeds` → `sync:content-contracts` → `validate:content` → `ingest:content`.
 
 ## Implemented
 

@@ -12,11 +12,14 @@
     "lint": "next lint",
     "check:architecture": "node scripts/check-architecture.mjs",
     "check:gdd-governance": "node scripts/check-gdd-governance.mjs",
+    "validate:content": "node scripts/validate-content.mjs",
     "check:visual": "node scripts/visual-audit.mjs",
     "ingest:content": "tsx scripts/ingest-content.ts",
     "ingest:assets": "tsx scripts/ingest-assets.ts",
     "generate:assets": "node scripts/generate-placeholder-assets.mjs",
     "generate:content-seeds": "node scripts/generate-content-seeds.mjs",
+    "build:content-seeds": "node scripts/build-content-seeds.mjs",
+    "sync:content-contracts": "node scripts/sync-content-contracts.mjs",
     "convert:webp": "node scripts/convert-png-to-webp.mjs",
     "normalize:light": "node scripts/normalize-light-assets.mjs",
     "verify:deploy": "node scripts/verify-deploy.mjs",
@@ -33,7 +36,8 @@
     "db:diff": "supabase db diff -f",
     "db:migration:new": "supabase migration new",
     "ingest:jmdict": "tsx scripts/ingest-jmdict.ts",
-    "build:curated": "tsx scripts/extract-jmdict-curated.ts --"
+    "build:curated": "tsx scripts/extract-jmdict-curated.ts --",
+    "push:send": "node scripts/send-push-notifications.mjs"
   },
   "dependencies": {
     "@fontsource/barlow-condensed": "^5.2.8",
@@ -61,6 +65,7 @@
     "tailwindcss": "^4.0.17",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.7",
+    "web-push": "^3.6.7"
   }
 }

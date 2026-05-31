@@ -3,6 +3,7 @@ import type {
   PendingRewardBundleContract,
   PlayerEconomyContract,
 } from "./economy-contract"
+import type { StoryProgressContract } from "./narrative-contract"
 
 export interface HunterIdentityContract {
   codename: string
@@ -51,6 +52,9 @@ export interface PlayerContract {
   trackedQuestId: string | null
 
   pendingRewards: PendingRewardBundleContract | null
+
+  /** Season narrative state — persisted in player_story_progress when synced. */
+  storyProgress?: StoryProgressContract
 
   createdAt: string
   updatedAt: string

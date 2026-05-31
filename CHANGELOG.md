@@ -1,5 +1,29 @@
 # Changelog
 
+## v3.2.0 (unreleased) — Season 1 Crave Masterplan
+
+### Narrative & content pipeline
+- Season 1 bible docs: `docs/crave-doctrine.md`, `docs/season-01-broken-signal-bible.md`, `docs/sector-registry-spec.md`
+- 24 authored story missions + 30 side contracts; `sync:content-contracts` + `validate:content` governance
+- `content-story-beats.json`, `content-encounter-scripts.json`, 53 archive fragments with beat gates + `japanese_excerpt`
+- Migration `026_player_story_progress.sql` — story progress, beats, encounter scripts catalog
+- `storyProgressSystem`, `seasonContentLoader`, Iris dialogue trees, beat-based unlock graph
+
+### Dungeons & encounters
+- `encounterScriptSystem` + route graphs with STORY/RECOVERY/TREASURE/ELITE rooms
+- `encounterScaleSystem` level-scaled word/listening budgets
+- `dungeonEncounterFactory` rewrite for script-mounted mode composition
+- Expanded boss phases + Hollow Monk master
+
+### Crave loop
+- Operational feed whispers, language invasions, archive/word bind ceremonies
+- Season narrative phases on `SeasonProgressChip`; PWA push stub with invasion deep links
+- Japanese-as-key (`japaneseKeySystem`) + corrupted language integration
+
+### Tests & docs
+- New tests: encounter scale, story progress, japanese key, encounter scripts
+- Updated `flows/story-template-ingest.md`, `docs/content-pipeline.md`, system registry
+
 ## v3.1.1 (unreleased) — Deploy + art MVP slice
 
 ### Step 1 — Remote activation

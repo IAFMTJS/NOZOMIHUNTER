@@ -1,38 +1,10 @@
 [
   {
-    "id": "whisper-index",
-    "title": "Whisper index — fragment 0",
-    "teaser": "They recorded the corridor before the lights failed.",
-    "lore_excerpt": "…sector seven went dark at 03:12.",
-    "min_rank": null
-  },
-  {
-    "id": "corridor-zero",
-    "title": "Corridor zero manifest",
-    "teaser": "First breach log before the neon grid stabilized.",
-    "lore_excerpt": "Operator 7 marked corridor zero as expendable.",
-    "min_rank": null
-  },
-  {
-    "id": "neon-grid-failure",
-    "title": "Neon grid failure log",
-    "teaser": "First documented cascade in corridor seven.",
-    "lore_excerpt": "The grid tried to correct itself.",
-    "min_rank": null
-  },
-  {
     "id": "operator-oath",
     "title": "Operator oath — redacted",
     "teaser": "Rank-gated discipline vows.",
     "lore_excerpt": "I will not read forbidden glyphs aloud.",
     "min_rank": "B"
-  },
-  {
-    "id": "void-priest-fragment",
-    "title": "Void priest fragment",
-    "teaser": "Recovered from abyss telemetry.",
-    "lore_excerpt": "The priest speaks in perfect grammar.",
-    "min_rank": "A"
   },
   {
     "id": "fracture-week-memo",
@@ -48,13 +20,6 @@
     "min_rank": null
   },
   {
-    "id": "semantic-collapse",
-    "title": "Semantic collapse report",
-    "teaser": "Entity hunt telemetry — sector 12.",
-    "lore_excerpt": "Words stopped meaning what they meant.",
-    "min_rank": "C"
-  },
-  {
     "id": "panic-channel-log",
     "title": "Panic channel intercept",
     "teaser": "Emergency dialogue capture.",
@@ -65,18 +30,6 @@
     "title": "Relic field manual",
     "teaser": "Equipment stacking rules.",
     "min_rank": null
-  },
-  {
-    "id": "warden-phase-two",
-    "title": "Warden phase two transcript",
-    "teaser": "Boss integrity breach at 40%.",
-    "min_rank": "B"
-  },
-  {
-    "id": "extraction-oath",
-    "title": "Extraction ceremony oath",
-    "teaser": "Spoken at gate clear.",
-    "min_rank": "S"
   },
   {
     "id": "mirror-hunter-echo",
@@ -101,12 +54,6 @@
     "title": "Gate devourer seal rubbings",
     "teaser": "Abyss core wall inscriptions.",
     "min_rank": "A"
-  },
-  {
-    "id": "iris-routing-table",
-    "title": "Iris routing table",
-    "teaser": "Spectral NPC channel map.",
-    "min_rank": null
   },
   {
     "id": "forbidden-kanji-chain",
@@ -156,5 +103,365 @@
     "title": "Void cartography shard",
     "teaser": "Unmapped coordinates.",
     "min_rank": "A"
+  },
+  {
+    "id": "corridor-zero",
+    "title": "First Glyph — archive shard",
+    "teaser": "Recovered during First Glyph.",
+    "lore_excerpt": "First Glyph — Season 1 main operation.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m02",
+    "required_beat_id": "beat-s01-002",
+    "japanese_excerpt": "第一の文字"
+  },
+  {
+    "id": "whisper-index",
+    "title": "Iris Briefing — archive shard",
+    "teaser": "Recovered during Iris Briefing.",
+    "lore_excerpt": "Iris Briefing — Season 1 main operation.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m04",
+    "required_beat_id": "beat-s01-004",
+    "japanese_excerpt": "アイリスブリーフィング"
+  },
+  {
+    "id": "neon-grid-failure",
+    "title": "Operator Seven — archive shard",
+    "teaser": "Recovered during Operator Seven.",
+    "lore_excerpt": "Operator Seven — Season 1 main operation.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m11",
+    "required_beat_id": "beat-s01-011",
+    "japanese_excerpt": "オペレーター七"
+  },
+  {
+    "id": "warden-phase-two",
+    "title": "Warden Rematch — archive shard",
+    "teaser": "Recovered during Warden Rematch.",
+    "lore_excerpt": "Warden Rematch — Season 1 main operation.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m14",
+    "required_beat_id": "beat-s01-014",
+    "japanese_excerpt": "監視者再戦"
+  },
+  {
+    "id": "iris-routing-table",
+    "title": "Static Confession — archive shard",
+    "teaser": "Recovered during Static Confession.",
+    "lore_excerpt": "Static Confession — Season 1 main operation.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m15",
+    "required_beat_id": "beat-s01-015",
+    "japanese_excerpt": "静止告白"
+  },
+  {
+    "id": "semantic-collapse",
+    "title": "Shadow Breach — archive shard",
+    "teaser": "Recovered during Shadow Breach.",
+    "lore_excerpt": "Shadow Breach — Season 1 main operation.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m20",
+    "required_beat_id": "beat-s01-020",
+    "japanese_excerpt": "影の突破"
+  },
+  {
+    "id": "void-priest-fragment",
+    "title": "Abyss Probe — archive shard",
+    "teaser": "Recovered during Abyss Probe.",
+    "lore_excerpt": "Abyss Probe — Season 1 main operation.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m23",
+    "required_beat_id": "beat-s01-023",
+    "japanese_excerpt": "深淵探査"
+  },
+  {
+    "id": "extraction-oath",
+    "title": "Broken Signal Finale — archive shard",
+    "teaser": "Recovered during Broken Signal Finale.",
+    "lore_excerpt": "Broken Signal Finale — Season 1 main operation.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m24",
+    "required_beat_id": "beat-s01-024",
+    "japanese_excerpt": "壊れた信号"
+  },
+  {
+    "id": "hunter-oath-e",
+    "title": "Hunter oath — rank E",
+    "teaser": "Registry induction vows.",
+    "lore_excerpt": "Registry induction vows.",
+    "min_rank": null,
+    "linked_contract_id": null,
+    "required_beat_id": "beat-s01-001",
+    "japanese_excerpt": "ハンター誓約"
+  },
+  {
+    "id": "glyph-resonance",
+    "title": "Glyph resonance chart",
+    "teaser": "First alphabet harmonics.",
+    "lore_excerpt": "First alphabet harmonics.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m02",
+    "required_beat_id": "beat-s01-002",
+    "japanese_excerpt": "共鳴の文字"
+  },
+  {
+    "id": "temple-static",
+    "title": "Temple static sample",
+    "teaser": "Prayer line under noise.",
+    "lore_excerpt": "Prayer line under noise.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m03",
+    "required_beat_id": "beat-s01-003",
+    "japanese_excerpt": "寺院の雑音"
+  },
+  {
+    "id": "iris-handshake",
+    "title": "Iris handshake log",
+    "teaser": "Trust channel opened.",
+    "lore_excerpt": "Trust channel opened.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m04",
+    "required_beat_id": "beat-s01-004",
+    "japanese_excerpt": "信頼ハンドシェイク"
+  },
+  {
+    "id": "forgotten-prayer",
+    "title": "Forgotten prayer reel",
+    "teaser": "Names erased from registry.",
+    "lore_excerpt": "Names erased from registry.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m06",
+    "required_beat_id": "beat-s01-006",
+    "japanese_excerpt": "消された祈り"
+  },
+  {
+    "id": "kanji-surgery-note",
+    "title": "Kanji surgery note",
+    "teaser": "Restoration incisions.",
+    "lore_excerpt": "Restoration incisions.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m07",
+    "required_beat_id": "beat-s01-007",
+    "japanese_excerpt": "文字修復記録"
+  },
+  {
+    "id": "hollow-monk-whisper",
+    "title": "Hollow Monk whisper",
+    "teaser": "Gate guardian foreshadow.",
+    "lore_excerpt": "Gate guardian foreshadow.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m08",
+    "required_beat_id": "beat-s01-008",
+    "japanese_excerpt": "虚ろ僧の囁き"
+  },
+  {
+    "id": "broadcast-fragment",
+    "title": "Broadcast fragment 7",
+    "teaser": "Distorted carrier wave.",
+    "lore_excerpt": "Distorted carrier wave.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m09",
+    "required_beat_id": "beat-s01-009",
+    "japanese_excerpt": "放送断片"
+  },
+  {
+    "id": "neon-infiltration-brief",
+    "title": "Neon infil brief",
+    "teaser": "Corridor seven map.",
+    "lore_excerpt": "Corridor seven map.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m10",
+    "required_beat_id": "beat-s01-010",
+    "japanese_excerpt": "潜入指令"
+  },
+  {
+    "id": "operator-seven-memo",
+    "title": "Operator Seven memo",
+    "teaser": "Panic channel excerpt.",
+    "lore_excerpt": "Panic channel excerpt.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m11",
+    "required_beat_id": "beat-s01-011",
+    "japanese_excerpt": "七番の覚書"
+  },
+  {
+    "id": "emergency-transcript",
+    "title": "Emergency transcript",
+    "teaser": "Speech relay failure.",
+    "lore_excerpt": "Speech relay failure.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m12",
+    "required_beat_id": "beat-s01-012",
+    "japanese_excerpt": "緊急通話記録"
+  },
+  {
+    "id": "corridor-breach-log",
+    "title": "Corridor breach log",
+    "teaser": "Neon corridor deploy.",
+    "lore_excerpt": "Neon corridor deploy.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m13",
+    "required_beat_id": "beat-s01-013",
+    "japanese_excerpt": "回廊突破記録"
+  },
+  {
+    "id": "warden-rematch-telemetry",
+    "title": "Warden rematch telemetry",
+    "teaser": "Phase integrity dips.",
+    "lore_excerpt": "Phase integrity dips.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m14",
+    "required_beat_id": "beat-s01-014",
+    "japanese_excerpt": "監視者再戦データ"
+  },
+  {
+    "id": "static-confession-clip",
+    "title": "Static confession clip",
+    "teaser": "Iris omits a name.",
+    "lore_excerpt": "Iris omits a name.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m15",
+    "required_beat_id": "beat-s01-015",
+    "japanese_excerpt": "静止告白"
+  },
+  {
+    "id": "signal-crown-rubric",
+    "title": "Signal crown rubric",
+    "teaser": "Survival vocab crown.",
+    "lore_excerpt": "Survival vocab crown.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m16",
+    "required_beat_id": "beat-s01-016",
+    "japanese_excerpt": "信号の冠"
+  },
+  {
+    "id": "lexicon-debt-ledger",
+    "title": "Lexicon debt ledger",
+    "teaser": "Memory cascade IOU.",
+    "lore_excerpt": "Memory cascade IOU.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m17",
+    "required_beat_id": "beat-s01-017",
+    "japanese_excerpt": "語彙負債台帳"
+  },
+  {
+    "id": "archivist-contact",
+    "title": "Archivist contact sheet",
+    "teaser": "Shadow briefing stub.",
+    "lore_excerpt": "Shadow briefing stub.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m18",
+    "required_beat_id": "beat-s01-018",
+    "japanese_excerpt": "記録官連絡"
+  },
+  {
+    "id": "memory-vault-key",
+    "title": "Memory vault key",
+    "teaser": "Listening vault access.",
+    "lore_excerpt": "Listening vault access.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m19",
+    "required_beat_id": "beat-s01-019",
+    "japanese_excerpt": "記憶保管庫"
+  },
+  {
+    "id": "shadow-breach-report",
+    "title": "Shadow breach report",
+    "teaser": "Archivist boss aftermath.",
+    "lore_excerpt": "Archivist boss aftermath.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m20",
+    "required_beat_id": "beat-s01-020",
+    "japanese_excerpt": "影突破報告"
+  },
+  {
+    "id": "forbidden-index-page",
+    "title": "Forbidden index page",
+    "teaser": "Entity hunt index.",
+    "lore_excerpt": "Entity hunt index.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m21",
+    "required_beat_id": "beat-s01-021",
+    "japanese_excerpt": "禁断索引"
+  },
+  {
+    "id": "iris-truth-fragment",
+    "title": "Iris truth fragment",
+    "teaser": "Lie by omission decoded.",
+    "lore_excerpt": "Lie by omission decoded.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m22",
+    "required_beat_id": "beat-s01-022",
+    "japanese_excerpt": "真実の断片"
+  },
+  {
+    "id": "abyss-probe-data",
+    "title": "Abyss probe data",
+    "teaser": "Void priest telemetry.",
+    "lore_excerpt": "Void priest telemetry.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m23",
+    "required_beat_id": "beat-s01-023",
+    "japanese_excerpt": "深淵探査"
+  },
+  {
+    "id": "finale-oath-echo",
+    "title": "Finale oath echo",
+    "teaser": "Broken signal closure.",
+    "lore_excerpt": "Broken signal closure.",
+    "min_rank": null,
+    "linked_contract_id": "story-s01-m24",
+    "required_beat_id": "beat-s01-024",
+    "japanese_excerpt": "最終誓約"
+  },
+  {
+    "id": "side-distorted-broadcast",
+    "title": "Side — distorted broadcast",
+    "teaser": "Anomaly side contract lore.",
+    "lore_excerpt": "Anomaly side contract lore.",
+    "min_rank": null,
+    "linked_contract_id": null,
+    "required_beat_id": null,
+    "japanese_excerpt": "歪んだ放送"
+  },
+  {
+    "id": "side-broken-meanings",
+    "title": "Side — broken meanings",
+    "teaser": "Semantic drift field notes.",
+    "lore_excerpt": "Semantic drift field notes.",
+    "min_rank": null,
+    "linked_contract_id": null,
+    "required_beat_id": null,
+    "japanese_excerpt": "壊れた意味"
+  },
+  {
+    "id": "side-neon-drift",
+    "title": "Side — neon drift",
+    "teaser": "Corridor drift memo.",
+    "lore_excerpt": "Corridor drift memo.",
+    "min_rank": null,
+    "linked_contract_id": null,
+    "required_beat_id": "beat-s01-010",
+    "japanese_excerpt": "ネオンドリフト"
+  },
+  {
+    "id": "side-registry-echo",
+    "title": "Side — registry echo",
+    "teaser": "Duplicate hunter IDs.",
+    "lore_excerpt": "Duplicate hunter IDs.",
+    "min_rank": null,
+    "linked_contract_id": null,
+    "required_beat_id": "beat-s01-005",
+    "japanese_excerpt": "レジストリ反響"
+  },
+  {
+    "id": "side-whisper-cache",
+    "title": "Side — whisper cache",
+    "teaser": "Cached whispers pre-purge.",
+    "lore_excerpt": "Cached whispers pre-purge.",
+    "min_rank": null,
+    "linked_contract_id": null,
+    "required_beat_id": "beat-s01-004",
+    "japanese_excerpt": "囁きキャッシュ"
   }
 ]

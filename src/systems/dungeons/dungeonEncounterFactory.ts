@@ -22,6 +22,13 @@ import {
   isMasterRuleActive,
 } from "./dungeonMasterRuleSystem"
 import type { DungeonRunContract } from "@/contracts/dungeon-contract"
+import type { RoomType } from "@/contracts/encounter-script-contract"
+import { resolveNodeEncounterContent } from "@/config/dungeonEncounterContentConfig"
+import {
+  resolveListeningFragmentCount,
+  resolveWordCount,
+} from "@/systems/learning/encounterScaleSystem"
+import { applyGameModeToQuest } from "@/systems/gameModes/gameModeQuestBuilder"
 
 export interface MountedEncounterPayload {
   activeType: EncounterType | "BOSS"
@@ -38,6 +45,11 @@ export interface MountContext {
   challengeDirection?: ChallengePromptDirection
   wordCount?: number
   dungeonRun?: DungeonRunContract
+  nodeId?: string
+  dungeonKey?: string
+  roomType?: RoomType
+  scenarioId?: string
+  gameMode?: import("@/contracts/game-mode-contract").GameModeId
 }
 
 export interface BossMountOptions {
@@ -75,39 +87,111 @@ function applyCombatToVocabulary(
   }
 }
 
+function scaleContext(ctx?: MountContext): MountContext | undefined {
+  if (!ctx) return ctx
+  const level = ctx.playerLevel ?? 1
+  const danger = ctx.dungeonRun?.routeGraph?.nodes[ctx.nodeId ?? ""]?.danger
+  const roomType = ctx.roomType
+  const scaleContext =
+    roomType === "ELITE" ? "dungeon-elite" : ("dungeon-sector" as const)
+  return {
+    ...ctx,
+    wordCount:
+      ctx.wordCount ??
+      resolveWordCount({ context: scaleContext, playerLevel: level, danger }),
+  }
+}
+
+function applyNodeContent(ctx?: MountContext): MountContext | undefined {
+  if (!ctx?.dungeonKey || !ctx.nodeId) return scaleContext(ctx)
+  const content = resolveNodeEncounterContent(ctx.dungeonKey, ctx.nodeId)
+  if (!content) return scaleContext(ctx)
+  return scaleContext({
+    ...ctx,
+    gameMode: content.gameMode ?? ctx.gameMode,
+    scenarioId: content.scenarioId ?? ctx.scenarioId,
+    roomType: content.roomType ?? ctx.roomType,
+  })
+}
+
+function wrapWithGameMode(
+  payload: MountedEncounterPayload,
+  ctx?: MountContext
+): MountedEncounterPayload {
+  const mode = ctx?.gameMode
+  if (!mode || mode === "STANDARD") return payload
+  const quest = applyGameModeToQuest(
+    {
+      id: "dungeon-mode",
+      type: "VOCABULARY",
+      title: ctx?.sectorLabel ?? "Sector",
+      description: "Dungeon mode segment",
+      difficulty: "NORMAL",
+      rewards: { xp: 0, credits: 0, items: [] },
+      objectives: [],
+      gameMode: mode,
+    },
+    mode
+  )
+  return {
+    activeType: payload.activeType,
+    vocabularyEncounter: quest.vocabularyEncounter ?? payload.vocabularyEncounter,
+    listeningEncounter: quest.listeningEncounter ?? payload.listeningEncounter,
+    conversationEncounter:
+      quest.conversationEncounter ?? payload.conversationEncounter,
+    speechEncounter: quest.speechEncounter ?? payload.speechEncounter,
+  }
+}
+
 export function mountSectorEncounter(
   type: EncounterType,
   sectorLabel: string,
   ctx?: MountContext
 ): MountedEncounterPayload {
   const label = ctx?.sectorLabel ?? sectorLabel
+  const resolved = applyNodeContent(ctx)
+  const scenarioId = resolved?.scenarioId ?? "gate-check"
   switch (type) {
     case "VOCAB":
-      return {
-        activeType: "VOCAB",
-        vocabularyEncounter: applyCombatToVocabulary(
-          {} as QuestContract,
-          ctx
-        ),
-      }
+      return wrapWithGameMode(
+        {
+          activeType: "VOCAB",
+          vocabularyEncounter: applyCombatToVocabulary(
+            {} as QuestContract,
+            resolved
+          ),
+        },
+        resolved
+      )
     case "LISTENING":
-      return {
-        activeType: "LISTENING",
-        listeningEncounter: createListeningEncounter(
-          DUNGEON_CONFIG.LISTENING_FRAGMENT_COUNT,
-          `Sector ${label}: decode the transmission. Match romaji, kana, or English.`
-        ),
-      }
+      return wrapWithGameMode(
+        {
+          activeType: "LISTENING",
+          listeningEncounter: createListeningEncounter(
+            resolveListeningFragmentCount(resolved?.playerLevel ?? 1),
+            resolved?.sectorLabel
+              ? `Sector ${label}: decode the transmission. Match romaji, kana, or English.`
+              : `Sector ${label}: decode the transmission. Match romaji, kana, or English.`
+          ),
+        },
+        resolved
+      )
     case "NPC":
-      return {
-        activeType: "NPC",
-        conversationEncounter: createConversationEncounter("gate-check", 2),
-      }
+      return wrapWithGameMode(
+        {
+          activeType: "NPC",
+          conversationEncounter: createConversationEncounter(scenarioId, 2),
+        },
+        resolved
+      )
     case "SPEECH":
-      return {
-        activeType: "SPEECH",
-        speechEncounter: createSpeechEncounter("gate-check"),
-      }
+      return wrapWithGameMode(
+        {
+          activeType: "SPEECH",
+          speechEncounter: createSpeechEncounter(scenarioId),
+        },
+        resolved
+      )
     default:
       throw new Error(`Unsupported sector encounter: ${type}`)
   }

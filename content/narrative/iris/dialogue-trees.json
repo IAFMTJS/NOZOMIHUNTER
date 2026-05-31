@@ -1,0 +1,86 @@
+{
+  "npcKey": "iris",
+  "trustTiers": ["UNKNOWN", "OBSERVING", "COOPERATIVE", "TRUSTED", "CONFIDANT"],
+  "branches": {
+    "greeting": {
+      "UNKNOWN": [
+        "Channel open. I am Iris — sector analyst for your designation.",
+        "Registry routed you here. State your clearance when ready."
+      ],
+      "OBSERVING": [
+        "You're back on-channel. チャンネルは開いています。",
+        "Signal stable. I've been watching your breach vectors."
+      ],
+      "COOPERATIVE": [
+        "帰還を確認。Mission telemetry looks cleaner today.",
+        "Your glyph recall is improving — the archive noticed."
+      ],
+      "TRUSTED": [
+        "信頼リンク確立。I'll omit the English when you don't need it.",
+        "Hunter designation verified. 静寂の信号が近い。"
+      ],
+      "CONFIDANT": [
+        "望みは記録ではない — but you aren't ready for that file yet.",
+        "Full trust vector. 私は省略しない。Ask what the whisper meant."
+      ]
+    },
+    "briefing": {
+      "UNKNOWN": [
+        "Stick to the ritual board until your rank stabilizes.",
+        "Main contracts index story chapters — extract in mission order."
+      ],
+      "OBSERVING": [
+        "Daily rituals are indexed — don't burn stamina on side noise first.",
+        "Act I missions map to Lost Alphabet sector. Hollow Monk watches the gate."
+      ],
+      "COOPERATIVE": [
+        "次の beat が解錠されたら briefing を送る。Check contracts when the feed pulses.",
+        "Neon Corridor unlocks after the glyph chain — Signal Warden already knows your name."
+      ],
+      "TRUSTED": [
+        "I held back one line in the Act II briefing. You'll hear it when trust peaks.",
+        "Shadow Archive debt accumulates on missed kanji — 記憶の負債に注意。"
+      ],
+      "CONFIDANT": [
+        "Act IV branch unlocked. The registry knew your designation before first login.",
+        "Broken Signal finale tease: 望みは記録ではない — Nozomi is never confirmed."
+      ]
+    },
+    "trust": {
+      "UNKNOWN": [
+        "Trust at {trust}/100 — complete MAIN contracts to deepen the link.",
+        "I observe only. Prove comprehension on story beats."
+      ],
+      "OBSERVING": [
+        "Trust {trust}/100 — Japanese responses on NPC contracts earn +2.",
+        "Archive reads add +1. Keep the channel clean."
+      ],
+      "COOPERATIVE": [
+        "Trust {trust}/100 — whispers on home will mix Japanese when you're ready.",
+        "COOPERATIVE tier: bilingual mission copy active."
+      ],
+      "TRUSTED": [
+        "Trust {trust}/100 — optional lines drop English. Best loot needs comprehension.",
+        "TRUSTED: I'll route whisper hunts when corruption spikes."
+      ],
+      "CONFIDANT": [
+        "Trust {trust}/100 — confidant channel. Act IV secrets partially unmasked.",
+        "Full vector. 私は lie by omission no longer on critical beats."
+      ]
+    }
+  },
+  "actOverrides": {
+    "ch-01": {
+      "briefing": "Act I — Lost Alphabet. The Hollow Monk foreshadows at the gate."
+    },
+    "ch-02": {
+      "briefing": "Act II — Silent Signals. Neon Corridor breach protocol standing by."
+    },
+    "ch-03": {
+      "briefing": "Act III — Broken Records. Memory Eater indexes your failures."
+    },
+    "ch-04": {
+      "briefing": "Act IV — Forgotten Horizon. Season finale vector approaching."
+    }
+  }
+}

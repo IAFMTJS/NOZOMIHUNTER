@@ -1,685 +1,5 @@
 [
   {
-    "id": "contract-story-001",
-    "title": "Main arc 1",
-    "channel": "story",
-    "template": {
-      "description": "Sector neon-corridor: vocabulary anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
-      "type": "CONVERSATION",
-      "wordCount": 2,
-      "narrativeTier": "MAIN",
-      "gameMode": "LOST_TRANSMISSION",
-      "minimumLevel": 1,
-      "sector": "neon-corridor",
-      "learning_focus": "vocabulary",
-      "boss_connection": "dungeon:neon-corridor"
-    }
-  },
-  {
-    "id": "contract-story-002",
-    "title": "Main arc 2",
-    "channel": "story",
-    "template": {
-      "description": "Sector shadow-archive: listening anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
-      "type": "LISTENING",
-      "wordCount": 3,
-      "narrativeTier": "MAIN",
-      "gameMode": "TERMINAL_BREACH",
-      "minimumLevel": 2,
-      "sector": "shadow-archive",
-      "learning_focus": "listening",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-003",
-    "title": "Main arc 3",
-    "channel": "story",
-    "template": {
-      "description": "Sector void-sector: grammar anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 4,
-      "narrativeTier": "MAIN",
-      "gameMode": "GHOST_INTERROGATION",
-      "minimumLevel": 3,
-      "sector": "void-sector",
-      "learning_focus": "grammar",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-004",
-    "title": "Main arc 4",
-    "channel": "story",
-    "template": {
-      "description": "Sector abyss-core: reading anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 5,
-      "narrativeTier": "MAIN",
-      "gameMode": "DEEP_COVER",
-      "minimumLevel": 4,
-      "sector": "abyss-core",
-      "learning_focus": "reading",
-      "boss_connection": "dungeon:abyss-core"
-    }
-  },
-  {
-    "id": "contract-story-005",
-    "title": "Main arc 5",
-    "channel": "story",
-    "template": {
-      "description": "Sector registry-hub: speaking anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
-      "type": "CONVERSATION",
-      "wordCount": 6,
-      "narrativeTier": "MAIN",
-      "gameMode": "SEMANTIC_NETWORK",
-      "minimumLevel": 5,
-      "sector": "registry-hub",
-      "learning_focus": "speaking",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-006",
-    "title": "Main arc 6",
-    "channel": "story",
-    "template": {
-      "description": "Sector neon-corridor: kanji anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
-      "type": "LISTENING",
-      "wordCount": 2,
-      "narrativeTier": "MAIN",
-      "gameMode": "LOST_TRANSMISSION",
-      "minimumLevel": 6,
-      "sector": "neon-corridor",
-      "learning_focus": "kanji",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-007",
-    "title": "Main arc 7",
-    "channel": "story",
-    "template": {
-      "description": "Sector shadow-archive: vocabulary anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 3,
-      "narrativeTier": "MAIN",
-      "gameMode": "TERMINAL_BREACH",
-      "minimumLevel": 7,
-      "sector": "shadow-archive",
-      "learning_focus": "vocabulary",
-      "boss_connection": "dungeon:shadow-archive"
-    }
-  },
-  {
-    "id": "contract-story-008",
-    "title": "Main arc 8",
-    "channel": "story",
-    "template": {
-      "description": "Sector void-sector: listening anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 4,
-      "narrativeTier": "MAIN",
-      "gameMode": "GHOST_INTERROGATION",
-      "minimumLevel": 8,
-      "sector": "void-sector",
-      "learning_focus": "listening",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-009",
-    "title": "Main arc 9",
-    "channel": "story",
-    "template": {
-      "description": "Sector abyss-core: grammar anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
-      "type": "CONVERSATION",
-      "wordCount": 5,
-      "narrativeTier": "MAIN",
-      "gameMode": "DEEP_COVER",
-      "minimumLevel": 9,
-      "sector": "abyss-core",
-      "learning_focus": "grammar",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-010",
-    "title": "Main arc 10",
-    "channel": "story",
-    "template": {
-      "description": "Sector registry-hub: reading anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
-      "type": "LISTENING",
-      "wordCount": 6,
-      "narrativeTier": "MAIN",
-      "gameMode": "SEMANTIC_NETWORK",
-      "minimumLevel": 10,
-      "sector": "registry-hub",
-      "learning_focus": "reading",
-      "boss_connection": "dungeon:registry-hub"
-    }
-  },
-  {
-    "id": "contract-story-011",
-    "title": "Main arc 11",
-    "channel": "story",
-    "template": {
-      "description": "Sector neon-corridor: speaking anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 2,
-      "narrativeTier": "MAIN",
-      "gameMode": "LOST_TRANSMISSION",
-      "minimumLevel": 11,
-      "sector": "neon-corridor",
-      "learning_focus": "speaking",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-012",
-    "title": "Main arc 12",
-    "channel": "story",
-    "template": {
-      "description": "Sector shadow-archive: kanji anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 3,
-      "narrativeTier": "MAIN",
-      "gameMode": "TERMINAL_BREACH",
-      "minimumLevel": 12,
-      "sector": "shadow-archive",
-      "learning_focus": "kanji",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-013",
-    "title": "Main arc 13",
-    "channel": "story",
-    "template": {
-      "description": "Sector void-sector: vocabulary anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
-      "type": "CONVERSATION",
-      "wordCount": 4,
-      "narrativeTier": "MAIN",
-      "gameMode": "GHOST_INTERROGATION",
-      "minimumLevel": 1,
-      "sector": "void-sector",
-      "learning_focus": "vocabulary",
-      "boss_connection": "dungeon:void-sector"
-    }
-  },
-  {
-    "id": "contract-story-014",
-    "title": "Main arc 14",
-    "channel": "story",
-    "template": {
-      "description": "Sector abyss-core: listening anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
-      "type": "LISTENING",
-      "wordCount": 5,
-      "narrativeTier": "MAIN",
-      "gameMode": "DEEP_COVER",
-      "minimumLevel": 2,
-      "sector": "abyss-core",
-      "learning_focus": "listening",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-015",
-    "title": "Main arc 15",
-    "channel": "story",
-    "template": {
-      "description": "Sector registry-hub: grammar anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 6,
-      "narrativeTier": "MAIN",
-      "gameMode": "SEMANTIC_NETWORK",
-      "minimumLevel": 3,
-      "sector": "registry-hub",
-      "learning_focus": "grammar",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-016",
-    "title": "Main arc 16",
-    "channel": "story",
-    "template": {
-      "description": "Sector neon-corridor: reading anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 2,
-      "narrativeTier": "MAIN",
-      "gameMode": "LOST_TRANSMISSION",
-      "minimumLevel": 4,
-      "sector": "neon-corridor",
-      "learning_focus": "reading",
-      "boss_connection": "dungeon:neon-corridor"
-    }
-  },
-  {
-    "id": "contract-story-017",
-    "title": "Main arc 17",
-    "channel": "story",
-    "template": {
-      "description": "Sector shadow-archive: speaking anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
-      "type": "CONVERSATION",
-      "wordCount": 3,
-      "narrativeTier": "MAIN",
-      "gameMode": "TERMINAL_BREACH",
-      "minimumLevel": 5,
-      "sector": "shadow-archive",
-      "learning_focus": "speaking",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-018",
-    "title": "Main arc 18",
-    "channel": "story",
-    "template": {
-      "description": "Sector void-sector: kanji anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
-      "type": "LISTENING",
-      "wordCount": 4,
-      "narrativeTier": "MAIN",
-      "gameMode": "GHOST_INTERROGATION",
-      "minimumLevel": 6,
-      "sector": "void-sector",
-      "learning_focus": "kanji",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-019",
-    "title": "Main arc 19",
-    "channel": "story",
-    "template": {
-      "description": "Sector abyss-core: vocabulary anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 5,
-      "narrativeTier": "MAIN",
-      "gameMode": "DEEP_COVER",
-      "minimumLevel": 7,
-      "sector": "abyss-core",
-      "learning_focus": "vocabulary",
-      "boss_connection": "dungeon:abyss-core"
-    }
-  },
-  {
-    "id": "contract-story-020",
-    "title": "Main arc 20",
-    "channel": "story",
-    "template": {
-      "description": "Sector registry-hub: listening anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 6,
-      "narrativeTier": "MAIN",
-      "gameMode": "SEMANTIC_NETWORK",
-      "minimumLevel": 8,
-      "sector": "registry-hub",
-      "learning_focus": "listening",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-021",
-    "title": "Main arc 21",
-    "channel": "story",
-    "template": {
-      "description": "Sector neon-corridor: grammar anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
-      "type": "CONVERSATION",
-      "wordCount": 2,
-      "narrativeTier": "MAIN",
-      "gameMode": "LOST_TRANSMISSION",
-      "minimumLevel": 9,
-      "sector": "neon-corridor",
-      "learning_focus": "grammar",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-022",
-    "title": "Main arc 22",
-    "channel": "story",
-    "template": {
-      "description": "Sector shadow-archive: reading anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
-      "type": "LISTENING",
-      "wordCount": 3,
-      "narrativeTier": "MAIN",
-      "gameMode": "TERMINAL_BREACH",
-      "minimumLevel": 10,
-      "sector": "shadow-archive",
-      "learning_focus": "reading",
-      "boss_connection": "dungeon:shadow-archive"
-    }
-  },
-  {
-    "id": "contract-story-023",
-    "title": "Main arc 23",
-    "channel": "story",
-    "template": {
-      "description": "Sector void-sector: speaking anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 4,
-      "narrativeTier": "MAIN",
-      "gameMode": "GHOST_INTERROGATION",
-      "minimumLevel": 11,
-      "sector": "void-sector",
-      "learning_focus": "speaking",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-024",
-    "title": "Main arc 24",
-    "channel": "story",
-    "template": {
-      "description": "Sector abyss-core: kanji anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 5,
-      "narrativeTier": "MAIN",
-      "gameMode": "DEEP_COVER",
-      "minimumLevel": 12,
-      "sector": "abyss-core",
-      "learning_focus": "kanji",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-025",
-    "title": "Main arc 25",
-    "channel": "story",
-    "template": {
-      "description": "Sector registry-hub: vocabulary anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
-      "type": "CONVERSATION",
-      "wordCount": 6,
-      "narrativeTier": "MAIN",
-      "gameMode": "SEMANTIC_NETWORK",
-      "minimumLevel": 1,
-      "sector": "registry-hub",
-      "learning_focus": "vocabulary",
-      "boss_connection": "dungeon:registry-hub"
-    }
-  },
-  {
-    "id": "contract-story-026",
-    "title": "Main arc 26",
-    "channel": "story",
-    "template": {
-      "description": "Sector neon-corridor: listening anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
-      "type": "LISTENING",
-      "wordCount": 2,
-      "narrativeTier": "MAIN",
-      "gameMode": "LOST_TRANSMISSION",
-      "minimumLevel": 2,
-      "sector": "neon-corridor",
-      "learning_focus": "listening",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-027",
-    "title": "Main arc 27",
-    "channel": "story",
-    "template": {
-      "description": "Sector shadow-archive: grammar anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 3,
-      "narrativeTier": "MAIN",
-      "gameMode": "TERMINAL_BREACH",
-      "minimumLevel": 3,
-      "sector": "shadow-archive",
-      "learning_focus": "grammar",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-028",
-    "title": "Main arc 28",
-    "channel": "story",
-    "template": {
-      "description": "Sector void-sector: reading anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 4,
-      "narrativeTier": "MAIN",
-      "gameMode": "GHOST_INTERROGATION",
-      "minimumLevel": 4,
-      "sector": "void-sector",
-      "learning_focus": "reading",
-      "boss_connection": "dungeon:void-sector"
-    }
-  },
-  {
-    "id": "contract-story-029",
-    "title": "Main arc 29",
-    "channel": "story",
-    "template": {
-      "description": "Sector abyss-core: speaking anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
-      "type": "CONVERSATION",
-      "wordCount": 5,
-      "narrativeTier": "MAIN",
-      "gameMode": "DEEP_COVER",
-      "minimumLevel": 5,
-      "sector": "abyss-core",
-      "learning_focus": "speaking",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-030",
-    "title": "Main arc 30",
-    "channel": "story",
-    "template": {
-      "description": "Sector registry-hub: kanji anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
-      "type": "LISTENING",
-      "wordCount": 6,
-      "narrativeTier": "MAIN",
-      "gameMode": "SEMANTIC_NETWORK",
-      "minimumLevel": 6,
-      "sector": "registry-hub",
-      "learning_focus": "kanji",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-031",
-    "title": "Main arc 31",
-    "channel": "story",
-    "template": {
-      "description": "Sector neon-corridor: vocabulary anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 2,
-      "narrativeTier": "MAIN",
-      "gameMode": "LOST_TRANSMISSION",
-      "minimumLevel": 7,
-      "sector": "neon-corridor",
-      "learning_focus": "vocabulary",
-      "boss_connection": "dungeon:neon-corridor"
-    }
-  },
-  {
-    "id": "contract-story-032",
-    "title": "Main arc 32",
-    "channel": "story",
-    "template": {
-      "description": "Sector shadow-archive: listening anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 3,
-      "narrativeTier": "MAIN",
-      "gameMode": "TERMINAL_BREACH",
-      "minimumLevel": 8,
-      "sector": "shadow-archive",
-      "learning_focus": "listening",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-033",
-    "title": "Main arc 33",
-    "channel": "story",
-    "template": {
-      "description": "Sector void-sector: grammar anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
-      "type": "CONVERSATION",
-      "wordCount": 4,
-      "narrativeTier": "MAIN",
-      "gameMode": "GHOST_INTERROGATION",
-      "minimumLevel": 9,
-      "sector": "void-sector",
-      "learning_focus": "grammar",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-034",
-    "title": "Main arc 34",
-    "channel": "story",
-    "template": {
-      "description": "Sector abyss-core: reading anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
-      "type": "LISTENING",
-      "wordCount": 5,
-      "narrativeTier": "MAIN",
-      "gameMode": "DEEP_COVER",
-      "minimumLevel": 10,
-      "sector": "abyss-core",
-      "learning_focus": "reading",
-      "boss_connection": "dungeon:abyss-core"
-    }
-  },
-  {
-    "id": "contract-story-035",
-    "title": "Main arc 35",
-    "channel": "story",
-    "template": {
-      "description": "Sector registry-hub: speaking anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize speaking signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 6,
-      "narrativeTier": "MAIN",
-      "gameMode": "SEMANTIC_NETWORK",
-      "minimumLevel": 11,
-      "sector": "registry-hub",
-      "learning_focus": "speaking",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-036",
-    "title": "Main arc 36",
-    "channel": "story",
-    "template": {
-      "description": "Sector neon-corridor: kanji anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize kanji signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 2,
-      "narrativeTier": "MAIN",
-      "gameMode": "LOST_TRANSMISSION",
-      "minimumLevel": 12,
-      "sector": "neon-corridor",
-      "learning_focus": "kanji",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-037",
-    "title": "Main arc 37",
-    "channel": "story",
-    "template": {
-      "description": "Sector shadow-archive: vocabulary anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize vocabulary signatures before bleed.",
-      "type": "CONVERSATION",
-      "wordCount": 3,
-      "narrativeTier": "MAIN",
-      "gameMode": "TERMINAL_BREACH",
-      "minimumLevel": 1,
-      "sector": "shadow-archive",
-      "learning_focus": "vocabulary",
-      "boss_connection": "dungeon:shadow-archive"
-    }
-  },
-  {
-    "id": "contract-story-038",
-    "title": "Main arc 38",
-    "channel": "story",
-    "template": {
-      "description": "Sector void-sector: listening anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize listening signatures before bleed.",
-      "type": "LISTENING",
-      "wordCount": 4,
-      "narrativeTier": "MAIN",
-      "gameMode": "GHOST_INTERROGATION",
-      "minimumLevel": 2,
-      "sector": "void-sector",
-      "learning_focus": "listening",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-039",
-    "title": "Main arc 39",
-    "channel": "story",
-    "template": {
-      "description": "Sector abyss-core: grammar anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize grammar signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 5,
-      "narrativeTier": "MAIN",
-      "gameMode": "DEEP_COVER",
-      "minimumLevel": 3,
-      "sector": "abyss-core",
-      "learning_focus": "grammar",
-      "boss_connection": null
-    }
-  },
-  {
-    "id": "contract-story-040",
-    "title": "Main arc 40",
-    "channel": "story",
-    "template": {
-      "description": "Sector registry-hub: reading anomaly containment protocol.",
-      "briefing": "Registry dispatch — stabilize reading signatures before bleed.",
-      "type": "VOCABULARY",
-      "wordCount": 6,
-      "narrativeTier": "MAIN",
-      "gameMode": "SEMANTIC_NETWORK",
-      "minimumLevel": 4,
-      "sector": "registry-hub",
-      "learning_focus": "reading",
-      "boss_connection": "dungeon:registry-hub"
-    }
-  },
-  {
     "id": "contract-side-001",
     "title": "Whisper op 1",
     "channel": "side",
@@ -1697,6 +1017,916 @@
       "sector": "registry-hub",
       "learning_focus": "listening",
       "boss_connection": null
+    }
+  },
+  {
+    "id": "story-s01-m01",
+    "title": "Registry Wake",
+    "channel": "story",
+    "template": {
+      "type": "VOCABULARY",
+      "gameMode": "STANDARD",
+      "wordCount": 3,
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-01",
+      "missionIndex": 1,
+      "storyBeatId": "beat-s01-001",
+      "linkedSectorId": "sector-01",
+      "description": "Registry Wake — Season 1 main operation.",
+      "briefing": "Registry dispatch — registry wake protocol active.",
+      "minimumLevel": 1
+    }
+  },
+  {
+    "id": "story-s01-m02",
+    "title": "First Glyph",
+    "channel": "story",
+    "template": {
+      "type": "VOCABULARY",
+      "gameMode": "TERMINAL_BREACH",
+      "prerequisiteBeatId": "beat-s01-001",
+      "wordCount": 3,
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-01",
+      "missionIndex": 2,
+      "storyBeatId": "beat-s01-002",
+      "archiveUnlockId": "corridor-zero",
+      "linkedSectorId": "sector-01",
+      "description": "First Glyph — Season 1 main operation.",
+      "briefing": "Registry dispatch — first glyph protocol active.",
+      "minimumLevel": 1
+    }
+  },
+  {
+    "id": "story-s01-m03",
+    "title": "Silent Prayer",
+    "channel": "story",
+    "template": {
+      "type": "LISTENING",
+      "gameMode": "LOST_TRANSMISSION",
+      "prerequisiteBeatId": "beat-s01-002",
+      "wordCount": 3,
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-01",
+      "missionIndex": 3,
+      "storyBeatId": "beat-s01-003",
+      "linkedSectorId": "sector-01",
+      "description": "Silent Prayer — Season 1 main operation.",
+      "briefing": "Registry dispatch — silent prayer protocol active.",
+      "minimumLevel": 1
+    }
+  },
+  {
+    "id": "story-s01-m04",
+    "title": "Iris Briefing",
+    "channel": "story",
+    "template": {
+      "type": "CONVERSATION",
+      "gameMode": "GHOST_INTERROGATION",
+      "prerequisiteBeatId": "beat-s01-003",
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-01",
+      "missionIndex": 4,
+      "storyBeatId": "beat-s01-004",
+      "archiveUnlockId": "whisper-index",
+      "scenarioId": "iris-briefing",
+      "linkedSectorId": "sector-01",
+      "description": "Iris Briefing — Season 1 main operation.",
+      "briefing": "Registry dispatch — iris briefing protocol active.",
+      "minimumLevel": 1
+    }
+  },
+  {
+    "id": "story-s01-m05",
+    "title": "Temple Signal",
+    "channel": "story",
+    "template": {
+      "type": "LISTENING",
+      "gameMode": "ECHO_LISTENING",
+      "prerequisiteBeatId": "beat-s01-004",
+      "wordCount": 3,
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-01",
+      "missionIndex": 5,
+      "storyBeatId": "beat-s01-005",
+      "linkedSectorId": "sector-01",
+      "description": "Temple Signal — Season 1 main operation.",
+      "briefing": "Registry dispatch — temple signal protocol active.",
+      "minimumLevel": 1
+    }
+  },
+  {
+    "id": "story-s01-m06",
+    "title": "Forgotten Names",
+    "channel": "story",
+    "template": {
+      "type": "VOCABULARY",
+      "gameMode": "MEMORY_CASCADE",
+      "prerequisiteBeatId": "beat-s01-005",
+      "wordCount": 4,
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-01",
+      "missionIndex": 6,
+      "storyBeatId": "beat-s01-006",
+      "linkedSectorId": "sector-01",
+      "description": "Forgotten Names — Season 1 main operation.",
+      "briefing": "Registry dispatch — forgotten names protocol active.",
+      "minimumLevel": 1
+    }
+  },
+  {
+    "id": "story-s01-m07",
+    "title": "Archive Restoration",
+    "channel": "story",
+    "template": {
+      "type": "VOCABULARY",
+      "gameMode": "KANJI_SURGERY",
+      "prerequisiteBeatId": "beat-s01-006",
+      "wordCount": 4,
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-01",
+      "missionIndex": 7,
+      "storyBeatId": "beat-s01-007",
+      "linkedSectorId": "sector-01",
+      "description": "Archive Restoration — Season 1 main operation.",
+      "briefing": "Registry dispatch — archive restoration protocol active.",
+      "minimumLevel": 2
+    }
+  },
+  {
+    "id": "story-s01-m08",
+    "title": "Hollow Gate",
+    "channel": "story",
+    "template": {
+      "type": "VOCABULARY",
+      "gameMode": "STANDARD",
+      "prerequisiteBeatId": "beat-s01-007",
+      "wordCount": 5,
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-01",
+      "missionIndex": 8,
+      "storyBeatId": "beat-s01-008",
+      "linkedSectorId": "sector-01",
+      "description": "Hollow Gate — Season 1 main operation.",
+      "briefing": "Registry dispatch — hollow gate protocol active.",
+      "minimumLevel": 2
+    }
+  },
+  {
+    "id": "story-s01-m09",
+    "title": "Distorted Broadcast",
+    "channel": "story",
+    "template": {
+      "type": "LISTENING",
+      "gameMode": "LOST_TRANSMISSION",
+      "prerequisiteBeatId": "beat-s01-008",
+      "wordCount": 3,
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-02",
+      "missionIndex": 9,
+      "storyBeatId": "beat-s01-009",
+      "linkedSectorId": "sector-02",
+      "description": "Distorted Broadcast — Season 1 main operation.",
+      "briefing": "Registry dispatch — distorted broadcast protocol active.",
+      "minimumLevel": 2
+    }
+  },
+  {
+    "id": "story-s01-m10",
+    "title": "Neon Infiltration",
+    "channel": "story",
+    "template": {
+      "type": "VOCABULARY",
+      "gameMode": "TERMINAL_BREACH",
+      "prerequisiteBeatId": "beat-s01-009",
+      "wordCount": 4,
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-02",
+      "missionIndex": 10,
+      "storyBeatId": "beat-s01-010",
+      "linkedSectorId": "sector-02",
+      "description": "Neon Infiltration — Season 1 main operation.",
+      "briefing": "Registry dispatch — neon infiltration protocol active.",
+      "minimumLevel": 3
+    }
+  },
+  {
+    "id": "story-s01-m11",
+    "title": "Operator Seven",
+    "channel": "story",
+    "template": {
+      "type": "CONVERSATION",
+      "gameMode": "DEEP_COVER",
+      "prerequisiteBeatId": "beat-s01-010",
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-02",
+      "missionIndex": 11,
+      "storyBeatId": "beat-s01-011",
+      "archiveUnlockId": "neon-grid-failure",
+      "scenarioId": "operator-seven",
+      "linkedSectorId": "sector-02",
+      "description": "Operator Seven — Season 1 main operation.",
+      "briefing": "Registry dispatch — operator seven protocol active.",
+      "minimumLevel": 3
+    }
+  },
+  {
+    "id": "story-s01-m12",
+    "title": "Emergency Transmission",
+    "channel": "story",
+    "template": {
+      "type": "SPEECH",
+      "gameMode": "SHADOW_ECHO",
+      "prerequisiteBeatId": "beat-s01-011",
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-02",
+      "missionIndex": 12,
+      "storyBeatId": "beat-s01-012",
+      "scenarioId": "field-relay",
+      "linkedSectorId": "sector-02",
+      "description": "Emergency Transmission — Season 1 main operation.",
+      "briefing": "Registry dispatch — emergency transmission protocol active.",
+      "minimumLevel": 3
+    }
+  },
+  {
+    "id": "story-s01-m13",
+    "title": "Corridor Breach",
+    "channel": "story",
+    "template": {
+      "type": "DUNGEON",
+      "gameMode": "STANDARD",
+      "prerequisiteBeatId": "beat-s01-012",
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-02",
+      "missionIndex": 13,
+      "storyBeatId": "beat-s01-013",
+      "linkedSectorId": "sector-02",
+      "linkedDungeonKey": "dungeon:neon-corridor",
+      "description": "Corridor Breach — Season 1 main operation.",
+      "briefing": "Registry dispatch — corridor breach protocol active.",
+      "minimumLevel": 4
+    }
+  },
+  {
+    "id": "story-s01-m14",
+    "title": "Warden Rematch",
+    "channel": "story",
+    "template": {
+      "type": "DUNGEON",
+      "gameMode": "STANDARD",
+      "prerequisiteBeatId": "beat-s01-013",
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-02",
+      "missionIndex": 14,
+      "storyBeatId": "beat-s01-014",
+      "archiveUnlockId": "warden-phase-two",
+      "linkedSectorId": "sector-02",
+      "linkedDungeonKey": "dungeon:neon-corridor",
+      "description": "Warden Rematch — Season 1 main operation.",
+      "briefing": "Registry dispatch — warden rematch protocol active.",
+      "minimumLevel": 4
+    }
+  },
+  {
+    "id": "story-s01-m15",
+    "title": "Static Confession",
+    "channel": "story",
+    "template": {
+      "type": "CONVERSATION",
+      "gameMode": "GHOST_INTERROGATION",
+      "prerequisiteBeatId": "beat-s01-014",
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-02",
+      "missionIndex": 15,
+      "storyBeatId": "beat-s01-015",
+      "archiveUnlockId": "iris-routing-table",
+      "scenarioId": "static-confession",
+      "linkedSectorId": "sector-02",
+      "description": "Static Confession — Season 1 main operation.",
+      "briefing": "Registry dispatch — static confession protocol active.",
+      "minimumLevel": 4
+    }
+  },
+  {
+    "id": "story-s01-m16",
+    "title": "Signal Crown",
+    "channel": "story",
+    "template": {
+      "type": "VOCABULARY",
+      "gameMode": "SURVIVAL_VOCAB",
+      "prerequisiteBeatId": "beat-s01-015",
+      "wordCount": 5,
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-02",
+      "missionIndex": 16,
+      "storyBeatId": "beat-s01-016",
+      "linkedSectorId": "sector-02",
+      "description": "Signal Crown — Season 1 main operation.",
+      "briefing": "Registry dispatch — signal crown protocol active.",
+      "minimumLevel": 5
+    }
+  },
+  {
+    "id": "story-s01-m17",
+    "title": "Lexicon Debt",
+    "channel": "story",
+    "template": {
+      "type": "VOCABULARY",
+      "gameMode": "MEMORY_CASCADE",
+      "prerequisiteBeatId": "beat-s01-016",
+      "wordCount": 5,
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-03",
+      "missionIndex": 17,
+      "storyBeatId": "beat-s01-017",
+      "linkedSectorId": "sector-03",
+      "description": "Lexicon Debt — Season 1 main operation.",
+      "briefing": "Registry dispatch — lexicon debt protocol active.",
+      "minimumLevel": 5
+    }
+  },
+  {
+    "id": "story-s01-m18",
+    "title": "Archivist Contact",
+    "channel": "story",
+    "template": {
+      "type": "CONVERSATION",
+      "gameMode": "GHOST_INTERROGATION",
+      "prerequisiteBeatId": "beat-s01-017",
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-03",
+      "missionIndex": 18,
+      "storyBeatId": "beat-s01-018",
+      "scenarioId": "shadow-briefing",
+      "linkedSectorId": "sector-03",
+      "description": "Archivist Contact — Season 1 main operation.",
+      "briefing": "Registry dispatch — archivist contact protocol active.",
+      "minimumLevel": 5
+    }
+  },
+  {
+    "id": "story-s01-m19",
+    "title": "Memory Vault",
+    "channel": "story",
+    "template": {
+      "type": "LISTENING",
+      "gameMode": "LOST_TRANSMISSION",
+      "prerequisiteBeatId": "beat-s01-018",
+      "wordCount": 4,
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-03",
+      "missionIndex": 19,
+      "storyBeatId": "beat-s01-019",
+      "linkedSectorId": "sector-03",
+      "description": "Memory Vault — Season 1 main operation.",
+      "briefing": "Registry dispatch — memory vault protocol active.",
+      "minimumLevel": 6
+    }
+  },
+  {
+    "id": "story-s01-m20",
+    "title": "Shadow Breach",
+    "channel": "story",
+    "template": {
+      "type": "DUNGEON",
+      "gameMode": "ARCHIVIST_BOSS",
+      "prerequisiteBeatId": "beat-s01-019",
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-03",
+      "missionIndex": 20,
+      "storyBeatId": "beat-s01-020",
+      "archiveUnlockId": "semantic-collapse",
+      "linkedSectorId": "sector-03",
+      "linkedDungeonKey": "dungeon:shadow-archive",
+      "description": "Shadow Breach — Season 1 main operation.",
+      "briefing": "Registry dispatch — shadow breach protocol active.",
+      "minimumLevel": 6
+    }
+  },
+  {
+    "id": "story-s01-m21",
+    "title": "Forbidden Index",
+    "channel": "story",
+    "template": {
+      "type": "VOCABULARY",
+      "gameMode": "ENTITY_HUNT",
+      "prerequisiteBeatId": "beat-s01-020",
+      "wordCount": 5,
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-03",
+      "missionIndex": 21,
+      "storyBeatId": "beat-s01-021",
+      "linkedSectorId": "sector-03",
+      "description": "Forbidden Index — Season 1 main operation.",
+      "briefing": "Registry dispatch — forbidden index protocol active.",
+      "minimumLevel": 6
+    }
+  },
+  {
+    "id": "story-s01-m22",
+    "title": "Iris Truth",
+    "channel": "story",
+    "template": {
+      "type": "CONVERSATION",
+      "gameMode": "DEEP_COVER",
+      "prerequisiteBeatId": "beat-s01-021",
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-03",
+      "missionIndex": 22,
+      "storyBeatId": "beat-s01-022",
+      "scenarioId": "iris-truth",
+      "linkedSectorId": "sector-03",
+      "description": "Iris Truth — Season 1 main operation.",
+      "briefing": "Registry dispatch — iris truth protocol active.",
+      "minimumLevel": 7
+    }
+  },
+  {
+    "id": "story-s01-m23",
+    "title": "Abyss Probe",
+    "channel": "story",
+    "template": {
+      "type": "DUNGEON",
+      "gameMode": "STANDARD",
+      "prerequisiteBeatId": "beat-s01-022",
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-04",
+      "missionIndex": 23,
+      "storyBeatId": "beat-s01-023",
+      "archiveUnlockId": "void-priest-fragment",
+      "linkedSectorId": "sector-04",
+      "linkedDungeonKey": "dungeon:abyss-core",
+      "description": "Abyss Probe — Season 1 main operation.",
+      "briefing": "Registry dispatch — abyss probe protocol active.",
+      "minimumLevel": 7
+    }
+  },
+  {
+    "id": "story-s01-m24",
+    "title": "Broken Signal Finale",
+    "channel": "story",
+    "template": {
+      "type": "CONVERSATION",
+      "gameMode": "SEMANTIC_NETWORK",
+      "prerequisiteBeatId": "beat-s01-023",
+      "narrativeTier": "MAIN",
+      "seasonId": "season-01-broken-signal",
+      "chapterId": "ch-04",
+      "missionIndex": 24,
+      "storyBeatId": "beat-s01-024",
+      "archiveUnlockId": "extraction-oath",
+      "scenarioId": "broken-signal-finale",
+      "linkedSectorId": "sector-04",
+      "description": "Broken Signal Finale — Season 1 main operation.",
+      "briefing": "Registry dispatch — broken signal finale protocol active.",
+      "minimumLevel": 7
+    }
+  },
+  {
+    "id": "side-s01-001",
+    "title": "Distorted Broadcast",
+    "channel": "side",
+    "template": {
+      "description": "Decode unstable audio bleeding through sector two.",
+      "briefing": "Side channel — listening sweep.",
+      "type": "LISTENING",
+      "wordCount": 3,
+      "narrativeTier": "SIDE",
+      "gameMode": "LOST_TRANSMISSION",
+      "minimumLevel": 2,
+      "linkedSectorId": "sector-02"
+    }
+  },
+  {
+    "id": "side-s01-002",
+    "title": "Broken Meanings",
+    "channel": "side",
+    "template": {
+      "description": "Words remain. Meanings do not.",
+      "briefing": "Side channel — vocabulary purge.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "ENTITY_HUNT",
+      "minimumLevel": 3,
+      "linkedSectorId": "sector-03"
+    }
+  },
+  {
+    "id": "side-s01-003",
+    "title": "Echo Reconstruction",
+    "channel": "side",
+    "template": {
+      "description": "Rebuild half-heard syllables before the link decays.",
+      "briefing": "Side channel — echo drill.",
+      "type": "LISTENING",
+      "wordCount": 3,
+      "narrativeTier": "SIDE",
+      "gameMode": "ECHO_LISTENING",
+      "minimumLevel": 2
+    }
+  },
+  {
+    "id": "side-s01-004",
+    "title": "Panic Channel",
+    "channel": "side",
+    "template": {
+      "description": "Emergency dialogue capture under timer.",
+      "briefing": "Side channel — panic relay.",
+      "type": "CONVERSATION",
+      "narrativeTier": "SIDE",
+      "gameMode": "PANIC_CHANNEL",
+      "scenarioId": "shadow-briefing",
+      "minimumLevel": 4
+    }
+  },
+  {
+    "id": "side-s01-005",
+    "title": "Semantic Collapse",
+    "channel": "side",
+    "template": {
+      "description": "Link meanings before the graph fractures.",
+      "briefing": "Side channel — semantic web.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "SEMANTIC_NETWORK",
+      "minimumLevel": 5
+    }
+  },
+  {
+    "id": "side-s01-006",
+    "title": "Ancient Symbol Recovery",
+    "channel": "side",
+    "template": {
+      "description": "Recover kanji fragments from cold storage.",
+      "briefing": "Side channel — kanji surgery.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "KANJI_SURGERY",
+      "minimumLevel": 4,
+      "linkedSectorId": "sector-04"
+    }
+  },
+  {
+    "id": "side-s01-007",
+    "title": "Ghost Frequency",
+    "channel": "side",
+    "template": {
+      "description": "Phantom voice repeats one glyph at a time.",
+      "briefing": "Side channel — ghost listen.",
+      "type": "LISTENING",
+      "wordCount": 3,
+      "narrativeTier": "SIDE",
+      "gameMode": "LOST_TRANSMISSION",
+      "minimumLevel": 2
+    }
+  },
+  {
+    "id": "side-s01-008",
+    "title": "Terminal Breach Drill",
+    "channel": "side",
+    "template": {
+      "description": "Read signage under alarm pressure.",
+      "briefing": "Side channel — infiltration drill.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "TERMINAL_BREACH",
+      "minimumLevel": 3
+    }
+  },
+  {
+    "id": "side-s01-009",
+    "title": "Memory Grid Sweep",
+    "channel": "side",
+    "template": {
+      "description": "Stabilize recall chains in the grid.",
+      "briefing": "Side channel — memory grid.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "MEMORY_GRID",
+      "minimumLevel": 3
+    }
+  },
+  {
+    "id": "side-s01-010",
+    "title": "Shadow Typing Run",
+    "channel": "side",
+    "template": {
+      "description": "Type under corruption static.",
+      "briefing": "Side channel — shadow typing.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "SHADOW_TYPING",
+      "minimumLevel": 4
+    }
+  },
+  {
+    "id": "side-s01-011",
+    "title": "Kana Dash Relay",
+    "channel": "side",
+    "template": {
+      "description": "Rapid kana recognition sprint.",
+      "briefing": "Side channel — kana dash.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "KANA_DASH",
+      "minimumLevel": 2
+    }
+  },
+  {
+    "id": "side-s01-012",
+    "title": "Deep Cover Probe",
+    "channel": "side",
+    "template": {
+      "description": "Maintain cover during hostile dialogue.",
+      "briefing": "Side channel — deep cover.",
+      "type": "CONVERSATION",
+      "narrativeTier": "SIDE",
+      "gameMode": "DEEP_COVER",
+      "scenarioId": "shadow-briefing",
+      "minimumLevel": 5
+    }
+  },
+  {
+    "id": "side-s01-013",
+    "title": "Lost Frequency Trace",
+    "channel": "side",
+    "template": {
+      "description": "Track a fading transmission.",
+      "briefing": "Side channel — frequency trace.",
+      "type": "LISTENING",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "LOST_TRANSMISSION",
+      "minimumLevel": 3
+    }
+  },
+  {
+    "id": "side-s01-014",
+    "title": "Voice in the Static",
+    "channel": "side",
+    "template": {
+      "description": "Identify the speaker behind noise.",
+      "briefing": "Side channel — voice trace.",
+      "type": "SPEECH",
+      "narrativeTier": "SIDE",
+      "gameMode": "SHADOW_ECHO",
+      "scenarioId": "comms-test",
+      "minimumLevel": 4
+    }
+  },
+  {
+    "id": "side-s01-015",
+    "title": "Forgotten Expressions",
+    "channel": "side",
+    "template": {
+      "description": "Recover phrase-level archives.",
+      "briefing": "Side channel — phrase recovery.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "MEMORY_CASCADE",
+      "minimumLevel": 4
+    }
+  },
+  {
+    "id": "side-s01-016",
+    "title": "Entity Hunt Sweep",
+    "channel": "side",
+    "template": {
+      "description": "Track unstable vocabulary entities.",
+      "briefing": "Side channel — entity hunt.",
+      "type": "VOCABULARY",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "ENTITY_HUNT",
+      "minimumLevel": 5
+    }
+  },
+  {
+    "id": "side-s01-017",
+    "title": "Signal Calibration",
+    "channel": "side",
+    "template": {
+      "description": "Tune listening arrays.",
+      "briefing": "Side channel — calibration.",
+      "type": "LISTENING",
+      "wordCount": 3,
+      "narrativeTier": "SIDE",
+      "gameMode": "SIGNAL_CALIBRATION",
+      "minimumLevel": 2
+    }
+  },
+  {
+    "id": "side-s01-018",
+    "title": "Archive Whisper",
+    "channel": "side",
+    "template": {
+      "description": "Log half-heard Japanese from cold storage.",
+      "briefing": "Side channel — archive whisper.",
+      "type": "LISTENING",
+      "wordCount": 3,
+      "narrativeTier": "SIDE",
+      "gameMode": "ECHO_LISTENING",
+      "minimumLevel": 3
+    }
+  },
+  {
+    "id": "side-s01-019",
+    "title": "Comms Discipline",
+    "channel": "side",
+    "template": {
+      "description": "Prove comms under Director monitoring.",
+      "briefing": "Side channel — comms test.",
+      "type": "SPEECH",
+      "narrativeTier": "SIDE",
+      "gameMode": "SHADOW_ECHO",
+      "scenarioId": "comms-test",
+      "minimumLevel": 3
+    }
+  },
+  {
+    "id": "side-s01-020",
+    "title": "Survival Lexicon",
+    "channel": "side",
+    "template": {
+      "description": "Endless vocab pressure drill.",
+      "briefing": "Side channel — survival vocab.",
+      "type": "VOCABULARY",
+      "wordCount": 6,
+      "narrativeTier": "SIDE",
+      "gameMode": "SURVIVAL_VOCAB",
+      "minimumLevel": 5
+    }
+  },
+  {
+    "id": "side-s01-021",
+    "title": "Operator Relay",
+    "channel": "side",
+    "template": {
+      "description": "Relay corrupted fragments to command.",
+      "briefing": "Side channel — signal relay.",
+      "type": "CONVERSATION",
+      "narrativeTier": "SIDE",
+      "gameMode": "STANDARD",
+      "scenarioId": "signal-relay",
+      "minimumLevel": 3
+    }
+  },
+  {
+    "id": "side-s01-022",
+    "title": "Gate Check Repeat",
+    "channel": "side",
+    "template": {
+      "description": "Director readiness scan.",
+      "briefing": "Side channel — gate check.",
+      "type": "CONVERSATION",
+      "narrativeTier": "SIDE",
+      "gameMode": "STANDARD",
+      "scenarioId": "gate-check",
+      "minimumLevel": 2
+    }
+  },
+  {
+    "id": "side-s01-023",
+    "title": "Lexicon Stack Raid",
+    "channel": "side",
+    "template": {
+      "description": "Clear cursed entries from the stack.",
+      "briefing": "Side channel — lexicon raid.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "KANJI_SURGERY",
+      "minimumLevel": 6
+    }
+  },
+  {
+    "id": "side-s01-024",
+    "title": "Static Veil Listen",
+    "channel": "side",
+    "template": {
+      "description": "Catch syllables before flatline.",
+      "briefing": "Side channel — static veil.",
+      "type": "LISTENING",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "LOST_TRANSMISSION",
+      "minimumLevel": 4
+    }
+  },
+  {
+    "id": "side-s01-025",
+    "title": "Fracture Week Anomaly",
+    "channel": "side",
+    "template": {
+      "description": "Season modifier anomaly sweep.",
+      "briefing": "Side channel — fracture week.",
+      "type": "VOCABULARY",
+      "wordCount": 5,
+      "narrativeTier": "SIDE",
+      "gameMode": "CORRUPTION_RUN",
+      "minimumLevel": 5
+    }
+  },
+  {
+    "id": "side-s01-026",
+    "title": "Keeper Records",
+    "channel": "side",
+    "template": {
+      "description": "Advanced kanji from keeper vault.",
+      "briefing": "Side channel — keeper records.",
+      "type": "VOCABULARY",
+      "wordCount": 6,
+      "narrativeTier": "SIDE",
+      "gameMode": "KANJI_SURGERY",
+      "minimumLevel": 7
+    }
+  },
+  {
+    "id": "side-s01-027",
+    "title": "Emergency Transmission",
+    "channel": "side",
+    "template": {
+      "description": "Mixed listening under crisis timer.",
+      "briefing": "Side channel — emergency TX.",
+      "type": "LISTENING",
+      "wordCount": 4,
+      "narrativeTier": "SIDE",
+      "gameMode": "LOST_TRANSMISSION",
+      "minimumLevel": 5
+    }
+  },
+  {
+    "id": "side-s01-028",
+    "title": "Interrogation Echo",
+    "channel": "side",
+    "template": {
+      "description": "Deduce implication under pressure.",
+      "briefing": "Side channel — interrogation.",
+      "type": "CONVERSATION",
+      "narrativeTier": "SIDE",
+      "gameMode": "GHOST_INTERROGATION",
+      "scenarioId": "shadow-briefing",
+      "minimumLevel": 6
+    }
+  },
+  {
+    "id": "side-s01-029",
+    "title": "Restoration Protocol",
+    "channel": "side",
+    "template": {
+      "description": "Mixed kanji restoration chain.",
+      "briefing": "Side channel — restoration.",
+      "type": "VOCABULARY",
+      "wordCount": 6,
+      "narrativeTier": "SIDE",
+      "gameMode": "MEMORY_CASCADE",
+      "minimumLevel": 6
+    }
+  },
+  {
+    "id": "side-s01-030",
+    "title": "Nozomi Trace",
+    "channel": "side",
+    "template": {
+      "description": "Follow a forbidden signal fragment.",
+      "briefing": "Side channel — nozomi trace.",
+      "type": "CONVERSATION",
+      "narrativeTier": "SIDE",
+      "gameMode": "SEMANTIC_NETWORK",
+      "scenarioId": "broken-signal-finale",
+      "minimumLevel": 8
     }
   }
 ]

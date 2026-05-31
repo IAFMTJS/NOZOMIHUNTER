@@ -21,6 +21,7 @@ import { parsePendingRewards } from "@/systems/rewards/rewardClaimSystem"
 import { PlayerSchema } from "@/systems/validation/playerSchema"
 import { resolveRpgStats } from "@/systems/progression/rpgStatsSystem"
 import { logSystemEvent } from "@/systems/logger/logger"
+import { loadStoryProgress } from "@/services/supabase/storyProgressRepository"
 import type { ProgressionRow } from "@/types/database"
 
 function requireClient() {
@@ -170,6 +171,12 @@ export async function loadPlayer(userId: string): Promise<{
     (progRes.data as unknown as ProgressionRow | null)?.pending_rewards
   )
 
+  try {
+    player = { ...player, storyProgress: await loadStoryProgress(userId) }
+  } catch {
+    /* table may not exist until migration */
+  }
+
   const boot = bootstrapPlayerState(player, inventory)
   player = boot.player
   inventory = boot.inventory
@@ -308,7 +315,7 @@ export async function findActiveQuestRowId(
 
 export async function loadCompletedQuestSnapshots(
   userId: string,
-  limit = 20
+  limit = 200
 ): Promise<QuestContract[]> {
   const supabase = requireClient()
   const { data, error } = await supabase

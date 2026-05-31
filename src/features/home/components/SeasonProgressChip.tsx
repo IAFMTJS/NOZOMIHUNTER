@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react"
 import { StatusChip } from "@/components/ui/StatusChip"
-import { getActiveSeason } from "@/config/seasonConfig"
+import { getPrimarySeason, resolveNarrativePhase } from "@/config/seasonConfig"
 import { buildSeasonProgressView } from "@/systems/live/seasonProgressSystem"
 import { loadSeasonProgress } from "@/services/supabase/seasonProgressRepository"
+import { resolveStoryProgress } from "@/systems/narrative/storyProgressSystem"
 import type { PlayerContract } from "@/contracts/player-contract"
 
 export function SeasonProgressChip({ player }: { player: PlayerContract }) {
-  const season = getActiveSeason()
+  const season = getPrimarySeason()
   const [stored, setStored] = useState<{ points: number; tier: number } | null>(null)
 
   useEffect(() => {
@@ -20,9 +21,12 @@ export function SeasonProgressChip({ player }: { player: PlayerContract }) {
   const view = buildSeasonProgressView(player, stored)
   if (!view) return null
 
+  const storyProgress = resolveStoryProgress(player)
+  const phase = resolveNarrativePhase(storyProgress.completedBeatIds.length)
+
   return (
     <StatusChip
-      label={`${season.label} T${view.tier} · ${view.progressPercent}%`}
+      label={`${season.label} · ${phase.title} · T${view.tier}`}
       tone="warning"
     />
   )

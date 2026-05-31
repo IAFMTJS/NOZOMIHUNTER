@@ -17,6 +17,11 @@ import { buildSectorCorruptionView } from "@/systems/world/sectorCorruptionSyste
 import { pickDailyTrainingPriority } from "@/systems/training/trainingPrioritySystem"
 import { irisWarningLine } from "@/systems/messaging/npcMessageSystem"
 import { buildOperationalFeed } from "@/systems/home/operationalFeedSystem"
+import {
+  homeWhisperEligible,
+  pickHomeWhisper,
+} from "@/systems/home/homeWhispersSystem"
+import { resolveStoryProgress } from "@/systems/narrative/storyProgressSystem"
 import { OperationalAlertRail } from "@/features/home/components/OperationalAlertRail"
 import { ContractRotationRail } from "@/features/home/components/ContractRotationRail"
 import { InstabilityFeed } from "@/features/home/components/InstabilityFeed"
@@ -47,18 +52,39 @@ export function HomeClient() {
 
   const seed = `${player.id}:${new Date().toISOString().slice(0, 10)}`
   const power = computeHunterPower(player)
-  const sector = buildSectorCorruptionView(player, activeQuests)
+  const sector = buildSectorCorruptionView(player, activeQuests, seed)
   const objective = buildAlmostThereObjective(player, activeQuests)
-  const chips = buildProximityChips(player, sector.corruptionPercent, sector.breachDelta)
+  const chips = buildProximityChips(
+    player,
+    sector.corruptionPercent,
+    sector.breachDelta,
+    activeQuests
+  )
   const priorityMode = pickDailyTrainingPriority(player, seed.slice(-10))
   const feed = buildOperationalFeed(player, activeQuests, seed)
   const irisLine = irisWarningLine(sector.band)
   const dailyMilestone = dailyMilestoneProgress(activeQuests, player.id)
+  const storyProgress = resolveStoryProgress(player)
+  const showWhisper = homeWhisperEligible(storyProgress.irisTrustTier)
+  const homeWhisper = showWhisper ? pickHomeWhisper(seed) : null
 
   return (
     <HunterPage
       className={`nozomi-screen-home nozomi-screen-home--command ${UI_TOKENS.sectionGap} ${hunterPresentation.shellClass}`.trim()}
     >
+      {homeWhisper && (
+        <p
+          className="text-center font-display text-sm tracking-wide text-[var(--accent-bright)]/90"
+          aria-label="Signal whisper"
+        >
+          {homeWhisper}
+        </p>
+      )}
+
+      {feed.storyAlerts.length > 0 && (
+        <OperationalAlertRail alerts={feed.storyAlerts} />
+      )}
+
       <div className="nozomi-embedded rounded-xl p-3">
         <HunterIdentityBlock
           player={player}
@@ -91,6 +117,10 @@ export function HomeClient() {
       <NpcMessageCard message={irisLine} />
       <TrainingPriorityTeaser modeId={priorityMode} />
 
+      {feed.anomalies.length > 0 && (
+        <AnomalyChip anomalies={feed.anomalies} />
+      )}
+
       <button
         type="button"
         className="w-full text-left text-xs uppercase tracking-widest text-[var(--muted)] hover:text-[var(--accent)]"
@@ -101,7 +131,6 @@ export function HomeClient() {
       {opsExpanded && (
         <>
           <OperationalAlertRail alerts={feed.alerts} />
-          <AnomalyChip anomalies={feed.anomalies} />
           <InstabilityFeed items={feed.instability} />
           <ActiveBoostsChip player={player} countOverride={feed.activeBoostCount} />
           <SectorActivityTicker items={feed.sectorActivity} />

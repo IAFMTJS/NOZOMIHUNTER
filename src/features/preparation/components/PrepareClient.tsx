@@ -73,6 +73,7 @@ export function PrepareClient() {
 
   const vocabPrep = missionQuest?.vocabularyPreparation
   const vocabScore = vocabPrep?.preparationScore
+  const missingVocabulary = vocabPrep?.newVocabulary ?? []
   const readiness = computeReadiness({
     player,
     quest: missionQuest
@@ -88,7 +89,9 @@ export function PrepareClient() {
   const vocabReady =
     missionQuest == null
       ? true
-      : (vocabScore ?? 0) >= minVocabScore || !hasVocabPhase
+      : missingVocabulary.length > 0
+        ? (vocabScore ?? 0) >= minVocabScore
+        : !hasVocabPhase || (vocabScore ?? 0) >= minVocabScore
   const trainingQuest = Boolean(missionQuest && isTrainingQuest(missionQuest))
   const allowCriticalDeploy = trainingQuest
   const operationalReady = !isReadinessHardBlocked(readiness, {
@@ -128,15 +131,14 @@ export function PrepareClient() {
   const displayVocabulary = missionQuest
     ? getPreparationDisplayVocabulary(missionQuest)
     : []
-  const missingVocabulary = vocabPrep?.newVocabulary ?? []
 
-  const readinessBaseScore = vocabScore ?? 100
+  const readinessBaseScore = vocabScore ?? readiness.preparationScore
   const readinessBaseLabel =
     vocabScore != null
       ? "Mission vocabulary familiarity"
       : def
-        ? "Sector baseline"
-        : "Operator baseline"
+        ? "Sector baseline (penalties apply)"
+        : "Operator baseline (penalties apply)"
 
   async function handleDeploy() {
     if (deployBlocked) return

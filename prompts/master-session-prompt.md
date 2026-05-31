@@ -7,6 +7,9 @@ Data layer:
 
 Before generating code:
 - read docs/Complete Game Design Document.md (or docs/game-design-document.md index)
+- read docs/crave-doctrine.md (ship gate + Japanese-as-key)
+- read docs/season-01-broken-signal-bible.md (Season 1 mission graph)
+- read docs/sector-registry-spec.md (sector → dungeon → pool map)
 - read architecture rules
 - read naming rules
 - read gameplay philosophy

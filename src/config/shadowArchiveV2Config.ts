@@ -20,7 +20,19 @@ export const SHADOW_ARCHIVE_ROUTE_GRAPH: DungeonRouteGraph = {
       type: "ROUTE",
       danger: "low",
       rewardHint: "Choose reading vector",
-      exits: ["listening-vault", "lexicon-stack"],
+      exits: ["listening-vault", "lexicon-stack", "story-fragment"],
+    },
+    "story-fragment": {
+      id: "story-fragment",
+      label: "Whisper Fragment",
+      type: "ENCOUNTER",
+      danger: "low",
+      rewardHint: "Lore decode",
+      roomType: "STORY",
+      encounterScriptId: "story-whisper",
+      encounterType: "NPC",
+      storyRoomCopy: "The archive whisper wants comprehension, not speed.",
+      exits: ["memory-hall"],
     },
     "listening-vault": {
       id: "listening-vault",
@@ -30,6 +42,8 @@ export const SHADOW_ARCHIVE_ROUTE_GRAPH: DungeonRouteGraph = {
       rewardHint: "Ghost transmissions",
       hazard: "Signal decay on replays",
       encounterType: "LISTENING",
+      roomType: "COMBAT",
+      encounterScriptId: "listening-vault",
       exits: ["memory-hall"],
     },
     "lexicon-stack": {
@@ -40,6 +54,8 @@ export const SHADOW_ARCHIVE_ROUTE_GRAPH: DungeonRouteGraph = {
       rewardHint: "Cursed word entries",
       hazard: "Memory debt active",
       encounterType: "VOCAB",
+      roomType: "ELITE",
+      encounterScriptId: "lexicon-stack",
       exits: ["memory-hall"],
     },
     "memory-hall": {
@@ -49,6 +65,8 @@ export const SHADOW_ARCHIVE_ROUTE_GRAPH: DungeonRouteGraph = {
       danger: "medium",
       rewardHint: "Semantic seals",
       encounterType: "NPC",
+      roomType: "COMBAT",
+      encounterScriptId: "memory-hall-npc",
       exits: ["archivist-gate"],
     },
     "archivist-gate": {

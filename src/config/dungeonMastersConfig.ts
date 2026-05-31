@@ -267,13 +267,109 @@ const SHRINE_WARDEN: DungeonMasterDefinition = {
   crestGlyph: "⛩",
   dialoguePools: {
     ...BROADCAST_SPIRIT.dialoguePools,
-    ENTRY: pool(["Modifiers mutate. My signal mutates with them.", "Instability is the ritual."]),
+    ENTRY: pool([
+      "Modifiers mutate. My signal mutates with them.",
+      "Instability is the ritual.",
+      "Shrine frequency locks on unstable hunters.",
+      "Each modifier rewrites my voice.",
+      "Procedural chaos — your reading must stay clean.",
+      "The ritual demands comprehension, not luck.",
+      "Static shrine — enter on my terms.",
+      "Mutated run. Mutated expectations.",
+    ]),
+    BOSS_PHASE: pool([
+      "Listen. Rebuild kana. Choose meaning. Answer the phrase.",
+      "Shrine trial phase one — signal lock.",
+      "Phase two — echo reconstruction.",
+      "Final phase — broadcast seal.",
+      "Modifiers stack. So does pressure.",
+      "Shrine warden does not repeat warnings.",
+    ]),
   },
   visualProfile: {
     cssClass: "nozomi-master--shrine-warden",
     palette: ["black", "dim-red", "shrine-white"],
     motionClass: "nozomi-master-motion--flicker",
     collapseId: "shrine-static",
+  },
+}
+
+const HOLLOW_MONK: DungeonMasterDefinition = {
+  id: "hollow-monk",
+  displayName: "The Hollow Monk",
+  domainLabel: "Lost Alphabet Gate",
+  crestGlyph: "虚",
+  personalityTags: ["serene", "ominous", "minimal"],
+  masteryFocus: ["kana recognition", "core N5 glyphs", "prayer fragments", "silent reading"],
+  uniqueRuleId: "hollow-silence",
+  uniqueRuleSummary: "Wrong answers echo in the corridor. Three echoes force retreat.",
+  pressureStyle: "Kana gates and prayer static",
+  perfectClearReward: {
+    title: "Glyph Initiate",
+    relicKey: "hollow-prayer-bead",
+    techniqueLabel: "Silent Read",
+  },
+  dialoguePools: {
+    ENTRY: pool([
+      "虚ろの門 — speak the lost alphabet or turn back.",
+      "The gate remembers every glyph you forgot.",
+      "Prayer static. Kana only. No romaji shelter.",
+      "You seek passage. Prove the simplest characters first.",
+      "Lost Alphabet sector watches. I am its keeper.",
+      "Silence is not mercy here.",
+      "Registry sent another reader. Begin.",
+      "The hollow listens for correct meaning.",
+    ]),
+    ROUTE_CHOICE: pool([
+      "Left path — familiar kana. Right — corrupted prayer.",
+      "Choose reading vector. Wrong path echoes longer.",
+    ]),
+    FIRST_MISTAKE: pool([
+      "The echo returns your mistake.",
+      "Glyph mismatch — the gate tightens.",
+      "Silent correction required.",
+      "Prayer breaks. Try again.",
+    ]),
+    STREAK: pool([
+      "Three seals without echo. Proceed.",
+      "Kana chain stable. Gate yields.",
+      "The hollow approves — briefly.",
+    ]),
+    CORRUPTION: pool([
+      "Prayer static thickens.",
+      "Corrupted kana bleeds into the gate.",
+      "Echo count rising.",
+    ]),
+    BOSS_AWARENESS: pool([
+      "Final gate phase imminent.",
+      "Hollow confrontation — no English shelter.",
+      "Monk trace locked on your designation.",
+    ]),
+    BOSS_PHASE: pool([
+      "Phase one — kana prayer lock.",
+      "Phase two — listening to silence.",
+      "Phase three — voice seal.",
+      "Phase four — forgotten name recall.",
+      "Break the hollow seal in order.",
+      "Final phase — 虚ろの僧 awaits.",
+    ]),
+    EXTRACTION: pool(["Extract with what you bound — or face the echo again."]),
+    FAILURE: pool([
+      "The gate closes. Echoes remain.",
+      "Turn back. Alphabet unfinished.",
+    ]),
+    PERFECT_CLEAR: pool([
+      "Gate opens. Lost Alphabet acknowledges you.",
+      "Perfect kana chain — prayer bead yours.",
+    ]),
+    REMATCH: pool(["Return when the whispers stop confusing you."]),
+  },
+  bossPattern: "inherit-definition",
+  visualProfile: {
+    cssClass: "nozomi-master--hollow-monk",
+    palette: ["black", "ash-grey", "paper-white", "temple-gold"],
+    motionClass: "nozomi-master-motion--drift",
+    collapseId: "hollow-gate",
   },
 }
 
@@ -286,6 +382,7 @@ export const DUNGEON_MASTER_REGISTRY: Record<DungeonMasterId, DungeonMasterDefin
   "collapse-echo": COLLAPSE_ECHO,
   "void-stalker": VOID_STALKER,
   "shrine-warden": SHRINE_WARDEN,
+  "hollow-monk": HOLLOW_MONK,
 }
 
 /** Overlay: dungeon config key → master id */
@@ -296,6 +393,7 @@ export const DUNGEON_KEY_TO_MASTER: Record<string, DungeonMasterId> = {
   "dungeon:abyss-core": "gate-devourer",
   "dungeon:void-pursuit": "mirror-hunter",
   "dungeon:corruption-run": "collapse-echo",
+  "sector-01:hollow-gate": "hollow-monk",
 }
 
 export function getMasterDefinition(id: DungeonMasterId): DungeonMasterDefinition {

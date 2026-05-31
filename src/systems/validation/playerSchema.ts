@@ -22,6 +22,23 @@ const rpgStatsSchema = z.object({
   vitality: z.number().int().min(0),
 })
 
+const storyProgressSchema = z.object({
+  seasonId: z.string(),
+  currentBeatId: z.string().nullable(),
+  completedBeatIds: z.array(z.string()),
+  storyFlags: z.record(z.union([z.boolean(), z.string(), z.number()])),
+  irisTrust: z.number().int().min(0).max(100),
+  irisTrustTier: z.enum([
+    "UNKNOWN",
+    "OBSERVING",
+    "COOPERATIVE",
+    "TRUSTED",
+    "CONFIDANT",
+  ]),
+  factionRep: z.record(z.number()),
+  archiveUnlockedIds: z.array(z.string()),
+})
+
 export const PlayerSchema = z.object({
   id: z.string().uuid(),
   username: z.string().min(1),
@@ -32,6 +49,7 @@ export const PlayerSchema = z.object({
   economy: economySchema.optional(),
   inventory: z.array(inventoryItemSchema).optional(),
   trackedQuestId: z.string().nullable().optional(),
+  storyProgress: storyProgressSchema.optional(),
 })
 
 export const QuestSnapshotSchema = z.object({
@@ -39,6 +57,16 @@ export const QuestSnapshotSchema = z.object({
   type: z.string(),
   title: z.string(),
   narrativeTier: z.enum(["MAIN", "SIDE", "DAILY"]).optional(),
+  seasonId: z.string().optional(),
+  chapterId: z.string().optional(),
+  missionIndex: z.number().optional(),
+  storyBeatId: z.string().optional(),
+  prerequisiteBeatId: z.string().optional(),
+  archiveUnlockId: z.string().optional(),
+  linkedSectorId: z.string().optional(),
+  linkedDungeonKey: z.string().optional(),
+  encounterScriptId: z.string().optional(),
+  scenarioId: z.string().optional(),
   rewards: z.object({
     xp: z.number(),
     credits: z.number().optional(),

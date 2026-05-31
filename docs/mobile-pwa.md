@@ -22,12 +22,47 @@ Dismiss the install banner with **Dismiss**; it stays hidden until local storage
 - Registered in production only (`ServiceWorkerRegister` in root layout).
 - Caches: `/`, `/home`, `/login`, and `/_next/static/*` on fetch.
 - Does **not** cache Supabase or `/auth/` routes.
+- Handles `push` + `notificationclick` for invasion deep links (`/home?anomaly=`).
 
 Test locally:
 
 ```bash
 npm run build
 npm run start
+```
+
+## Push notifications (GitHub Actions)
+
+Delivery is **not** via Supabase Edge Functions — scheduled sends run in GitHub Actions:
+
+| Piece | Location |
+|-------|----------|
+| Opt-in UI | Settings → **Invasion alerts** |
+| Subscription storage | `push_subscriptions` table (migration `027`) |
+| Client subscribe | `pushNotificationSystem` + VAPID public key |
+| Send worker | [`scripts/send-push-notifications.mjs`](../scripts/send-push-notifications.mjs) |
+| Scheduler | [`.github/workflows/push-notifications.yml`](../.github/workflows/push-notifications.yml) |
+
+### Setup
+
+1. Generate VAPID keys:
+   ```bash
+   npx web-push generate-vapid-keys
+   ```
+2. App env: `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (public key only).
+3. GitHub repo **Secrets** (Settings → Secrets and variables → Actions):
+   - `VAPID_PUBLIC_KEY`
+   - `VAPID_PRIVATE_KEY`
+   - `VAPID_SUBJECT` — e.g. `mailto:ops@yourdomain.com`
+   - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` (same as deploy)
+4. Apply migration: `npm run db:push`
+5. Manual test: Actions → **Push notifications** → **Run workflow** (enable **dry_run** first).
+
+The workflow runs every 6 hours UTC and sends only during active **language invasion** windows (see `languageInvasionSystem.ts`). Notifications deep-link to `/home?anomaly=<invasion-id>`.
+
+Local send (requires service role + VAPID env):
+```bash
+PUSH_DRY_RUN=true npm run push:send
 ```
 
 ## Mobile QA checklist (listening + encounters)

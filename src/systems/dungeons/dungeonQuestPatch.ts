@@ -45,5 +45,9 @@ export function mountContextFromRun(
     playerLevel,
     selectedAction: run.selectedDungeonAction,
     dungeonRun: run,
+    nodeId: node?.id,
+    dungeonKey: run.dungeon.id,
+    roomType: node?.roomType,
+    scenarioId: undefined,
   }
 }

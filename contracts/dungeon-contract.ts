@@ -1,5 +1,6 @@
 import type { DungeonMasterId } from "./dungeon-master-contract"
 import type { MasterDialogueMoment } from "./dungeon-master-contract"
+import type { RoomType } from "./encounter-script-contract"
 
 export interface DungeonContract {
   id: string
@@ -80,6 +81,9 @@ export interface DungeonRouteNode {
   encounterType?: EncounterType
   exits: string[]
   requiredMasteryScore?: number
+  roomType?: RoomType
+  encounterScriptId?: string
+  storyRoomCopy?: string
 }
 
 export interface DungeonRouteGraph {

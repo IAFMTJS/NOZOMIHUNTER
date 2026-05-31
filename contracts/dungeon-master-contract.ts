@@ -10,6 +10,7 @@ export type DungeonMasterId =
   | "collapse-echo"
   | "void-stalker"
   | "shrine-warden"
+  | "hollow-monk"
 
 export type MasterRelationshipState =
   | "UNKNOWN"

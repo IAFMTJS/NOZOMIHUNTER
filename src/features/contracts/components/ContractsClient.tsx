@@ -68,6 +68,14 @@ export function ContractsClient() {
     })
   }, [user?.id, regularQuests.length])
 
+  useEffect(() => {
+    const channelParam = searchParams.get("channel")
+    if (channelParam !== "anomaly" || !user?.id || !player) return
+    void quest.newQuest("anomaly").catch(() => {
+      /* invasion window may be inactive */
+    })
+  }, [searchParams, user?.id, player, quest])
+
   function setTab(next: QuestChannelTab) {
     const params = new URLSearchParams(searchParams.toString())
     params.set("tab", next)
@@ -95,7 +103,8 @@ export function ContractsClient() {
   const storyChapters = buildStoryChapters(
     catalog.mainStoryQuests,
     completedQuests,
-    completedIds
+    completedIds,
+    player
   )
   const achievements = resolveAchievements(player)
   const tracked = getTrackedQuest(activeQuests, player)

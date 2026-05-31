@@ -15,6 +15,16 @@ import {
   pickContentContractTemplate,
   buildQuestFromContentTemplate,
 } from "@/systems/content/contentContractTemplateSystem"
+import {
+  getNextStoryMission,
+  seasonStoryMissionToTemplate,
+} from "@/systems/content/seasonContentLoader"
+import {
+  getActiveLanguageInvasion,
+  invasionCorruptionDrift,
+} from "@/systems/retention/languageInvasionSystem"
+import { eventBus } from "@/systems/events/eventBus"
+import { GAME_EVENTS } from "@/systems/events/eventTypes"
 
 const DAILY_MODES: GameModeId[] = ["SIGNAL_CALIBRATION", "MEMORY_CASCADE"]
 const STORY_MODES: GameModeId[] = [
@@ -63,6 +73,31 @@ export function generateQuestForChannel(
 ): QuestContract {
   const date = utcDateKey()
 
+  if (channel === "anomaly") {
+    const seed = `${player.id}:${date}`
+    const invasion = getActiveLanguageInvasion(seed)
+    if (invasion) {
+      eventBus.emit(GAME_EVENTS.LANGUAGE_INVASION_ACTIVE, {
+        invasionId: invasion.id,
+        corruptionDrift: invasionCorruptionDrift(invasion),
+      })
+      const base = generateVocabularyQuest(player.level)
+      return assignChannelGameMode(
+        {
+          ...base,
+          id: `anomaly-${player.id}-${date}`,
+          title: invasion.headline,
+          description: invasion.detail,
+          narrativeTier: "SIDE" as const,
+          rewards: buildQuestRewards(player.level, "SIDE"),
+        },
+        "side",
+        player
+      )
+    }
+    return generateQuestForChannel("side", player, activeQuests)
+  }
+
   if (channel === "daily") {
     const existing = findActiveDailyQuest(activeQuests, player.id, date)
     if (existing) return existing
@@ -109,6 +144,17 @@ export function generateQuestForChannel(
       "side",
       player
     )
+  }
+
+  const nextStory = getNextStoryMission(player)
+  if (nextStory) {
+    const quest = buildQuestFromContentTemplate(
+      seasonStoryMissionToTemplate(nextStory),
+      player
+    )
+    if (meetsQuestRequirements(quest, player)) {
+      return quest.gameMode ? quest : assignChannelGameMode(quest, "story", player)
+    }
   }
 
   const storyTemplate = pickContentContractTemplate("story", player.id, date)

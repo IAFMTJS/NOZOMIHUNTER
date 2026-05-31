@@ -1,0 +1,41 @@
+name: Push notifications
+
+on:
+  schedule:
+    # Check every 6 hours UTC — sends only during active invasion windows
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Log payload without sending"
+        type: boolean
+        default: false
+      force:
+        description: "Send even outside invasion window"
+        type: boolean
+        default: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Send invasion push notifications
+        run: node scripts/send-push-notifications.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+          PUSH_DRY_RUN: ${{ github.event.inputs.dry_run && 'true' || 'false' }}
+          PUSH_FORCE: ${{ github.event.inputs.force && 'true' || 'false' }}

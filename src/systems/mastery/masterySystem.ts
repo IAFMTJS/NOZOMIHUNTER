@@ -99,6 +99,11 @@ export function recordWordAnswer(
       wordId,
       mastery: next.mastery,
     })
+    eventBus.emit(GAME_EVENTS.WORD_BOUND, {
+      playerId,
+      wordId,
+      mastery: next.mastery,
+    })
   }
 
   return next

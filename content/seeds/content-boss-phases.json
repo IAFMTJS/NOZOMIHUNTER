@@ -33,6 +33,28 @@
     }
   },
   {
+    "id": "neon-corridor-phase-3",
+    "boss_key": "dungeon:neon-corridor",
+    "phase_index": 3,
+    "spec": {
+      "id": "phase-3",
+      "label": "Neon Warden — Phase 4",
+      "encounterKind": "NPC",
+      "wordCount": 3
+    }
+  },
+  {
+    "id": "neon-corridor-phase-4",
+    "boss_key": "dungeon:neon-corridor",
+    "phase_index": 4,
+    "spec": {
+      "id": "phase-4",
+      "label": "Neon Warden — Phase 5",
+      "encounterKind": "VOCAB",
+      "wordCount": 4
+    }
+  },
+  {
     "id": "shadow-archive-phase-0",
     "boss_key": "dungeon:shadow-archive",
     "phase_index": 0,
@@ -63,6 +85,39 @@
       "label": "Shadow Archivist — Phase 3",
       "encounterKind": "SPEECH",
       "wordCount": 5
+    }
+  },
+  {
+    "id": "shadow-archive-phase-3",
+    "boss_key": "dungeon:shadow-archive",
+    "phase_index": 3,
+    "spec": {
+      "id": "phase-3",
+      "label": "Shadow Archivist — Phase 4",
+      "encounterKind": "VOCAB",
+      "wordCount": 4
+    }
+  },
+  {
+    "id": "shadow-archive-phase-4",
+    "boss_key": "dungeon:shadow-archive",
+    "phase_index": 4,
+    "spec": {
+      "id": "phase-4",
+      "label": "Shadow Archivist — Phase 5",
+      "encounterKind": "NPC",
+      "wordCount": 3
+    }
+  },
+  {
+    "id": "shadow-archive-phase-5",
+    "boss_key": "dungeon:shadow-archive",
+    "phase_index": 5,
+    "spec": {
+      "id": "phase-5",
+      "label": "Shadow Archivist — Final Seal",
+      "encounterKind": "VOCAB",
+      "wordCount": 2
     }
   },
   {
@@ -99,6 +154,28 @@
     }
   },
   {
+    "id": "abyss-core-phase-3",
+    "boss_key": "dungeon:abyss-core",
+    "phase_index": 3,
+    "spec": {
+      "id": "phase-3",
+      "label": "Gate Devourer — Phase 4",
+      "encounterKind": "NPC",
+      "wordCount": 3
+    }
+  },
+  {
+    "id": "abyss-core-phase-4",
+    "boss_key": "dungeon:abyss-core",
+    "phase_index": 4,
+    "spec": {
+      "id": "phase-4",
+      "label": "Gate Devourer — Final Hunger",
+      "encounterKind": "VOCAB",
+      "wordCount": 4
+    }
+  },
+  {
     "id": "corruption-run-phase-0",
     "boss_key": "dungeon:corruption-run",
     "phase_index": 0,
@@ -129,6 +206,28 @@
       "label": "Collapse Echo — Phase 3",
       "encounterKind": "SPEECH",
       "wordCount": 5
+    }
+  },
+  {
+    "id": "corruption-run-phase-3",
+    "boss_key": "dungeon:corruption-run",
+    "phase_index": 3,
+    "spec": {
+      "id": "phase-3",
+      "label": "Collapse Echo — Phase 4",
+      "encounterKind": "VOCAB",
+      "wordCount": 4
+    }
+  },
+  {
+    "id": "corruption-run-phase-4",
+    "boss_key": "dungeon:corruption-run",
+    "phase_index": 4,
+    "spec": {
+      "id": "phase-4",
+      "label": "Collapse Echo — Loop Seal",
+      "encounterKind": "LISTENING",
+      "fragmentCount": 3
     }
   },
   {
@@ -165,6 +264,28 @@
     }
   },
   {
+    "id": "void-pursuit-phase-3",
+    "boss_key": "dungeon:void-pursuit",
+    "phase_index": 3,
+    "spec": {
+      "id": "phase-3",
+      "label": "Mirror Hunter — Phase 4",
+      "encounterKind": "NPC",
+      "wordCount": 3
+    }
+  },
+  {
+    "id": "void-pursuit-phase-4",
+    "boss_key": "dungeon:void-pursuit",
+    "phase_index": 4,
+    "spec": {
+      "id": "phase-4",
+      "label": "Mirror Hunter — Shadow Sync",
+      "encounterKind": "VOCAB",
+      "wordCount": 4
+    }
+  },
+  {
     "id": "roguelike-sector-phase-0",
     "boss_key": "dungeon:roguelike-sector",
     "phase_index": 0,
@@ -195,6 +316,83 @@
       "label": "Broadcast Spirit — Phase 3",
       "encounterKind": "SPEECH",
       "wordCount": 5
+    }
+  },
+  {
+    "id": "roguelike-sector-phase-3",
+    "boss_key": "dungeon:roguelike-sector",
+    "phase_index": 3,
+    "spec": {
+      "id": "phase-3",
+      "label": "Broadcast Spirit — Phase 4",
+      "encounterKind": "LISTENING",
+      "fragmentCount": 3
+    }
+  },
+  {
+    "id": "roguelike-sector-phase-4",
+    "boss_key": "dungeon:roguelike-sector",
+    "phase_index": 4,
+    "spec": {
+      "id": "phase-4",
+      "label": "Broadcast Spirit — Phase 5",
+      "encounterKind": "NPC",
+      "wordCount": 3
+    }
+  },
+  {
+    "id": "hollow-monk-phase-0",
+    "boss_key": "sector-01:hollow-gate",
+    "phase_index": 0,
+    "spec": {
+      "id": "phase-0",
+      "label": "Hollow Monk — Kana Prayer",
+      "encounterKind": "VOCAB",
+      "wordCount": 3
+    }
+  },
+  {
+    "id": "hollow-monk-phase-1",
+    "boss_key": "sector-01:hollow-gate",
+    "phase_index": 1,
+    "spec": {
+      "id": "phase-1",
+      "label": "Hollow Monk — Silent Listen",
+      "encounterKind": "LISTENING",
+      "fragmentCount": 2
+    }
+  },
+  {
+    "id": "hollow-monk-phase-2",
+    "boss_key": "sector-01:hollow-gate",
+    "phase_index": 2,
+    "spec": {
+      "id": "phase-2",
+      "label": "Hollow Monk — Voice Seal",
+      "encounterKind": "SPEECH",
+      "wordCount": 4
+    }
+  },
+  {
+    "id": "hollow-monk-phase-3",
+    "boss_key": "sector-01:hollow-gate",
+    "phase_index": 3,
+    "spec": {
+      "id": "phase-3",
+      "label": "Hollow Monk — Forgotten Name",
+      "encounterKind": "VOCAB",
+      "wordCount": 4
+    }
+  },
+  {
+    "id": "hollow-monk-phase-4",
+    "boss_key": "sector-01:hollow-gate",
+    "phase_index": 4,
+    "spec": {
+      "id": "phase-4",
+      "label": "Hollow Monk — Gate Break",
+      "encounterKind": "NPC",
+      "wordCount": 3
     }
   }
 ]

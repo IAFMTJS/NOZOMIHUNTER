@@ -1,6 +1,27 @@
 NOZOMI System Registry
 
-Last updated: v3.2.0-gdd-final (see CHANGELOG). Creative scope: `docs/immersion-rework-masterplan.md`.
+Last updated: v3.2.0 Season 1 crave masterplan (see CHANGELOG). Creative scope: `docs/crave-doctrine.md`, `docs/season-01-broken-signal-bible.md`.
+
+## v3.2 Season 1 crave systems
+
+| System | Location | Notes |
+|--------|----------|-------|
+| storyProgressSystem | `src/systems/narrative/storyProgressSystem.ts` | Beat completion, Iris trust, archive unlock ids |
+| storyProgressRepository | `src/services/supabase/storyProgressRepository.ts` | `complete_story_beat` RPC |
+| seasonContentLoader | `src/systems/content/seasonContentLoader.ts` | Season 1 mission pack from `content/seasons/` |
+| encounterScaleSystem | `src/systems/learning/encounterScaleSystem.ts` | Level-scaled word/listening/session budgets |
+| japaneseKeySystem | `src/systems/narrative/japaneseKeySystem.ts` | Comprehension gates for archive/hidden nodes |
+| sectorWordPoolSystem | `src/systems/vocabulary/sectorWordPoolSystem.ts` | Sector-themed vocabulary pools |
+| wordPassiveSystem | `src/systems/vocabulary/wordPassiveSystem.ts` | Entity bind passive XP/corruption bonuses |
+| entityHuntSystem | `src/systems/vocabulary/entityHuntSystem.ts` | Word entity metadata + capture states |
+| encounterScriptSystem | `src/systems/encounters/encounterScriptSystem.ts` | Phased dungeon room scripts |
+| sectorSystem | `src/systems/world/sectorSystem.ts` | Sector registry + corruption drift |
+| operationalFeedSystem | `src/systems/home/operationalFeedSystem.ts` | Home crave feed + anomalies |
+| homeWhispersSystem | `src/systems/home/homeWhispersSystem.ts` | Japanese whispers above fold |
+| languageInvasionSystem | wired via `sectorCorruptionSystem` | Timed anomaly quests |
+| pushNotificationSystem | `src/systems/retention/pushNotificationSystem.ts` | VAPID opt-in; subscriptions in Supabase |
+| push send worker | `scripts/send-push-notifications.mjs` + `.github/workflows/push-notifications.yml` | Scheduled invasion alerts via GitHub Actions |
+| questCompletionRewardSystem | `src/systems/quests/questCompletionRewardSystem.ts` | Streak + word passive reward modifiers |
 
 ## v3.2 systems (GDD final)
 

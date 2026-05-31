@@ -12,6 +12,13 @@ import {
 } from "@/systems/audio/registerAudioHandlers"
 import type { ThemeMode } from "@/styles/themeDefaults"
 import { persistTheme, readStoredTheme } from "@/styles/themePreference"
+import {
+  isPushConfigured,
+  isPushOptIn,
+  isPushSupported,
+  subscribeToPush,
+  unsubscribeFromPush,
+} from "@/systems/retention/pushNotificationSystem"
 
 const REDUCED_MOTION_KEY = "nozomi-reduced-motion"
 
@@ -20,6 +27,10 @@ export function SettingsClient() {
   const [reducedMotion, setReducedMotion] = useState(false)
   const [corruptionAudio, setCorruptionAudio] = useState(true)
   const [colorMode, setColorMode] = useState<ThemeMode>("dark")
+  const [pushEnabled, setPushEnabled] = useState(false)
+  const [pushBusy, setPushBusy] = useState(false)
+  const pushAvailable = isPushSupported()
+  const pushConfigured = isPushConfigured()
 
   useEffect(() => {
     setColorMode(readStoredTheme())
@@ -31,6 +42,8 @@ export function SettingsClient() {
     const corruptionStored = localStorage.getItem(CORRUPTION_AUDIO_KEY)
     const enabled = corruptionStored === null || corruptionStored === "1"
     setCorruptionAudio(enabled)
+
+    setPushEnabled(isPushOptIn())
   }, [])
 
   function toggleReducedMotion() {
@@ -51,6 +64,22 @@ export function SettingsClient() {
     const next: ThemeMode = colorMode === "dark" ? "light" : "dark"
     setColorMode(next)
     persistTheme(next)
+  }
+
+  async function togglePushAlerts() {
+    if (!player?.id || pushBusy) return
+    setPushBusy(true)
+    try {
+      if (pushEnabled) {
+        await unsubscribeFromPush(player.id)
+        setPushEnabled(false)
+      } else if (pushConfigured) {
+        const ok = await subscribeToPush(player.id)
+        setPushEnabled(ok)
+      }
+    } finally {
+      setPushBusy(false)
+    }
   }
 
   return (
@@ -110,6 +139,35 @@ export function SettingsClient() {
             />
           </button>
         </li>
+        {pushAvailable && (
+          <li className="flex items-center justify-between px-4 py-3 text-sm">
+            <div>
+              <span className="block">Invasion alerts</span>
+              <span className="text-xs text-[var(--muted)]">
+                {pushConfigured
+                  ? "Push via GitHub scheduler — deep links to /home anomalies"
+                  : "Set NEXT_PUBLIC_VAPID_PUBLIC_KEY to enable"}
+              </span>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={pushEnabled}
+              aria-label="Invasion push alerts"
+              disabled={!pushConfigured || pushBusy}
+              onClick={() => void togglePushAlerts()}
+              className={`relative h-7 w-12 rounded-full transition-colors disabled:opacity-40 ${
+                pushEnabled ? "bg-[var(--accent)]" : "bg-[var(--overlay-toggle-off)]"
+              }`}
+            >
+              <span
+                className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-transform ${
+                  pushEnabled ? "left-6" : "left-1"
+                }`}
+              />
+            </button>
+          </li>
+        )}
         <li className="flex items-center justify-between px-4 py-3 text-sm">
           <span>Reduced motion</span>
           <button

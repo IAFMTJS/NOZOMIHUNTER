@@ -40,7 +40,7 @@ import { playThemedCue } from "@/systems/audio/themedAudioSystem"
 import { pulseHaptic } from "@/systems/presentation/hapticsSystem"
 import { explorationCorruptionDelta } from "@/systems/dungeons/explorationSystem"
 import { mergePenalties } from "@/systems/penalties/penaltySystem"
-import { applyEncounterStreakToQuestRewards } from "@/systems/quests/questCompletionRewardSystem"
+import { applyQuestRewardModifiers } from "@/systems/quests/questCompletionRewardSystem"
 import type { GameModeId } from "@/contracts/game-mode-contract"
 import {
   advanceExplorationBeat,
@@ -330,7 +330,7 @@ export async function extractDungeonRewards(userId: string) {
   const progressionState = store.getProgressionState()
   if (!quest?.dungeonRun || !progressionState || !store.player) return null
 
-  const ready = applyEncounterStreakToQuestRewards(finalizeDungeonExtraction(quest))
+  const ready = applyQuestRewardModifiers(finalizeDungeonExtraction(quest))
   if (!canCompleteQuest(ready)) {
     throw new Error("Dungeon objectives not complete")
   }

@@ -1,0 +1,10 @@
+{
+  "seasonId": "season-01-broken-signal",
+  "title": "The Broken Signal",
+  "acts": [
+    { "id": "act-1", "chapterId": "ch-01", "title": "Awakening", "sectorId": "sector-01" },
+    { "id": "act-2", "chapterId": "ch-02", "title": "Static", "sectorId": "sector-02" },
+    { "id": "act-3", "chapterId": "ch-03", "title": "Debt", "sectorId": "sector-03" },
+    { "id": "act-4", "chapterId": "ch-04", "title": "Horizon", "sectorId": "sector-04" }
+  ]
+}

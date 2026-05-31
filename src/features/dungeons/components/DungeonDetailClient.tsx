@@ -19,6 +19,14 @@ import { E2E_TEST_IDS } from "@/config/e2eTestIds"
 import { buildDungeonEntryTension } from "@/systems/presentation/dungeonEntryPresentation"
 import { DungeonEntryTension } from "@/features/dungeons/components/DungeonEntryTension"
 import { buildSectorCorruptionView } from "@/systems/world/sectorCorruptionSystem"
+import { computeReadiness, isReadinessHardBlocked } from "@/systems/readiness/readinessSystem"
+import { computePreparationChecklist } from "@/systems/readiness/preparationChecklistSystem"
+import {
+  isDeployBlocked,
+  resolveDeployBlockers,
+  MIN_OPERATIONAL_READINESS_SCORE,
+} from "@/systems/readiness/deployGateSystem"
+import { DeploymentBlockersPanel } from "@/components/preparation/DeploymentBlockersPanel"
 
 interface DungeonDetailClientProps {
   dungeonKey: string
@@ -45,6 +53,7 @@ export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
     )
   }
 
+  const seed = `${player.id}:${new Date().toISOString().slice(0, 10)}`
   const gate = canStartDungeon(player, activeQuests, dungeonKey)
   const power = computeHunterPower(player)
   const cost = def.staminaCost
@@ -53,7 +62,17 @@ export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
   const maxDifficulty = Math.max(...def.encounterPlan.map((e) => e.difficulty))
   const timeLimit = estimatedDungeonTimeLimitMinutes(def.encounterPlan.length)
   const entryTension = buildDungeonEntryTension(def)
-  const sectorView = buildSectorCorruptionView(player, [...activeQuests, ...regularQuests])
+  const sectorView = buildSectorCorruptionView(
+    player,
+    [...activeQuests, ...regularQuests],
+    seed
+  )
+  const readiness = computeReadiness({ player, quest: { type: "DUNGEON" } })
+  const operationalReady = !isReadinessHardBlocked(readiness)
+  const checklist = computePreparationChecklist(player, true, [], operationalReady)
+  const blockers = resolveDeployBlockers({ readiness, checklist })
+  const readinessBlocked = isDeployBlocked(blockers)
+  const canEnter = gate.ok && hasStamina && !readinessBlocked && !dungeon.busy
 
   return (
     <HunterPage className="pb-28">
@@ -70,6 +89,21 @@ export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
         <p className="text-xs text-[var(--muted)]">
           Sector corruption: {sectorView.corruptionPercent}% — {sectorView.subline}
         </p>
+
+        <div className="nozomi-embedded rounded-xl px-4 py-3 text-sm">
+          <p className="text-xs uppercase tracking-widest text-[var(--accent-bright)]">
+            Deployment readiness
+          </p>
+          <p className="mt-2 font-mono text-lg text-[var(--foreground)]">
+            {readiness.preparationScore}%
+            <span className="ml-2 text-xs text-[var(--muted)]">
+              (minimum {MIN_OPERATIONAL_READINESS_SCORE}%)
+            </span>
+          </p>
+          <p className="mt-1 text-xs text-[var(--muted)]">{readiness.survivalLabel}</p>
+        </div>
+
+        {readinessBlocked && <DeploymentBlockersPanel blockers={blockers} />}
 
         <StatGrid
           items={[
@@ -123,9 +157,10 @@ export function DungeonDetailClient({ dungeonKey }: DungeonDetailClientProps) {
             variant="cta"
             size="md"
             className="w-full !py-3.5"
-            disabled={!gate.ok || !hasStamina || dungeon.busy}
+            disabled={!canEnter}
             data-testid={E2E_TEST_IDS.dungeonEnter}
             onClick={async () => {
+              if (!canEnter) return
               await dungeon.enter(dungeonKey)
               router.push(`/prepare?dungeonKey=${encodeURIComponent(dungeonKey)}`)
             }}

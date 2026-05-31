@@ -5,7 +5,13 @@ import {
   nextRankAfter,
 } from "@/systems/progression/almostThereSystem"
 import type { PlayerContract } from "@/contracts/player-contract"
+import type { StoryBeatId } from "@/contracts/narrative-contract"
+import { DEFAULT_STORY_PROGRESS } from "@/contracts/narrative-contract"
 import { defaultProgression } from "@/systems/progression/unlockSystem"
+
+const ALL_SEASON_BEATS: StoryBeatId[] = Array.from({ length: 24 }, (_, i) =>
+  `beat-s01-${String(i + 1).padStart(3, "0")}`
+)
 
 function mockPlayer(overrides: Partial<PlayerContract> = {}): PlayerContract {
   return {
@@ -62,7 +68,16 @@ describe("almostThereSystem", () => {
   })
 
   it("builds rank objective for mid-level hunters", () => {
-    const vm = buildAlmostThereObjective(mockPlayer({ level: 8 }), [])
+    const vm = buildAlmostThereObjective(
+      mockPlayer({
+        level: 8,
+        storyProgress: {
+          ...DEFAULT_STORY_PROGRESS(),
+          completedBeatIds: ALL_SEASON_BEATS,
+        },
+      }),
+      []
+    )
     expect(vm.title).toContain("Rank D")
     expect(vm.progressPercent).toBeGreaterThan(0)
   })

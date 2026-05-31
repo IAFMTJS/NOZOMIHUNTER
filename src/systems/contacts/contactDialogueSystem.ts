@@ -1,9 +1,32 @@
+import type { IrisTrustTier } from "@/contracts/narrative-contract"
+import { irisTrustTierFromScore } from "@/contracts/narrative-contract"
+import irisDialogueTrees from "../../../content/narrative/iris/dialogue-trees.json"
+
 export type ContactDialogueBranch = "greeting" | "briefing" | "trust"
+
+type IrisBranchMap = Record<IrisTrustTier, string[]>
+
+interface IrisDialoguePack {
+  branches: Record<ContactDialogueBranch, IrisBranchMap>
+  actOverrides?: Record<string, { briefing?: string }>
+}
+
+const IRIS_PACK = irisDialogueTrees as IrisDialoguePack
 
 const LINES: Record<
   string,
-  Record<ContactDialogueBranch, (trust: number) => string>
+  Record<ContactDialogueBranch, (trust: number, actId?: string) => string>
 > = {
+  iris: {
+    greeting: (trust) => pickIrisLine("greeting", trust),
+    briefing: (trust, actId) => {
+      const override = actId ? IRIS_PACK.actOverrides?.[actId]?.briefing : undefined
+      if (override) return override
+      return pickIrisLine("briefing", trust)
+    },
+    trust: (trust) =>
+      pickIrisLine("trust", trust).replace("{trust}", String(trust)),
+  },
   "operator-7": {
     greeting: (t) =>
       t >= 60
@@ -32,12 +55,28 @@ const LINES: Record<
   },
 }
 
+function pickIrisLine(branch: ContactDialogueBranch, trust: number): string {
+  const tier = irisTrustTierFromScore(trust)
+  const pool = IRIS_PACK.branches[branch]?.[tier] ?? IRIS_PACK.branches[branch]?.UNKNOWN
+  if (!pool?.length) return "…signal lost."
+  const idx = trust % pool.length
+  return pool[idx] ?? pool[0]!
+}
+
 export function pickContactDialogue(
   npcKey: string,
   branch: ContactDialogueBranch,
-  trust: number
+  trust: number,
+  actId?: string
 ): string {
+  if (npcKey === "iris") {
+    return LINES.iris[branch](trust, actId)
+  }
   const npc = LINES[npcKey]
   if (!npc) return "…signal lost."
-  return npc[branch](trust)
+  return npc[branch](trust, actId)
+}
+
+export function irisTrustTierForContact(trust: number): IrisTrustTier {
+  return irisTrustTierFromScore(trust)
 }

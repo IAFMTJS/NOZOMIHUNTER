@@ -32,7 +32,7 @@ import { logSystemEvent } from "@/systems/logger/logger"
 import { shouldAssignTutorialQuest } from "@/systems/tutorial/tutorialSystem"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { triggerSave } from "@/systems/save/saveSystem"
-import { applyEncounterStreakToQuestRewards } from "@/systems/quests/questCompletionRewardSystem"
+import { applyQuestRewardModifiers } from "@/systems/quests/questCompletionRewardSystem"
 import {
   applyLiveModifiersToQuest,
   resolveLiveRewardModifiers,
@@ -176,7 +176,7 @@ export async function finishQuest(userId: string, questId: string) {
 
   const liveMods = resolveLiveRewardModifiers(userId)
   const questForComplete = applyLiveModifiersToQuest(
-    applyEncounterStreakToQuestRewards(quest),
+    applyQuestRewardModifiers(quest),
     liveMods
   )
   await updateUserQuest(userId, questForComplete)

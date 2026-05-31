@@ -57,7 +57,11 @@ describe("dungeonRouteSystem", () => {
   it("lists exits from entry", () => {
     const run = initRouteRun(baseRun(), NEON_CORRIDOR_ROUTE_GRAPH)
     const choices = listRouteChoices(run)
-    expect(choices.map((c) => c.id)).toEqual(["neon-hall", "archive-door"])
+    expect(choices.map((c) => c.id)).toEqual([
+      "neon-hall",
+      "archive-door",
+      "recovery-alcove",
+    ])
   })
 
   it("advances to encounter node", () => {

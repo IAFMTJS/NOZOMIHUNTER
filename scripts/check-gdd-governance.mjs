@@ -149,5 +149,19 @@ if (!fs.existsSync(path.join(root, ".github/workflows/gdd-quality.yml"))) {
   fail("gdd-quality.yml CI workflow missing")
 }
 
+const contentSeeds = read("content/seeds/content-contracts.json")
+if (/Main arc \d+/i.test(contentSeeds)) {
+  fail('content-contracts.json still contains procedural "Main arc N" story titles')
+}
+
+if (!fs.existsSync(path.join(root, "docs/content-pipeline.md"))) {
+  fail("content-pipeline.md missing")
+}
+
+const homeClient = read("src/features/home/components/HomeClient.tsx")
+if (!homeClient.includes("pickHomeWhisper")) {
+  fail("home missing Japanese whispers above fold")
+}
+
 if (failed) process.exit(1)
 console.log("[gdd-governance] OK")

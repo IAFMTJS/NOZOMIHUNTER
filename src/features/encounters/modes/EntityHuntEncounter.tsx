@@ -5,7 +5,8 @@ import type { PlayerContract } from "@/contracts/player-contract"
 import { Panel } from "@/components/ui/Panel"
 import { ModeEncounterShell } from "@/features/encounters/modes/ModeEncounterShell"
 import { VocabularyEncounter } from "@/features/quests/components/VocabularyEncounter"
-import { computeEntityThreatIndex } from "@/systems/vocabulary/entityHuntSystem"
+import { computeEntityThreatIndex, buildWordEntityMetadata } from "@/systems/vocabulary/entityHuntSystem"
+import { getMasteryMap } from "@/systems/mastery/masterySystem"
 
 interface EntityHuntEncounterProps {
   quest: QuestContract
@@ -25,16 +26,43 @@ export function EntityHuntEncounter({
   onAbandon,
 }: EntityHuntEncounterProps) {
   const enc = quest.vocabularyEncounter
+  const currentWord = enc?.words?.[enc.currentIndex ?? 0]
+  const masteryMap = getMasteryMap()
+  const masteryScore = currentWord ? masteryMap.get(currentWord.id) : undefined
+  const entityMeta = currentWord
+    ? buildWordEntityMetadata(
+        currentWord.id,
+        masteryScore != null
+          ? {
+              wordId: currentWord.id,
+              mastery: masteryScore,
+              correctCount: 0,
+              wrongCount: 0,
+              lastSeenAt: new Date().toISOString(),
+            }
+          : undefined,
+        { encounterSource: "entity-hunt", threatLevel: "ELEVATED" }
+      )
+    : null
   const answered = enc?.currentIndex ?? 0
   const total = enc?.words?.length ?? 1
-  const masteryProxy = Math.round((answered / Math.max(1, total)) * 100)
+  const masteryProxy = entityMeta
+    ? Math.round(
+        (entityMeta.captureState === "MASTERED"
+          ? 90
+          : entityMeta.captureState === "STABILIZED"
+            ? 55
+            : 15)
+      )
+    : Math.round((answered / Math.max(1, total)) * 100)
   const threatIndex = computeEntityThreatIndex(masteryProxy, "ELEVATED")
 
   return (
     <ModeEncounterShell modeLabel="Entity Hunt" emotion="Discovery" quest={quest}>
       <Panel tone="inset" className="mb-3 !p-3 nozomi-entity-network">
         <p className="text-xs text-[var(--muted)]">
-          Track the anomaly — stabilize entities before threat index maxes out.
+          {entityMeta?.displaySubtitle ??
+            "Track the anomaly — stabilize entities before threat index maxes out."}
         </p>
         <div className="mt-2 space-y-1">
           <p className="text-[10px] uppercase tracking-widest text-[var(--danger)]">

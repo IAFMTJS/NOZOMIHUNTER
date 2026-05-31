@@ -9,6 +9,12 @@ import type { QuestContract } from "@/contracts/quest-contract"
 import { xpProgressInCurrentLevel } from "@/systems/progression/levelSystem"
 import { rankFromLevel } from "@/systems/progression/rankSystem"
 import { getTrackedQuest } from "@/systems/quests/contractTrackingSystem"
+import { getNextStoryMission } from "@/systems/content/seasonContentLoader"
+import { resolveStoryProgress } from "@/systems/narrative/storyProgressSystem"
+import {
+  dailyMilestoneProgress,
+  DAILY_MILESTONE_TARGET,
+} from "@/systems/quests/dailyMilestoneSystem"
 
 const RANK_ORDER: HunterRank[] = ["E", "D", "C", "B", "A", "S", "SS", "SSS"]
 
@@ -46,6 +52,43 @@ export function buildAlmostThereObjective(
   player: PlayerContract,
   activeQuests: QuestContract[]
 ): AlmostThereObjectiveContract {
+  const nextStory = getNextStoryMission(player)
+  const storyProgress = resolveStoryProgress(player)
+  const dailyMilestone = dailyMilestoneProgress(activeQuests, player.id)
+
+  if (
+    nextStory &&
+    storyProgress.completedBeatIds.length < 24 &&
+    dailyMilestone.completed < DAILY_MILESTONE_TARGET
+  ) {
+    const tracked = getTrackedQuest(activeQuests, player)
+    return {
+      title: nextStory.title,
+      progressPercent: Math.round(
+        (storyProgress.completedBeatIds.length / 24) * 100
+      ),
+      detailLine: `Story beat ${nextStory.missionIndex}/24 — ${nextStory.titleJa}`,
+      contractsRemaining: null,
+      ctaHref: tracked?.narrativeTier === "MAIN"
+        ? `/contracts/${tracked.id}`
+        : `/contracts`,
+      ctaLabel: "Open story file",
+    }
+  }
+
+  if (dailyMilestone.completed > 0 && dailyMilestone.completed < DAILY_MILESTONE_TARGET) {
+    return {
+      title: "Daily contract chain",
+      progressPercent: Math.round(
+        (dailyMilestone.completed / DAILY_MILESTONE_TARGET) * 100
+      ),
+      detailLine: `${dailyMilestone.completed}/${DAILY_MILESTONE_TARGET} clears — bonus at third extraction`,
+      contractsRemaining: DAILY_MILESTONE_TARGET - dailyMilestone.completed,
+      ctaHref: "/contracts",
+      ctaLabel: "Continue daily chain",
+    }
+  }
+
   const next = nextRankAfter(player.rank)
   const rankPct = rankProgressPercent(player.level, player.rank)
   const tracked = getTrackedQuest(activeQuests, player)
@@ -76,14 +119,18 @@ export function buildAlmostThereObjective(
 export function buildProximityChips(
   player: PlayerContract,
   sectorCorruptionPercent: number,
-  sectorBreachDelta: number
+  sectorBreachDelta: number,
+  activeQuests: QuestContract[] = []
 ): ProximityChipContract[] {
   const next = nextRankAfter(player.rank)
   const rankPct = rankProgressPercent(player.level, player.rank)
   const syncTarget = 7
   const syncRemaining = Math.max(0, syncTarget - player.synchronization.chainDays)
+  const storyProgress = resolveStoryProgress(player)
+  const nextStory = getNextStoryMission(player)
+  const dailyMilestone = dailyMilestoneProgress(activeQuests, player.id)
 
-  return [
+  const chips: ProximityChipContract[] = [
     {
       id: "rank",
       label: "Rank progress",
@@ -121,6 +168,30 @@ export function buildProximityChips(
       tone: "muted",
     },
   ]
+
+  if (nextStory) {
+    chips.unshift({
+      id: "story",
+      label: "Story arc",
+      value: `${storyProgress.completedBeatIds.length}/24`,
+      subline: nextStory.title,
+      tone: "accent",
+    })
+  }
+
+  if (dailyMilestone.completed > 0 && dailyMilestone.completed < DAILY_MILESTONE_TARGET) {
+    chips.push({
+      id: "daily-chain",
+      label: "Daily chain",
+      value: `${dailyMilestone.completed}/${DAILY_MILESTONE_TARGET}`,
+      subline: dailyMilestone.bonusReady
+        ? "Bonus unlocked"
+        : "Clear for extraction bonus",
+      tone: "reward",
+    })
+  }
+
+  return chips
 }
 
 export function hunterPowerPercentileLabel(totalPower: number): string {

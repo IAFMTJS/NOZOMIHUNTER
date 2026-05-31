@@ -27,6 +27,8 @@ export function registerAudioHandlers(): () => void {
   const onQuestFailed = () => playAudioCue("error")
   const onEncounterStart = () => playCategoryStem("training")
   const onEncounterComplete = () => playCategoryStem("sector_clear")
+  const onEncounterCorrect = () => playAudioCue("confirm")
+  const onEncounterWrong = () => playAudioCue("error")
   const onDungeonEntered = (payload: unknown) => {
     const p = payload as { theme?: DungeonTheme } | undefined
     playCategoryStem("dungeon_enter", p?.theme)
@@ -49,12 +51,18 @@ export function registerAudioHandlers(): () => void {
   }
   const onPrepReady = () => playCategoryStem("training")
   const onRankUp = () => playCategoryStem("rank_up")
+  const onAnomaly = () => playCategoryStem("corruption_alert")
+  const onArchiveUnlock = () => playCategoryStem("relic_drop")
+  const onBossPhase = () => playCategoryStem("boss")
+  const onWordBound = () => playAudioCue("rewardCascade")
 
   eventBus.on(GAME_EVENTS.LEVEL_UP, onLevelUp)
   eventBus.on(GAME_EVENTS.QUEST_COMPLETED, onQuestComplete)
   eventBus.on(GAME_EVENTS.QUEST_FAILED, onQuestFailed)
   eventBus.on(GAME_EVENTS.ENCOUNTER_STARTED, onEncounterStart)
   eventBus.on(GAME_EVENTS.ENCOUNTER_COMPLETED, onEncounterComplete)
+  eventBus.on(GAME_EVENTS.ENCOUNTER_ANSWER_CORRECT, onEncounterCorrect)
+  eventBus.on(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, onEncounterWrong)
   eventBus.on(GAME_EVENTS.SECTOR_CLEARED, onEncounterComplete)
   eventBus.on(GAME_EVENTS.DUNGEON_ENTERED, onDungeonEntered)
   eventBus.on(GAME_EVENTS.DUNGEON_COMPLETED, onDungeonCompleted)
@@ -65,6 +73,10 @@ export function registerAudioHandlers(): () => void {
   eventBus.on(GAME_EVENTS.MASTERY_TIER_UP, onMasteryTier)
   eventBus.on(GAME_EVENTS.DAILY_MILESTONE_REACHED, onQuestComplete)
   eventBus.on(GAME_EVENTS.RANK_UP, onRankUp)
+  eventBus.on(GAME_EVENTS.LANGUAGE_INVASION_ACTIVE, onAnomaly)
+  eventBus.on(GAME_EVENTS.ARCHIVE_UNLOCKED, onArchiveUnlock)
+  eventBus.on(GAME_EVENTS.BOSS_PHASE_CHANGED, onBossPhase)
+  eventBus.on(GAME_EVENTS.WORD_BOUND, onWordBound)
 
   unregister = () => {
     eventBus.off(GAME_EVENTS.LEVEL_UP, onLevelUp)
@@ -72,6 +84,8 @@ export function registerAudioHandlers(): () => void {
     eventBus.off(GAME_EVENTS.QUEST_FAILED, onQuestFailed)
     eventBus.off(GAME_EVENTS.ENCOUNTER_STARTED, onEncounterStart)
     eventBus.off(GAME_EVENTS.ENCOUNTER_COMPLETED, onEncounterComplete)
+    eventBus.off(GAME_EVENTS.ENCOUNTER_ANSWER_CORRECT, onEncounterCorrect)
+    eventBus.off(GAME_EVENTS.ENCOUNTER_ANSWER_WRONG, onEncounterWrong)
     eventBus.off(GAME_EVENTS.DUNGEON_ENTERED, onDungeonEntered)
     eventBus.off(GAME_EVENTS.DUNGEON_COMPLETED, onDungeonCompleted)
     eventBus.off(GAME_EVENTS.DUNGEON_FAILED, onDungeonFailed)
@@ -81,6 +95,10 @@ export function registerAudioHandlers(): () => void {
     eventBus.off(GAME_EVENTS.MASTERY_TIER_UP, onMasteryTier)
     eventBus.off(GAME_EVENTS.DAILY_MILESTONE_REACHED, onQuestComplete)
     eventBus.off(GAME_EVENTS.RANK_UP, onRankUp)
+    eventBus.off(GAME_EVENTS.LANGUAGE_INVASION_ACTIVE, onAnomaly)
+    eventBus.off(GAME_EVENTS.ARCHIVE_UNLOCKED, onArchiveUnlock)
+    eventBus.off(GAME_EVENTS.BOSS_PHASE_CHANGED, onBossPhase)
+    eventBus.off(GAME_EVENTS.WORD_BOUND, onWordBound)
     eventBus.off(GAME_EVENTS.SECTOR_CLEARED, onEncounterComplete)
     registered = false
     unregister = null

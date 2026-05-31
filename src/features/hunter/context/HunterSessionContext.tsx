@@ -24,6 +24,8 @@ import { RewardClaimOverlay } from "@/features/rewards/components/RewardClaimOve
 import { LevelUpCeremony } from "@/components/ceremonies/LevelUpCeremony"
 import { AchievementUnlockCeremony } from "@/components/ceremonies/AchievementUnlockCeremony"
 import { MasteryTierUpCeremony } from "@/components/ceremonies/MasteryTierUpCeremony"
+import { ArchiveUnlockCeremony } from "@/components/ceremonies/ArchiveUnlockCeremony"
+import { WordBindCeremony } from "@/components/ceremonies/WordBindCeremony"
 import { RankUpNotice } from "@/components/RankUpNotice"
 import { UnlockNotice } from "@/components/UnlockNotice"
 import { InstallPrompt } from "@/components/InstallPrompt"
@@ -88,10 +90,14 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
   const {
     achievementQueue,
     masteryTierQueue,
+    archiveUnlockQueue,
+    wordBindQueue,
     syncCeremonyKey,
     dismissSyncCeremony,
     popAchievement,
     popMasteryTier,
+    popArchiveUnlock,
+    popWordBind,
   } = useHunterCeremonies(player, user?.id)
   const { claimRewards, claimError } = useHunterRewardClaim(
     player,
@@ -193,6 +199,19 @@ export function HunterSessionProvider({ children }: { children: ReactNode }) {
         />
       )}
 
+      {wordBindQueue[0] != null &&
+        masteryTierQueue[0] == null &&
+        achievementQueue[0] == null &&
+        archiveUnlockQueue[0] == null && (
+        <WordBindCeremony data={wordBindQueue[0]} onDismiss={popWordBind} />
+      )}
+      {archiveUnlockQueue[0] != null &&
+        achievementQueue[0] == null && (
+        <ArchiveUnlockCeremony
+          data={archiveUnlockQueue[0]}
+          onDismiss={popArchiveUnlock}
+        />
+      )}
       {masteryTierQueue[0] != null && achievementQueue[0] == null && (
         <MasteryTierUpCeremony
           data={masteryTierQueue[0]}

@@ -48,6 +48,9 @@ export const GAME_EVENTS = {
   SECTOR_CORRUPTION_TICK: "SECTOR_CORRUPTION_TICK",
   DISCIPLINE_SPENT: "DISCIPLINE_SPENT",
   DAILY_MILESTONE_REACHED: "DAILY_MILESTONE_REACHED",
+  ARCHIVE_UNLOCKED: "ARCHIVE_UNLOCKED",
+  WORD_BOUND: "WORD_BOUND",
+  LANGUAGE_INVASION_ACTIVE: "LANGUAGE_INVASION_ACTIVE",
 } as const
 
 export type GameEventType = (typeof GAME_EVENTS)[keyof typeof GAME_EVENTS]
@@ -142,4 +145,21 @@ export type MasteryTierUpPayload = {
   wordId: string
   tier: string
   mastery: number
+}
+
+export type ArchiveUnlockedPayload = {
+  playerId: string
+  archiveUnlockId: string
+  title?: string
+}
+
+export type WordBoundPayload = {
+  playerId: string
+  wordId: string
+  mastery: number
+}
+
+export type LanguageInvasionPayload = {
+  invasionId: string
+  corruptionDrift: number
 }

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button"
 import { usePlayerStore } from "@/stores/usePlayerStore"
 import { listArchiveEntries } from "@/systems/archive/archiveSystem"
 import { resolveArchiveContractLink } from "@/systems/archive/archiveContractSystem"
+import { canParseFragment } from "@/systems/narrative/japaneseKeySystem"
 
 export function ArchiveClient() {
   const player = usePlayerStore((s) => s.player)
@@ -29,6 +30,19 @@ export function ArchiveClient() {
                 {entry.title}
               </p>
               <p className="mt-1 text-sm text-[var(--muted)]">{entry.teaser}</p>
+              {entry.japaneseExcerpt && (
+                <p
+                  className={`mt-2 font-display text-sm ${
+                    entry.locked ? "text-[var(--muted)] opacity-70" : "text-[var(--accent)]"
+                  }`}
+                >
+                  {entry.locked &&
+                  player &&
+                  !canParseFragment(player, entry.japaneseExcerpt).allowed
+                    ? `${entry.japaneseExcerpt.slice(0, 3)}…`
+                    : entry.japaneseExcerpt}
+                </p>
+              )}
               {!entry.locked && entry.loreExcerpt && (
                 <p className="mt-2 border-l-2 border-[var(--accent)] pl-3 font-mono text-xs leading-relaxed text-[var(--foreground)] opacity-90">
                   {entry.loreExcerpt}

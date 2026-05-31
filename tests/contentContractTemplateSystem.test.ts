@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest"
 import {
+  buildQuestFromContentTemplate,
   pickContentContractTemplate,
   setContentContractTemplates,
 } from "@/systems/content/contentContractTemplateSystem"
+import type { PlayerContract } from "@/contracts/player-contract"
 
 describe("contentContractTemplateSystem", () => {
   it("picks story channel from pool", () => {
@@ -32,5 +34,23 @@ describe("contentContractTemplateSystem", () => {
     ])
     const picked = pickContentContractTemplate("story", "player-a", "2026-05-29")
     expect(picked?.channel).toBe("story")
+  })
+
+  it("builds conversation quest with template scenarioId", () => {
+    const template = {
+      id: "side-iris",
+      title: "Iris Briefing",
+      channel: "side",
+      template: {
+        description: "Briefing op",
+        type: "CONVERSATION" as const,
+        gameMode: "GHOST_INTERROGATION" as const,
+        scenarioId: "iris-briefing",
+        narrativeTier: "SIDE" as const,
+      },
+    }
+    const player = { id: "p1", level: 5 } as PlayerContract
+    const quest = buildQuestFromContentTemplate(template, player)
+    expect(quest.scenarioId).toBe("iris-briefing")
   })
 })

@@ -1,4 +1,9 @@
 import type { PlayerContract } from "@/contracts/player-contract"
+import {
+  isBeatCompleted,
+  resolveStoryProgress,
+} from "@/systems/narrative/storyProgressSystem"
+import { canParseFragment } from "@/systems/narrative/japaneseKeySystem"
 
 export interface ArchiveEntry {
   id: string
@@ -6,8 +11,12 @@ export interface ArchiveEntry {
   teaser: string
   /** Shown when entry is unlocked — full lore stub for future contracts. */
   loreExcerpt?: string
+  /** Partial Japanese line — comprehension gate for locked teasers. */
+  japaneseExcerpt?: string
   locked: boolean
   lockReason?: string
+  /** Story beat that must be complete before this fragment opens. */
+  requiredBeatId?: string
   /** Future: contract id that unlocks deeper read. */
   linkedContractId?: string
 }
@@ -26,40 +35,53 @@ const ENTRIES: ArchiveEntry[] = [
     teaser: "They recorded the corridor before the lights failed.",
     loreExcerpt:
       "…sector seven went dark at 03:12. The whisper index was the only file that survived the purge.",
-    locked: false,
+    japaneseExcerpt: "セクター七は03:12に消えた",
+    requiredBeatId: "beat-s01-004",
+    locked: true,
+    lockReason: "Complete Iris Briefing to decode",
+    linkedContractId: "story-s01-m04",
   },
   {
     id: "forbidden-kanji",
     title: "Forbidden glyph chain",
     teaser: "Do not read aloud unless your rank permits.",
+    japaneseExcerpt: "禁断の文字列",
     locked: true,
     lockReason: "Requires Shadow Archive sector clear",
-    linkedContractId: "story:shadow-archive-intro",
+    linkedContractId: "story-s01-m21",
   },
   {
     id: "night-report",
     title: "Night operator report",
     teaser: "Only visible after 22:00 local.",
+    japaneseExcerpt: "夜間報告——未送信",
     locked: true,
     lockReason: "Time-gated — return after neon dusk",
+    linkedContractId: "daily:night-scan",
   },
   {
     id: "corridor-zero",
     title: "Corridor zero manifest",
     teaser: "First breach log before the neon grid stabilized.",
     loreExcerpt: "Operator 7 marked corridor zero as expendable. The grid disagreed.",
-    locked: false,
+    japaneseExcerpt: "第一の文字はまだ息をしている",
+    requiredBeatId: "beat-s01-002",
+    locked: true,
+    lockReason: "Complete First Glyph",
+    linkedContractId: "story-s01-m02",
   },
   {
     id: "iris-origin",
     title: "Iris channel origin",
     teaser: "Spectral routing table — partial decode.",
+    japaneseExcerpt: "アイリス経路表",
     locked: false,
   },
   {
     id: "warden-echo",
     title: "Warden echo transcript",
     teaser: "Boss phase whispers captured during Shadow Archive run.",
+    japaneseExcerpt: "監視者の囁き",
     locked: true,
     lockReason: "Clear Shadow Archive warden encounter",
   },
@@ -67,6 +89,7 @@ const ENTRIES: ArchiveEntry[] = [
     id: "void-cartography",
     title: "Void cartography shard",
     teaser: "Unmapped sector coordinates leak through static.",
+    japaneseExcerpt: "空白地図の欠片",
     locked: true,
     lockReason: "Requires Void sector access",
   },
@@ -74,6 +97,7 @@ const ENTRIES: ArchiveEntry[] = [
     id: "discipline-oath",
     title: "Discipline oath fragment",
     teaser: "Registry maintenance vows — rank B minimum.",
+    japaneseExcerpt: "規律誓約",
     locked: true,
     lockReason: "Reach rank B",
   },
@@ -87,6 +111,7 @@ const ENTRIES: ArchiveEntry[] = [
     id: "abyss-core",
     title: "Abyss core breach memo",
     teaser: "Deep sector pressure readings — classified.",
+    japaneseExcerpt: "深淵コア圧力",
     locked: true,
     lockReason: "Unlock Abyss Core sector",
   },
@@ -108,6 +133,14 @@ function mergedEntries(): ArchiveEntry[] {
   return [...byId.values()]
 }
 
+function isArchiveUnlocked(player: PlayerContract | null, entry: ArchiveEntry): boolean {
+  if (!player) return false
+  const progress = resolveStoryProgress(player)
+  if (progress.archiveUnlockedIds.includes(entry.id)) return true
+  if (entry.requiredBeatId && isBeatCompleted(progress, entry.requiredBeatId)) return true
+  return false
+}
+
 export function listArchiveEntries(player: PlayerContract | null): ArchiveEntry[] {
   const shadowClear = player?.progression.unlockedDungeons.includes(
     "dungeon:shadow-archive"
@@ -115,13 +148,37 @@ export function listArchiveEntries(player: PlayerContract | null): ArchiveEntry[
   const hour = new Date().getHours()
   const nightOk = hour >= 22 || hour < 5
 
-  return mergedEntries().map((e) => {
-    if (e.id === "forbidden-kanji") {
-      return { ...e, locked: !shadowClear, lockReason: shadowClear ? undefined : e.lockReason }
+  return mergedEntries().map((entry) => {
+    let locked = entry.locked
+    let lockReason = entry.lockReason
+
+    if (entry.requiredBeatId && player) {
+      const beatOpen = isArchiveUnlocked(player, entry)
+      if (!beatOpen) {
+        locked = true
+        lockReason = lockReason ?? "Story beat incomplete"
+      } else {
+        locked = false
+        lockReason = undefined
+      }
     }
-    if (e.id === "night-report") {
-      return { ...e, locked: !nightOk, lockReason: nightOk ? undefined : e.lockReason }
+
+    if (entry.id === "forbidden-kanji" || entry.id === "forbidden-kanji-chain") {
+      locked = !shadowClear
+      lockReason = shadowClear ? undefined : (lockReason ?? "Requires Shadow Archive sector clear")
     }
-    return e
+    if (entry.id === "night-report") {
+      locked = !nightOk
+      lockReason = nightOk ? undefined : (lockReason ?? "Time-gated — return after neon dusk")
+    }
+
+    if (player && entry.japaneseExcerpt && locked) {
+      const gate = canParseFragment(player, entry.japaneseExcerpt)
+      if (!gate.allowed && gate.reason) {
+        lockReason = gate.reason
+      }
+    }
+
+    return { ...entry, locked, lockReason }
   })
 }

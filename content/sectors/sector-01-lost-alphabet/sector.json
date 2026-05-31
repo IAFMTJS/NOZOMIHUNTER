@@ -1,0 +1,14 @@
+{
+  "id": "sector-01",
+  "index": 1,
+  "name": "Lost Alphabet",
+  "nameJa": "失われた文字",
+  "jlptFocus": "N5 kana + core",
+  "canonBossName": "The Hollow Monk",
+  "canonBossNameJa": "虚ろの僧",
+  "primaryDungeonKeys": [],
+  "wordPoolId": "sector-01-n5-core",
+  "heroTheme": "CYBER_TOKYO",
+  "minLevel": 1,
+  "description": "The simplest records remain. Many characters have disappeared."
+}

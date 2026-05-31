@@ -1,5 +1,6 @@
 import type { QuestContract } from "@/contracts/quest-contract"
 import type { DungeonRunContract } from "@/contracts/dungeon-contract"
+import { DUNGEON_CONFIG } from "@/config/dungeonConfig"
 import {
   clearEncounterPayloads,
   mountSectorEncounter,
@@ -20,6 +21,12 @@ import {
   patchRun,
   mountContextFromRun,
 } from "./dungeonQuestPatch"
+import {
+  mountFromEncounterScript,
+  resolveScriptForNode,
+} from "@/systems/encounters/encounterScriptSystem"
+import { resolveNodeEncounterContent } from "@/config/dungeonEncounterContentConfig"
+import { applyGameModeToQuest } from "@/systems/gameModes/gameModeQuestBuilder"
 
 export function beginBossPhase(quest: QuestContract): QuestContract {
   const run = quest.dungeonRun!
@@ -41,6 +48,145 @@ export function beginBossPhase(quest: QuestContract): QuestContract {
   return patchRun({ ...quest, ...clearEncounterPayloads(), ...mounted }, nextRun)
 }
 
+function applySpecialRoomMount(
+  quest: QuestContract,
+  run: DungeonRunContract,
+  kind: "STORY" | "RECOVERY" | "TREASURE",
+  copy?: string
+): QuestContract {
+  const relief =
+    kind === "RECOVERY"
+      ? Math.max(0, (run.sectorCorruption ?? run.threat?.corruptionPressure ?? 0) - 8)
+      : run.sectorCorruption
+  const nextRun: DungeonRunContract = {
+    ...run,
+    machineState: transition(run.machineState, "ENCOUNTER"),
+    activeType: null,
+    explorationBeat: null,
+    explorationProgress: 100,
+    routeSelectPending: false,
+    sectorCorruption: relief,
+    explorationSystemLine:
+      copy ??
+      (kind === "RECOVERY"
+        ? DUNGEON_CONFIG.RECOVERY_ROUTE.corruptionReliefCopy
+        : kind === "TREASURE"
+          ? "Relic cache stabilized — bonus extraction logged."
+          : "Story beat — continue when ready."),
+  }
+  return patchRun({ ...quest, ...clearEncounterPayloads() }, nextRun)
+}
+
+function mountNodeEncounter(
+  quest: QuestContract,
+  run: DungeonRunContract,
+  playerLevel: number
+) {
+  const node = getCurrentNode(run)!
+  const ctx = mountContextFromRun(run, playerLevel)
+  const content = resolveNodeEncounterContent(run.dungeon.id, node.id)
+  const script = resolveScriptForNode(
+    run.dungeon.id,
+    node.id,
+    node.encounterScriptId ?? content?.encounterScriptId
+  )
+
+  if (script) {
+    const scriptMount = mountFromEncounterScript(script, {
+      ...ctx,
+      roomType: node.roomType ?? content?.roomType ?? script.roomType,
+    })
+    if (scriptMount.kind === "RECOVERY") {
+      return applySpecialRoomMount(
+        quest,
+        run,
+        "RECOVERY",
+        scriptMount.storyCopy ?? scriptMount.briefing
+      )
+    }
+    if (scriptMount.kind === "STORY") {
+      return applySpecialRoomMount(
+        quest,
+        run,
+        "STORY",
+        scriptMount.storyCopy ?? node.storyRoomCopy
+      )
+    }
+    if (scriptMount.kind === "TREASURE") {
+      return applySpecialRoomMount(quest, run, "TREASURE", scriptMount.briefing)
+    }
+    if (scriptMount.payload) {
+      let nextQuest: QuestContract = {
+        ...patchRun(
+          { ...quest, ...clearEncounterPayloads(), ...scriptMount.payload },
+          {
+            ...run,
+            machineState: transition(run.machineState, "ENCOUNTER"),
+            activeType: scriptMount.payload.activeType,
+            explorationBeat: null,
+            explorationProgress: 100,
+            routeSelectPending: false,
+          }
+        ),
+      }
+      if (scriptMount.gameMode && scriptMount.gameMode !== "STANDARD") {
+        nextQuest = applyGameModeToQuest(nextQuest, scriptMount.gameMode)
+      }
+      return nextQuest
+    }
+  }
+
+  if (node.roomType === "RECOVERY") {
+    return applySpecialRoomMount(quest, run, "RECOVERY", node.storyRoomCopy)
+  }
+  if (node.roomType === "STORY") {
+    return applySpecialRoomMount(
+      quest,
+      run,
+      "STORY",
+      node.storyRoomCopy ?? "Story beat — continue when ready."
+    )
+  }
+  if (node.roomType === "TREASURE") {
+    return applySpecialRoomMount(quest, run, "TREASURE")
+  }
+
+  const mounted = mountSectorEncounter(
+    node.encounterType!,
+    node.label,
+    {
+      ...ctx,
+      roomType: node.roomType ?? content?.roomType,
+      gameMode: content?.gameMode,
+    }
+  )
+
+  const encounterIndex = run.dungeon.encounters.findIndex(
+    (e) => e.type === node.encounterType && !e.completed
+  )
+
+  let nextQuest: QuestContract = {
+    ...patchRun(
+      { ...quest, ...clearEncounterPayloads(), ...mounted },
+      {
+        ...run,
+        machineState: transition(run.machineState, "ENCOUNTER"),
+        currentEncounterIndex: encounterIndex >= 0 ? encounterIndex : 0,
+        activeType: mounted.activeType,
+        explorationBeat: null,
+        explorationProgress: 100,
+        routeSelectPending: false,
+      }
+    ),
+  }
+
+  if (content?.gameMode && content.gameMode !== "STANDARD") {
+    nextQuest = applyGameModeToQuest(nextQuest, content.gameMode)
+  }
+
+  return nextQuest
+}
+
 function engageSectorEncounterV2(
   quest: QuestContract,
   playerLevel: number
@@ -56,7 +202,19 @@ function engageSectorEncounterV2(
   }
 
   const node = getCurrentNode(run)
-  if (!node || node.type !== "ENCOUNTER" || !node.encounterType) {
+  if (!node) {
+    throw new Error("Current node has no breach encounter.")
+  }
+
+  if (node.type === "ROUTE") {
+    throw new Error("Choose your next route before engaging.")
+  }
+
+  if (node.type !== "ENCOUNTER" && node.type !== "BOSS_GATE") {
+    throw new Error("Current node has no breach encounter.")
+  }
+
+  if (node.type === "ENCOUNTER" && !node.encounterType && !node.roomType) {
     throw new Error("Current node has no breach encounter.")
   }
 
@@ -68,30 +226,7 @@ function engageSectorEncounterV2(
     return beginBossPhase(quest)
   }
 
-  const mounted = mountSectorEncounter(
-    node.encounterType,
-    node.label,
-    mountContextFromRun(run, playerLevel)
-  )
-
-  const encounterIndex = run.dungeon.encounters.findIndex(
-    (e) => e.type === node.encounterType && !e.completed
-  )
-
-  return {
-    ...patchRun(
-      { ...quest, ...clearEncounterPayloads(), ...mounted },
-      {
-        ...run,
-        machineState: transition(run.machineState, "ENCOUNTER"),
-        currentEncounterIndex: encounterIndex >= 0 ? encounterIndex : 0,
-        activeType: mounted.activeType,
-        explorationBeat: null,
-        explorationProgress: 100,
-        routeSelectPending: false,
-      }
-    ),
-  }
+  return mountNodeEncounter(quest, run, playerLevel)
 }
 
 export function engageSectorEncounter(

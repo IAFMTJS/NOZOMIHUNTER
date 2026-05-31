@@ -25,6 +25,11 @@ import {
   dailyMilestoneProgress,
   DAILY_MILESTONE_BONUS_CREDITS,
 } from "@/systems/quests/dailyMilestoneSystem"
+import { completeStoryBeatRemote } from "@/services/supabase/storyProgressRepository"
+import {
+  applyLocalStoryBeatComplete,
+  mergeStoryProgressOnPlayer,
+} from "@/systems/narrative/storyProgressSystem"
 
 export interface ActivityCompletionInput {
   userId: string
@@ -84,6 +89,37 @@ export async function applyActivityCompletion(
   })
 
   emitUnlockGrants(input.userId, input.newUnlocks)
+
+  if (
+    input.quest.narrativeTier === "MAIN" &&
+    input.quest.storyBeatId
+  ) {
+    const beatId = input.quest.storyBeatId
+    const seasonId = input.quest.seasonId ?? "season-01-broken-signal"
+    const remote = await completeStoryBeatRemote(
+      input.userId,
+      beatId,
+      seasonId
+    )
+    const currentPlayer = usePlayerStore.getState().player
+    if (currentPlayer) {
+      const withBeat = applyLocalStoryBeatComplete(
+        currentPlayer,
+        beatId,
+        input.quest.archiveUnlockId
+      )
+      usePlayerStore.getState().setPlayer(
+        remote ? mergeStoryProgressOnPlayer(withBeat, remote) : withBeat
+      )
+    }
+    if (input.quest.archiveUnlockId) {
+      eventBus.emit(GAME_EVENTS.ARCHIVE_UNLOCKED, {
+        playerId: input.userId,
+        archiveUnlockId: input.quest.archiveUnlockId,
+        title: input.quest.title,
+      })
+    }
+  }
 
   if (leveledUp) {
     const afterLevel = usePlayerStore.getState().player

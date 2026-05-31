@@ -1,4 +1,4 @@
-import { getActiveSeason } from "@/config/seasonConfig"
+import { getPrimarySeason } from "@/config/seasonConfig"
 import type { PlayerContract } from "@/contracts/player-contract"
 
 export interface SeasonProgressView {
@@ -16,7 +16,7 @@ export function buildSeasonProgressView(
   player: PlayerContract,
   stored?: { points: number; tier: number } | null
 ): SeasonProgressView | null {
-  const season = getActiveSeason()
+  const season = getPrimarySeason()
   if (!season) return null
 
   const points = stored?.points ?? Math.min(500, player.level * 12 + player.xp / 20)

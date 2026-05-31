@@ -58,19 +58,23 @@ export async function loadArchiveEntriesFromDb(
 
   const { data, error } = await supabase
     .from("content_archive_entries")
-    .select("id, title, teaser, lore_excerpt, min_rank, linked_contract_id")
+    .select(
+      "id, title, teaser, lore_excerpt, min_rank, linked_contract_id, required_beat_id, japanese_excerpt"
+    )
 
   if (error || !data?.length) return []
 
   const entries: ArchiveEntry[] = data.map((row) => {
-    const locked = !rankMeets(row.min_rank as string | null, playerRank)
+    const rankLocked = !rankMeets(row.min_rank as string | null, playerRank)
     return {
       id: row.id as string,
       title: row.title as string,
       teaser: row.teaser as string,
       loreExcerpt: (row.lore_excerpt as string) ?? undefined,
-      locked,
-      lockReason: locked
+      japaneseExcerpt: (row.japanese_excerpt as string) ?? undefined,
+      requiredBeatId: (row.required_beat_id as string) ?? undefined,
+      locked: rankLocked,
+      lockReason: rankLocked
         ? `Requires rank ${row.min_rank ?? "higher"}`
         : undefined,
       linkedContractId: (row.linked_contract_id as string) ?? undefined,

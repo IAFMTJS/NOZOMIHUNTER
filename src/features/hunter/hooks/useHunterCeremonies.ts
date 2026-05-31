@@ -5,6 +5,8 @@ import type { PlayerContract } from "@/contracts/player-contract"
 import type { AchievementContract } from "@/systems/progression/achievementSystem"
 import type { CanonicalMasteryTier } from "@/systems/presentation/masteryPresentationSystem"
 import type { MasteryTierUpCeremonyData } from "@/components/ceremonies/MasteryTierUpCeremony"
+import type { ArchiveUnlockCeremonyData } from "@/components/ceremonies/ArchiveUnlockCeremony"
+import type { WordBindCeremonyData } from "@/components/ceremonies/WordBindCeremony"
 import { detectNewAchievements } from "@/systems/presentation/achievements/achievementUnlockPresentation"
 import { achievementUnlockFingerprint } from "@/systems/presentation/achievements/achievementUnlockSnapshot"
 import { eventBus } from "@/systems/events/eventBus"
@@ -17,6 +19,8 @@ export function useHunterCeremonies(
 ) {
   const [achievementQueue, setAchievementQueue] = useState<AchievementContract[]>([])
   const [masteryTierQueue, setMasteryTierQueue] = useState<MasteryTierUpCeremonyData[]>([])
+  const [archiveUnlockQueue, setArchiveUnlockQueue] = useState<ArchiveUnlockCeremonyData[]>([])
+  const [wordBindQueue, setWordBindQueue] = useState<WordBindCeremonyData[]>([])
   const [syncCeremonyKey, setSyncCeremonyKey] = useState<string | null>(null)
   const prevPlayerRef = useRef<PlayerContract | null>(null)
 
@@ -106,9 +110,39 @@ export function useHunterCeremonies(
         } as MasteryTierUpCeremonyData,
       ])
     }
+    const onArchiveUnlock = (payload: unknown) => {
+      const p = payload as {
+        archiveUnlockId?: string
+        title?: string
+        excerpt?: string
+      }
+      if (!p.archiveUnlockId) return
+      const archiveUnlockId = p.archiveUnlockId
+      setArchiveUnlockQueue((q) => [
+        ...q,
+        {
+          archiveUnlockId,
+          title: p.title ?? archiveUnlockId.replace(/-/g, " "),
+          excerpt: p.excerpt,
+        },
+      ])
+    }
+    const onWordBound = (payload: unknown) => {
+      const p = payload as { wordId?: string; mastery?: number }
+      if (!p.wordId) return
+      const wordId = p.wordId
+      setWordBindQueue((q) => [
+        ...q,
+        { wordId, mastery: p.mastery ?? 80 },
+      ])
+    }
     eventBus.on(GAME_EVENTS.MASTERY_TIER_UP, onMasteryTier)
+    eventBus.on(GAME_EVENTS.ARCHIVE_UNLOCKED, onArchiveUnlock)
+    eventBus.on(GAME_EVENTS.WORD_BOUND, onWordBound)
     return () => {
       eventBus.off(GAME_EVENTS.MASTERY_TIER_UP, onMasteryTier)
+      eventBus.off(GAME_EVENTS.ARCHIVE_UNLOCKED, onArchiveUnlock)
+      eventBus.off(GAME_EVENTS.WORD_BOUND, onWordBound)
     }
   }, [])
 
@@ -120,12 +154,24 @@ export function useHunterCeremonies(
     setMasteryTierQueue((q) => q.slice(1))
   }, [])
 
+  const popArchiveUnlock = useCallback(() => {
+    setArchiveUnlockQueue((q) => q.slice(1))
+  }, [])
+
+  const popWordBind = useCallback(() => {
+    setWordBindQueue((q) => q.slice(1))
+  }, [])
+
   return {
     achievementQueue,
     masteryTierQueue,
+    archiveUnlockQueue,
+    wordBindQueue,
     syncCeremonyKey,
     dismissSyncCeremony,
     popAchievement,
     popMasteryTier,
+    popArchiveUnlock,
+    popWordBind,
   }
 }

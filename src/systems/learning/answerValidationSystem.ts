@@ -8,6 +8,10 @@ import {
   readingToRomaji,
 } from "@/services/jmdict/normalize"
 import { resolveInputMode } from "@/systems/learning/challengeDisplaySystem"
+import {
+  isCorruptedJapanese,
+  isCorruptedRomaji,
+} from "@/systems/corruption/corruptedLanguageSystem"
 
 export interface AnswerableChallengeItem {
   japanese: string
@@ -16,6 +20,8 @@ export interface AnswerableChallengeItem {
   meanings: string[]
   promptDirection?: ChallengePromptDirection
   inputMode?: AnswerInputMode
+  /** When true, corrupted JP tokens may match (corruption-run encounters). */
+  allowCorrupted?: boolean
 }
 
 export function resolveAnswerInputMode(
@@ -76,6 +82,12 @@ export function matchesChallengeAnswer(
 ): boolean {
   const normalized = normalizeAnswer(answer)
   if (!normalized) return false
+
+  if (!item.allowCorrupted) {
+    const corruptedJp = isCorruptedJapanese(answer)
+    if (corruptedJp.isCorrupted) return false
+    if (isCorruptedRomaji(normalized)) return false
+  }
 
   const direction = item.promptDirection ?? defaultDirection
   if (direction === "LISTEN_DECODE") {

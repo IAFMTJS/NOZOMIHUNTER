@@ -38,7 +38,20 @@ async function main() {
       string,
       unknown
     >[]
-    await upsertTable(supabase, "content_archive_entries", archive)
+    await upsertTable(
+      supabase,
+      "content_archive_entries",
+      archive.map((row) => ({
+        id: row.id,
+        title: row.title,
+        teaser: row.teaser ?? null,
+        lore_excerpt: row.lore_excerpt ?? row.loreExcerpt ?? null,
+        min_rank: row.min_rank ?? row.minRank ?? null,
+        linked_contract_id: row.linked_contract_id ?? row.linkedContractId ?? null,
+        required_beat_id: row.required_beat_id ?? row.requiredBeatId ?? null,
+        japanese_excerpt: row.japanese_excerpt ?? row.japaneseExcerpt ?? null,
+      }))
+    )
   }
 
   const manifestPath = path.join(SEEDS, "asset-manifest.json")
@@ -109,6 +122,35 @@ async function main() {
       supabase,
       "content_achievements",
       achievements.map((a) => ({ ...a, active: true }))
+    )
+  }
+
+  const beatsPath = path.join(SEEDS, "content-story-beats.json")
+  if (fs.existsSync(beatsPath)) {
+    const beats = JSON.parse(fs.readFileSync(beatsPath, "utf8")) as Record<string, unknown>[]
+    await upsertTable(supabase, "content_story_beats", beats)
+  }
+
+  const scriptsPath = path.join(SEEDS, "content-encounter-scripts.json")
+  if (fs.existsSync(scriptsPath)) {
+    const scripts = JSON.parse(fs.readFileSync(scriptsPath, "utf8")) as {
+      id: string
+      sector_id?: string
+      dungeon_key?: string
+      node_id?: string
+      script: Record<string, unknown>
+    }[]
+    await upsertTable(
+      supabase,
+      "content_encounter_scripts",
+      scripts.map((s) => ({
+        id: s.id,
+        sector_id: s.sector_id ?? null,
+        dungeon_key: s.dungeon_key ?? null,
+        node_id: s.node_id ?? null,
+        script: s.script,
+        active: true,
+      }))
     )
   }
 

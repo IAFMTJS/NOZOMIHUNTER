@@ -1,0 +1,314 @@
+[
+  {
+    "id": "beat-s01-001",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-01",
+    "mission_index": 1,
+    "title": "Registry Wake",
+    "prerequisite_beat_id": null,
+    "metadata": {
+      "titleJa": "レジストリ覚醒",
+      "missionId": "story-s01-m01",
+      "linkedSectorId": "sector-01"
+    }
+  },
+  {
+    "id": "beat-s01-002",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-01",
+    "mission_index": 2,
+    "title": "First Glyph",
+    "prerequisite_beat_id": "beat-s01-001",
+    "metadata": {
+      "titleJa": "第一の文字",
+      "missionId": "story-s01-m02",
+      "linkedSectorId": "sector-01"
+    }
+  },
+  {
+    "id": "beat-s01-003",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-01",
+    "mission_index": 3,
+    "title": "Silent Prayer",
+    "prerequisite_beat_id": "beat-s01-002",
+    "metadata": {
+      "titleJa": "静かな祈り",
+      "missionId": "story-s01-m03",
+      "linkedSectorId": "sector-01"
+    }
+  },
+  {
+    "id": "beat-s01-004",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-01",
+    "mission_index": 4,
+    "title": "Iris Briefing",
+    "prerequisite_beat_id": "beat-s01-003",
+    "metadata": {
+      "titleJa": "アイリスブリーフィング",
+      "missionId": "story-s01-m04",
+      "linkedSectorId": "sector-01"
+    }
+  },
+  {
+    "id": "beat-s01-005",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-01",
+    "mission_index": 5,
+    "title": "Temple Signal",
+    "prerequisite_beat_id": "beat-s01-004",
+    "metadata": {
+      "titleJa": "寺院信号",
+      "missionId": "story-s01-m05",
+      "linkedSectorId": "sector-01"
+    }
+  },
+  {
+    "id": "beat-s01-006",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-01",
+    "mission_index": 6,
+    "title": "Forgotten Names",
+    "prerequisite_beat_id": "beat-s01-005",
+    "metadata": {
+      "titleJa": "忘れられた名",
+      "missionId": "story-s01-m06",
+      "linkedSectorId": "sector-01"
+    }
+  },
+  {
+    "id": "beat-s01-007",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-01",
+    "mission_index": 7,
+    "title": "Archive Restoration",
+    "prerequisite_beat_id": "beat-s01-006",
+    "metadata": {
+      "titleJa": "記録復元",
+      "missionId": "story-s01-m07",
+      "linkedSectorId": "sector-01"
+    }
+  },
+  {
+    "id": "beat-s01-008",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-01",
+    "mission_index": 8,
+    "title": "Hollow Gate",
+    "prerequisite_beat_id": "beat-s01-007",
+    "metadata": {
+      "titleJa": "虚ろの門",
+      "missionId": "story-s01-m08",
+      "linkedSectorId": "sector-01"
+    }
+  },
+  {
+    "id": "beat-s01-009",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-02",
+    "mission_index": 9,
+    "title": "Distorted Broadcast",
+    "prerequisite_beat_id": "beat-s01-008",
+    "metadata": {
+      "titleJa": "歪んだ放送",
+      "missionId": "story-s01-m09",
+      "linkedSectorId": "sector-02"
+    }
+  },
+  {
+    "id": "beat-s01-010",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-02",
+    "mission_index": 10,
+    "title": "Neon Infiltration",
+    "prerequisite_beat_id": "beat-s01-009",
+    "metadata": {
+      "titleJa": "ネオン潜入",
+      "missionId": "story-s01-m10",
+      "linkedSectorId": "sector-02"
+    }
+  },
+  {
+    "id": "beat-s01-011",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-02",
+    "mission_index": 11,
+    "title": "Operator Seven",
+    "prerequisite_beat_id": "beat-s01-010",
+    "metadata": {
+      "titleJa": "オペレーター七",
+      "missionId": "story-s01-m11",
+      "linkedSectorId": "sector-02"
+    }
+  },
+  {
+    "id": "beat-s01-012",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-02",
+    "mission_index": 12,
+    "title": "Emergency Transmission",
+    "prerequisite_beat_id": "beat-s01-011",
+    "metadata": {
+      "titleJa": "緊急送信",
+      "missionId": "story-s01-m12",
+      "linkedSectorId": "sector-02"
+    }
+  },
+  {
+    "id": "beat-s01-013",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-02",
+    "mission_index": 13,
+    "title": "Corridor Breach",
+    "prerequisite_beat_id": "beat-s01-012",
+    "metadata": {
+      "titleJa": "回廊突破",
+      "missionId": "story-s01-m13",
+      "linkedSectorId": "sector-02"
+    }
+  },
+  {
+    "id": "beat-s01-014",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-02",
+    "mission_index": 14,
+    "title": "Warden Rematch",
+    "prerequisite_beat_id": "beat-s01-013",
+    "metadata": {
+      "titleJa": "監視者再戦",
+      "missionId": "story-s01-m14",
+      "linkedSectorId": "sector-02"
+    }
+  },
+  {
+    "id": "beat-s01-015",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-02",
+    "mission_index": 15,
+    "title": "Static Confession",
+    "prerequisite_beat_id": "beat-s01-014",
+    "metadata": {
+      "titleJa": "静止告白",
+      "missionId": "story-s01-m15",
+      "linkedSectorId": "sector-02"
+    }
+  },
+  {
+    "id": "beat-s01-016",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-02",
+    "mission_index": 16,
+    "title": "Signal Crown",
+    "prerequisite_beat_id": "beat-s01-015",
+    "metadata": {
+      "titleJa": "信号の冠",
+      "missionId": "story-s01-m16",
+      "linkedSectorId": "sector-02"
+    }
+  },
+  {
+    "id": "beat-s01-017",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-03",
+    "mission_index": 17,
+    "title": "Lexicon Debt",
+    "prerequisite_beat_id": "beat-s01-016",
+    "metadata": {
+      "titleJa": "語彙の負債",
+      "missionId": "story-s01-m17",
+      "linkedSectorId": "sector-03"
+    }
+  },
+  {
+    "id": "beat-s01-018",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-03",
+    "mission_index": 18,
+    "title": "Archivist Contact",
+    "prerequisite_beat_id": "beat-s01-017",
+    "metadata": {
+      "titleJa": "記録官接触",
+      "missionId": "story-s01-m18",
+      "linkedSectorId": "sector-03"
+    }
+  },
+  {
+    "id": "beat-s01-019",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-03",
+    "mission_index": 19,
+    "title": "Memory Vault",
+    "prerequisite_beat_id": "beat-s01-018",
+    "metadata": {
+      "titleJa": "記憶保管庫",
+      "missionId": "story-s01-m19",
+      "linkedSectorId": "sector-03"
+    }
+  },
+  {
+    "id": "beat-s01-020",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-03",
+    "mission_index": 20,
+    "title": "Shadow Breach",
+    "prerequisite_beat_id": "beat-s01-019",
+    "metadata": {
+      "titleJa": "影の突破",
+      "missionId": "story-s01-m20",
+      "linkedSectorId": "sector-03"
+    }
+  },
+  {
+    "id": "beat-s01-021",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-03",
+    "mission_index": 21,
+    "title": "Forbidden Index",
+    "prerequisite_beat_id": "beat-s01-020",
+    "metadata": {
+      "titleJa": "禁断索引",
+      "missionId": "story-s01-m21",
+      "linkedSectorId": "sector-03"
+    }
+  },
+  {
+    "id": "beat-s01-022",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-03",
+    "mission_index": 22,
+    "title": "Iris Truth",
+    "prerequisite_beat_id": "beat-s01-021",
+    "metadata": {
+      "titleJa": "アイリスの真実",
+      "missionId": "story-s01-m22",
+      "linkedSectorId": "sector-03"
+    }
+  },
+  {
+    "id": "beat-s01-023",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-04",
+    "mission_index": 23,
+    "title": "Abyss Probe",
+    "prerequisite_beat_id": "beat-s01-022",
+    "metadata": {
+      "titleJa": "深淵探査",
+      "missionId": "story-s01-m23",
+      "linkedSectorId": "sector-04"
+    }
+  },
+  {
+    "id": "beat-s01-024",
+    "season_id": "season-01-broken-signal",
+    "chapter_id": "ch-04",
+    "mission_index": 24,
+    "title": "Broken Signal Finale",
+    "prerequisite_beat_id": "beat-s01-023",
+    "metadata": {
+      "titleJa": "壊れた信号",
+      "missionId": "story-s01-m24",
+      "linkedSectorId": "sector-04"
+    }
+  }
+]

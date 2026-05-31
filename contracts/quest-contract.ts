@@ -7,12 +7,19 @@ import type {
 import type { DungeonRunContract } from "./dungeon-contract"
 import type { GameModeId } from "./game-mode-contract"
 import type { QuestVocabularyPreparationContract } from "./vocabulary-contract"
+import type {
+  ArchiveUnlockId,
+  ChapterId,
+  SeasonId,
+  StoryBeatId,
+} from "./narrative-contract"
+import type { SectorId } from "./sector-contract"
 
 /** MAIN = story; SIDE = narrative contracts; DAILY = maintenance slot (UTC date id). */
 export type QuestNarrativeTier = "MAIN" | "SIDE" | "DAILY"
 
 /** Which contract board channel requested generation. */
-export type QuestRequestChannel = "daily" | "side" | "story"
+export type QuestRequestChannel = "daily" | "side" | "story" | "anomaly"
 
 export interface QuestContract {
   id: string
@@ -73,6 +80,19 @@ export interface QuestContract {
 
   /** Distinct gameplay mode — defaults to STANDARD when absent. */
   gameMode?: GameModeId
+
+  /** Season 1+ narrative metadata */
+  seasonId?: SeasonId
+  chapterId?: ChapterId
+  missionIndex?: number
+  storyBeatId?: StoryBeatId
+  prerequisiteBeatId?: StoryBeatId
+  archiveUnlockId?: ArchiveUnlockId
+  linkedSectorId?: SectorId
+  linkedDungeonKey?: string
+  encounterScriptId?: string
+  scenarioId?: string
+  briefing?: string
 
   hidden?: boolean
 }

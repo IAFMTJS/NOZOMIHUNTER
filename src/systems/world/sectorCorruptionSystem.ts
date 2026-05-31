@@ -4,6 +4,10 @@ import type { DungeonRunContract } from "@/contracts/dungeon-contract"
 import { corruptionBandFromPercent } from "@/config/corruptionThresholds"
 import { buildWorldMapNodes } from "@/systems/world/worldMapSystem"
 import { DUNGEON_DEFINITIONS } from "@/config/dungeonConfig"
+import {
+  getActiveLanguageInvasion,
+  invasionCorruptionDrift,
+} from "@/systems/retention/languageInvasionSystem"
 
 export interface SectorCorruptionViewModel {
   sectorKey: string
@@ -43,7 +47,8 @@ export function resolvePrimarySector(
 
 export function buildSectorCorruptionView(
   player: PlayerContract,
-  activeQuests: QuestContract[]
+  activeQuests: QuestContract[],
+  seed?: string
 ): SectorCorruptionViewModel {
   const sector = resolvePrimarySector(player, activeQuests)
   const run = activeDungeonRun(activeQuests)
@@ -57,6 +62,12 @@ export function buildSectorCorruptionView(
     const nodes = buildWorldMapNodes(player)
     const node = nodes.find((n) => n.key === sector.key || n.name === sector.name)
     corruptionPercent = node?.corruptionIndex ?? 42
+  }
+
+  const invasion = getActiveLanguageInvasion(seed)
+  const drift = invasionCorruptionDrift(invasion)
+  if (drift > 0) {
+    corruptionPercent = Math.min(100, corruptionPercent + drift)
   }
 
   const band = corruptionBandFromPercent(corruptionPercent)
